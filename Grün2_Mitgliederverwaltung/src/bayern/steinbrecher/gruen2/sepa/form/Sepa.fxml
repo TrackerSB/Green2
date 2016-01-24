@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import bayern.steinbrecher.gruen2.elements.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.sepa.form.SepaController">
+    <Label text="Name des Einreichers: (Max. 70 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <CheckedTextField maxColumnCount="70" promptText="Name des Einreichers" fx:id="creatorTextField" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <Label text="Kontoinhaber:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <TextField promptText="Kontoinhaber" fx:id="creditorTextField" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Label text="IBAN:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <TextField promptText="IBAN" fx:id="ibanTextField" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label text="BIC:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <TextField promptText="BIC" fx:id="bicTextField" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <Label text="Gläubiger-ID:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+    <TextField promptText="Gläubiger-ID" fx:id="trusterIdTextField" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    <Label text="Verwendungszweck:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+    <TextField promptText="Verwendungszweck" fx:id="purposeTextField" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <Label text="Ausführungsdatum:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+    <DatePicker promptText="Ausführungsdatum" fx:id="executionDatePicker" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+    <Label text="Message-ID: (Max. 35 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="7" spacing="5" >
+        <CheckedTextField maxColumnCount="35" promptText="Message-ID" fx:id="messageIdTextField" onAction="#next" />
+        <Button text="Erstellen" onAction="#generateMessageId" />
+    </HBox>
+    <Label text="Payment Information Identification: (Max. 35 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+    <CheckedTextField maxColumnCount="35" promptText="Payment Information Identification" fx:id="pmtInfIdTextField" onAction="#next" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+    
+    <Label text="Eingabe zu lang" styleClass="warningLabel" fx:id="inputToLongLabel" GridPane.columnIndex="1" GridPane.rowIndex="9" visible="false" />
+    <Label text="Fehlende Angaben" styleClass="warningLabel" fx:id="missingInputLabel" GridPane.columnIndex="1" GridPane.rowIndex="10" visible="false" />
+    
+    <Button text="Weiter" fx:id="nextButton" onAction="#next" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+</GridPane>
