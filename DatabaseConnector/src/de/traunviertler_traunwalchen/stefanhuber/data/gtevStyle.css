@@ -1,0 +1,98 @@
+/* 
+    Author     : Stefan Huber
+*/
+
+.root{
+    -fx-background-color: white;
+    -fx-focus-color: forestgreen; /*#228B22*/
+    -fx-padding: 10px;
+    -fx-hgap: 5px;
+    -fx-vgap: 10px;
+}
+
+.text-field{
+    -fx-highlight-fill: forestgreen;
+    -fx-border-color: transparent;
+    -fx-min-width: 200px;
+}
+
+.date-picker-popup{
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 25, 0, 3, 5);
+}
+
+.date-picker-popup > .month-year-pane{
+    -fx-background-color: forestgreen;
+    -fx-background-radius: 15px 15px 0px 0px;
+}
+
+.date-picker-popup > .month-year-pane > .secondary-label {
+}
+
+.date-picker-popup > * > .spinner {
+}
+
+.date-picker-popup > * > .spinner > .button {
+}
+
+.date-picker-popup > * > .spinner > .label {
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: white;
+    -fx-background-image: url("icon.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: bottom right;
+}
+
+.date-picker-popup > * > .date-cell{
+}
+
+.date-picker-popup > * > .day-name-cell{
+}
+
+.date-picker-popup > * > .week-number-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: forestgreen;
+}
+
+.date-picker-popup > * > .day-cell {
+    -fx-text-fill: lime;
+    -fx-background-color: rgba(80,80,80,0.7);
+}
+
+.date-picker-popup > * > .day-cell:hover {
+    -fx-background-color: forestgreen;
+    -fx-text-fill: white;
+    -fx-background-radius: 5px;
+}
+
+.date-picker-popup > * > .day-cell.selected{
+    -fx-background-color: orangered;
+}
+
+.date-picker-popup > * > .previous-month,
+.date-picker-popup > * > .next-month{
+    -fx-background-color: rgba(50,50,50,0.8);
+}
+
+.date-picker-popup > * > .today {
+    -fx-background-color: rgba(50,50,255,0.5);
+}
+
+.missingInput, .badInputLength, .badInput{
+    -fx-border-color: red;
+    -fx-highlight-fill: red;
+    -fx-focus-color: red;
+}
+
+.missingInput:focused, .badInputLength:focused{
+    -fx-border-color: transparent;
+}
+
+.warningLabel{
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+}

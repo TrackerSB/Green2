@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.traunviertler_traunwalchen.stefanhuber.databaseconnector.standard.DatabaseConnectorControllerStandard">
+    <stylesheets>
+        <URL value="@/de/traunviertler_traunwalchen/stefanhuber/data/gtevStyle.css" />
+    </stylesheets>
+    
+    <Label text="Datenbank-Nutzername:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <TextField fx:id="databaseNameField" promptText="Datenbank-Nutzername" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label text="Datenbank-Passwort:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <PasswordField fx:id="databasePasswdField" promptText="Datenbank-Passwort" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    
+    <Label text="Name oder Passwort falsch" fx:id="nameOrPasswdWrong" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="4" visible="false" />
+    <Label text="Fehlende Angaben" fx:id="missingInputLabel" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" visible="false" />
+    <CheckBox text="Leere Felder zulassen" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" />
+    <Button fx:id="loginButton" text="Login" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+</GridPane>
