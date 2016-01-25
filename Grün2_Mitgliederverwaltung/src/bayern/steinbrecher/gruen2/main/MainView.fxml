@@ -5,6 +5,6 @@
 <?import javafx.scene.layout.*?>
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.main.MainController">
-    <Button fx:id="sepaButton" GridPane.columnIndex="0" GridPane.rowIndex="0" text="Sepa-Lastschrift erstellen" onAction="#showSepaDialog" />
+    <Button GridPane.columnIndex="0" GridPane.rowIndex="0" text="Sepa-Lastschrift erstellen" onAction="#showSepaDialog" />
     <Button GridPane.columnIndex="1" GridPane.rowIndex="0" text="Daten für Serienbrief generieren" onAction="#showSerialLettersDialog" />
 </GridPane>

@@ -71,9 +71,10 @@ public class DataProvider {
     public static String getAppDataPath() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             return System.getProperty("user.home").replaceAll("\\\\", "/")
-                    + "/AppData/Roaming/Mitgliederverwaltung";
+                    + "/AppData/Roaming/Gruen2_Mitgliederverwaltung";
         } else {
-            return System.getProperty("user.home") + "/Mitgliederverwaltung";
+            return System.getProperty("user.home")
+                    + "/Gruen2_Mitgliederverwaltung";
         }
     }
 
@@ -150,5 +151,9 @@ public class DataProvider {
             }
         }
         return configs.getOrDefault(key, defaultValue);
+    }
+    
+    public static boolean useSsh(){
+        return getOrDefault("nutzeSsh", "ja").equalsIgnoreCase("ja");
     }
 }

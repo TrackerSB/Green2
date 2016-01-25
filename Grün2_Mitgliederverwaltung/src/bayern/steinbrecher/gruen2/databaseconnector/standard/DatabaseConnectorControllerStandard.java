@@ -45,8 +45,10 @@ public class DatabaseConnectorControllerStandard implements Initializable {
         try {
             if (!missingInputLabel.isVisible()) {
                 dbc.update(new DatabaseStandardConnection(
+                        DataProvider.getOrDefault("databaseHost", "localhost"),
                         databaseNameField.getText(),
-                        databasePasswdField.getText()));
+                        databasePasswdField.getText(),
+                        DataProvider.getOrDefault("databaseName", "Mitglieder")));
                 try {
                     dbc.callCallable();
                 } catch (Exception ex) {

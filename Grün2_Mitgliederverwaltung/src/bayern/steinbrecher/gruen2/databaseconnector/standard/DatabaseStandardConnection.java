@@ -14,17 +14,16 @@ import java.util.logging.Logger;
  */
 public final class DatabaseStandardConnection implements DatabaseConnection {
 
-    private static final String DATABASE_HOST = "jdbc:mysql://localhost:3306/",
-            DATABASE = "frauenverein",
-            DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
     private Connection connection;
 
-    public DatabaseStandardConnection(String databaseUsername,
-            String databasePasswd) throws SQLException {
+    public DatabaseStandardConnection(String databaseHost,
+            String databaseUsername, String databasePasswd, String databaseName)
+            throws SQLException {
         try {
             Class.forName(DRIVER).newInstance();
             connection = (Connection) DriverManager.getConnection(
-                    DATABASE_HOST + DATABASE, databaseUsername, databasePasswd);
+                    databaseHost + databaseName, databaseUsername, databasePasswd);
             execQuery("SELECT 1");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(DatabaseStandardConnection.class.getName())
