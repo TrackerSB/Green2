@@ -37,7 +37,7 @@ public class DataForSerialLetters extends Application {
     }
 
     /**
-     * Die start-Methode. Einstiegspunkt jeder JavaFX-Applikation.
+     * Die start-Methode. Einstiegspunkt für jede JavaFX-Applikation.
      *
      * @param primaryStage Die initiale Stage
      * @throws Exception
