@@ -13,22 +13,22 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  */
 public class Main extends Application {
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource("MainView.fxml"));
-        
+
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
         ((MainController) fxmlLoader.getController()).setStage(primaryStage);
-        
+
         Scene scene = new Scene(root);
-        
+
         primaryStage.setScene(scene);
         primaryStage.setTitle("Programm wählen");
         primaryStage.setResizable(false);

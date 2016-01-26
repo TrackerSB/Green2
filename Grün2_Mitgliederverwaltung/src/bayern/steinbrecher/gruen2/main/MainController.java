@@ -12,7 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 
 /**
- * FXML Controller class
+ * FXML Controller class.
  *
  * @author Stefan Huber
  */
