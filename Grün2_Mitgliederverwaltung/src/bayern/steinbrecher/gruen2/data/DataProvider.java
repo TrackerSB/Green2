@@ -5,53 +5,48 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Control;
 import javafx.scene.image.Image;
 
 /**
- * Diese Klasse erm&ouml;glicht das Abfragen von Daten/Informationen, die alle
- * Applikationen betreffen, die den Login des DatabaseConnector-Projekts
- * benötigen.
+ * Delivers access to diffrent application wide usefull paths, icons, etc.
  *
  * @author Stefan Huber
  */
 public class DataProvider {
 
-    public static final String MISSING_INPUT_STYLECLASS_NAME = "missingInput",
-            BAD_INPUTLENGTH_STYLECLASS_NAME = "badInputLength",
-            BAD_INPUT_STYLECLASS_NAME = "badInput",
-            VALUE_SEPARATOR = "=";
+    public static final String VALUE_SEPARATOR = "=";
     private static Map<String, String> configs = null;
 
     /**
-     * Um zu verhindern, dass Objekte dieser Klasse erstellt werden.
+     * Prohibit construction of a new object.
      */
     private DataProvider() {
+        throw new UnsupportedOperationException("Constructing an "
+                + DataProvider.class.getSimpleName() + "is not allowed");
     }
 
     /**
-     * Liefert das Standard-Icon.
+     * Returns the default icon.
      *
-     * @return Das Standard-Icon
+     * @return The default icon.
      */
     public static Image getIcon() {
         return new Image("bayern/steinbrecher/gruen2/data/icon.png");
     }
 
     /**
-     * Liefert die Standard-CSS-Datei.
+     * Returns the css file containing application wide styles.
      *
-     * @return Die Standard-CSS-Datei
+     * @return The css file containing application wide styles.
      */
     public static String getStylesheetPath() {
         return "bayern/steinbrecher/gruen2/data/styles.css";
     }
 
     /**
-     * Liefert den Standard-Speicherort.
+     * Returns the path of the directory to save results.
      *
-     * @return Bei Windows den Pfad zum Desktop, sonst das home-Verzeichnis
+     * @return The path of the directory to save results.
      */
     public static String getSavepath() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
@@ -63,10 +58,9 @@ public class DataProvider {
     }
 
     /**
-     * Liefert den Speicherort der Daten für das Programm.
+     * Returns the path of the directory for saving user data.
      *
-     * @return Unter Windows: %AppData%/Mitgliederverwaltung Sonst:
-     * "home-directory"/Mitgliederverwaltung
+     * @return The path of the directory for saving user data.
      */
     public static String getAppDataPath() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
@@ -74,63 +68,19 @@ public class DataProvider {
                     + "/AppData/Roaming/Gruen2_Mitgliederverwaltung";
         } else {
             return System.getProperty("user.home")
-                    + "/Gruen2_Mitgliederverwaltung";
+                    + "/.Gruen2_Mitgliederverwaltung";
         }
     }
 
     /**
-     * Setzt oder entfernt die Style-Class
-     * <code>MISSING_INPUT_STYLECLASS_NAME</code>
+     * Returns the value belonging to key {@code key} or {@code defaultValue} if
+     * {@code key} could not be found or is not specified.
      *
-     * @param control Das Control-Element, dessen Styleklassen verändert werden
-     * sollen.
-     * @param set true, wenn die Styleklasse gesetzt werden soll; false, wenn
-     * diese entfernt werden soll.
+     * @param key The key to search for.
+     * @param defaultValue The value to return when {@code key} was not found.
+     * @return The value belonging to key {@code key} or {@code defaultValue} if
+     * {@code key} could not be found or is not specified.
      */
-    public static void changeMissingInputStyleClass(Control control,
-            boolean set) {
-        changeStyleClass(control, set, MISSING_INPUT_STYLECLASS_NAME);
-    }
-
-    /**
-     * Setzt oder entfernt die Style-Class
-     * <code>BAD_INPUTLENGTH_STYLECLASS_NAME</code>
-     *
-     * @param control Das Control-Element, dessen Styleklassen verändert werden
-     * sollen.
-     * @param set true, wenn die Styleklasse gesetzt werden soll; false, wenn
-     * diese entfernt werden soll.
-     */
-    public static void changeBadInputLengthStyleClass(Control control,
-            boolean set) {
-        changeStyleClass(control, set, BAD_INPUTLENGTH_STYLECLASS_NAME);
-    }
-
-    /**
-     * Setzt oder entfernt die Style-Class
-     * <code>BAD_INPUT_STYLECLASS_NAME</code>
-     *
-     * @param control Das Control-Element, dessen Styleklassen verändert werden
-     * sollen.
-     * @param set true, wenn die Styleklasse gesetzt werden soll; false, wenn
-     * diese entfernt werden soll.
-     */
-    public static void changeBadInputStyleClass(Control control, boolean set) {
-        changeStyleClass(control, set, BAD_INPUT_STYLECLASS_NAME);
-    }
-
-    private static void changeStyleClass(Control control, boolean set,
-            String styleClass) {
-        ObservableList<String> styleClasses = control.getStyleClass();
-        if (set) {
-            if (!styleClasses.contains(styleClass)) {
-                styleClasses.add(styleClass);
-            }
-        } else {
-            styleClasses.remove(styleClass);
-        }
-    }
-
     public static String getOrDefault(String key, String defaultValue) {
         if (configs == null) {
             configs = new HashMap<>();
@@ -141,7 +91,7 @@ public class DataProvider {
                     String[] parts = line.split(VALUE_SEPARATOR);
                     if (parts.length != 2) {
                         System.err.println("\"" + line + "\" has not exactly "
-                                + "two elements. It gets ignored.");
+                                + "two elements. It remains ignored.");
                     } else {
                         configs.put(parts[0], parts[1]);
                     }
@@ -152,8 +102,13 @@ public class DataProvider {
         }
         return configs.getOrDefault(key, defaultValue);
     }
-    
-    public static boolean useSsh(){
-        return getOrDefault("nutzeSsh", "ja").equalsIgnoreCase("ja");
+
+    /**
+     * Checks whether to use SSH or not.
+     *
+     * @return {@code true} only if the connections have to use SSH.
+     */
+    public static boolean useSsh() {
+        return getOrDefault("nutzessh", "ja").equalsIgnoreCase("ja");
     }
 }

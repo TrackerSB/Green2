@@ -57,7 +57,6 @@ public class DatabaseConnectorControllerSSH implements Initializable {
                                 "Mitglieder")));
                 try {
                     disableControls(true);
-                    System.out.println("Dbccssh callCallable()");
                     dbc.callCallable().get();
                 } catch (Exception ex) {
                     Logger.getLogger(

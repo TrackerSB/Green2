@@ -82,13 +82,13 @@
     -fx-background-color: rgba(50,50,255,0.5);
 }
 
-.missingInput, .tooLongContent, .badInput{
+.missingInput, .badInputLength, .badInput{
     -fx-border-color: red;
     -fx-highlight-fill: red;
     -fx-focus-color: red;
 }
 
-.missingInput:focused, .tooLongContent:focused{
+.missingInput:focused, .badInputLength:focused{
     -fx-border-color: transparent;
 }
 

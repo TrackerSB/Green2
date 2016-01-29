@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.databaseconnector.standard.DatabaseConnectorControllerStandard">
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.defaultLogin.DefaultLoginController">
     <Label text="Datenbank-Nutzername:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
     <TextField fx:id="databaseNameField" promptText="Datenbank-Nutzername" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="2" />
     <Label text="Datenbank-Passwort:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
