@@ -1,6 +1,9 @@
 package bayern.steinbrecher.gruen2.databaseconnector;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javafx.application.Application;
 
 /**
@@ -61,10 +64,14 @@ public abstract class DatabaseConnectorModel<T> extends Application {
      * Ruft die <code>call</code>-Methode des Callable-Objektes auf und
      * schlie&szlig:t die Datenbankverbindung.
      *
-     * @return The result of the set callable.
+     * @return The representation of the result of the set callable.
      * @throws Exception Forwards a thrown exeception of the set callable.
      */
-    public T callCallable() throws Exception {
-        return caller.call();
+    public Future<T> callCallable() throws Exception {
+        ExecutorService es = Executors.newWorkStealingPool();
+        System.out.println("Caller submitted");
+        Future<T> result = es.submit(caller);
+        es.shutdown();
+        return result;
     }
 }

@@ -29,7 +29,7 @@ public class SepaPain00800302_XML_Generator {
      * @param eigeninfo Das Objekt, das die SepaModel-Eigeninfos enth&auml;lt
      * @param outputfile Der Name der Datei f&uuml;r den XML-Quellcode
      */
-    public static void createXMLFile(LinkedList<Member> member, double contribution, OriginatorIinfo eigeninfo, String outputfile) {
+    public static void createXMLFile(LinkedList<Member> member, double contribution, OriginatorInfo eigeninfo, String outputfile) {
         filterValidMember(member);
         int numberOfTransactions = member.size();
         double controlSum = numberOfTransactions * contribution;
@@ -71,7 +71,7 @@ public class SepaPain00800302_XML_Generator {
      * <code>members</code> zuordnet.
      * @return Eine StringBuilder-Repr&auml;sentation der XML-Datei.
      */
-    private static StringBuilder createXML(LinkedList<Member> member, OriginatorIinfo eigeninfo, int numberOfTransactions, double contribution, double controlSum) {
+    private static StringBuilder createXML(LinkedList<Member> member, OriginatorInfo eigeninfo, int numberOfTransactions, double contribution, double controlSum) {
         StringBuilder output = new StringBuilder();
 
         //Der Beginn mit unseren Daten

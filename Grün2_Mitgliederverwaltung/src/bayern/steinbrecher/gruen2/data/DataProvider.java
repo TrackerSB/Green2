@@ -21,7 +21,7 @@ public class DataProvider {
     public static final String MISSING_INPUT_STYLECLASS_NAME = "missingInput",
             BAD_INPUTLENGTH_STYLECLASS_NAME = "badInputLength",
             BAD_INPUT_STYLECLASS_NAME = "badInput",
-            VALUE_SEPARATOR = ":";
+            VALUE_SEPARATOR = "=";
     private static Map<String, String> configs = null;
 
     /**

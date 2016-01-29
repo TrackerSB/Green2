@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class OriginatorIinfo {
+public class OriginatorInfo {
 
     private String creator,
             msgId,
@@ -36,30 +36,30 @@ public class OriginatorIinfo {
      *
      * @param filename Der Name der Eigeninfos-Datei
      */
-    public OriginatorIinfo(String filename) {
+    public OriginatorInfo(String filename) {
         this.filename = filename;
         creator = msgId = creditor = iban = bic = trusterId = pmtInfId = executiondate = purpose = "";
     }
 
     /**
-     * Erstellt ein OriginatorIinfo-Objekt und liest die Datei <code>filename</code>
+     * Erstellt ein OriginatorInfo-Objekt und liest die Datei <code>filename</code>
      * ein, die Informationen &uuml;ber den Ersteller des Einzuges enth&auml;lt,
      * falls die Datei existiert.
      *
      * @param filename Die einzulesende Datei
-     * @return Neues OriginatorIinfo-Objekt, das <code>filename</code> bereits
+     * @return Neues OriginatorInfo-Objekt, das <code>filename</code> bereits
      * eingelesen hat.
      * @throws java.io.FileNotFoundException Tritt auf, wenn die Datei nicht
      * gefunden werden konnte.
      */
-    public static OriginatorIinfo readInEigeninfosTxt(String filename) throws FileNotFoundException {
-        OriginatorIinfo e = new OriginatorIinfo(filename);
+    public static OriginatorInfo readInEigeninfosTxt(String filename) throws FileNotFoundException {
+        OriginatorInfo e = new OriginatorInfo(filename);
         e.readInEigeninfosTxt();
         return e;
     }
 
     /**
-     * Liest die Datei, die den OriginatorIinfo-Objekt bei der Erzeugung
+     * Liest die Datei, die den OriginatorInfo-Objekt bei der Erzeugung
  &uuml;bergeben wurde ein, falls die Datei existiert.
      *
      * @throws FileNotFoundException Tritt auf, wenn die Datei nicht gefunden
@@ -77,7 +77,7 @@ public class OriginatorIinfo {
             this.executiondate = sc.nextLine();
             this.pmtInfId = sc.nextLine();
         } catch (NoSuchElementException ex) {
-            Logger.getLogger(OriginatorIinfo.class.getName()).log(Level.SEVERE, filename + " hat zu wenig Zeilen", ex);
+            Logger.getLogger(OriginatorInfo.class.getName()).log(Level.SEVERE, filename + " hat zu wenig Zeilen", ex);
         }
     }
 
@@ -97,7 +97,7 @@ public class OriginatorIinfo {
             pw.println(executiondate);
             pw.println(pmtInfId);
         } catch (IOException ex) {
-            Logger.getLogger(OriginatorIinfo.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OriginatorInfo.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

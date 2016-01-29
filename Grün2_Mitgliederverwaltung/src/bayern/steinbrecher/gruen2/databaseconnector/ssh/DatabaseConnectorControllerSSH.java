@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
@@ -50,10 +51,14 @@ public class DatabaseConnectorControllerSSH implements Initializable {
                         DataProvider.getOrDefault("sshhost", "localhost"),
                         sshNameField.getText(), sshPasswdField.getText(),
                         DataProvider.getOrDefault("databasehost", "localhost"),
-                        databaseNameField.getText(), databasePasswdField.getText(),
-                        DataProvider.getOrDefault("databasename", "Mitglieder")));
+                        databaseNameField.getText(),
+                        databasePasswdField.getText(),
+                        DataProvider.getOrDefault("databasename",
+                                "Mitglieder")));
                 try {
-                    dbc.callCallable();
+                    disableControls(true);
+                    System.out.println("Dbccssh callCallable()");
+                    dbc.callCallable().get();
                 } catch (Exception ex) {
                     Logger.getLogger(
                             DatabaseConnectorControllerSSH.class.getName())
@@ -66,6 +71,12 @@ public class DatabaseConnectorControllerSSH implements Initializable {
                     .log(Level.SEVERE, null, ex);
             nameOrPasswdWrong.setVisible(true);
         }
+    }
+    
+    private void disableControls(boolean disable) {
+        textFields.forEach(t -> t.setDisable(disable));
+        loginButton.setDisable(disable);
+        allowEmptyFieldsCheckbox.setDisable(disable);
     }
 
     @FXML

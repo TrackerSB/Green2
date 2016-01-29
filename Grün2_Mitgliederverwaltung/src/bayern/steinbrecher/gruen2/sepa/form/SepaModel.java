@@ -81,6 +81,7 @@ public class SepaModel extends Application {
             dbcModel = new DatabaseConnectorStandard();
         }
         dbcModel.setCaller(() -> {
+            System.out.println("sepa caller executing");
             databaseConnection = dbcModel.getConnection();
             //Wenn null, dann wurde das Fenster per "X" geschlossen
             if (databaseConnection != null) {

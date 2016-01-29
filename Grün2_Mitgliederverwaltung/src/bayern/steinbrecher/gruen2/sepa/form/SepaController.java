@@ -2,7 +2,7 @@ package bayern.steinbrecher.gruen2.sepa.form;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
-import bayern.steinbrecher.gruen2.sepa.OriginatorIinfo;
+import bayern.steinbrecher.gruen2.sepa.OriginatorInfo;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -30,7 +30,7 @@ import javafx.scene.control.TextField;
 public class SepaController implements Initializable {
 
     private static final SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private OriginatorIinfo eigeninfo = new OriginatorIinfo(DataProvider.getAppDataPath() + "/Eigeninfos.txt");
+    private OriginatorInfo eigeninfo = new OriginatorInfo(DataProvider.getAppDataPath() + "/Eigeninfos.txt");
     private SepaModel sepa; //Das Model
     @FXML
     private TextField creditorTextField,
@@ -136,7 +136,7 @@ public class SepaController implements Initializable {
         return !isMissingInput;
     }
 
-    public OriginatorIinfo getOriginatorInfo() {
+    public OriginatorInfo getOriginatorInfo() {
         return eigeninfo;
     }
 

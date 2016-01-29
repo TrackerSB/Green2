@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
@@ -48,9 +50,11 @@ public class DatabaseConnectorControllerStandard implements Initializable {
                         DataProvider.getOrDefault("databaseHost", "localhost"),
                         databaseNameField.getText(),
                         databasePasswdField.getText(),
-                        DataProvider.getOrDefault("databaseName", "Mitglieder")));
+                        DataProvider.getOrDefault("databaseName",
+                                "Mitglieder")));
                 try {
-                    dbc.callCallable();
+                    disableControls(true);
+                    dbc.callCallable().get();
                 } catch (Exception ex) {
                     Logger.getLogger(
                             DatabaseConnectorControllerStandard.class.getName())
@@ -64,6 +68,12 @@ public class DatabaseConnectorControllerStandard implements Initializable {
                     .log(Level.SEVERE, null, ex);
             nameOrPasswdWrong.setVisible(true);
         }
+    }
+
+    private void disableControls(boolean disable) {
+        textFields.forEach(t -> t.setDisable(disable));
+        loginButton.setDisable(disable);
+        allowEmptyFieldsCheckbox.setDisable(disable);
     }
 
     @FXML

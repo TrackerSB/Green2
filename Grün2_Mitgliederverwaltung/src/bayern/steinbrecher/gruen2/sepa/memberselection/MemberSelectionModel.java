@@ -1,7 +1,7 @@
 package bayern.steinbrecher.gruen2.sepa.memberselection;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.sepa.OriginatorIinfo;
+import bayern.steinbrecher.gruen2.sepa.OriginatorInfo;
 import bayern.steinbrecher.gruen2.sepa.Member;
 import bayern.steinbrecher.gruen2.sepa.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.sepa.form.SepaModel;
@@ -26,14 +26,14 @@ public class MemberSelectionModel extends Application {
 
     private HashMap<Member, Boolean> allMember;
     private MemberSelectionController memberSelecotionController;
-    private OriginatorIinfo eigeninfo;
+    private OriginatorInfo eigeninfo;
     private double contribution;
     private Callable callable = () -> {
         SepaPain00800302_XML_Generator.createXMLFile(getSelectedMember(), contribution, eigeninfo, DataProvider.getSavepath() + "/Sepa.xml");
         return null;
     };
 
-    public MemberSelectionModel(LinkedList<Member> allMember, OriginatorIinfo eigeninfo) {
+    public MemberSelectionModel(LinkedList<Member> allMember, OriginatorInfo eigeninfo) {
         this.allMember = new HashMap<>();
         allMember.forEach(m -> {
             this.allMember.put(m, false);
