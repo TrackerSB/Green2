@@ -1,7 +1,7 @@
 package bayern.steinbrecher.gruen2.connection;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Represents a database connection.
@@ -23,5 +23,5 @@ public interface DatabaseConnection extends AutoCloseable {
      * @return Table containing the results.
      * @throws SQLException Thrown if the sql code is invalid.
      */
-    LinkedList<String[]> execQuery(String sqlCode) throws SQLException;
+    List<String[]> execQuery(String sqlCode) throws SQLException;
 }

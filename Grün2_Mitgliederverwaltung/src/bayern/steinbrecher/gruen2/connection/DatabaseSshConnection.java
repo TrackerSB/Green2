@@ -5,7 +5,6 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import bayern.steinbrecher.gruen2.databaseconnector.DatabaseConnection;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.sql.SQLException;

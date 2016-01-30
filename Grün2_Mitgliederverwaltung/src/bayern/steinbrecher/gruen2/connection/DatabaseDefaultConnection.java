@@ -1,11 +1,11 @@
 package bayern.steinbrecher.gruen2.connection;
 
 import com.mysql.jdbc.Connection;
-import bayern.steinbrecher.gruen2.databaseconnector.DatabaseConnection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +45,7 @@ public final class DatabaseDefaultConnection implements DatabaseConnection {
      * {@inheritDoc}
      */
     @Override
-    public LinkedList<String[]> execQuery(String sqlCode) throws SQLException {
+    public List<String[]> execQuery(String sqlCode) throws SQLException {
         ResultSet resultset = connection.prepareStatement(sqlCode)
                 .executeQuery();
         LinkedList<String[]> result = new LinkedList<>();
