@@ -5,7 +5,6 @@ import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
 import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
 
 /**
  * Represents text fields that detect whether their input text is longer than a
@@ -29,7 +28,7 @@ public class CheckedTextField extends TextField {
      * there´s no content in this field.
      */
     public static final String CSS_CLASS_NO_CONTENT = "empty";
-    private IntegerProperty maximumColumnCountProperty
+    private IntegerProperty maxColumnCountProperty
             = new IntegerPropertyBase() {
         @Override
         public Object getBean() {
@@ -38,7 +37,7 @@ public class CheckedTextField extends TextField {
 
         @Override
         public String getName() {
-            return "maximumColumnCount";
+            return "maxColumnCount";
         }
     };
     /**
@@ -108,7 +107,7 @@ public class CheckedTextField extends TextField {
      * @return The current set maximum column count.
      */
     public int getMaxColumnCount() {
-        return maximumColumnCountProperty.get();
+        return maxColumnCountProperty.get();
     }
 
     /**
@@ -117,11 +116,15 @@ public class CheckedTextField extends TextField {
      * @param maxColumnCount The new maximum column count.
      */
     public void setMaxColumnCount(int maxColumnCount) {
-        if (maxColumnCount < 0) {
+        if (maxColumnCount < 1) {
             throw new IllegalArgumentException(
-                    "maxColumnCount must not be negative");
+                    "maxColumnCount must be at least 1");
         }
-        maximumColumnCountProperty.set(maxColumnCount);
+        maxColumnCountProperty.set(maxColumnCount);
+    }
+
+    public IntegerProperty maxColumnCount() {
+        return maxColumnCountProperty;
     }
 
     /**
@@ -146,10 +149,10 @@ public class CheckedTextField extends TextField {
 
         //Update validProperty
         validProperty.set(!checkedProperty.get() || (textLength > 0
-                && textLength <= maximumColumnCountProperty.get()));
+                && textLength <= maxColumnCountProperty.get()));
 
         //Update css classes
-        if (textLength > maximumColumnCountProperty.get()
+        if (textLength > maxColumnCountProperty.get()
                 && checkedProperty.get()) {
             if (!getStyleClass().contains(
                     CheckedTextField.CSS_CLASS_TOO_LONG_CONTENT)) {

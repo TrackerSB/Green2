@@ -15,8 +15,6 @@ import javafx.scene.image.Image;
 public class DataProvider {
 
     public static final String VALUE_SEPARATOR = "=";
-    public static final String DATABASE_USERNAME_KEY = "databaseUsername";
-    public static final String DATABASE_PASSWORD_KEY = "databasePassword";
     private static Map<String, String> configs = null;
 
     /**

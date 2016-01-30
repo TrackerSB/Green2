@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import bayern.steinbrecher.gruen2.elements.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.login.ssh.SshLoginController">
+    <Label text="SSH-Nutzername:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <CheckedTextField fx:id="sshUsernameField" promptText="SSH-Nutzername" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <Label text="SSH-Passwort:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <CheckedPasswordField fx:id="sshPasswordField" promptText="SSH-Passwort" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Label text="Datenbank-Nutzername:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <CheckedTextField fx:id="databaseUsernameField" promptText="Datenbank-Nutzername" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label text="Datenbank-Passwort:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <CheckedPasswordField fx:id="databasePasswordField" promptText="Datenbank-Passwort" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    
+    <Label text="Ungültige oder fehlende Angaben" fx:id="invalidInput" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <CheckBox GridPane.rowIndex="5" GridPane.columnIndex="0" text="Leere Felder zulassen" fx:id="allowEmptyFieldsCheckbox" />
+    <Button fx:id="loginButton" text="Login" disable="true" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+</GridPane>

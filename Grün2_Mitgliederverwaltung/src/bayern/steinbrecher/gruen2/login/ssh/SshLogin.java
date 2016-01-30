@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2.login.standard;
+package bayern.steinbrecher.gruen2.login.ssh;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
@@ -10,26 +10,26 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Represents a login without SSH.
+ * Represents a login with SSH.
  *
  * @author Stefan Huber
  */
-public class DefaultLogin extends Login {
+public class SshLogin extends Login {
 
     private Stage primaryStage;
-    private LoginController dlController;
+    private LoginController sshController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
-                .getResource("DefaultLogin.fxml"));
+                .getResource("SshLogin.fxml"));
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        dlController = fxmlLoader.getController();
-        dlController.setStage(primaryStage);
+        sshController = fxmlLoader.getController();
+        sshController.setStage(primaryStage);
 
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("Login");
@@ -40,6 +40,6 @@ public class DefaultLogin extends Login {
     @Override
     public Map<String, String> getLoginInformation() {
         primaryStage.showAndWait();
-        return dlController.getLoginInformation();
+        return sshController.getLoginInformation();
     }
 }

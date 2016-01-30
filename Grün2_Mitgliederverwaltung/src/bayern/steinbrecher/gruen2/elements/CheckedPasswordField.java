@@ -2,7 +2,6 @@ package bayern.steinbrecher.gruen2.elements;
 
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
-import javafx.scene.control.PasswordField;
 
 /**
  * Represents a password field which recognizes empty content and may set a css
@@ -14,6 +13,7 @@ public class CheckedPasswordField extends CheckedTextField {
 
     public CheckedPasswordField() {
         super();
+        //FIXME Show bullets instead of clear text
         setAccessibleRole(AccessibleRole.PASSWORD_FIELD);
     }
 
