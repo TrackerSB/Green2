@@ -1,7 +1,7 @@
 package bayern.steinbrecher.gruen2.main;
 
-import bayern.steinbrecher.gruen2.login.Login;
-import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
+import bayern.steinbrecher.gruen2.selection.Selection;
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -19,8 +19,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Login l = new SshLogin();
+        Selection l = new Selection();
         l.start(new Stage());
-        System.out.println(l.getLoginInformation());
+        l.setOptions(Arrays.asList("Alpha", "Beta", "Gamma", "Delta", "Epsilon"));
+        System.out.println(l.getSelection());
     }
 }

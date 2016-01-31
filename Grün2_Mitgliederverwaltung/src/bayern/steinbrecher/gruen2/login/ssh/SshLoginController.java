@@ -5,7 +5,9 @@ import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.LoginController;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -37,29 +39,28 @@ public class SshLoginController extends LoginController
     private CheckedPasswordField databasePasswordField;
     @FXML
     private CheckBox allowEmptyFieldsCheckbox;
+    private List<CheckedTextField> textInputFields;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        textInputFields
+            = Arrays.asList(sshUsernameField, sshPasswordField,
+                    databaseUsernameField, databasePasswordField);
+        
         allowEmptyFieldsCheckbox.selectedProperty()
                 .addListener((obs, oldVal, newVal) -> {
-                    databasePasswordField.setChecked(!newVal);
-                    databaseUsernameField.setChecked(!newVal);
-                    sshUsernameField.setChecked(!newVal);
-                    sshPasswordField.setChecked(!newVal);
+                    textInputFields.forEach(f -> f.setChecked(!newVal));
                 });
         ChangeListener<Boolean> cl = (obs, oldVal, newVal) -> {
-            boolean isAllInputValid = databasePasswordField.isValid()
-                    && databaseUsernameField.isValid();
+            boolean isAllInputValid = textInputFields.stream()
+                    .allMatch(CheckedTextField::isValid);
             loginButton.setDisable(!isAllInputValid);
             invalidInput.setVisible(!isAllInputValid);
         };
-        databasePasswordField.validProperty().addListener(cl);
-        databaseUsernameField.validProperty().addListener(cl);
-        sshUsernameField.validProperty().addListener(cl);
-        sshPasswordField.validProperty().addListener(cl);
+        textInputFields.forEach(f -> f.validProperty().addListener(cl));
     }
 
     @Override
