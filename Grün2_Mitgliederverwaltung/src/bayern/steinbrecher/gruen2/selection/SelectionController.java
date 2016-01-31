@@ -51,6 +51,7 @@ public class SelectionController<T> implements Initializable {
                 boolean disableSelectNone = items.stream()
                 .allMatch(cb -> !cb.isSelected());
                 selectNoneButton.setDisable(disableSelectNone);
+                missingInput.setVisible(disableSelectNone);
             };
 
     @Override

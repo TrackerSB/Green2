@@ -127,6 +127,11 @@ public class CheckedTextField extends TextField {
         return maxColumnCountProperty;
     }
 
+    public boolean isTooLong() {
+        return !validProperty.get()
+                && (getText() == null ? false : !getText().isEmpty());
+    }
+
     /**
      * Checks whether the current content is valid.
      *

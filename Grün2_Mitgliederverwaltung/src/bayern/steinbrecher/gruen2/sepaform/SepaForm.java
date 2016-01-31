@@ -1,23 +1,22 @@
-package bayern.steinbrecher.gruen2.login.standard;
+package bayern.steinbrecher.gruen2.sepaform;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.login.Login;
-import bayern.steinbrecher.gruen2.login.LoginController;
-import java.util.Map;
+import bayern.steinbrecher.gruen2.sepa.Originator;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Represents a login without SSH.
+ * Represents a form for input according to sepa informations.
  *
  * @author Stefan Huber
  */
-public class DefaultLogin extends Login {
+public class SepaForm extends Application {
 
     private Stage primaryStage;
-    private LoginController dlController;
+    private SepaFormController sfcontroller;
     private boolean wasShown = false;
 
     @Override
@@ -25,25 +24,24 @@ public class DefaultLogin extends Login {
         this.primaryStage = primaryStage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
-                .getResource("DefaultLogin.fxml"));
+                .getResource("SepaForm.fxml"));
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        dlController = fxmlLoader.getController();
-        dlController.setStage(primaryStage);
+        sfcontroller = fxmlLoader.getController();
+        sfcontroller.setStage(primaryStage);
 
         primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Login");
+        primaryStage.setTitle("Lastschrift Infos eintragen");
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(DataProvider.getIcon());
     }
 
-    @Override
-    public Map<String, String> getLoginInformation() {
+    public Originator getOriginator() {
         if (!wasShown) {
             primaryStage.showAndWait();
             wasShown = true;
         }
-        return dlController.getLoginInformation();
+        return sfcontroller.getOriginator();
     }
 }

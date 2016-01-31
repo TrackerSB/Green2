@@ -1,7 +1,6 @@
 package bayern.steinbrecher.gruen2.main;
 
-import bayern.steinbrecher.gruen2.selection.Selection;
-import java.util.Arrays;
+import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -19,8 +18,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Selection l = new Selection(Arrays.asList("Alpha", "Beta", "Gamma", "Delta", "Epsilon"));
+        SepaForm l = new SepaForm();
         l.start(new Stage());
-        System.out.println(l.getSelection() + " : " + l.getContribution());
+        System.out.println(l.getOriginator());
     }
 }

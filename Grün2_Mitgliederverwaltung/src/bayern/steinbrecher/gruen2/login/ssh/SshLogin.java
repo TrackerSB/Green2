@@ -18,6 +18,7 @@ public class SshLogin extends Login {
 
     private Stage primaryStage;
     private LoginController sshController;
+    private boolean wasShown = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -39,7 +40,10 @@ public class SshLogin extends Login {
 
     @Override
     public Map<String, String> getLoginInformation() {
-        primaryStage.showAndWait();
+        if (!wasShown) {
+            primaryStage.showAndWait();
+            wasShown = true;
+        }
         return sshController.getLoginInformation();
     }
 }
