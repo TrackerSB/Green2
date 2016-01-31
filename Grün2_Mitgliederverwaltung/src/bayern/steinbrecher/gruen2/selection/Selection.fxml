@@ -8,10 +8,11 @@
     <ListView fx:id="optionsListView" maxHeight="300" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2" />
     <Label text="Betrag in €" GridPane.columnIndex="0" GridPane.rowIndex="1" />
     <CheckedTextField onAction="#select" fx:id="contributionTextField" text="10" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+    <Spinner fx:id="contributionSpinner" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="true" />
     
-    <Button fx:id="selectAllButton" text="Alle auswählen" onAction="#selectAllOptions" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+    <Button fx:id="selectAllButton" text="Alles auswählen" onAction="#selectAllOptions" GridPane.rowIndex="2" GridPane.columnIndex="0" />
     <Button fx:id="selectNoneButton" text="Nichts auswählen" disable="true" onAction="#selectNoOption" GridPane.rowIndex="2" GridPane.columnIndex="1" />
     
-    <Button text="Fertig" fx:id="selectButton" onAction="#select" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+    <Button text="Fertig" fx:id="selectButton" disable="true" onAction="#select" GridPane.rowIndex="3" GridPane.columnIndex="0" />
     <Label fx:id="missingInput" text="Auswahl fehlt" styleClass="warningLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" />
 </GridPane>

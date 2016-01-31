@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,6 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.stage.Stage;
 
 /**
@@ -36,6 +40,8 @@ public class SelectionController<T> implements Initializable {
     private Label missingInput;
     @FXML
     private CheckedTextField contributionTextField;
+    @FXML
+    private Spinner<Double> contributionSpinner;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
                 ObservableList<CheckBox> items = optionsListView.getItems();
@@ -49,6 +55,27 @@ public class SelectionController<T> implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        DoubleSpinnerValueFactory factory
+                = new DoubleSpinnerValueFactory(0, 200, 10, 0.01);
+        contributionSpinner.setValueFactory(factory);
+        contributionSpinner.getEditor().textProperty()
+                .addListener((obs, oldValue, newValue) -> {
+                    try {
+                        double parsed = Double.parseDouble(newValue);
+                        factory.setValue(parsed);
+                    } catch (NumberFormatException ex) {
+                        Logger.getLogger(SelectionController.class.getName())
+                                .log(Level.SEVERE, null, ex);
+                    }
+                    selectButton.setDisable(selectNoneButton.isDisabled()
+                            || contributionSpinner.getValue() == null);
+                });
+
+        selectNoneButton.disabledProperty()
+                .addListener((obs, oldValue, newValue) -> {
+                    selectButton.setDisable(selectNoneButton.isDisabled()
+                            || contributionSpinner.getValue() == null);
+                });
     }
 
     public void setStage(Stage stage) {
@@ -67,7 +94,9 @@ public class SelectionController<T> implements Initializable {
 
     @FXML
     private void select() {
-        stage.close();
+        if (!selectButton.isDisabled()) {
+            stage.close();
+        }
     }
 
     @FXML
@@ -90,5 +119,9 @@ public class SelectionController<T> implements Initializable {
             }
         }
         return selection;
+    }
+
+    public double getContribution() {
+        return contributionSpinner.getValue();
     }
 }

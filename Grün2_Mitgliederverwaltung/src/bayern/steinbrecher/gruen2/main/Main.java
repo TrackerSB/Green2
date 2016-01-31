@@ -19,9 +19,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Selection l = new Selection();
+        Selection l = new Selection(Arrays.asList("Alpha", "Beta", "Gamma", "Delta", "Epsilon"));
         l.start(new Stage());
-        l.setOptions(Arrays.asList("Alpha", "Beta", "Gamma", "Delta", "Epsilon"));
-        System.out.println(l.getSelection());
+        System.out.println(l.getSelection() + " : " + l.getContribution());
     }
 }
