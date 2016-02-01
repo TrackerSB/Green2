@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 /**
  * @author Stefan Huber
  */
-public final class DatabaseDefaultConnection implements DatabaseConnection {
+public final class DefaultConnection implements DBConnection {
 
     private static final String DRIVER = "com.mysql.jdbc.Driver";
     private Connection connection;
@@ -27,7 +27,7 @@ public final class DatabaseDefaultConnection implements DatabaseConnection {
      * @throws SQLException Is thrown if some username, password or address is
      * wrong.
      */
-    public DatabaseDefaultConnection(String databaseHost,
+    public DefaultConnection(String databaseHost,
             String databaseUsername, String databasePasswd, String databaseName)
             throws SQLException {
         try {
@@ -36,7 +36,7 @@ public final class DatabaseDefaultConnection implements DatabaseConnection {
                     + databaseName, databaseUsername, databasePasswd);
             execQuery("SELECT 1");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(DatabaseConnection.class.getName())
+            Logger.getLogger(Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }
@@ -75,7 +75,7 @@ public final class DatabaseDefaultConnection implements DatabaseConnection {
         try {
             connection.close();
         } catch (SQLException ex) {
-            Logger.getLogger(DatabaseConnection.class.getName())
+            Logger.getLogger(Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }

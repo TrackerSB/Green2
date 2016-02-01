@@ -100,6 +100,7 @@ public class DataProvider {
                 System.err.println("Configfile \"gruen2.conf\" not found.");
             }
         }
+        System.out.println(configs.get);
         return configs.getOrDefault(key, defaultValue);
     }
 

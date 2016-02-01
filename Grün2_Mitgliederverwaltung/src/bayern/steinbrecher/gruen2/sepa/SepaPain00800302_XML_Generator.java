@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Generates a Sepa.Pain.008.003.02.
+ *
  * @author Stefan Huber
  */
 public class SepaPain00800302_XML_Generator {

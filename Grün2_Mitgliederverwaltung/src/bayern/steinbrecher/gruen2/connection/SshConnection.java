@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public final class DatabaseSshConnection implements DatabaseConnection {
+public final class SshConnection implements DBConnection {
 
     private Session sshSession;
     public static final int DEFAULT_SSH_PORT = 22;
@@ -40,7 +40,7 @@ public final class DatabaseSshConnection implements DatabaseConnection {
      * @throws SQLException Is thrown if some username, password or address is
      * wrong.
      */
-    public DatabaseSshConnection(String sshHost, String sshUsername,
+    public SshConnection(String sshHost, String sshUsername,
             String sshPassword, String databaseHost, String databaseUsername,
             String databasePasswd, String databaseName)
             throws SQLException {
@@ -55,7 +55,7 @@ public final class DatabaseSshConnection implements DatabaseConnection {
             //Check correctness of database-login-data
             execQuery("SELECT 1");
         } catch (JSchException ex) {
-            Logger.getLogger(DatabaseSshConnection.class.getName())
+            Logger.getLogger(SshConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
             throw new SQLException("username or password didn´t work or "
                     + "address unreachable");
@@ -100,7 +100,7 @@ public final class DatabaseSshConnection implements DatabaseConnection {
             channel.disconnect();
             return formattedResult;
         } catch (JSchException | IOException | InterruptedException ex) {
-            Logger.getLogger(DatabaseSshConnection.class.getName())
+            Logger.getLogger(SshConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
             return null;
         }

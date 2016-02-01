@@ -1,14 +1,13 @@
 package bayern.steinbrecher.gruen2.serialLetters;
 
+import bayern.steinbrecher.gruen2.connection.DBConnection;
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.databaseconnector.DatabaseConnection;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,15 +28,15 @@ public class DataForSerialLettersGenerator {
                 "Construction of an object not supported");
     }
 
-    public static void generateAddressData(DatabaseConnection dbc) {
+    public static void generateAddressData(DBConnection dbc) {
         List<String[]> member = readMember(dbc);
         Map<String, String> nicknames = readNicknames(dbc);
         replaceGenderWithAddress(member, nicknames);
         createOutputCsvFile(createOutput(member));
     }
 
-    private static List<String[]> readMember(DatabaseConnection dbc) {
-        LinkedList<String[]> result = null;
+    private static List<String[]> readMember(DBConnection dbc) {
+        List<String[]> result = null;
         try {
             result = dbc.execQuery(
                     "SELECT Vorname, Nachname, Strasse, Hausnummer, PLZ, Ort, "
@@ -51,7 +50,7 @@ public class DataForSerialLettersGenerator {
         return result;
     }
 
-    private static Map<String, String> readNicknames(DatabaseConnection dbc) {
+    private static Map<String, String> readNicknames(DBConnection dbc) {
         HashMap<String, String> nicknames = new HashMap<>();
         try {
             dbc.execQuery("SELECT * FROM Spitznamen").parallelStream()

@@ -1,6 +1,7 @@
 package bayern.steinbrecher.gruen2.login.ssh;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.LoginController;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class SshLogin extends Login {
     }
 
     @Override
-    public Map<String, String> getLoginInformation() {
+    public Map<LoginKey, String> getLoginInformation() {
         if (!wasShown) {
             primaryStage.showAndWait();
             wasShown = true;

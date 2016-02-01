@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author Stefan Huber
  */
-public interface DatabaseConnection extends AutoCloseable {
+public interface DBConnection extends AutoCloseable {
 
     /**
      * Closes this connection.

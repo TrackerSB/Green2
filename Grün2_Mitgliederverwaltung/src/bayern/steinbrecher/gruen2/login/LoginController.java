@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.login;
 
+import bayern.steinbrecher.gruen2.data.LoginKey;
 import java.util.Map;
 import javafx.stage.Stage;
 
@@ -17,7 +18,7 @@ public abstract class LoginController {
      *
      * @return The currently entered login information.
      */
-    public abstract Map<String, String> getLoginInformation();
+    public abstract Map<LoginKey, String> getLoginInformation();
 
     /**
      * Sets the stage the conroller can refer to. (E.g. for closing the stage)
