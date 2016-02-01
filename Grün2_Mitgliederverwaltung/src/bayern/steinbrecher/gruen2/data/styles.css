@@ -16,13 +16,13 @@
     -fx-min-width: 200px;
 }
 
-.empty, .tooLongContent{
+.empty, .tooLongContent, .invalidDate{
     -fx-border-color: red;
     -fx-highlight-fill: red;
     -fx-focus-color: red;
 }
 
-.empty:focused, .tooLongContent:focused{
+.empty:focused, .tooLongContent:focused, .invalidDate:focused{
     -fx-border-color: transparent;
 }
 

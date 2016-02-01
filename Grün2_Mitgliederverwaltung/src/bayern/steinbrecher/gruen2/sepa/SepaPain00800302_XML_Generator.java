@@ -72,7 +72,8 @@ public class SepaPain00800302_XML_Generator {
     private static void createXMLFile(StringBuilder output, String filename) {
         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(filename), "UTF-8"))) {
-            /* Dies dient dazu aus "UTF-8 ohne Bom", "UTF-8 MIT Bom" zu machen,
+            /*
+             * Dies dient dazu aus "UTF-8 ohne Bom", "UTF-8 MIT Bom" zu machen,
              * damit Sonderzeichen korrekt interpretiert werden.
              */
             bw.append('\uFEFF')

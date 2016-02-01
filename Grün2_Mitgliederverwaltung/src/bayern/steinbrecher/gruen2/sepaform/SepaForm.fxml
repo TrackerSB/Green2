@@ -18,7 +18,7 @@
     <Label text="Verwendungszweck:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
     <CheckedTextField promptText="Verwendungszweck" fx:id="purposeTextField" onAction="#ready" GridPane.columnIndex="1" GridPane.rowIndex="5" />
     <Label text="Ausführungsdatum:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-    <DatePicker promptText="Ausführungsdatum" fx:id="executionDatePicker" onKeyPressed="#readyIfEnter"  GridPane.columnIndex="1" GridPane.rowIndex="6" />
+    <CheckedDatePicker promptText="Ausführungsdatum" fx:id="executionDatePicker" onKeyPressed="#readyIfEnter"  GridPane.columnIndex="1" GridPane.rowIndex="6" />
     <Label text="Message-ID: (Max. 35 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="7" />
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="7" spacing="5" >
         <CheckedTextField maxColumnCount="35" promptText="Message-ID" fx:id="messageIdTextField" onAction="#ready" />

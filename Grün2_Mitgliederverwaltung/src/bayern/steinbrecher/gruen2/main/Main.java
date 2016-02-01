@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.main;
 
+import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -18,8 +19,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        SepaForm l = new SepaForm();
-        l.start(new Stage());
-        System.out.println(l.getOriginator());
+        
     }
 }

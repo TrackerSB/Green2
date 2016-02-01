@@ -15,7 +15,7 @@ import javafx.scene.image.Image;
 public class DataProvider {
 
     public static final String VALUE_SEPARATOR = "=";
-    private static Map<String, String> configs = null;
+    private static Map<ConfigKey, String> configs = null;
 
     /**
      * Prohibit construction of a new object.
@@ -81,19 +81,19 @@ public class DataProvider {
      * @return The value belonging to key {@code key} or {@code defaultValue} if
      * {@code key} could not be found or is not specified.
      */
-    public static String getOrDefault(String key, String defaultValue) {
+    public static String getOrDefault(ConfigKey key, String defaultValue) {
         if (configs == null) {
             configs = new HashMap<>();
             try (Scanner sc = new Scanner(
                     new File(getAppDataPath() + "/gruen2.conf"))) {
                 while (sc.hasNextLine()) {
-                    String line = sc.nextLine().trim().toLowerCase();
+                    String line = sc.nextLine().trim().toUpperCase();
                     String[] parts = line.split(VALUE_SEPARATOR);
                     if (parts.length != 2) {
                         System.err.println("\"" + line + "\" has not exactly "
                                 + "two elements. It remains ignored.");
                     } else {
-                        configs.put(parts[0], parts[1]);
+                        configs.put(ConfigKey.valueOf(parts[0]), parts[1]);
                     }
                 }
             } catch (FileNotFoundException ex) {
@@ -109,6 +109,6 @@ public class DataProvider {
      * @return {@code true} only if the connections have to use SSH.
      */
     public static boolean useSsh() {
-        return getOrDefault("nutzessh", "ja").equalsIgnoreCase("ja");
+        return getOrDefault(ConfigKey.USE_SSH, "ja").equalsIgnoreCase("ja");
     }
 }

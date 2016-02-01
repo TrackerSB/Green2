@@ -1,6 +1,7 @@
 package bayern.steinbrecher.gruen2.sepaform;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.elements.CheckedDatePicker;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.sepa.Originator;
 import java.io.FileNotFoundException;
@@ -16,7 +17,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -51,7 +51,7 @@ public class SepaFormController implements Initializable {
     private CheckedTextField pmtInfIdTextField;
     private List<CheckedTextField> checkedTextFields;
     @FXML
-    private DatePicker executionDatePicker;
+    private CheckedDatePicker executionDatePicker;
     @FXML
     private Label inputTooLongLabel;
     @FXML
@@ -65,20 +65,26 @@ public class SepaFormController implements Initializable {
                 ibanTextField, bicTextField, trusterIdTextField,
                 purposeTextField, messageIdTextField, pmtInfIdTextField);
 
-        ChangeListener<String> cl = (obs, oldVal, newVal) -> {
+        /*
+         * Rawtype needed for adding as ChangeListener<String> and
+         * ChangeListener<Boolean>
+         */
+        ChangeListener cl = (obs, oldVal, newVal) -> {
             boolean anyInputTooLong = checkedTextFields.stream()
                     .anyMatch(CheckedTextField::isTooLong);
             inputTooLongLabel.setVisible(anyInputTooLong);
             boolean anyInputMissing = checkedTextFields.stream()
                     .anyMatch(ctf -> {
                         return ctf.getText() == null || ctf.getText().isEmpty();
-                    });
+                    }) || !executionDatePicker.isValid();
             missingInputLabel.setVisible(anyInputMissing);
-            readyButton.setDisable(anyInputTooLong || anyInputMissing);
+            readyButton.setDisable(anyInputTooLong || anyInputMissing
+                    || !executionDatePicker.isValid());
         };
         checkedTextFields.stream()
                 .map(CheckedTextField::textProperty)
                 .forEach(tp -> tp.addListener(cl));
+        executionDatePicker.validProperty().addListener(cl);
 
         String originatorInfoPath = DataProvider.getAppDataPath()
                 + "/originator.info";
@@ -97,6 +103,7 @@ public class SepaFormController implements Initializable {
         purposeTextField.setText(originator.getPurpose());
         messageIdTextField.setText(originator.getMsgId());
         pmtInfIdTextField.setText(originator.getPmtInfId());
+        executionDatePicker.setValue(originator.getExecutiondate());
     }
 
     @FXML
@@ -115,6 +122,7 @@ public class SepaFormController implements Initializable {
             originator.setPurpose(purposeTextField.getText());
             originator.setMsgId(messageIdTextField.getText());
             originator.setPmtInfId(pmtInfIdTextField.getText());
+            originator.setExecutiondate(executionDatePicker.getValue());
             originator.updateOriginatorInfo();
             stage.close();
         }

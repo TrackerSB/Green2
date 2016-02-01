@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -25,9 +28,9 @@ public class Originator {
             bic,
             trusterId,
             pmtInfId,
-            executiondate,
             purpose,
             filename;
+    private LocalDate executionDate;
 
     /**
      * Erstellt ein Objekt, das die Sepa-Eigeninfos der Datei
@@ -40,9 +43,9 @@ public class Originator {
     }
 
     /**
-     * Erstellt ein Originator-Objekt und liest die Datei
-     * <code>filename</code> ein, die Informationen &uuml;ber den Ersteller des
-     * Einzuges enth&auml;lt, falls die Datei existiert.
+     * Erstellt ein Originator-Objekt und liest die Datei <code>filename</code>
+     * ein, die Informationen &uuml;ber den Ersteller des Einzuges enth&auml;lt,
+     * falls die Datei existiert.
      *
      * @param filename Die einzulesende Datei
      * @return Neues Originator-Objekt, das <code>filename</code> bereits
@@ -73,7 +76,12 @@ public class Originator {
             this.purpose = sc.nextLine();
             this.trusterId = sc.nextLine();
             this.msgId = sc.nextLine();
-            this.executiondate = sc.nextLine();
+            try {
+                this.executionDate = LocalDate.parse(sc.nextLine(),
+                        DateTimeFormatter.ISO_DATE);
+            } catch (DateTimeParseException ex) {
+                this.executionDate = null;
+            }
             this.pmtInfId = sc.nextLine();
         } catch (NoSuchElementException ex) {
             Logger.getLogger(Originator.class.getName())
@@ -95,7 +103,7 @@ public class Originator {
             pw.println(purpose);
             pw.println(trusterId);
             pw.println(msgId);
-            pw.println(executiondate);
+            pw.println(executionDate);
             pw.println(pmtInfId);
         } catch (IOException ex) {
             Logger.getLogger(Originator.class.getName())
@@ -159,12 +167,12 @@ public class Originator {
         this.pmtInfId = pmtInfId;
     }
 
-    public String getExecutiondate() {
-        return executiondate;
+    public LocalDate getExecutiondate() {
+        return executionDate;
     }
 
-    public void setExecutiondate(String executiondate) {
-        this.executiondate = executiondate;
+    public void setExecutiondate(LocalDate executionDate) {
+        this.executionDate = executionDate;
     }
 
     public String getPurpose() {
