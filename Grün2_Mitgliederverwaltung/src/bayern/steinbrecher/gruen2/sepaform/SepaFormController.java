@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.sepaform;
 
+import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.elements.CheckedDatePicker;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
@@ -15,23 +16,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
 
 /**
  * Represents Controller for SepaForm.fxml.
  *
  * @author Stefan Huber
  */
-public class SepaFormController implements Initializable {
+public class SepaFormController extends Controller {
 
     private static final SimpleDateFormat YEAR_MONTH_DAY
             = new SimpleDateFormat("yyyy-MM-dd");
-    private Stage stage;
     private Originator originator;
     @FXML
     private CheckedTextField creatorTextField;
@@ -124,6 +122,7 @@ public class SepaFormController implements Initializable {
             originator.setPmtInfId(pmtInfIdTextField.getText());
             originator.setExecutiondate(executionDatePicker.getValue());
             originator.updateOriginatorInfo();
+            userConfirmed = true;
             stage.close();
         }
     }
@@ -135,11 +134,10 @@ public class SepaFormController implements Initializable {
         }
     }
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
     public Originator getOriginator() {
-        return originator;
+        if (userConfirmed) {
+            return originator;
+        }
+        return null;
     }
 }

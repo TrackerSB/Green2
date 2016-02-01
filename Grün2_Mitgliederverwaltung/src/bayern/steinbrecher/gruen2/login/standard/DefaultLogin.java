@@ -1,6 +1,7 @@
 package bayern.steinbrecher.gruen2.login.standard;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.LoginController;
 import java.util.Map;
@@ -18,7 +19,6 @@ public class DefaultLogin extends Login {
 
     private Stage primaryStage;
     private LoginController dlController;
-    private boolean wasShown = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -39,10 +39,14 @@ public class DefaultLogin extends Login {
     }
 
     @Override
-    public Map<String, String> getLoginInformation() {
-        if (!wasShown) {
-            primaryStage.showAndWait();
-            wasShown = true;
+    public Map<LoginKey, String> getLoginInformation() {
+        if (primaryStage == null) {
+            throw new IllegalStateException(
+                    "start(...) has to be called first");
+        }
+        primaryStage.showAndWait();
+        if (!dlController.userConfirmed()) {
+            return null;
         }
         return dlController.getLoginInformation();
     }

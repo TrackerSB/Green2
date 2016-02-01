@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.selection;
 
+import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import java.net.URL;
 import java.util.LinkedList;
@@ -10,23 +11,20 @@ import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
-import javafx.stage.Stage;
 
 /**
  * Represents controller for Selection.fxml.
  *
  * @author Stefan Huber
  */
-public class SelectionController<T> implements Initializable {
+public class SelectionController<T> extends Controller {
 
-    private Stage stage;
     @FXML
     private ListView<CheckBox> optionsListView;
     private List<T> options;
@@ -79,10 +77,6 @@ public class SelectionController<T> implements Initializable {
                 });
     }
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
     public void setOptions(List<T> options) {
         optionsListView.getItems().clear();
         this.options = options;
@@ -96,6 +90,7 @@ public class SelectionController<T> implements Initializable {
     @FXML
     private void select() {
         if (!selectButton.isDisabled()) {
+            userConfirmed = true;
             stage.close();
         }
     }
@@ -122,7 +117,10 @@ public class SelectionController<T> implements Initializable {
         return selection;
     }
 
-    public double getContribution() {
-        return contributionSpinner.getValue();
+    public Double getContribution() {
+        if (userConfirmed) {
+            return contributionSpinner.getValue();
+        }
+        return null;
     }
 }

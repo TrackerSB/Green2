@@ -19,7 +19,7 @@ public class SshLogin extends Login {
 
     private Stage primaryStage;
     private LoginController sshController;
-    private boolean wasShown = false;
+    private boolean userAbborted = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -41,9 +41,13 @@ public class SshLogin extends Login {
 
     @Override
     public Map<LoginKey, String> getLoginInformation() {
-        if (!wasShown) {
-            primaryStage.showAndWait();
-            wasShown = true;
+        if (primaryStage == null) {
+            throw new IllegalStateException(
+                    "start(...) has to be called first");
+        }
+        primaryStage.showAndWait();
+        if(!sshController.userConfirmed()){
+            return null;
         }
         return sshController.getLoginInformation();
     }

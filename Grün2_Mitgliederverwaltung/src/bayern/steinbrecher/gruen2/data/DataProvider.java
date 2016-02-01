@@ -87,20 +87,20 @@ public class DataProvider {
             try (Scanner sc = new Scanner(
                     new File(getAppDataPath() + "/gruen2.conf"))) {
                 while (sc.hasNextLine()) {
-                    String line = sc.nextLine().trim().toUpperCase();
+                    String line = sc.nextLine().trim();
                     String[] parts = line.split(VALUE_SEPARATOR);
                     if (parts.length != 2) {
                         System.err.println("\"" + line + "\" has not exactly "
                                 + "two elements. It remains ignored.");
                     } else {
-                        configs.put(ConfigKey.valueOf(parts[0]), parts[1]);
+                        configs.put(ConfigKey.valueOf(parts[0].toUpperCase()),
+                                parts[1]);
                     }
                 }
             } catch (FileNotFoundException ex) {
                 System.err.println("Configfile \"gruen2.conf\" not found.");
             }
         }
-        System.out.println(configs.get);
         return configs.getOrDefault(key, defaultValue);
     }
 

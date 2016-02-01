@@ -37,29 +37,19 @@ public final class SshConnection implements DBConnection {
      * @param databaseUsername The username for the database.
      * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
-     * @throws SQLException Is thrown if some username, password or address is
-     * wrong.
+     * @throws JSchException Is thrown if some of username, password or address
+     * is wrong or not reachable.
      */
     public SshConnection(String sshHost, String sshUsername,
             String sshPassword, String databaseHost, String databaseUsername,
             String databasePasswd, String databaseName)
-            throws SQLException {
+            throws JSchException {
         this.databaseHost = databaseHost;
         this.databaseUsername = databaseUsername;
         this.databasePasswd = databasePasswd;
         this.databaseName = databaseName;
-        try {
-            this.sshSession
-                    = createSshSession(sshHost, sshUsername, sshPassword);
-            this.sshSession.connect();
-            //Check correctness of database-login-data
-            execQuery("SELECT 1");
-        } catch (JSchException ex) {
-            Logger.getLogger(SshConnection.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            throw new SQLException("username or password didn´t work or "
-                    + "address unreachable");
-        }
+        this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
+        this.sshSession.connect();
     }
 
     /**

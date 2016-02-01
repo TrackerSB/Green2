@@ -27,14 +27,13 @@ public final class DefaultConnection implements DBConnection {
      * @throws SQLException Is thrown if some username, password or address is
      * wrong.
      */
-    public DefaultConnection(String databaseHost,
-            String databaseUsername, String databasePasswd, String databaseName)
-            throws SQLException {
+    public DefaultConnection(String databaseHost, String databaseUsername,
+            String databasePasswd, String databaseName) throws SQLException {
         try {
             Class.forName(DRIVER).newInstance();
             connection = (Connection) DriverManager.getConnection(databaseHost
                     + databaseName, databaseUsername, databasePasswd);
-            execQuery("SELECT 1");
+            execQuery("SELECT 1"); //TODO SELECT 1 notwendig?
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(Connection.class.getName())
                     .log(Level.SEVERE, null, ex);

@@ -61,7 +61,7 @@ public class Selection<T> extends Application {
             gotShown = true;
             primaryStage.showAndWait();
             gotClosed = true;
-            notify();
+            notifyAll();
         }
         while (!gotClosed) {
             try {

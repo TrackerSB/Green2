@@ -3,7 +3,6 @@ package bayern.steinbrecher.gruen2.login.ssh;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.elements.CheckedPasswordField;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
-import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.LoginController;
 import java.net.URL;
 import java.util.Arrays;
@@ -13,7 +12,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -23,8 +21,7 @@ import javafx.scene.control.Label;
  *
  * @author Stefan Huber
  */
-public class SshLoginController extends LoginController
-        implements Initializable {
+public class SshLoginController extends LoginController {
 
     @FXML
     private Button loginButton;
@@ -82,6 +79,7 @@ public class SshLoginController extends LoginController
                 throw new IllegalStateException(
                         "Stage is not set. Use setStage().");
             } else {
+                userConfirmed = true;
                 stage.close();
             }
         }

@@ -1,9 +1,8 @@
 package bayern.steinbrecher.gruen2.login.standard;
 
-import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.elements.CheckedPasswordField;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
-import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.LoginController;
 import java.net.URL;
 import java.util.Arrays;
@@ -13,7 +12,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -23,8 +21,7 @@ import javafx.scene.control.Label;
  *
  * @author Stefan Huber
  */
-public class DefaultLoginController extends LoginController
-        implements Initializable {
+public class DefaultLoginController extends LoginController {
 
     @FXML
     private CheckedTextField databaseUsernameField;
@@ -44,8 +41,8 @@ public class DefaultLoginController extends LoginController
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         textInputFields
-            = Arrays.asList(databaseUsernameField, databasePasswordField);
-        
+                = Arrays.asList(databaseUsernameField, databasePasswordField);
+
         allowEmptyFieldsCheckbox.selectedProperty()
                 .addListener((obs, oldVal, newVal) -> {
                     textInputFields.forEach(f -> f.setChecked(!newVal));
@@ -66,17 +63,18 @@ public class DefaultLoginController extends LoginController
                 throw new IllegalStateException(
                         "Stage is not set. Use setStage().");
             } else {
+                userConfirmed = true;
                 stage.close();
             }
         }
     }
 
     @Override
-    public Map<String, String> getLoginInformation() {
-        Map<String, String> loginInfo = new HashMap<>(2);
-        loginInfo.put(Login.DATABASE_USERNAME_KEY,
+    public Map<LoginKey, String> getLoginInformation() {
+        Map<LoginKey, String> loginInfo = new HashMap<>(2);
+        loginInfo.put(LoginKey.DATABASE_USERNAME,
                 databaseUsernameField.getText());
-        loginInfo.put(Login.DATABASE_PASSWORD_KEY,
+        loginInfo.put(LoginKey.DATABASE_PASSWORD,
                 databasePasswordField.getText());
         return loginInfo;
     }
