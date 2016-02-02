@@ -12,15 +12,29 @@ import javafx.fxml.FXML;
  */
 public class MainController extends Controller {
 
+    private Main caller;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
     }
 
     @FXML
     private void startSepa() {
+        if (caller == null) {
+            throw new IllegalStateException("caller is not set");
+        }
+        caller.startSepa();
     }
 
     @FXML
     private void generateSerialLetterData() {
+        if (caller == null) {
+            throw new IllegalStateException("caller is not set");
+        }
+        caller.generateSerialLetterData();
+    }
+
+    public void setCaller(Main caller) {
+        this.caller = caller;
     }
 }

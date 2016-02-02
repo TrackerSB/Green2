@@ -8,11 +8,12 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
-import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
-import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
+import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
 import com.jcraft.jsch.JSchException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -27,6 +28,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private Controller mcontroller;
+    private DBConnection con;
 
     /**
      * @param args the command line arguments
@@ -37,7 +39,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Login l;
+        /*Login l;
         if (DataProvider.useSsh()) {
             l = new SshLogin();
         } else {
@@ -46,10 +48,10 @@ public class Main extends Application {
         Stage loginStage = new Stage();
         l.start(loginStage);
 
-        DBConnection con = getConnection(l, loginStage);
+        con = getConnection(l, loginStage);
 
         if (con != null) {
-            primaryStage.setOnHiding(wevt -> con.close());
+            primaryStage.setOnHiding(wevt -> con.close());*/
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -64,7 +66,7 @@ public class Main extends Application {
             primaryStage.setResizable(false);
             primaryStage.getIcons().add(DataProvider.getIcon());
             primaryStage.show();
-        }
+        //}
     }
 
     private DBConnection getConnection(Login login, Stage loginStage) {
@@ -102,5 +104,22 @@ public class Main extends Application {
             }
         }
         return con;
+    }
+
+    public void generateSerialLetterData() {
+        if(con == null){
+            throw new IllegalStateException(
+                    "No connection initialised. Call start(...) first.");
+        }
+        DataForSerialLettersGenerator.generateAddressData(con);
+    }
+
+    public void startSepa() {
+        if(con == null){
+            throw new IllegalStateException(
+                    "No connection initialised. Call start(...) first.");
+        }
+        ExecutorService exserv = Executors.newWorkStealingPool();
+        Future<> member = exserv.submit(() -> con.execQuery())
     }
 }
