@@ -8,12 +8,17 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
+import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
+import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
 import com.jcraft.jsch.JSchException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -27,7 +32,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private Controller mcontroller;
+    private MainController mcontroller;
     private DBConnection con;
 
     /**
@@ -39,7 +44,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        /*Login l;
+        Login l;
         if (DataProvider.useSsh()) {
             l = new SshLogin();
         } else {
@@ -51,7 +56,7 @@ public class Main extends Application {
         con = getConnection(l, loginStage);
 
         if (con != null) {
-            primaryStage.setOnHiding(wevt -> con.close());*/
+            primaryStage.setOnHiding(wevt -> con.close());
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -60,13 +65,14 @@ public class Main extends Application {
 
             mcontroller = fxmlLoader.getController();
             mcontroller.setStage(primaryStage);
+            mcontroller.setCaller(this);
 
             primaryStage.setScene(new Scene(root));
             primaryStage.setTitle("Programm wählen");
             primaryStage.setResizable(false);
             primaryStage.getIcons().add(DataProvider.getIcon());
             primaryStage.show();
-        //}
+        }
     }
 
     private DBConnection getConnection(Login login, Stage loginStage) {
@@ -120,6 +126,11 @@ public class Main extends Application {
                     "No connection initialised. Call start(...) first.");
         }
         ExecutorService exserv = Executors.newWorkStealingPool();
-        Future<> member = exserv.submit(() -> con.execQuery())
+        Future<Map<String, List<String>>> member = exserv.submit(() -> con.execQuery("SELECT * FROM Mitglieder"));
+        try {
+            System.out.println(member.get());
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

@@ -9,7 +9,10 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +60,7 @@ public final class SshConnection implements DBConnection {
      */
     @SuppressWarnings("SleepWhileInLoop")
     @Override
-    public LinkedList<String[]> execQuery(String sqlCode) throws SQLException {
+    public Map<String, List<String>> execQuery(String sqlCode) throws SQLException {
         try {
             Channel channel = sshSession.openChannel("exec");
             ((ChannelExec) channel).setErrStream(System.err);
@@ -70,7 +73,7 @@ public final class SshConnection implements DBConnection {
                     = new BufferedInputStream(channel.getInputStream());
 
             channel.connect();
-            //FIXME Eine bessere Lösung als die Sleep-while-Schleife finden
+            //FIXME Find better solution as sleep-while-loop
             while (!channel.isEOF()) {
                 Thread.sleep(200);
             }
@@ -79,16 +82,23 @@ public final class SshConnection implements DBConnection {
             if (result == null) {
                 throw new SQLException("Invalid SQL-Code");
             }
-            LinkedList<String[]> formattedResult = new LinkedList<>();
-            //Erste Zeile enthält Spaltenüberschriften
-            Arrays.stream(result.split("\n")).skip(1).forEach(row -> {
-                formattedResult.add(row.split("\t"));
-            });
-            //Letzte Zeile enth&auml;lt Schlusszeichen
-            formattedResult.remove(formattedResult.size() - 1);
+            Map<String, List<String>> mappedResult = new HashMap<>();
+            String[] rows = result.split("\n");
+
+            String[] columnLabels = rows[0].split("\t");
+            for (String columnLabel : columnLabels) {
+                mappedResult.put(columnLabel, new LinkedList<>());
+            }
+            for (int row = 1; row < rows.length - 1; row++) { //Last line contains EOF
+                String[] columns = rows[row].split("\t");
+                for (int col = 0; col < columnLabels.length; col++) {
+                    mappedResult.get(columnLabels[col]).add(columns[col]);
+                }
+            }
 
             channel.disconnect();
-            return formattedResult;
+
+            return mappedResult;
         } catch (JSchException | IOException | InterruptedException ex) {
             Logger.getLogger(SshConnection.class.getName())
                     .log(Level.SEVERE, null, ex);

@@ -4,8 +4,10 @@ import com.mysql.jdbc.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,26 +46,23 @@ public final class DefaultConnection implements DBConnection {
      * {@inheritDoc}
      */
     @Override
-    public List<String[]> execQuery(String sqlCode) throws SQLException {
+    public Map<String, List<String>> execQuery(String sqlCode) throws SQLException {
         ResultSet resultset = connection.prepareStatement(sqlCode)
                 .executeQuery();
-        LinkedList<String[]> result = new LinkedList<>();
+
+        Map<String, List<String>> mappedResult = new HashMap<>();
+        for (int i = 0; i < resultset.getMetaData().getColumnCount(); i++) {
+            mappedResult.put(resultset.getMetaData().getColumnLabel(i),
+                    new LinkedList<>());
+        }
+
         while (resultset.next()) {
-            String[] fields = getFieldsOfCurrentRow(resultset);
-            result.add(fields);
+            for(String key: mappedResult.keySet()){
+                mappedResult.get(key).add(resultset.getString(key));
+            }
         }
 
-        return result;
-    }
-
-    private String[] getFieldsOfCurrentRow(ResultSet resultset)
-            throws SQLException {
-        int columncount = resultset.getMetaData().getColumnCount();
-        String[] fields = new String[columncount];
-        for (int i = 0; i < columncount; i++) {
-            fields[i] = resultset.getString(i + 1);
-        }
-        return fields;
+        return mappedResult;
     }
 
     /**

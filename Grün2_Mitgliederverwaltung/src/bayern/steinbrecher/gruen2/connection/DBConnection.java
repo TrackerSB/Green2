@@ -2,6 +2,7 @@ package bayern.steinbrecher.gruen2.connection;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a database connection.
@@ -23,5 +24,5 @@ public interface DBConnection extends AutoCloseable {
      * @return Table containing the results.
      * @throws SQLException Thrown if the sql code is invalid.
      */
-    List<String[]> execQuery(String sqlCode) throws SQLException;
+    Map<String, List<String>> execQuery(String sqlCode) throws SQLException;
 }

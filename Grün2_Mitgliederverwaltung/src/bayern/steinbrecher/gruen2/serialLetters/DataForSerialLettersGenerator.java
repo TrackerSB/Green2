@@ -7,7 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,14 +31,14 @@ public class DataForSerialLettersGenerator {
     }
 
     public static void generateAddressData(DBConnection dbc) {
-        List<String[]> member = readMember(dbc);
+        Map<String, List<String>> member = readMember(dbc);
         Map<String, String> nicknames = readNicknames(dbc);
         replaceGenderWithAddress(member, nicknames);
         createOutputCsvFile(createOutput(member));
     }
 
-    private static List<String[]> readMember(DBConnection dbc) {
-        List<String[]> result = null;
+    private static Map<String, List<String>> readMember(DBConnection dbc) {
+        Map<String, List<String>> result = null;
         try {
             result = dbc.execQuery(
                     "SELECT Vorname, Nachname, Strasse, Hausnummer, PLZ, Ort, "
@@ -51,15 +53,19 @@ public class DataForSerialLettersGenerator {
     }
 
     private static Map<String, String> readNicknames(DBConnection dbc) {
-        HashMap<String, String> nicknames = new HashMap<>();
+        Map<String, String> mappedNicknames = new HashMap<>();
         try {
-            dbc.execQuery("SELECT * FROM Spitznamen").parallelStream()
-                    .forEach(row -> nicknames.put(row[0], row[1]));
+            Map<String, List<String>> nicknames
+                    = dbc.execQuery("SELECT * FROM Spitznamen");
+            for (int i = 0; i < nicknames.get("Name").size(); i++) {
+                mappedNicknames.put(nicknames.get("Name").get(i),
+                        nicknames.get("Spitzname").get(i));
+            }
         } catch (SQLException ex) {
             Logger.getLogger(DataForSerialLettersGenerator.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
-        return nicknames;
+        return mappedNicknames;
     }
 
     /**
@@ -73,20 +79,25 @@ public class DataForSerialLettersGenerator {
      * @param nicknames Die Liste mit den Datens&auml;tzen der Spitznamen
      * Indizes zuordnet.
      */
-    private static void replaceGenderWithAddress(List<String[]> member,
-            Map<String, String> nicknames) {
-        member.parallelStream().forEach(row -> {
-            String adress = row[row.length - 1].equals("1") ? "Lieber "
-                    : "Liebe ";
-            adress += nicknames.getOrDefault(row[0], row[0]);
-            row[row.length - 1] = adress;
-        });
+    private static void replaceGenderWithAddress(
+            Map<String, List<String>> member, Map<String, String> nicknames) {
+        List<String> addresses = new LinkedList<>();
+        List<String> gender = member.get("istMaennlich");
+        List<String> prenames = member.get("Vorname");
+        for (int i = 0; i < gender.size(); i++) {
+            String address = gender.get(i)
+                    .equalsIgnoreCase("1") ? "Lieber " : "Liebe ";
+            address += nicknames.getOrDefault(prenames.get(i), prenames.get(i));
+            addresses.add(address);
+        }
+
+        member.put("Anrede", addresses);
     }
 
-    private static String createOutput(List<String[]> table) {
+    private static String createOutput(Map<String, List<String>> mappedResult) {
         StringBuilder output = new StringBuilder();
         output.append("Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Anrede\n");
-        table.parallelStream().forEach(row -> {
+        mappedResult.values().parallelStream().forEach(row -> {
             StringBuilder formattedRow = new StringBuilder();
             for (String field : row) {
                 formattedRow.append(field).append(';');
