@@ -60,7 +60,8 @@ public final class SshConnection implements DBConnection {
      */
     @SuppressWarnings("SleepWhileInLoop")
     @Override
-    public Map<String, List<String>> execQuery(String sqlCode) throws SQLException {
+    public Map<String, List<String>> execQuery(String sqlCode)
+            throws SQLException {
         try {
             Channel channel = sshSession.openChannel("exec");
             ((ChannelExec) channel).setErrStream(System.err);
@@ -73,10 +74,6 @@ public final class SshConnection implements DBConnection {
                     = new BufferedInputStream(channel.getInputStream());
 
             channel.connect();
-            //FIXME Find better solution as sleep-while-loop
-            while (!channel.isEOF()) {
-                Thread.sleep(200);
-            }
 
             String result = readResult(in);
             if (result == null) {
@@ -99,7 +96,7 @@ public final class SshConnection implements DBConnection {
             channel.disconnect();
 
             return mappedResult;
-        } catch (JSchException | IOException | InterruptedException ex) {
+        } catch (JSchException | IOException ex) {
             Logger.getLogger(SshConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
             return null;

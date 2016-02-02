@@ -1,6 +1,5 @@
 package bayern.steinbrecher.gruen2.main;
 
-import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.connection.DBConnection;
 import bayern.steinbrecher.gruen2.connection.DefaultConnection;
 import bayern.steinbrecher.gruen2.connection.SshConnection;
@@ -10,9 +9,15 @@ import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
+import bayern.steinbrecher.gruen2.selection.Selection;
+import bayern.steinbrecher.gruen2.sepa.Member;
+import bayern.steinbrecher.gruen2.sepa.Originator;
+import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
 import com.jcraft.jsch.JSchException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -33,7 +38,9 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private MainController mcontroller;
-    private DBConnection con;
+    private DBConnection dbConnection;
+    private final ExecutorService exserv = Executors.newWorkStealingPool();
+    private Future<Map<String, List<String>>> member;
 
     /**
      * @param args the command line arguments
@@ -44,19 +51,22 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Login l;
+        Login login;
         if (DataProvider.useSsh()) {
-            l = new SshLogin();
+            login = new SshLogin();
         } else {
-            l = new DefaultLogin();
+            login = new DefaultLogin();
         }
         Stage loginStage = new Stage();
-        l.start(loginStage);
+        login.start(loginStage);
 
-        con = getConnection(l, loginStage);
+        dbConnection = getConnection(login, loginStage);
 
-        if (con != null) {
-            primaryStage.setOnHiding(wevt -> con.close());
+        if (dbConnection != null) {
+            primaryStage.setOnHiding(wevt -> {
+                dbConnection.close();
+                exserv.shutdownNow();
+            });
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -72,6 +82,8 @@ public class Main extends Application {
             primaryStage.setResizable(false);
             primaryStage.getIcons().add(DataProvider.getIcon());
             primaryStage.show();
+
+            member = exserv.submit(() -> readMember(dbConnection));
         }
     }
 
@@ -112,25 +124,76 @@ public class Main extends Application {
         return con;
     }
 
-    public void generateSerialLetterData() {
-        if(con == null){
-            throw new IllegalStateException(
-                    "No connection initialised. Call start(...) first.");
+    private Map<String, List<String>> readMember(DBConnection dbc) {
+        Map<String, List<String>> result = null;
+        try {
+            result = dbc.execQuery(
+                    "SELECT Vorname, Nachname, Strasse, Hausnummer, PLZ, Ort, "
+                    + "istMaennlich "
+                    + "FROM Mitglieder "
+                    + "WHERE AusgetretenSeit='0000-00-00'");
+        } catch (SQLException ex) {
+            Logger.getLogger(DataForSerialLettersGenerator.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
-        DataForSerialLettersGenerator.generateAddressData(con);
+        return result;
     }
 
-    public void startSepa() {
-        if(con == null){
+    public void generateSerialLetterData() {
+        if (dbConnection == null) {
             throw new IllegalStateException(
                     "No connection initialised. Call start(...) first.");
         }
-        ExecutorService exserv = Executors.newWorkStealingPool();
-        Future<Map<String, List<String>>> member = exserv.submit(() -> con.execQuery("SELECT * FROM Mitglieder"));
         try {
-            System.out.println(member.get());
+            DataForSerialLettersGenerator.generateAddressData(
+                    member.get(), readNicknames(dbConnection));
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private Map<String, String> readNicknames(DBConnection dbc) {
+        Map<String, String> mappedNicknames = new HashMap<>();
+        try {
+            Map<String, List<String>> nicknames
+                    = dbc.execQuery("SELECT * FROM Spitznamen");
+            for (int i = 0; i < nicknames.get("Name").size(); i++) {
+                mappedNicknames.put(nicknames.get("Name").get(i),
+                        nicknames.get("Spitzname").get(i));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return mappedNicknames;
+    }
+
+    public void startSepa() {
+        if (dbConnection == null) {
+            throw new IllegalStateException(
+                    "No connection initialised. Call start(...) first.");
+        }
+        
+        SepaForm sepaForm = new SepaForm();
+        Originator originator = null;
+        try {
+            sepaForm.start(new Stage());
+            originator = sepaForm.getOriginator();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(originator != null){
+            try {
+                List<Member> memberList = generateMemberList(member.get());
+                Selection sel = new Selection(memberList);
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    private List<Member> generateMemberList(Map<String, List<String>> member){
+        List<Member> memberList = new ArrayList<>();
     }
 }

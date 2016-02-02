@@ -1,14 +1,10 @@
 package bayern.steinbrecher.gruen2.serialLetters;
 
-import bayern.steinbrecher.gruen2.connection.DBConnection;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,42 +26,10 @@ public class DataForSerialLettersGenerator {
                 "Construction of an object not supported");
     }
 
-    public static void generateAddressData(DBConnection dbc) {
-        Map<String, List<String>> member = readMember(dbc);
-        Map<String, String> nicknames = readNicknames(dbc);
+    public static void generateAddressData(Map<String, List<String>> member,
+            Map<String, String> nicknames) {
         replaceGenderWithAddress(member, nicknames);
         createOutputCsvFile(createOutput(member));
-    }
-
-    private static Map<String, List<String>> readMember(DBConnection dbc) {
-        Map<String, List<String>> result = null;
-        try {
-            result = dbc.execQuery(
-                    "SELECT Vorname, Nachname, Strasse, Hausnummer, PLZ, Ort, "
-                    + "istMaennlich "
-                    + "FROM Mitglieder "
-                    + "WHERE AusgetretenSeit='0000-00-00'");
-        } catch (SQLException ex) {
-            Logger.getLogger(DataForSerialLettersGenerator.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        return result;
-    }
-
-    private static Map<String, String> readNicknames(DBConnection dbc) {
-        Map<String, String> mappedNicknames = new HashMap<>();
-        try {
-            Map<String, List<String>> nicknames
-                    = dbc.execQuery("SELECT * FROM Spitznamen");
-            for (int i = 0; i < nicknames.get("Name").size(); i++) {
-                mappedNicknames.put(nicknames.get("Name").get(i),
-                        nicknames.get("Spitzname").get(i));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(DataForSerialLettersGenerator.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        return mappedNicknames;
     }
 
     /**

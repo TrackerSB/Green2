@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +36,7 @@ public class SepaPain00800302_XML_Generator {
      * @param originator Das Objekt, das die SepaModel-Eigeninfos enth&auml;lt
      * @param outputfile Der Name der Datei f&uuml;r den XML-Quellcode
      */
-    public static void createXMLFile(LinkedList<Member> member,
+    public static void createXMLFile(List<Member> member,
             double contribution, Originator originator, String outputfile) {
         filterValidMember(member);
         int numberOfTransactions = member.size();
@@ -44,7 +45,7 @@ public class SepaPain00800302_XML_Generator {
                 contribution, controlSum), outputfile);
     }
 
-    private static void filterValidMember(LinkedList<Member> member) {
+    private static void filterValidMember(List<Member> member) {
         LinkedList<Member> invalidMember = new LinkedList<>();
         member.forEach(m -> {
             boolean valid = true;
@@ -94,7 +95,7 @@ public class SepaPain00800302_XML_Generator {
      * (Zeile der Spalten&uuml;berschriften vorher entfernen!)
      * @return Eine StringBuilder-Repr&auml;sentation der XML-Datei.
      */
-    private static StringBuilder createXML(LinkedList<Member> member,
+    private static StringBuilder createXML(List<Member> member,
             Originator originator, int numberOfTransactions,
             double contribution, double controlSum) {
         StringBuilder output = new StringBuilder();
