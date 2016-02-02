@@ -4,10 +4,8 @@ import com.mysql.jdbc.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,23 +44,26 @@ public final class DefaultConnection implements DBConnection {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, List<String>> execQuery(String sqlCode) throws SQLException {
+    public List<List<String>> execQuery(String sqlCode) throws SQLException {
         ResultSet resultset = connection.prepareStatement(sqlCode)
                 .executeQuery();
 
-        Map<String, List<String>> mappedResult = new HashMap<>();
+        List<List<String>> resultTable = new LinkedList<>();
+        List<String> labels = new LinkedList<>();
         for (int i = 0; i < resultset.getMetaData().getColumnCount(); i++) {
-            mappedResult.put(resultset.getMetaData().getColumnLabel(i),
-                    new LinkedList<>());
+            labels.add(resultset.getMetaData().getColumnLabel(i));
         }
+        resultTable.add(labels);
 
         while (resultset.next()) {
-            for(String key: mappedResult.keySet()){
-                mappedResult.get(key).add(resultset.getString(key));
+            List<String> columns = new LinkedList<>();
+            for (String l : labels) {
+                columns.add(resultset.getString(l));
             }
+            resultTable.add(columns);
         }
 
-        return mappedResult;
+        return resultTable;
     }
 
     /**

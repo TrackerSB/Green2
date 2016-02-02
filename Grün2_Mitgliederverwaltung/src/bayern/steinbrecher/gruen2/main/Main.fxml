@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox spacing="10" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.main.MainController">
-    <Button onAction="#startSepa" text="Sepa-Sammellastschrift erstellen" />
-    <Button onAction="#generateSerialLetterData" text="Daten für Serienbrief holen" />
+<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" fx:controller="bayern.steinbrecher.gruen2.main.MainController">
+    <Button fx:id="generateSepaButton" onAction="#startSepa" text="Sepa-Sammellastschrift erstellen" />
+    <Button fx:id="generateDataButton" onAction="#generateSerialLetterData" text="Daten für Serienbrief holen" />
 </HBox>

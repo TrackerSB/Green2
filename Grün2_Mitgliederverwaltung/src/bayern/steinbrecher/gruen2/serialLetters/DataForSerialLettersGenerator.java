@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -26,46 +25,39 @@ public class DataForSerialLettersGenerator {
                 "Construction of an object not supported");
     }
 
-    public static void generateAddressData(Map<String, List<String>> member,
+    public static void generateAddressData(List<List<String>> member,
             Map<String, String> nicknames) {
-        replaceGenderWithAddress(member, nicknames);
+        appendAddresses(member, nicknames);
         createOutputCsvFile(createOutput(member));
     }
 
     /**
-     * Diese Methode konvertiert <code>member</code> mit
-     * <code>convertResultSetToArray(...)</code> und ersetzt die Spalte
-     * IstMaennlich durch eine passende Anrede ggf mit Spitznamen aus
-     * <code>nicknames</code>.
+     * Diese Methode fügt die Anreden zu <code>member</code> hinzu.
      *
-     * @param member Die Liste mit den Datens&auml;tzen der Mitglieder (OHNE
-     * Spaltennamen!)
-     * @param nicknames Die Liste mit den Datens&auml;tzen der Spitznamen
-     * Indizes zuordnet.
+     * @param member Die Liste mit den Datens&auml;tzen der Mitglieder
+     * @param nicknames Die Liste mit den Datens&auml;tzen der Spitznamen.
      */
-    private static void replaceGenderWithAddress(
-            Map<String, List<String>> member, Map<String, String> nicknames) {
-        List<String> addresses = new LinkedList<>();
-        List<String> gender = member.get("istMaennlich");
-        List<String> prenames = member.get("Vorname");
-        for (int i = 0; i < gender.size(); i++) {
-            String address = gender.get(i)
-                    .equalsIgnoreCase("1") ? "Lieber " : "Liebe ";
-            address += nicknames.getOrDefault(prenames.get(i), prenames.get(i));
-            addresses.add(address);
-        }
-
-        member.put("Anrede", addresses);
+    private static void appendAddresses(
+            List<List<String>> member, Map<String, String> nicknames) {
+        int istMaennlichIndex = member.get(0).indexOf("istMaennlich");
+        int vornameIndex = member.get(0).indexOf("Vorname");
+        member.get(0).add("Anrede");
+        member.parallelStream().skip(1).forEach(row -> {
+            String address = row.get(istMaennlichIndex).equalsIgnoreCase("1")
+                    ? "Lieber " : "Liebe ";
+            address += nicknames.getOrDefault(
+                    row.get(vornameIndex), row.get(vornameIndex));
+            row.add(address);
+        });
     }
 
-    private static String createOutput(Map<String, List<String>> mappedResult) {
+    private static String createOutput(List<List<String>> resultTable) {
         StringBuilder output = new StringBuilder();
-        output.append("Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Anrede\n");
-        mappedResult.values().parallelStream().forEach(row -> {
+        resultTable.parallelStream().forEach(row -> {
             StringBuilder formattedRow = new StringBuilder();
-            for (String field : row) {
+            row.stream().forEach(field -> {
                 formattedRow.append(field).append(';');
-            }
+            });
             formattedRow.setCharAt(formattedRow.length() - 1, '\n');
             synchronized (output) {
                 output.append(formattedRow);

@@ -14,6 +14,7 @@ import javafx.stage.Stage;
  * Represents a selection dialog.
  *
  * @author Stefan Huber
+ * @param <T> The type of the attributes being able to selct.
  */
 public class Selection<T> extends Application {
 

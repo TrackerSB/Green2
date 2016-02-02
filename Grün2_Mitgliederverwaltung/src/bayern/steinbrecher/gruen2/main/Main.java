@@ -16,8 +16,8 @@ import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
 import com.jcraft.jsch.JSchException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +40,9 @@ public class Main extends Application {
     private MainController mcontroller;
     private DBConnection dbConnection;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
-    private Future<Map<String, List<String>>> member;
+    private Future<List<List<String>>> memberNoSepa;
+    private Future<List<List<String>>> memberSepa;
+    private Future<Map<String, String>> nicknames;
 
     /**
      * @param args the command line arguments
@@ -63,10 +65,13 @@ public class Main extends Application {
         dbConnection = getConnection(login, loginStage);
 
         if (dbConnection != null) {
-            primaryStage.setOnHiding(wevt -> {
-                dbConnection.close();
-                exserv.shutdownNow();
-            });
+            primaryStage.showingProperty().addListener(
+                    (obs, oldVal, newVal) -> {
+                        if (!newVal) {
+                            dbConnection.close();
+                            exserv.shutdownNow();
+                        }
+                    });
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -83,7 +88,9 @@ public class Main extends Application {
             primaryStage.getIcons().add(DataProvider.getIcon());
             primaryStage.show();
 
-            member = exserv.submit(() -> readMember(dbConnection));
+            memberNoSepa = exserv.submit(() -> readMemberNoSepa(dbConnection));
+            memberSepa = exserv.submit(() -> readMemberSepa(dbConnection));
+            nicknames = exserv.submit(() -> readNicknames(dbConnection));
         }
     }
 
@@ -124,19 +131,31 @@ public class Main extends Application {
         return con;
     }
 
-    private Map<String, List<String>> readMember(DBConnection dbc) {
-        Map<String, List<String>> result = null;
+    private List<List<String>> readMemberNoSepa(DBConnection dbc) {
         try {
-            result = dbc.execQuery(
+            return dbc.execQuery(
                     "SELECT Vorname, Nachname, Strasse, Hausnummer, PLZ, Ort, "
                     + "istMaennlich "
                     + "FROM Mitglieder "
                     + "WHERE AusgetretenSeit='0000-00-00'");
         } catch (SQLException ex) {
-            Logger.getLogger(DataForSerialLettersGenerator.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return result;
+    }
+
+    private List<List<String>> readMemberSepa(DBConnection dbc) {
+        try {
+            return dbc.execQuery(
+                    "SELECT Vorname, Nachname, IBAN, BIC, MandatErstellt, "
+                    + "Mitgliedsnummer "
+                    + "FROM Mitglieder "
+                    + "WHERE AusgetretenSeit='0000-00-00' "
+                    + "AND istBeitragsfrei='0'");
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     public void generateSerialLetterData() {
@@ -146,7 +165,7 @@ public class Main extends Application {
         }
         try {
             DataForSerialLettersGenerator.generateAddressData(
-                    member.get(), readNicknames(dbConnection));
+                    memberNoSepa.get(), nicknames.get());
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -155,12 +174,14 @@ public class Main extends Application {
     private Map<String, String> readNicknames(DBConnection dbc) {
         Map<String, String> mappedNicknames = new HashMap<>();
         try {
-            Map<String, List<String>> nicknames
+            List<List<String>> queriedNicknames
                     = dbc.execQuery("SELECT * FROM Spitznamen");
-            for (int i = 0; i < nicknames.get("Name").size(); i++) {
-                mappedNicknames.put(nicknames.get("Name").get(i),
-                        nicknames.get("Spitzname").get(i));
-            }
+            int nameIndex = queriedNicknames.get(0).indexOf("Name");
+            int nicknameIndex = queriedNicknames.get(0).indexOf("Spitzname");
+
+            queriedNicknames.parallelStream().skip(1).forEach(row -> {
+                mappedNicknames.put(row.get(nameIndex), row.get(nicknameIndex));
+            });
         } catch (SQLException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -172,7 +193,7 @@ public class Main extends Application {
             throw new IllegalStateException(
                     "No connection initialised. Call start(...) first.");
         }
-        
+
         SepaForm sepaForm = new SepaForm();
         Originator originator = null;
         try {
@@ -181,19 +202,61 @@ public class Main extends Application {
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        if(originator != null){
+
+        if (originator != null) {
             try {
-                List<Member> memberList = generateMemberList(member.get());
-                Selection sel = new Selection(memberList);
+                List<Member> memberList = generateMemberList(memberSepa.get());
+                Selection<Member> sel = new Selection<>(memberList);
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
         }
     }
-    
-    private List<Member> generateMemberList(Map<String, List<String>> member){
-        List<Member> memberList = new ArrayList<>();
+
+    private List<Member> generateMemberList(List<List<String>> member) {
+        int mitgliedsnummerIndex = -1;
+        int mandatErstelltIndex = -1;
+        int ibanIndex = -1;
+        int bicIndex = -1;
+        int vornameIndex = -1;
+        int nachnameIndex = -1;
+        for (int i = 0; i < member.get(0).size(); i++) {
+            switch (member.get(0).get(i)) {
+            case "Mitgliedsnummer":
+                mitgliedsnummerIndex = i;
+                break;
+            case "MandatErstellt":
+                mandatErstelltIndex = i;
+                break;
+            case "IBAN":
+                ibanIndex = i;
+                break;
+            case "BIC":
+                bicIndex = i;
+                break;
+            case "Vorname":
+                vornameIndex = i;
+                break;
+            case "Nachname":
+                nachnameIndex = i;
+                break;
+            default:
+                System.out.println(
+                        member.get(0).get(i) + " is not needed for member.");
+            }
+        }
+
+        List<Member> memberList = new LinkedList<>();
+        for (List<String> row : member) {
+            Member m = new Member(
+                    Integer.parseInt(row.get(mitgliedsnummerIndex)),
+                    row.get(mandatErstelltIndex), row.get(bicIndex),
+                    row.get(nachnameIndex), row.get(vornameIndex),
+                    row.get(ibanIndex), false);
+            memberList.add(m);
+        }
+
+        return memberList;
     }
 }

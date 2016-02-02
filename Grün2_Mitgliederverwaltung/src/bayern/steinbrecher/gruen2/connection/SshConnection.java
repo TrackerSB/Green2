@@ -9,12 +9,14 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Represents database connections over SSH.
@@ -60,7 +62,7 @@ public final class SshConnection implements DBConnection {
      */
     @SuppressWarnings("SleepWhileInLoop")
     @Override
-    public Map<String, List<String>> execQuery(String sqlCode)
+    public List<List<String>> execQuery(String sqlCode)
             throws SQLException {
         try {
             Channel channel = sshSession.openChannel("exec");
@@ -79,23 +81,18 @@ public final class SshConnection implements DBConnection {
             if (result == null) {
                 throw new SQLException("Invalid SQL-Code");
             }
-            Map<String, List<String>> mappedResult = new HashMap<>();
-            String[] rows = result.split("\n");
+            List<List<String>> resultTable = Arrays.stream(result.split("\n"))
+                    .parallel()
+                    .map(row -> row.split("\t"))
+                    .map(Arrays::asList)
+                    .collect(Collectors.toList());
 
-            String[] columnLabels = rows[0].split("\t");
-            for (String columnLabel : columnLabels) {
-                mappedResult.put(columnLabel, new LinkedList<>());
-            }
-            for (int row = 1; row < rows.length - 1; row++) { //Last line contains EOF
-                String[] columns = rows[row].split("\t");
-                for (int col = 0; col < columnLabels.length; col++) {
-                    mappedResult.get(columnLabels[col]).add(columns[col]);
-                }
-            }
+            //Remove EOF
+            resultTable.removeIf(row -> row.size() != 2);
 
             channel.disconnect();
 
-            return mappedResult;
+            return resultTable;
         } catch (JSchException | IOException ex) {
             Logger.getLogger(SshConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -104,10 +101,6 @@ public final class SshConnection implements DBConnection {
     }
 
     private String readResult(BufferedInputStream in) throws IOException {
-        if (in.available() <= 0) {
-            return null;
-        }
-
         StringBuilder output = new StringBuilder();
         int nextByte;
         do {
