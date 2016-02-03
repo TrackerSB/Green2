@@ -7,6 +7,8 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
+import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
+import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepa.Member;
 import bayern.steinbrecher.gruen2.sepa.Originator;
@@ -26,6 +28,9 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
