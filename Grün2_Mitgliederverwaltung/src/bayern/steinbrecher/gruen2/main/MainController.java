@@ -54,11 +54,11 @@ public class MainController extends Controller {
         if (caller == null) {
             throw new IllegalStateException("caller is not set");
         }
-        exserv.execute(() -> {
+        //exserv.execute(() -> {
             generateDataButton.setDisable(true);
             caller.generateSerialLetterData();
             generateDataButton.setDisable(false);
-        });
+        //});
     }
 
     public void setCaller(Main caller) {
