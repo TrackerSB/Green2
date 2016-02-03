@@ -5,6 +5,8 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -27,7 +29,7 @@ public class DataForSerialLettersGenerator {
 
     public static void generateAddressData(List<List<String>> member,
             Map<String, String> nicknames) {
-        appendAddresses(member, nicknames);
+        member = appendAddresses(member, nicknames);
         createOutputCsvFile(createOutput(member));
     }
 
@@ -36,24 +38,49 @@ public class DataForSerialLettersGenerator {
      *
      * @param member Die Liste mit den Datens&auml;tzen der Mitglieder
      * @param nicknames Die Liste mit den Datens&auml;tzen der Spitznamen.
+     *
+     * @return The same list, but with addresses.
      */
-    private static void appendAddresses(
+    private static List<List<String>> appendAddresses(
             List<List<String>> member, Map<String, String> nicknames) {
+        //Deep copy of member list
+        List<List<String>> copy = new ArrayList<>();
+        member.stream().forEach(row -> copy.add(new ArrayList<>(row)));
+
         int istMaennlichIndex = member.get(0).indexOf("istMaennlich");
         int vornameIndex = member.get(0).indexOf("Vorname");
-        member.get(0).add("Anrede");
-        member.parallelStream().skip(1).forEach(row -> {
-            String address = row.get(istMaennlichIndex).equalsIgnoreCase("1")
-                    ? "Lieber " : "Liebe ";
-            address += nicknames.getOrDefault(
-                    row.get(vornameIndex), row.get(vornameIndex));
-            row.add(address);
-        });
+        copy.get(0).add("Anrede");
+        for (int row = 1; row < member.size(); row++) {
+            String address = member.get(row).get(istMaennlichIndex)
+                    .equalsIgnoreCase("1") ? "Lieber " : "Liebe ";
+            address += nicknames.getOrDefault(member.get(row).get(vornameIndex),
+                    member.get(row).get(vornameIndex));
+            copy.get(row).add(address);
+        }
+
+        return copy;
     }
 
+    /**
+     * Creates output representing {@code resultTable}. The order is not
+     * guaranteed apart from the first row. The first row will still be the
+     * first row.
+     *
+     * @param resultTable The table to output. First dimension row; second
+     * column.
+     * @return A String representing the output.
+     */
     private static String createOutput(List<List<String>> resultTable) {
         StringBuilder output = new StringBuilder();
-        resultTable.parallelStream().forEach(row -> {
+
+        //Labels of columns
+        StringBuilder headings = new StringBuilder();
+        resultTable.get(0).stream().forEach(columnLabel -> {
+            headings.append(columnLabel).append(';');
+        });
+        headings.setCharAt(headings.length() - 1, '\n');
+
+        resultTable.parallelStream().skip(1).forEach(row -> {
             StringBuilder formattedRow = new StringBuilder();
             row.stream().forEach(field -> {
                 formattedRow.append(field).append(';');

@@ -81,14 +81,13 @@ public final class SshConnection implements DBConnection {
             if (result == null) {
                 throw new SQLException("Invalid SQL-Code");
             }
-            List<List<String>> resultTable = Arrays.stream(result.split("\n"))
+            String[] rows = result.split("\n");
+            List<List<String>> resultTable = Arrays.stream(rows)
+                    .limit(rows.length - 1) //Remove EOF
                     .parallel()
                     .map(row -> row.split("\t"))
                     .map(Arrays::asList)
                     .collect(Collectors.toList());
-
-            //Remove EOF
-            resultTable.removeIf(row -> row.size() != 2);
 
             channel.disconnect();
 
