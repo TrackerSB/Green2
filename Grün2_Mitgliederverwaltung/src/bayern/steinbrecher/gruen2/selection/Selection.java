@@ -20,11 +20,11 @@ public class Selection<T> extends Application {
 
     private Stage primaryStage;
     private SelectionController<T> scontroller;
-    private final List<T> options;
+    private final T[] options;
     private boolean gotShown = false;
     private boolean gotClosed = false;
 
-    public Selection(List<T> options) {
+    public Selection(T... options) {
         this.options = options;
     }
 

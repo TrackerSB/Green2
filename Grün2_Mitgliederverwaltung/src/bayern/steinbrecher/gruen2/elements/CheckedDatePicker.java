@@ -37,7 +37,7 @@ public class CheckedDatePicker extends DatePicker {
         super(locale);
         getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
             DateTimeFormatter dtf
-                    = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY);
+                    = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY);
             try {
                 LocalDate.parse(newVal, dtf);
                 getStyleClass().remove(CSS_CLASS_INVALID_DATE);

@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
+import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 
 /**
@@ -95,6 +96,7 @@ public class CheckedTextField extends TextField {
      */
     public CheckedTextField(int maxColumnCount, String text) {
         super(text);
+        setAccessibleRole(AccessibleRole.TEXT_FIELD);
         setMaxColumnCount(maxColumnCount);
         textProperty().addListener((obs, oldVal, newVal) -> checkValid());
         checkedProperty.addListener((obs, oldVal, newVal) -> checkValid());

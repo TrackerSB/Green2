@@ -92,7 +92,7 @@ public class Member implements Comparable<Member> {
 
     @Override
     public String toString() {
-        return mitgliedsnummer + "\t" + nachname + " " + vorname;
+        return mitgliedsnummer + ": " + nachname + " " + vorname;
     }
 
     @Override

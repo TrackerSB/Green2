@@ -1,8 +1,9 @@
 package bayern.steinbrecher.gruen2.selection;
 
 import bayern.steinbrecher.gruen2.Controller;
-import bayern.steinbrecher.gruen2.elements.CheckedTextField;
+import bayern.steinbrecher.gruen2.elements.CheckedDoubleSpinner;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -15,7 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 
 /**
@@ -27,7 +27,7 @@ public class SelectionController<T> extends Controller {
 
     @FXML
     private ListView<CheckBox> optionsListView;
-    private List<T> options;
+    private T[] options;
     @FXML
     private Button selectAllButton;
     @FXML
@@ -37,48 +37,38 @@ public class SelectionController<T> extends Controller {
     @FXML
     private Label missingInput;
     @FXML
-    private Spinner<Double> contributionSpinner;
+    private CheckedDoubleSpinner contributionSpinner;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
-                ObservableList<CheckBox> items = optionsListView.getItems();
-                boolean disableSelectAll = items.stream()
+        ObservableList<CheckBox> items = optionsListView.getItems();
+        boolean disableSelectAll = items.stream()
                 .allMatch(CheckBox::isSelected);
-                selectAllButton.setDisable(disableSelectAll);
-                boolean disableSelectNone = items.stream()
+        selectAllButton.setDisable(disableSelectAll);
+        boolean disableSelectNone = items.stream()
                 .allMatch(cb -> !cb.isSelected());
-                selectNoneButton.setDisable(disableSelectNone);
-                missingInput.setVisible(disableSelectNone);
-            };
+        selectNoneButton.setDisable(disableSelectNone);
+        missingInput.setVisible(disableSelectNone);
+    };
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        DoubleSpinnerValueFactory factory
-                = new DoubleSpinnerValueFactory(0, 200, 10, 0.01);
-        contributionSpinner.setValueFactory(factory);
-        contributionSpinner.getEditor().textProperty()
-                .addListener((obs, oldValue, newValue) -> {
-                    try {
-                        double parsed = Double.parseDouble(newValue);
-                        factory.setValue(parsed);
-                    } catch (NumberFormatException ex) {
-                        Logger.getLogger(SelectionController.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    }
-                    selectButton.setDisable(selectNoneButton.isDisabled()
-                            || contributionSpinner.getValue() == null);
+        contributionSpinner.validProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    selectButton.setDisable(
+                            selectNoneButton.isDisabled() || !newVal);
                 });
 
         selectNoneButton.disabledProperty()
                 .addListener((obs, oldValue, newValue) -> {
                     selectButton.setDisable(selectNoneButton.isDisabled()
-                            || contributionSpinner.getValue() == null);
+                            || !contributionSpinner.validProperty().get());
                 });
     }
 
-    public void setOptions(List<T> options) {
+    public void setOptions(T... options) {
         optionsListView.getItems().clear();
         this.options = options;
-        options.stream().forEach(op -> {
+        Arrays.stream(options).forEach(op -> {
             CheckBox newItem = new CheckBox(op.toString());
             newItem.selectedProperty().addListener(selectionChange);
             optionsListView.getItems().add(newItem);
@@ -109,7 +99,7 @@ public class SelectionController<T> extends Controller {
         ObservableList<CheckBox> items = optionsListView.getItems();
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).isSelected()) {
-                selection.add(options.get(i));
+                selection.add(options[i]);
             }
         }
         return selection;

@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -106,7 +107,9 @@ public class SepaFormController extends Controller {
 
     @FXML
     private void generateMessageId() {
-        messageIdTextField.setText("ID_" + YEAR_MONTH_DAY.format(new Date()));
+        messageIdTextField.setText(YEAR_MONTH_DAY.format(new Date())
+                + " Mitgliedsbeitrag "
+                + Calendar.getInstance().get(Calendar.YEAR));
     }
 
     @FXML

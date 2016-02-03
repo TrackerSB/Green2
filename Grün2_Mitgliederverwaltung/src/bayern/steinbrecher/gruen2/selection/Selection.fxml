@@ -8,7 +8,7 @@
     <ListView fx:id="optionsListView" maxHeight="300" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2" />
     <Label text="Betrag in €" GridPane.columnIndex="0" GridPane.rowIndex="1" />
     <CheckedTextField onAction="#select" fx:id="contributionTextField" text="10" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-    <Spinner fx:id="contributionSpinner" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="true" />
+    <CheckedDoubleSpinner min="0" max="200" initialValue="10" amountToStepBy="1" fx:id="contributionSpinner" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="true" />
     
     <Button fx:id="selectAllButton" text="Alles auswählen" onAction="#selectAllOptions" GridPane.rowIndex="2" GridPane.columnIndex="0" />
     <Button fx:id="selectNoneButton" text="Nichts auswählen" disable="true" onAction="#selectNoOption" GridPane.rowIndex="2" GridPane.columnIndex="1" />
