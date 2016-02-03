@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public final class DefaultConnection implements DBConnection {
 
     private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DRIVER_PROTOCOL = "jdbc:mysql://";
     private Connection connection;
 
     /**
@@ -30,11 +31,15 @@ public final class DefaultConnection implements DBConnection {
     public DefaultConnection(String databaseHost, String databaseUsername,
             String databasePasswd, String databaseName) throws SQLException {
         try {
-            Class.forName(DRIVER).newInstance();
-            connection = (Connection) DriverManager.getConnection(databaseHost
+            Class.forName(DRIVER);
+            if (!databaseHost.endsWith("/")) {
+                databaseHost += "/";
+            }
+            connection = (Connection) DriverManager.getConnection(
+                    DRIVER_PROTOCOL + databaseHost
                     + databaseName, databaseUsername, databasePasswd);
-            execQuery("SELECT 1"); //TODO SELECT 1 notwendig?
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            execQuery("SELECT 1");
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
@@ -50,7 +55,7 @@ public final class DefaultConnection implements DBConnection {
 
         List<List<String>> resultTable = new LinkedList<>();
         List<String> labels = new LinkedList<>();
-        for (int i = 0; i < resultset.getMetaData().getColumnCount(); i++) {
+        for (int i = 1; i <= resultset.getMetaData().getColumnCount(); i++) {
             labels.add(resultset.getMetaData().getColumnLabel(i));
         }
         resultTable.add(labels);
