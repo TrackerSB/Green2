@@ -78,6 +78,7 @@ public class DataForSerialLettersGenerator {
             headings.append(columnLabel).append(';');
         });
         headings.setCharAt(headings.length() - 1, '\n');
+        output.append(headings);
 
         resultTable.parallelStream().skip(1).forEach(row -> {
             StringBuilder formattedRow = new StringBuilder();

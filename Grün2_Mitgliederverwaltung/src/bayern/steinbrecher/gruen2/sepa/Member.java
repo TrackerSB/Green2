@@ -12,7 +12,9 @@ public class Member implements Comparable<Member> {
     private final String mandatErstellt,
             bic,
             nachname,
+            kontoinhaberNachname,
             vorname,
+            kontoinhaberVorname,
             iban;
     private final boolean hasMandatChanged;
 
@@ -21,21 +23,26 @@ public class Member implements Comparable<Member> {
      *
      * @param mitgliedsnummer Die Mitgliedsnummer
      * @param mandatErstellt
+     * @param iban
      * @param bic
      * @param nachname
      * @param vorname
-     * @param iban
+     * @param kontoinhaberNachname
+     * @param kontoinhaberVorname
      * @param hasMandatChanged
      */
-    public Member(int mitgliedsnummer, String mandatErstellt, String bic,
-            String nachname, String vorname, String iban,
+    public Member(int mitgliedsnummer, String mandatErstellt, String iban,
+            String bic, String nachname, String vorname,
+            String kontoinhaberNachname, String kontoinhaberVorname,
             boolean hasMandatChanged) {
         this.mitgliedsnummer = mitgliedsnummer;
         this.mandatErstellt = mandatErstellt;
+        this.iban = iban;
         this.bic = bic;
         this.nachname = nachname;
         this.vorname = vorname;
-        this.iban = iban;
+        this.kontoinhaberNachname = kontoinhaberNachname;
+        this.kontoinhaberVorname = kontoinhaberVorname;
         this.hasMandatChanged = hasMandatChanged;
     }
 
@@ -61,6 +68,14 @@ public class Member implements Comparable<Member> {
 
     public String getVorname() {
         return vorname;
+    }
+
+    public String getKontoinhaberVorname() {
+        return kontoinhaberVorname;
+    }
+
+    public String getKontoinhaberNachname() {
+        return kontoinhaberNachname;
     }
 
     public String getIban() {

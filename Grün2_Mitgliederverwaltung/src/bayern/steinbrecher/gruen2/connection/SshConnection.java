@@ -57,6 +57,16 @@ public final class SshConnection implements DBConnection {
         this.sshSession.connect();
     }
 
+    private Session createSshSession(String sshHost, String sshUsername,
+            String sshPassword)
+            throws JSchException {
+        Session session = new JSch()
+                .getSession(sshUsername, sshHost, DEFAULT_SSH_PORT);
+        session.setPassword(sshPassword);
+        session.setConfig("StrictHostKeyChecking", "no");
+        return session;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -85,8 +95,7 @@ public final class SshConnection implements DBConnection {
             List<List<String>> resultTable = Arrays.stream(rows)
                     .limit(rows.length - 1) //Remove EOF
                     .parallel()
-                    .map(row -> row.split("\t"))
-                    .map(Arrays::asList)
+                    .map(row -> splitUp(row, '\t'))
                     .collect(Collectors.toList());
 
             channel.disconnect();
@@ -110,14 +119,21 @@ public final class SshConnection implements DBConnection {
         return output.toString();
     }
 
-    private Session createSshSession(String sshHost, String sshUsername,
-            String sshPassword)
-            throws JSchException {
-        Session session = new JSch()
-                .getSession(sshUsername, sshHost, DEFAULT_SSH_PORT);
-        session.setPassword(sshPassword);
-        session.setConfig("StrictHostKeyChecking", "no");
-        return session;
+    //String.split skips emtpy columns
+    private List<String> splitUp(String row, char regex) {
+        List<String> columns = new LinkedList<>();
+        StringBuilder lastCol = new StringBuilder();
+        for (char c : row.toCharArray()) {
+            if (c == regex) {
+                columns.add(lastCol.toString());
+                lastCol.setLength(0);
+            } else {
+                lastCol.append(c);
+            }
+        }
+        columns.add(lastCol.toString());
+
+        return columns;
     }
 
     /**

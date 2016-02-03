@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 public class MainController extends Controller {
 
     private Main caller;
-    private ExecutorService exserv = Executors.newCachedThreadPool();
     @FXML
     private Button generateSepaButton;
     @FXML
@@ -32,21 +31,9 @@ public class MainController extends Controller {
         if (caller == null) {
             throw new IllegalStateException("caller is not set");
         }
-        exserv.execute(() -> {
             generateSepaButton.setDisable(true);
             caller.startSepa();
             generateSepaButton.setDisable(false);
-        });
-    }
-
-    @Override
-    public void setStage(Stage stage) {
-        super.setStage(stage);
-        stage.showingProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                exserv.shutdownNow();
-            }
-        });
     }
 
     @FXML
@@ -54,11 +41,9 @@ public class MainController extends Controller {
         if (caller == null) {
             throw new IllegalStateException("caller is not set");
         }
-        //exserv.execute(() -> {
             generateDataButton.setDisable(true);
             caller.generateSerialLetterData();
             generateDataButton.setDisable(false);
-        //});
     }
 
     public void setCaller(Main caller) {

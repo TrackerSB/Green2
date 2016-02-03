@@ -37,8 +37,6 @@ public class SelectionController<T> extends Controller {
     @FXML
     private Label missingInput;
     @FXML
-    private CheckedTextField contributionTextField;
-    @FXML
     private Spinner<Double> contributionSpinner;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {

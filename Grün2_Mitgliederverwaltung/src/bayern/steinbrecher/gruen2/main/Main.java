@@ -12,6 +12,7 @@ import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepa.Member;
 import bayern.steinbrecher.gruen2.sepa.Originator;
+import bayern.steinbrecher.gruen2.sepa.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
 import com.jcraft.jsch.JSchException;
@@ -67,11 +68,11 @@ public class Main extends Application {
         if (dbConnection != null) {
             primaryStage.showingProperty().addListener(
                     (obs, oldVal, newVal) -> {
-                        if (!newVal) {
-                            dbConnection.close();
-                            exserv.shutdownNow();
-                        }
-                    });
+                if (!newVal) {
+                    dbConnection.close();
+                    exserv.shutdownNow();
+                }
+            });
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -135,7 +136,7 @@ public class Main extends Application {
         try {
             return dbc.execQuery(
                     "SELECT Vorname, Nachname, Strasse, Hausnummer, PLZ, Ort, "
-                    + "istMaennlich "
+                    + "istMaennlich, Titel "
                     + "FROM Mitglieder "
                     + "WHERE AusgetretenSeit='0000-00-00'");
         } catch (SQLException ex) {
@@ -148,7 +149,8 @@ public class Main extends Application {
         try {
             return dbc.execQuery(
                     "SELECT Vorname, Nachname, IBAN, BIC, MandatErstellt, "
-                    + "Mitgliedsnummer "
+                    + "Mitgliedsnummer, KontoinhaberVorname, "
+                    + "KontoinhaberNachname "
                     + "FROM Mitglieder "
                     + "WHERE AusgetretenSeit='0000-00-00' "
                     + "AND istBeitragsfrei='0'");
@@ -207,7 +209,16 @@ public class Main extends Application {
             try {
                 List<Member> memberList = generateMemberList(memberSepa.get());
                 Selection<Member> sel = new Selection<>(memberList);
+                sel.start(new Stage());
+                memberList = sel.getSelection();
+                double contribution = sel.getContribution();
+                SepaPain00800302_XML_Generator.createXMLFile(
+                        memberList, contribution, originator,
+                        DataProvider.getSavepath() + "/Sepa.xml");
             } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
@@ -221,6 +232,8 @@ public class Main extends Application {
         int bicIndex = -1;
         int vornameIndex = -1;
         int nachnameIndex = -1;
+        int kontoinhaberVornameIndex = -1;
+        int kontoinhaberNachnameIndex = -1;
         for (int i = 0; i < member.get(0).size(); i++) {
             switch (member.get(0).get(i)) {
             case "Mitgliedsnummer":
@@ -241,6 +254,12 @@ public class Main extends Application {
             case "Nachname":
                 nachnameIndex = i;
                 break;
+            case "KontoinhaberVorname":
+                kontoinhaberVornameIndex = i;
+                break;
+            case "KontoinhaberNachname":
+                kontoinhaberNachnameIndex = i;
+                break;
             default:
                 System.out.println(
                         member.get(0).get(i) + " is not needed for member.");
@@ -248,12 +267,18 @@ public class Main extends Application {
         }
 
         List<Member> memberList = new LinkedList<>();
-        for (List<String> row : member) {
+        for (List<String> row : member.subList(1, member.size())) {
+            String kiN = row.get(kontoinhaberNachnameIndex);
+            String nachname = row.get(nachnameIndex);
+            String kiV = row.get(kontoinhaberVornameIndex);
+            String vorname = row.get(vornameIndex);
             Member m = new Member(
                     Integer.parseInt(row.get(mitgliedsnummerIndex)),
-                    row.get(mandatErstelltIndex), row.get(bicIndex),
-                    row.get(nachnameIndex), row.get(vornameIndex),
-                    row.get(ibanIndex), false);
+                    row.get(mandatErstelltIndex), row.get(ibanIndex),
+                    row.get(bicIndex), nachname, vorname,
+                    kiN.isEmpty() ? nachname : kiN,
+                    kiV.isEmpty() ? vorname : kiV, false);
+//FIXME MandatChanged is not always false.
             memberList.add(m);
         }
 
