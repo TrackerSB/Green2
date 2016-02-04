@@ -15,6 +15,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  * Controller of DefaultLogin.fxml.
@@ -54,6 +56,13 @@ public class DefaultLoginController extends LoginController {
             invalidInput.setVisible(!isAllInputValid);
         };
         textInputFields.forEach(f -> f.validProperty().addListener(cl));
+    }
+
+    @FXML
+    private void loginIfEnter(KeyEvent kevt) {
+        if (kevt.getCode() == KeyCode.ENTER) {
+            login();
+        }
     }
 
     @FXML

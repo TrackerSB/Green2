@@ -16,6 +16,6 @@
     <CheckedPasswordField fx:id="databasePasswordField" promptText="Datenbank-Passwort" onAction="#login" GridPane.columnIndex="1" GridPane.rowIndex="3" />
     
     <Label text="Ungültige oder fehlende Angaben" fx:id="invalidInput" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-    <CheckBox GridPane.rowIndex="5" GridPane.columnIndex="0" text="Leere Felder zulassen" fx:id="allowEmptyFieldsCheckbox" />
+    <CheckBox onKeyPressed="#loginIfEnter" GridPane.rowIndex="5" GridPane.columnIndex="0" text="Leere Felder zulassen" fx:id="allowEmptyFieldsCheckbox" />
     <Button fx:id="loginButton" text="Login" disable="true" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
 </GridPane>

@@ -14,7 +14,14 @@ import javafx.scene.control.SpinnerValueFactory;
  */
 public class CheckedDoubleSpinner extends Spinner<Double> {
 
+    /**
+     * Css class attribute indicating that the current value of a
+     * {@code CheckedDoubleSpinner} is not valid
+     */
     public static final String CSS_CLASS_INVALID = "invalidSpinnerValue";
+    /**
+     * {@code BooleanProperty} indicating whether the current value is valid.
+     */
     private BooleanProperty validProperty = new BooleanPropertyBase(true) {
         @Override
         public Object getBean() {
@@ -27,6 +34,16 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
         }
     };
 
+    /**
+     * Constructes a new {@code CheckedDoubleSpinner}.
+     *
+     * @param min The minimum allowed value.
+     * @param max The maximum allowed value.
+     * @param initialValue The value of the Spinner when first instantiated,
+     * must be within the bounds of the min and max arguments, or else the min
+     * value will be used.
+     * @param amountToStepBy The amount to increment or decrement by, per step.
+     */
     public CheckedDoubleSpinner(@NamedArg("min") int min,
             @NamedArg("max") int max,
             @NamedArg("initialValue") int initialValue,
@@ -47,17 +64,24 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
                     } catch (NumberFormatException ex) {
                         validProperty.set(false);
                     }
-                    
-                    if(!validProperty.get()){
-                        if(!getStyleClass().contains(CSS_CLASS_INVALID)){
+
+                    if (!validProperty.get()) {
+                        if (!getStyleClass().contains(CSS_CLASS_INVALID)) {
                             getStyleClass().add(CSS_CLASS_INVALID);
                         }
-                    } else{
+                    } else {
                         getStyleClass().remove(CSS_CLASS_INVALID);
                     }
                 });
     }
 
+    /**
+     * Returns the {@code BooleanProperty} representing whether the current
+     * value is valid or not.
+     *
+     * @return The {@code BooleanProperty} representing whether the current
+     * value is valid or not.
+     */
     public BooleanProperty validProperty() {
         return validProperty;
     }

@@ -15,6 +15,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  * The controller for SshLogin.fxml.
@@ -60,6 +62,9 @@ public class SshLoginController extends LoginController {
         textInputFields.forEach(f -> f.validProperty().addListener(cl));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<LoginKey, String> getLoginInformation() {
         Map<LoginKey, String> loginInfo = new HashMap<>(4);
@@ -70,6 +75,13 @@ public class SshLoginController extends LoginController {
         loginInfo.put(LoginKey.SSH_USERNAME, sshUsernameField.getText());
         loginInfo.put(LoginKey.SSH_PASSWORD, sshPasswordField.getText());
         return loginInfo;
+    }
+
+    @FXML
+    private void loginIfEnter(KeyEvent kevt) {
+        if (kevt.getCode() == KeyCode.ENTER) {
+            login();
+        }
     }
 
     @FXML

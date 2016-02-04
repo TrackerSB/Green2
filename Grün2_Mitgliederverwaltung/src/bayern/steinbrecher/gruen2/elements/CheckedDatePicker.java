@@ -41,10 +41,19 @@ public class CheckedDatePicker extends DatePicker {
         }
     };
 
+    /**
+     * Constructes a {@code CheckedDatePicker} with no initial date inserted.
+     */
     public CheckedDatePicker() {
         this(null);
     }
 
+    /**
+     * Constructes a {@code CheckedDatePicker} with {@code locale} as initial
+     * date.
+     *
+     * @param locale
+     */
     public CheckedDatePicker(LocalDate locale) {
         super(locale);
         getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
@@ -68,10 +77,22 @@ public class CheckedDatePicker extends DatePicker {
         getEditor().setText(oldText);
     }
 
+    /**
+     * Checks whether the current value is a valid date.
+     *
+     * @return {@code true} only if the current value is a valid date.
+     */
     public boolean isValid() {
         return validProperty.get();
     }
 
+    /**
+     * Returns the {@code BooleanProperty} representing whether the current
+     * value is valid or not.
+     *
+     * @return The {@code BooleanProperty} representing whether the current
+     * value is valid or not.
+     */
     public BooleanProperty validProperty() {
         return validProperty;
     }

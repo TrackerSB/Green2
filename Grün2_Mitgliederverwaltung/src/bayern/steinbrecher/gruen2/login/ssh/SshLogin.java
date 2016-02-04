@@ -17,10 +17,18 @@ import javafx.stage.Stage;
  */
 public class SshLogin extends Login {
 
+    /**
+     * The stage used to show this login.
+     */
     private Stage primaryStage;
+    /**
+     * The controller used for the view.
+     */
     private LoginController sshController;
-    private boolean userAbborted = false;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
@@ -39,6 +47,9 @@ public class SshLogin extends Login {
         primaryStage.getIcons().add(DataProvider.getIcon());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<LoginKey, String> getLoginInformation() {
         if (primaryStage == null) {
@@ -46,7 +57,7 @@ public class SshLogin extends Login {
                     "start(...) has to be called first");
         }
         primaryStage.showAndWait();
-        if(!sshController.userConfirmed()){
+        if (!sshController.userConfirmed()) {
             return null;
         }
         return sshController.getLoginInformation();

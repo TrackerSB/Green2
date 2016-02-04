@@ -29,45 +29,56 @@ public class CheckedTextField extends TextField {
      * there´s no content in this field.
      */
     public static final String CSS_CLASS_NO_CONTENT = "emptyTextField";
+    /**
+     * Represents the maximum column count.
+     */
     private IntegerProperty maxColumnCountProperty
             = new IntegerPropertyBase() {
-        @Override
-        public Object getBean() {
-            return CheckedTextField.this;
-        }
+                @Override
+                public Object getBean() {
+                    return CheckedTextField.this;
+                }
 
-        @Override
-        public String getName() {
-            return "maxColumnCount";
-        }
-    };
+                @Override
+                public String getName() {
+                    return "maxColumnCount";
+                }
+            };
     /**
-     * {@code true} only if the content has to be checked.
+     * Holds {@code true} only if the content has to be checked.
      */
     private final BooleanProperty checkedProperty
             = new BooleanPropertyBase(true) {
-        @Override
-        public Object getBean() {
-            return CheckedTextField.this;
-        }
+                @Override
+                public Object getBean() {
+                    return CheckedTextField.this;
+                }
 
-        @Override
-        public String getName() {
-            return "checked";
-        }
-    };
+                @Override
+                public String getName() {
+                    return "checked";
+                }
+            };
+    /**
+     * Holds {@code true} only if the content is valid. {@code true} if one of
+     * the following is true:
+     * <ol>
+     * <li>This field is not checked</li>
+     * <li>It is not empty and the content is not too long</li>
+     * </ol>
+     */
     private final BooleanProperty validProperty
             = new BooleanPropertyBase(false) {
-        @Override
-        public Object getBean() {
-            return CheckedTextField.this;
-        }
+                @Override
+                public Object getBean() {
+                    return CheckedTextField.this;
+                }
 
-        @Override
-        public String getName() {
-            return "valid";
-        }
-    };
+                @Override
+                public String getName() {
+                    return "valid";
+                }
+            };
 
     /**
      * Creates a new {@code CheckedTextField} with no initial content and a
@@ -125,10 +136,20 @@ public class CheckedTextField extends TextField {
         maxColumnCountProperty.set(maxColumnCount);
     }
 
+    /**
+     * Returns the property representing the maximum column count.
+     *
+     * @return The property representing the maximum column count.
+     */
     public IntegerProperty maxColumnCount() {
         return maxColumnCountProperty;
     }
 
+    /**
+     * Checks whether the currently inserted text is too long.
+     *
+     * @return {@code true} only if the current content is too long.
+     */
     public boolean isTooLong() {
         return !validProperty.get()
                 && (getText() == null ? false : !getText().isEmpty());
@@ -137,20 +158,26 @@ public class CheckedTextField extends TextField {
     /**
      * Checks whether the current content is valid.
      *
-     * @return {@code true} if one of the following is true:
-     * <ol>
-     * <li>This field is not checked</li>
-     * <li>It is not empty and the content is not too long</li>
-     * </ol>
+     * @return {@code true } only if the current content is valid.
+     * @see #validProperty
      */
     public boolean isValid() {
         return validProperty.get();
     }
 
+    /**
+     * Returns the property representing the validity of the inserted content.
+     *
+     * @return The property representing the validity of the inserted content.
+     */
     public BooleanProperty validProperty() {
         return validProperty;
     }
 
+    /**
+     * Checks whether the current content is valid and saves the value in
+     * {@code validProperty}.
+     */
     private void checkValid() {
         int textLength = getText() == null ? 0 : getText().length();
 
