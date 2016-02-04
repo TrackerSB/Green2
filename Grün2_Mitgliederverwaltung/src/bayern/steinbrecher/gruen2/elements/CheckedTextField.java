@@ -28,7 +28,7 @@ public class CheckedTextField extends TextField {
      * Holds the string representation of the css class attribute added when
      * there´s no content in this field.
      */
-    public static final String CSS_CLASS_NO_CONTENT = "empty";
+    public static final String CSS_CLASS_NO_CONTENT = "emptyTextField";
     private IntegerProperty maxColumnCountProperty
             = new IntegerPropertyBase() {
         @Override

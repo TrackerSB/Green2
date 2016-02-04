@@ -16,15 +16,15 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  * @param <T> The type of the attributes being able to selct.
  */
-public class Selection<T> extends Application {
+public class Selection<T extends Comparable> extends Application {
 
     private Stage primaryStage;
     private SelectionController<T> scontroller;
-    private final T[] options;
+    private final List<T> options;
     private boolean gotShown = false;
     private boolean gotClosed = false;
 
-    public Selection(T... options) {
+    public Selection(List<T> options) {
         this.options = options;
     }
 

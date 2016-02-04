@@ -8,5 +8,8 @@ package bayern.steinbrecher.gruen2.data;
  */
 public enum LoginKey {
 
+    /**
+     * Keys representing username and password for each of database and ssh.
+     */
     SSH_USERNAME, SSH_PASSWORD, DATABASE_USERNAME, DATABASE_PASSWORD;
 }

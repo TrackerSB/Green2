@@ -9,11 +9,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -25,12 +22,30 @@ import java.util.stream.Collectors;
  */
 public final class SshConnection implements DBConnection {
 
+    /**
+     * The ssh session used to connect to the database over a secure channel.
+     */
     private Session sshSession;
+    /**
+     * The default port for ssh.
+     */
     public static final int DEFAULT_SSH_PORT = 22;
-    private final String databaseName,
-            databaseHost,
-            databaseUsername,
-            databasePasswd;
+    /**
+     * The name of the database.
+     */
+    private final String databaseName;
+    /**
+     * The address of the host of the database (without protocol).
+     */
+    private final String databaseHost;
+    /**
+     * The username used to login into the database.
+     */
+    private final String databaseUsername;
+    /**
+     * The password used to login into the database.
+     */
+    private final String databasePasswd;
 
     /**
      * Constructes a new database connection over SSH.
@@ -38,12 +53,12 @@ public final class SshConnection implements DBConnection {
      * @param sshHost The address of the ssh host.
      * @param sshUsername The username for the ssh connection.
      * @param sshPassword The password for the ssh connection.
-     * @param databaseHost The address of the database host.
+     * @param databaseHost The address of the database host (without protocol).
      * @param databaseUsername The username for the database.
      * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
-     * @throws JSchException Is thrown if some of username, password or address
-     * is wrong or not reachable.
+     * @throws JSchException Thrown if some of username, password or host is
+     * wrong or not reachable.
      */
     public SshConnection(String sshHost, String sshUsername,
             String sshPassword, String databaseHost, String databaseUsername,
@@ -57,6 +72,16 @@ public final class SshConnection implements DBConnection {
         this.sshSession.connect();
     }
 
+    /**
+     * Creates a ssh session.
+     *
+     * @param sshHost The address of the host of the ssh service to connect to.
+     * @param sshUsername The username used to login.
+     * @param sshPassword The password used to login.
+     * @return A Session representing the ssh connection.
+     * @throws JSchException Thrown if some of username, password or host is
+     * wrong or unreachable.
+     */
     private Session createSshSession(String sshHost, String sshUsername,
             String sshPassword)
             throws JSchException {
@@ -108,6 +133,14 @@ public final class SshConnection implements DBConnection {
         }
     }
 
+    /**
+     * Reads the result of a SQL-Query bytewise.
+     *
+     * @param in The inputstream to read from.
+     * @return The result as one single String.
+     * @throws IOException If the inputstream has been closed or some other
+     * I/O-Exception is thrown.
+     */
     private String readResult(BufferedInputStream in) throws IOException {
         StringBuilder output = new StringBuilder();
         int nextByte;
@@ -119,7 +152,16 @@ public final class SshConnection implements DBConnection {
         return output.toString();
     }
 
-    //String.split skips emtpy columns
+    /**
+     * Splits up a string on the given regex. The regex itself won´t show up in
+     * any element of the returned list. When two or more regex are right in a
+     * row an empty {@code String} will be added. (This is the main difference
+     * to {@code String.split(...)})
+     *
+     * @param row
+     * @param regex
+     * @return
+     */
     private List<String> splitUp(String row, char regex) {
         List<String> columns = new LinkedList<>();
         StringBuilder lastCol = new StringBuilder();

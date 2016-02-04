@@ -14,7 +14,14 @@ import javafx.scene.image.Image;
  */
 public class DataProvider {
 
+    /**
+     * The symbol used to separate the config key on the left side and the value
+     * on the right side in gruen2.conf.
+     */
     public static final String VALUE_SEPARATOR = "=";
+    /**
+     * The configurations found in gruen2.conf.
+     */
     private static Map<ConfigKey, String> configs = null;
 
     /**

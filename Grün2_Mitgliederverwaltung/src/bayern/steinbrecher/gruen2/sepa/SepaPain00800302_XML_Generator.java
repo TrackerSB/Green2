@@ -102,7 +102,11 @@ public class SepaPain00800302_XML_Generator {
 
         //Der Beginn mit unseren Daten
         output.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-                .append("<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.003.02\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:pain.008.003.02 pain.008.003.02.xsd\">\n")
+                .append("<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:")
+                .append("pain.008.003.02\" xmlns:xsi")
+                .append("=\"http://www.w3.org/2001/XMLSchema-instance\" ")
+                .append("xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:")
+                .append("pain.008.003.02 pain.008.003.02.xsd\">\n")
                 .append(" <CstmrDrctDbtInitn>\n")
                 .append("   <GrpHdr>\n")
                 .append("     <MsgId>")

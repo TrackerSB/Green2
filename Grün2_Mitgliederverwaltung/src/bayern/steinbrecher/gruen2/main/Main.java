@@ -208,8 +208,7 @@ public class Main extends Application {
         if (originator != null) {
             try {
                 List<Member> memberList = generateMemberList(memberSepa.get());
-                Selection<Member> sel = new Selection<>(
-                        memberList.toArray(new Member[memberList.size()]));
+                Selection<Member> sel = new Selection<>(memberList);
                 sel.start(new Stage());
                 memberList = sel.getSelection();
                 double contribution = sel.getContribution();

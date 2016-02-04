@@ -1,8 +1,5 @@
 package bayern.steinbrecher.gruen2.elements;
 
-import bayern.steinbrecher.gruen2.selection.SelectionController;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.NamedArg;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
@@ -17,7 +14,7 @@ import javafx.scene.control.SpinnerValueFactory;
  */
 public class CheckedDoubleSpinner extends Spinner<Double> {
 
-    public static final String CSS_CLASS_INVALID = "invalid";
+    public static final String CSS_CLASS_INVALID = "invalidSpinnerValue";
     private BooleanProperty validProperty = new BooleanPropertyBase(true) {
         @Override
         public Object getBean() {

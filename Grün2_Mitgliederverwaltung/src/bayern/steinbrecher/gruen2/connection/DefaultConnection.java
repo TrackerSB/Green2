@@ -14,8 +14,17 @@ import java.util.logging.Logger;
  */
 public final class DefaultConnection implements DBConnection {
 
+    /**
+     * The name of the used driver.
+     */
     private static final String DRIVER = "com.mysql.jdbc.Driver";
+    /**
+     * The protocol used as the beginning of the location of the database.
+     */
     private static final String DRIVER_PROTOCOL = "jdbc:mysql://";
+    /**
+     * The created connection used to execute queries.
+     */
     private Connection connection;
 
     /**

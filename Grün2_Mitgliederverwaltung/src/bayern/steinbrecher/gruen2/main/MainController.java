@@ -3,11 +3,8 @@ package bayern.steinbrecher.gruen2.main;
 import bayern.steinbrecher.gruen2.Controller;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
 
 /**
  * Controller for Main.fxml.
@@ -31,9 +28,9 @@ public class MainController extends Controller {
         if (caller == null) {
             throw new IllegalStateException("caller is not set");
         }
-            generateSepaButton.setDisable(true);
-            caller.startSepa();
-            generateSepaButton.setDisable(false);
+        generateSepaButton.setDisable(true);
+        caller.startSepa();
+        generateSepaButton.setDisable(false);
     }
 
     @FXML
@@ -41,9 +38,9 @@ public class MainController extends Controller {
         if (caller == null) {
             throw new IllegalStateException("caller is not set");
         }
-            generateDataButton.setDisable(true);
-            caller.generateSerialLetterData();
-            generateDataButton.setDisable(false);
+        generateDataButton.setDisable(true);
+        caller.generateSerialLetterData();
+        generateDataButton.setDisable(false);
     }
 
     public void setCaller(Main caller) {

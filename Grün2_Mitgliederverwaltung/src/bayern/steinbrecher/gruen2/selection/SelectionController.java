@@ -3,12 +3,10 @@ package bayern.steinbrecher.gruen2.selection;
 import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.elements.CheckedDoubleSpinner;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,18 +14,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 
 /**
  * Represents controller for Selection.fxml.
  *
  * @author Stefan Huber
+ * @param <T> The type of the objects being able to select.
  */
-public class SelectionController<T> extends Controller {
+public class SelectionController<T extends Comparable> extends Controller {
 
     @FXML
     private ListView<CheckBox> optionsListView;
-    private T[] options;
+    private List<T> options;
     @FXML
     private Button selectAllButton;
     @FXML
@@ -65,10 +63,11 @@ public class SelectionController<T> extends Controller {
                 });
     }
 
-    public void setOptions(T... options) {
+    public void setOptions(List<T> options) {
         optionsListView.getItems().clear();
         this.options = options;
-        Arrays.stream(options).forEach(op -> {
+        Collections.sort(options);
+        options.stream().forEach(op -> {
             CheckBox newItem = new CheckBox(op.toString());
             newItem.selectedProperty().addListener(selectionChange);
             optionsListView.getItems().add(newItem);
@@ -99,7 +98,7 @@ public class SelectionController<T> extends Controller {
         ObservableList<CheckBox> items = optionsListView.getItems();
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).isSelected()) {
-                selection.add(options[i]);
+                selection.add(options.get(i));
             }
         }
         return selection;

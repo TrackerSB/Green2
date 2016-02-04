@@ -16,7 +16,6 @@ public class CheckedPasswordField extends CheckedTextField {
 
     public CheckedPasswordField() {
         super();
-        //FIXME Show bullets instead of clear text
         setAccessibleRole(AccessibleRole.PASSWORD_FIELD);
         setSkin(new PasswordFieldSkin(this));
     }

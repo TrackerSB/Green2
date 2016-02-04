@@ -16,13 +16,25 @@ import javafx.scene.control.DatePicker;
  */
 public class CheckedDatePicker extends DatePicker {
 
+    /**
+     * The css class added when the inserted date is no valid date.
+     */
     public static final String CSS_CLASS_INVALID_DATE = "invalidDate";
+    /**
+     * BooleanProperty indicating whether the currently inserted date is valid.
+     */
     private final BooleanProperty validProperty = new BooleanPropertyBase() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Object getBean() {
             return CheckedDatePicker.this;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getName() {
             return "valid";
@@ -49,7 +61,7 @@ public class CheckedDatePicker extends DatePicker {
                 validProperty.set(false);
             }
         });
-        
+
         //Initiate ChangeListener
         String oldText = getEditor().getText();
         getEditor().setText(oldText + "extended");
