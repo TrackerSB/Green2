@@ -2,15 +2,12 @@ package bayern.steinbrecher.gruen2.sepa;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +27,16 @@ public class Originator {
             pmtInfId,
             purpose,
             filename;
+    private static final Properties DEFAULT_PROPERTIES = new Properties() {{
+            put("creator", "");
+            put("creditor", "");
+            put("iban", "");
+            put("bic", "");
+            put("trusterId", "");
+            put("pmtInfId", "");
+            put("purpose", "");
+            put("executionDate", "");
+        }};
     private LocalDate executionDate;
 
     /**
@@ -68,43 +75,52 @@ public class Originator {
      * werden konnte.
      */
     public void readOriginatorInfo() throws FileNotFoundException {
-        try (Scanner sc = new Scanner(new File(filename))) {
-            this.creator = sc.nextLine();
-            this.creditor = sc.nextLine();
-            this.iban = sc.nextLine();
-            this.bic = sc.nextLine();
-            this.purpose = sc.nextLine();
-            this.trusterId = sc.nextLine();
-            this.msgId = sc.nextLine();
-            try {
-                this.executionDate = LocalDate.parse(sc.nextLine(),
-                        DateTimeFormatter.ISO_DATE);
-            } catch (DateTimeParseException ex) {
-                this.executionDate = null;
-            }
-            this.pmtInfId = sc.nextLine();
-        } catch (NoSuchElementException ex) {
-            Logger.getLogger(Originator.class.getName())
-                    .log(Level.SEVERE, filename + " has too few lines", ex);
+        Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
+        originatorProps.forEach(action);
+
+        try {
+            originatorProps.load(new FileInputStream(new File(filename)));
+        } catch (IOException ex) {
+            Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
         }
+//        try (Scanner sc = new Scanner(new File(filename))) {
+//            this.creator = sc.nextLine();
+//            this.creditor = sc.nextLine();
+//            this.iban = sc.nextLine();
+//            this.bic = sc.nextLine();
+//            this.purpose = sc.nextLine();
+//            this.trusterId = sc.nextLine();
+//            this.msgId = sc.nextLine();
+//            try {
+//                this.executionDate = LocalDate.parse(sc.nextLine(),
+//                        DateTimeFormatter.ISO_DATE);
+//            } catch (DateTimeParseException ex) {
+//                this.executionDate = null;
+//            }
+//            this.pmtInfId = sc.nextLine();
+//        } catch (NoSuchElementException ex) {
+//            Logger.getLogger(Originator.class.getName())
+//                    .log(Level.SEVERE, filename + " has too few lines", ex);
+//        }
     }
 
     /**
      * Schreibt die eingegebenen Daten in {@code filename}. Falls die Datei noch
      * nicht existiert, wird sie erstellt.
      */
-    public void updateOriginatorInfo() {
-        try (PrintWriter pw = new PrintWriter(
-                new BufferedWriter(new FileWriter(filename)))) {
-            pw.println(creator);
-            pw.println(creditor);
-            pw.println(iban);
-            pw.println(bic);
-            pw.println(purpose);
-            pw.println(trusterId);
-            pw.println(msgId);
-            pw.println(executionDate);
-            pw.println(pmtInfId);
+    public void saveOriginator() {
+        Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
+        originatorProps.setProperty("creator", creator);
+        originatorProps.setProperty("creditor", creditor);
+        originatorProps.setProperty("iban", iban);
+        originatorProps.setProperty("bic", bic);
+        originatorProps.setProperty("purpose", purpose);
+        originatorProps.setProperty("trusterId", trusterId);
+        originatorProps.setProperty("executionDate", executionDate.toString());
+        originatorProps.setProperty("pmtInfId", pmtInfId);
+        try {
+            originatorProps.store(
+                    new BufferedWriter(new FileWriter(filename)), null);
         } catch (IOException ex) {
             Logger.getLogger(Originator.class.getName())
                     .log(Level.SEVERE, null, ex);

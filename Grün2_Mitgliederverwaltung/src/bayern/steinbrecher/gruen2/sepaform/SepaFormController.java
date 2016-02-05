@@ -86,7 +86,7 @@ public class SepaFormController extends Controller {
         executionDatePicker.validProperty().addListener(cl);
 
         String originatorInfoPath = DataProvider.getAppDataPath()
-                + "/originator.info";
+                + "/originator.properties";
         try {
             originator = Originator.readOriginatorInfo(originatorInfoPath);
         } catch (FileNotFoundException ex) {
@@ -124,7 +124,7 @@ public class SepaFormController extends Controller {
             originator.setMsgId(messageIdTextField.getText());
             originator.setPmtInfId(pmtInfIdTextField.getText());
             originator.setExecutiondate(executionDatePicker.getValue());
-            originator.updateOriginatorInfo();
+            originator.saveOriginator();
             userConfirmed = true;
             stage.close();
         }

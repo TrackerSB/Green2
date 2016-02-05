@@ -72,10 +72,10 @@ public class DataProvider {
     public static String getAppDataPath() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             return System.getProperty("user.home").replaceAll("\\\\", "/")
-                    + "/AppData/Roaming/Gruen2_Mitgliederverwaltung";
+                    + "/AppData/Roaming/Grün2_Mitgliederverwaltung";
         } else {
             return System.getProperty("user.home")
-                    + "/.Gruen2_Mitgliederverwaltung";
+                    + "/.Grün2_Mitgliederverwaltung";
         }
     }
 
@@ -92,7 +92,7 @@ public class DataProvider {
         if (configs == null) {
             configs = new HashMap<>();
             try (Scanner sc = new Scanner(
-                    new File(getAppDataPath() + "/gruen2.conf"))) {
+                    new File(getAppDataPath() + "/Grün2.conf"))) {
                 while (sc.hasNextLine()) {
                     String line = sc.nextLine().trim();
                     String[] parts = line.split(VALUE_SEPARATOR);
@@ -105,7 +105,7 @@ public class DataProvider {
                     }
                 }
             } catch (FileNotFoundException ex) {
-                System.err.println("Configfile \"gruen2.conf\" not found.");
+                System.err.println("Configfile \"Grün2.conf\" not found.");
             }
         }
         return configs.getOrDefault(key, defaultValue);

@@ -54,7 +54,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Login login;
+        SepaForm sf = new SepaForm();
+        sf.start(new Stage());
+        sf.getOriginator();
+        /*Login login;
         if (DataProvider.useSsh()) {
             login = new SshLogin();
         } else {
@@ -92,7 +95,7 @@ public class Main extends Application {
             memberNoSepa = exserv.submit(() -> readMemberNoSepa(dbConnection));
             memberSepa = exserv.submit(() -> readMemberSepa(dbConnection));
             nicknames = exserv.submit(() -> readNicknames(dbConnection));
-        }
+        }*/
     }
 
     private DBConnection getConnection(Login login, Stage loginStage) {
