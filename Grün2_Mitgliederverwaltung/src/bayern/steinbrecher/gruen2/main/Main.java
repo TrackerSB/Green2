@@ -10,23 +10,27 @@ import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import bayern.steinbrecher.gruen2.selection.Selection;
-import bayern.steinbrecher.gruen2.sepa.Member;
+import bayern.steinbrecher.gruen2.member.Member;
 import bayern.steinbrecher.gruen2.sepa.Originator;
 import bayern.steinbrecher.gruen2.sepa.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
 import com.jcraft.jsch.JSchException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,9 +44,17 @@ public class Main extends Application {
 
     private MainController mcontroller;
     private DBConnection dbConnection;
+    private static final Set<String> COLUMN_LABELS_MEMBER = new TreeSet<>(
+            Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
+                    "istmaennlich", "istaktiv", "geburtstag", "strasse",
+                    "hausnummer", "plz", "ort", "istbeitragsfrei", "iban",
+                    "bic", "kontoinhabervorname", "kontoinhabernachname",
+                    "mandaterstellt"));
+    private static final String ALL_COLUMN_LABELS_MEMBER
+            = COLUMN_LABELS_MEMBER.stream()
+            .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
     private final ExecutorService exserv = Executors.newWorkStealingPool();
-    private Future<List<List<String>>> memberNoSepa;
-    private Future<List<List<String>>> memberSepa;
+    private Future<List<Member>> member;
     private Future<Map<String, String>> nicknames;
 
     /**
@@ -53,7 +65,8 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {Login login;
+    public void start(Stage primaryStage) throws Exception {
+        Login login;
         if (DataProvider.useSsh()) {
             login = new SshLogin();
         } else {
@@ -88,8 +101,7 @@ public class Main extends Application {
             primaryStage.getIcons().add(DataProvider.getIcon());
             primaryStage.show();
 
-            memberNoSepa = exserv.submit(() -> readMemberNoSepa(dbConnection));
-            memberSepa = exserv.submit(() -> readMemberSepa(dbConnection));
+            member = exserv.submit(() -> readMember(dbConnection));
             nicknames = exserv.submit(() -> readNicknames(dbConnection));
         }
     }
@@ -131,32 +143,33 @@ public class Main extends Application {
         return con;
     }
 
-    private List<List<String>> readMemberNoSepa(DBConnection dbc) {
+    private List<Member> readMember(DBConnection dbc) {
         try {
-            return dbc.execQuery(
-                    "SELECT Vorname, Nachname, Strasse, Hausnummer, PLZ, Ort, "
-                    + "istMaennlich, Titel "
+            return generateMemberList(dbc.execQuery(
+                    "SELECT " + ALL_COLUMN_LABELS_MEMBER
+                    .substring(0, ALL_COLUMN_LABELS_MEMBER.length() - 1)
                     + "FROM Mitglieder "
-                    + "WHERE AusgetretenSeit='0000-00-00'");
+                    + "WHERE AusgetretenSeit='0000-00-00'"));
         } catch (SQLException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
-    private List<List<String>> readMemberSepa(DBConnection dbc) {
-        try {
-            return dbc.execQuery(
-                    "SELECT Vorname, Nachname, IBAN, BIC, MandatErstellt, "
-                    + "Mitgliedsnummer, KontoinhaberVorname, "
-                    + "KontoinhaberNachname "
-                    + "FROM Mitglieder "
-                    + "WHERE AusgetretenSeit='0000-00-00' "
-                    + "AND istBeitragsfrei='0'");
-        } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    private List<Member> generateMemberList(List<List<String>> queryResult) {
+        assert COLUMN_LABELS_MEMBER.size() == queryResult.size();
+        Map<String, Integer> resultToInitialLabel
+                = new HashMap<>(COLUMN_LABELS_MEMBER.size());
+        List<String> resultLabels = queryResult.get(0).stream()
+                .map(String::toLowerCase).collect(Collectors.toList());
+        COLUMN_LABELS_MEMBER.stream().forEach(initialLabel -> {
+            resultToInitialLabel
+                    .put(initialLabel, resultLabels.indexOf(initialLabel));
+        });
+
+        List<Member> memberList = new ArrayList<>(queryResult.size());
+
+        return memberList;
     }
 
     public void generateSerialLetterData() {
@@ -166,7 +179,7 @@ public class Main extends Application {
         }
         try {
             DataForSerialLettersGenerator.generateAddressData(
-                    memberNoSepa.get(), nicknames.get());
+                    member.get(), nicknames.get());
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -206,13 +219,12 @@ public class Main extends Application {
 
         if (originator != null) {
             try {
-                List<Member> memberList = generateMemberList(memberSepa.get());
-                Selection<Member> sel = new Selection<>(memberList);
+                Selection<Member> sel = new Selection<>(member.get());
                 sel.start(new Stage());
-                memberList = sel.getSelection();
+                List<Member> selectedMember = sel.getSelection();
                 double contribution = sel.getContribution();
-                SepaPain00800302_XML_Generator.createXMLFile(
-                        memberList, contribution, originator,
+                SepaPain00800302_XML_Generator.createXMLFile(selectedMember,
+                        contribution, originator,
                         DataProvider.getSavepath() + "/Sepa.xml");
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Main.class.getName())
@@ -222,65 +234,5 @@ public class Main extends Application {
                         .log(Level.SEVERE, null, ex);
             }
         }
-    }
-
-    private List<Member> generateMemberList(List<List<String>> member) {
-        int mitgliedsnummerIndex = -1;
-        int mandatErstelltIndex = -1;
-        int ibanIndex = -1;
-        int bicIndex = -1;
-        int vornameIndex = -1;
-        int nachnameIndex = -1;
-        int kontoinhaberVornameIndex = -1;
-        int kontoinhaberNachnameIndex = -1;
-        for (int i = 0; i < member.get(0).size(); i++) {
-            switch (member.get(0).get(i)) {
-            case "Mitgliedsnummer":
-                mitgliedsnummerIndex = i;
-                break;
-            case "MandatErstellt":
-                mandatErstelltIndex = i;
-                break;
-            case "IBAN":
-                ibanIndex = i;
-                break;
-            case "BIC":
-                bicIndex = i;
-                break;
-            case "Vorname":
-                vornameIndex = i;
-                break;
-            case "Nachname":
-                nachnameIndex = i;
-                break;
-            case "KontoinhaberVorname":
-                kontoinhaberVornameIndex = i;
-                break;
-            case "KontoinhaberNachname":
-                kontoinhaberNachnameIndex = i;
-                break;
-            default:
-                System.out.println(
-                        member.get(0).get(i) + " is not needed for member.");
-            }
-        }
-
-        List<Member> memberList = new LinkedList<>();
-        for (List<String> row : member.subList(1, member.size())) {
-            String kiN = row.get(kontoinhaberNachnameIndex);
-            String nachname = row.get(nachnameIndex);
-            String kiV = row.get(kontoinhaberVornameIndex);
-            String vorname = row.get(vornameIndex);
-            Member m = new Member(
-                    Integer.parseInt(row.get(mitgliedsnummerIndex)),
-                    row.get(mandatErstelltIndex), row.get(ibanIndex),
-                    row.get(bicIndex), nachname, vorname,
-                    kiN.isEmpty() ? nachname : kiN,
-                    kiV.isEmpty() ? vorname : kiV, false);
-//FIXME MandatChanged is not always false.
-            memberList.add(m);
-        }
-
-        return memberList;
     }
 }

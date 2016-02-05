@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.sepa;
 
+import bayern.steinbrecher.gruen2.member.Member;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
