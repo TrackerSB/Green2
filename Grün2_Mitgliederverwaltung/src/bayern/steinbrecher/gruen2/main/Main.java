@@ -9,28 +9,29 @@ import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
+import bayern.steinbrecher.gruen2.member.AccountHolder;
+import bayern.steinbrecher.gruen2.member.Address;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.member.Member;
+import bayern.steinbrecher.gruen2.member.Person;
 import bayern.steinbrecher.gruen2.sepa.Originator;
 import bayern.steinbrecher.gruen2.sepa.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
 import com.jcraft.jsch.JSchException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -44,7 +45,7 @@ public class Main extends Application {
 
     private MainController mcontroller;
     private DBConnection dbConnection;
-    private static final Set<String> COLUMN_LABELS_MEMBER = new TreeSet<>(
+    private static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
             Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
                     "istmaennlich", "istaktiv", "geburtstag", "strasse",
                     "hausnummer", "plz", "ort", "istbeitragsfrei", "iban",
@@ -148,7 +149,7 @@ public class Main extends Application {
             return generateMemberList(dbc.execQuery(
                     "SELECT " + ALL_COLUMN_LABELS_MEMBER
                     .substring(0, ALL_COLUMN_LABELS_MEMBER.length() - 1)
-                    + "FROM Mitglieder "
+                    + " FROM Mitglieder "
                     + "WHERE AusgetretenSeit='0000-00-00'"));
         } catch (SQLException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -158,16 +159,61 @@ public class Main extends Application {
 
     private List<Member> generateMemberList(List<List<String>> queryResult) {
         assert COLUMN_LABELS_MEMBER.size() == queryResult.size();
-        Map<String, Integer> resultToInitialLabel
+        /*Map<String, Integer> resultToInitialLabel
                 = new HashMap<>(COLUMN_LABELS_MEMBER.size());
         List<String> resultLabels = queryResult.get(0).stream()
                 .map(String::toLowerCase).collect(Collectors.toList());
         COLUMN_LABELS_MEMBER.stream().forEach(initialLabel -> {
             resultToInitialLabel
                     .put(initialLabel, resultLabels.indexOf(initialLabel));
-        });
+        });*/
 
         List<Member> memberList = new ArrayList<>(queryResult.size());
+        queryResult.parallelStream().forEach(row -> {
+            String prename = row.get(COLUMN_LABELS_MEMBER.indexOf("vorname"));
+            String lastname = row.get(COLUMN_LABELS_MEMBER.indexOf("nachname"));
+            String title = row.get(COLUMN_LABELS_MEMBER.indexOf("titel"));
+            LocalDate birthday = LocalDate.parse(
+                    row.get(COLUMN_LABELS_MEMBER.indexOf("geburtstag")));
+            boolean isMale
+                    = row.get(COLUMN_LABELS_MEMBER.indexOf("istmaennlich"))
+                    .equalsIgnoreCase("1");
+            String iban = row.get(COLUMN_LABELS_MEMBER.indexOf("iban"));
+            String bic = row.get(COLUMN_LABELS_MEMBER.indexOf("bic"));
+            LocalDate mandatsigned = LocalDate.parse(
+                    row.get(COLUMN_LABELS_MEMBER.indexOf("mandaterstellt")));
+            String street = row.get(COLUMN_LABELS_MEMBER.indexOf("strasse"));
+            String housenumber
+                    = row.get(COLUMN_LABELS_MEMBER.indexOf("hausnummer"));
+            String postcode = row.get(COLUMN_LABELS_MEMBER.indexOf("plz"));
+            String place = row.get(COLUMN_LABELS_MEMBER.indexOf("ort"));
+            boolean isActive = row.get(COLUMN_LABELS_MEMBER.indexOf("istaktiv"))
+                    .equalsIgnoreCase("1");
+            boolean isContributionfree
+                    = row.get(COLUMN_LABELS_MEMBER.indexOf("istbeitragsfrei"))
+                    .equalsIgnoreCase("1");
+            int membershipnumber = Integer.parseInt(
+                    row.get(COLUMN_LABELS_MEMBER.indexOf("mitgliedsnummer")));
+            String accountHolderPrename = row.get(
+                    COLUMN_LABELS_MEMBER.indexOf("kontoinhabervorname"));
+            String accountHolderLastname = row.get(
+                    COLUMN_LABELS_MEMBER.indexOf("kontoinhabernachname"));
+
+            Person p = new Person(prename, lastname, title, birthday, isMale);
+            //FIXME MandatChanged has not to be always false
+            AccountHolder ah = new AccountHolder(iban, bic, mandatsigned, false,
+                    accountHolderPrename.isEmpty()
+                            ? prename : accountHolderPrename,
+                    accountHolderLastname.isEmpty()
+                            ? lastname : accountHolderLastname, title, birthday,
+                    isMale);
+            Address ad = new Address(street, housenumber, postcode, place);
+            Member m = new Member(
+                    membershipnumber, p, ad, ah, isActive, isContributionfree);
+            synchronized (memberList) {
+                memberList.add(m);
+            }
+        });
 
         return memberList;
     }

@@ -1,6 +1,8 @@
 package bayern.steinbrecher.gruen2.sepa;
 
+import bayern.steinbrecher.gruen2.member.AccountHolder;
 import bayern.steinbrecher.gruen2.member.Member;
+import bayern.steinbrecher.gruen2.member.Person;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,23 +50,27 @@ public class SepaPain00800302_XML_Generator {
 
     private static void filterValidMember(List<Member> member) {
         LinkedList<Member> invalidMember = new LinkedList<>();
-        member.forEach(m -> {
+        member.parallelStream().forEach(m -> {
             boolean valid = true;
-            if (!m.hasIban()) {
+            Person p = m.getPerson();
+            AccountHolder ah = m.getAccountHolder();
+            if (!ah.hasIban()) {
                 valid = false;
-                System.err.println(m.getVorname() + m.getNachname()
+                System.err.println(p.getPrename() + p.getLastname()
                         + " has no IBAN");
             }
-            if (!m.hasBic()) {
+            if (!ah.hasBic()) {
                 valid = false;
-                System.err.println(m.getVorname() + m.getNachname()
+                System.err.println(p.getPrename() + p.getLastname()
                         + " has no BIC");
             }
             if (!valid) {
                 invalidMember.add(m);
             }
         });
-        member.removeAll(invalidMember);
+        synchronized (member) {
+            member.removeAll(invalidMember);
+        }
     }
 
     /**
@@ -188,6 +194,8 @@ public class SepaPain00800302_XML_Generator {
          * Die Mitglieder
          */
         member.parallelStream().forEach(m -> {
+            Person p = m.getPerson();
+            AccountHolder ah = m.getAccountHolder();
             StringBuilder suboutput = new StringBuilder("     <DrctDbtTxInf>\n")
                     .append("       <PmtId>\n")
                     .append("         <EndToEndId>NOTPROVIDED</EndToEndId>\n")
@@ -198,34 +206,34 @@ public class SepaPain00800302_XML_Generator {
                     .append("       <DrctDbtTx>\n")
                     .append("         <MndtRltdInf>\n")
                     .append("           <MndtId>")
-                    .append(m.getMitgliedsnummer())
+                    .append(m.getMembershipnumber())
                     .append("</MndtId>\n")
                     .append("           <DtOfSgntr>")
-                    .append(m.getMandatErstellt())
+                    .append(ah.getMandatSigned())
                     .append("</DtOfSgntr>\n")
                     .append("           <AmdmntInd>")
-                    .append(m.hasMandatChanged())
+                    .append(ah.hasMandatChanged())
                     .append("</AmdmntInd>\n")
                     .append("         </MndtRltdInf>\n")
                     .append("       </DrctDbtTx>\n")
                     .append("       <DbtrAgt>\n")
                     .append("         <FinInstnId>\n")
                     .append("           <BIC>")
-                    .append(m.getBic())
+                    .append(ah.getBic())
                     .append("</BIC>\n")
                     .append("         </FinInstnId>\n")
                     .append("       </DbtrAgt>\n")
                     .append("       <Dbtr>\n")
                     .append("         <Nm>")
-                    .append(m.getKontoinhaberNachname())
+                    .append(ah.getLastname())
                     .append(", ")
-                    .append(m.getKontoinhaberVorname())
+                    .append(ah.getPrename())
                     .append("</Nm>\n")
                     .append("       </Dbtr>\n")
                     .append("       <DbtrAcct>\n")
                     .append("         <Id>\n")
                     .append("           <IBAN>")
-                    .append(m.getIban())
+                    .append(ah.getIban())
                     .append("</IBAN>\n")
                     .append("         </Id>\n")
                     .append("       </DbtrAcct>\n")

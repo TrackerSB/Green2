@@ -27,8 +27,16 @@ public class AccountHolder extends Person {
         return iban;
     }
 
+    public boolean hasIban() {
+        return !iban.isEmpty();
+    }
+
     public String getBic() {
         return bic;
+    }
+
+    public boolean hasBic() {
+        return !bic.isEmpty();
     }
 
     public LocalDate getMandatSigned() {

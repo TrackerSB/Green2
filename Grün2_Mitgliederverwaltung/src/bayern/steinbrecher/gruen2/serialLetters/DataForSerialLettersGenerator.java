@@ -1,6 +1,9 @@
 package bayern.steinbrecher.gruen2.serialLetters;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.member.Address;
+import bayern.steinbrecher.gruen2.member.Member;
+import bayern.steinbrecher.gruen2.member.Person;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,38 +29,33 @@ public class DataForSerialLettersGenerator {
                 "Construction of an object not supported");
     }
 
-    public static void generateAddressData(List<List<String>> member,
+    public static void generateAddressData(List<Member> member,
             Map<String, String> nicknames) {
-        member = appendAddresses(member, nicknames);
-        createOutputCsvFile(createOutput(member));
+        List<String> addresses = appendAddresses(member, nicknames);
+        createOutputCsvFile(createOutput(member, addresses));
     }
 
     /**
-     * Diese Methode fügt die Anreden zu <code>member</code> hinzu.
+     * Creates a list with addresses for the given member.
      *
-     * @param member Die Liste mit den Datens&auml;tzen der Mitglieder
-     * @param nicknames Die Liste mit den Datens&auml;tzen der Spitznamen.
+     * @param member The member to create an address for.
+     * @param nicknames The map containing the nicknames.
      *
-     * @return The same list, but with addresses.
+     * @return A list with apropriate addresses.
      */
-    private static List<List<String>> appendAddresses(
-            List<List<String>> member, Map<String, String> nicknames) {
-        //Deep copy of member list
-        List<List<String>> copy = new ArrayList<>();
-        member.stream().forEach(row -> copy.add(new ArrayList<>(row)));
+    private static List<String> appendAddresses(
+            List<Member> member, Map<String, String> nicknames) {
 
-        int istMaennlichIndex = member.get(0).indexOf("istMaennlich");
-        int vornameIndex = member.get(0).indexOf("Vorname");
-        copy.get(0).add("Anrede");
-        for (int row = 1; row < member.size(); row++) {
-            String address = member.get(row).get(istMaennlichIndex)
-                    .equalsIgnoreCase("1") ? "Lieber " : "Liebe ";
-            address += nicknames.getOrDefault(member.get(row).get(vornameIndex),
-                    member.get(row).get(vornameIndex));
-            copy.get(row).add(address);
-        }
+        List<String> addresses = new ArrayList<>(member.size());
+        member.stream().forEach(m -> {
+            String address = m.getPerson().isIsMale() ? "Lieber " : "Liebe ";
+            address += nicknames.getOrDefault(
+                    m.getPerson().getPrename(), m.getPerson().getPrename());
+            addresses.add(address);
+        });
+        assert addresses.size() == member.size();
 
-        return copy;
+        return addresses;
     }
 
     /**
@@ -65,31 +63,27 @@ public class DataForSerialLettersGenerator {
      * guaranteed apart from the first row. The first row will still be the
      * first row.
      *
-     * @param resultTable The table to output. First dimension row; second
-     * column.
+     * @param member The table to output. First dimension row; second column.
+     * @param addresses The list containing the apropriate addresses for the
+     * member.
      * @return A String representing the output.
      */
-    private static String createOutput(List<List<String>> resultTable) {
-        StringBuilder output = new StringBuilder();
+    private static String createOutput(List<Member> member,
+            List<String> addresses) {
+        StringBuilder output = new StringBuilder(
+                "Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Anrede");
+        for (int i = 0; i < member.size(); i++) {
+            Person currentPerson = member.get(i).getPerson();
+            Address currentAddress = member.get(i).getHome();
+            output.append(currentPerson.getPrename()).append(';')
+                    .append(currentPerson.getLastname()).append(';')
+                    .append(currentAddress.getStreet()).append(';')
+                    .append(currentAddress.getHousenumber()).append(';')
+                    .append(currentAddress.getPostcode()).append(';')
+                    .append(currentAddress.getPlace()).append(';')
+                    .append(addresses.get(i)).append('\n');
+        }
 
-        //Labels of columns
-        StringBuilder headings = new StringBuilder();
-        resultTable.get(0).stream().forEach(columnLabel -> {
-            headings.append(columnLabel).append(';');
-        });
-        headings.setCharAt(headings.length() - 1, '\n');
-        output.append(headings);
-
-        resultTable.parallelStream().skip(1).forEach(row -> {
-            StringBuilder formattedRow = new StringBuilder();
-            row.stream().forEach(field -> {
-                formattedRow.append(field).append(';');
-            });
-            formattedRow.setCharAt(formattedRow.length() - 1, '\n');
-            synchronized (output) {
-                output.append(formattedRow);
-            }
-        });
         return output.toString();
     }
 

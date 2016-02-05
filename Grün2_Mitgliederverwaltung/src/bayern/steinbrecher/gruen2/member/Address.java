@@ -9,7 +9,8 @@ public class Address {
 
     private final String street, housenumber, postcode, place;
 
-    public Address(String street, String housenumber, String postcode, String place) {
+    public Address(String street, String housenumber, String postcode,
+            String place) {
         this.street = street;
         this.housenumber = housenumber;
         this.postcode = postcode;
