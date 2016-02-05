@@ -3,6 +3,7 @@ package bayern.steinbrecher.gruen2.login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import java.util.Map;
 import javafx.application.Application;
+import javafx.stage.Stage;
 
 /**
  * Represents a login.
