@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,8 @@ public class Originator {
             pmtInfId,
             purpose,
             filename;
-    private static final Properties DEFAULT_PROPERTIES = new Properties() {{
+    private static final Properties DEFAULT_PROPERTIES = new Properties() {
+        {
             put("creator", "");
             put("creditor", "");
             put("iban", "");
@@ -36,7 +38,8 @@ public class Originator {
             put("pmtInfId", "");
             put("purpose", "");
             put("executionDate", "");
-        }};
+        }
+    };
     private LocalDate executionDate;
 
     /**
@@ -75,33 +78,36 @@ public class Originator {
      * werden konnte.
      */
     public void readOriginatorInfo() throws FileNotFoundException {
-        Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
-        originatorProps.forEach(action);
-
         try {
+            Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
             originatorProps.load(new FileInputStream(new File(filename)));
+            Arrays.stream(getClass().getDeclaredFields())
+                    .parallel()
+                    .forEach(f -> {
+                        try {
+                            String property
+                                    = originatorProps.getProperty(f.getName());
+
+                            if (f.getType() == LocalDate.class) {
+                                f.set(this, LocalDate.parse(property));
+                            } else if (f.getType() == String.class) {
+                                f.set(this, property);
+                            } else {
+                                System.err.println(Originator.class
+                                        + ": No action for reading in "
+                                        + f.getType()
+                                        + " defined. Gets skipped.");
+                            }
+                        } catch (IllegalArgumentException |
+                                IllegalAccessException ex) {
+                            Logger.getLogger(Originator.class.getName())
+                                    .log(Level.SEVERE, null, ex);
+                        }
+                    });
         } catch (IOException ex) {
-            Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Originator.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
-//        try (Scanner sc = new Scanner(new File(filename))) {
-//            this.creator = sc.nextLine();
-//            this.creditor = sc.nextLine();
-//            this.iban = sc.nextLine();
-//            this.bic = sc.nextLine();
-//            this.purpose = sc.nextLine();
-//            this.trusterId = sc.nextLine();
-//            this.msgId = sc.nextLine();
-//            try {
-//                this.executionDate = LocalDate.parse(sc.nextLine(),
-//                        DateTimeFormatter.ISO_DATE);
-//            } catch (DateTimeParseException ex) {
-//                this.executionDate = null;
-//            }
-//            this.pmtInfId = sc.nextLine();
-//        } catch (NoSuchElementException ex) {
-//            Logger.getLogger(Originator.class.getName())
-//                    .log(Level.SEVERE, filename + " has too few lines", ex);
-//        }
     }
 
     /**
@@ -110,14 +116,21 @@ public class Originator {
      */
     public void saveOriginator() {
         Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
-        originatorProps.setProperty("creator", creator);
-        originatorProps.setProperty("creditor", creditor);
-        originatorProps.setProperty("iban", iban);
-        originatorProps.setProperty("bic", bic);
-        originatorProps.setProperty("purpose", purpose);
-        originatorProps.setProperty("trusterId", trusterId);
-        originatorProps.setProperty("executionDate", executionDate.toString());
-        originatorProps.setProperty("pmtInfId", pmtInfId);
+        Arrays.stream(getClass().getDeclaredFields())
+                .parallel()
+                .filter(f ->
+                        !f.getName().equalsIgnoreCase("default_properties"))
+                .filter(f -> !f.getName().equalsIgnoreCase("filename"))
+                .forEach(f -> {
+                    try {
+                        originatorProps.put(
+                                f.getName(), f.get(this).toString());
+                    } catch (IllegalArgumentException |
+                            IllegalAccessException ex) {
+                        Logger.getLogger(Originator.class.getName())
+                                .log(Level.SEVERE, null, ex);
+                    }
+                });
         try {
             originatorProps.store(
                     new BufferedWriter(new FileWriter(filename)), null);
