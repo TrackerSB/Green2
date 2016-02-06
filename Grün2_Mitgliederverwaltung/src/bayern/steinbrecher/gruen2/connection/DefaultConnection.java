@@ -4,7 +4,7 @@ import com.mysql.jdbc.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,15 +62,15 @@ public final class DefaultConnection implements DBConnection {
         ResultSet resultset = connection.prepareStatement(sqlCode)
                 .executeQuery();
 
-        List<List<String>> resultTable = new LinkedList<>();
-        List<String> labels = new LinkedList<>();
+        List<List<String>> resultTable = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
         for (int i = 1; i <= resultset.getMetaData().getColumnCount(); i++) {
             labels.add(resultset.getMetaData().getColumnLabel(i));
         }
         resultTable.add(labels);
 
         while (resultset.next()) {
-            List<String> columns = new LinkedList<>();
+            List<String> columns = new ArrayList<>();
             for (String l : labels) {
                 columns.add(resultset.getString(l));
             }
