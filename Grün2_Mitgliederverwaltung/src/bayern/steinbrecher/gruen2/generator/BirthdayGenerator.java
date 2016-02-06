@@ -25,8 +25,7 @@ public class BirthdayGenerator {
         Person p = m.getPerson();
         return new StringBuilder().append(p.getPrename()).append(';')
                 .append(p.getLastname()).append(';')
-                .append(p.getBirthday()).append(';')
-                .append(m.isActive()).append('\n').toString();
+                .append(p.getBirthday()).append('\n').toString();
     };
 
     private BirthdayGenerator() {
@@ -76,13 +75,13 @@ public class BirthdayGenerator {
             output.append("\n\n").append(currentAge).append("ter Geburtstag\n");
             if (!currentAgeActive.isEmpty()) {
                 output.append("Aktiv:\n")
-                        .append("Vorname;Nachname;Geburtstag;istAktiv\n")
+                        .append("Vorname;Nachname;Geburtstag\n")
                         .append(currentAgeActive.stream().map(PRINT_LINE)
                                 .reduce(String::concat).get());
             }
             if (!currentAgePassive.isEmpty()) {
                 output.append("Passiv:\n")
-                        .append("Vorname;Nachname;Geburtstag;istAktiv\n")
+                        .append("Vorname;Nachname;Geburtstag\n")
                         .append(currentAgePassive.stream().map(PRINT_LINE)
                                 .reduce(String::concat).get());
             }
