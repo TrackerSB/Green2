@@ -120,7 +120,6 @@ public class Originator {
                 .parallel()
                 .filter(f ->
                         !f.getName().equalsIgnoreCase("default_properties"))
-                .filter(f -> !f.getName().equalsIgnoreCase("filename"))
                 .forEach(f -> {
                     try {
                         originatorProps.put(
@@ -134,7 +133,7 @@ public class Originator {
         try {
             originatorProps.store(
                     new BufferedWriter(new FileWriter(filename)), null);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(Originator.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
