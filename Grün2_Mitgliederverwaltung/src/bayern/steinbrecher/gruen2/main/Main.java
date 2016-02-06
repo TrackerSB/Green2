@@ -7,6 +7,7 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
+import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import bayern.steinbrecher.gruen2.member.AccountHolder;
@@ -15,12 +16,13 @@ import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.member.Member;
 import bayern.steinbrecher.gruen2.member.Person;
 import bayern.steinbrecher.gruen2.sepa.Originator;
-import bayern.steinbrecher.gruen2.sepa.SepaPain00800302_XML_Generator;
+import bayern.steinbrecher.gruen2.generator.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
-import bayern.steinbrecher.gruen2.serialLetters.DataForSerialLettersGenerator;
+import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import com.jcraft.jsch.JSchException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,8 +32,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -43,8 +47,16 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private MainController mcontroller;
-    private DBConnection dbConnection;
+    private static final Predicate<Member> TEST_BIRTHDAY_THIS_YEAR = m -> {
+        int age = LocalDate.now().getYear()
+                - m.getPerson().getBirthday().getYear();
+        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
+    };
+    private static final Predicate<Member> TEST_BIRTHDAY_NEXT_YEAR = m -> {
+        int age = LocalDate.now().getYear()
+                - m.getPerson().getBirthday().getYear() + 1;
+        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
+    };
     private static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
             Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
                     "istmaennlich", "istaktiv", "geburtstag", "strasse",
@@ -54,8 +66,12 @@ public class Main extends Application {
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
+    private MainController mcontroller;
+    private DBConnection dbConnection;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
+    private Future<List<Member>> memberBirthdayThisYear;
+    private Future<List<Member>> memberBirthdayNextYear;
     private Future<Map<String, String>> nicknames;
 
     /**
@@ -103,6 +119,12 @@ public class Main extends Application {
             primaryStage.show();
 
             member = exserv.submit(() -> readMember(dbConnection));
+            memberBirthdayThisYear = exserv.submit(() -> member.get().stream()
+                    .filter(TEST_BIRTHDAY_THIS_YEAR)
+                    .collect(Collectors.toList()));
+            memberBirthdayNextYear = exserv.submit(() -> member.get().stream()
+                    .filter(TEST_BIRTHDAY_NEXT_YEAR)
+                    .collect(Collectors.toList()));
             nicknames = exserv.submit(() -> readNicknames(dbConnection));
         }
     }
@@ -158,30 +180,40 @@ public class Main extends Application {
     }
 
     private List<Member> generateMemberList(List<List<String>> queryResult) {
-        assert COLUMN_LABELS_MEMBER.size() == queryResult.size();
-        /*Map<String, Integer> resultToInitialLabel
-                = new HashMap<>(COLUMN_LABELS_MEMBER.size());
-        List<String> resultLabels = queryResult.get(0).stream()
-                .map(String::toLowerCase).collect(Collectors.toList());
-        COLUMN_LABELS_MEMBER.stream().forEach(initialLabel -> {
-            resultToInitialLabel
-                    .put(initialLabel, resultLabels.indexOf(initialLabel));
-        });*/
-
         List<Member> memberList = new ArrayList<>(queryResult.size());
-        queryResult.parallelStream().forEach(row -> {
+        queryResult.parallelStream().skip(1).forEach(row -> {
             String prename = row.get(COLUMN_LABELS_MEMBER.indexOf("vorname"));
             String lastname = row.get(COLUMN_LABELS_MEMBER.indexOf("nachname"));
             String title = row.get(COLUMN_LABELS_MEMBER.indexOf("titel"));
-            LocalDate birthday = LocalDate.parse(
-                    row.get(COLUMN_LABELS_MEMBER.indexOf("geburtstag")));
+            LocalDate birthday = null;
+            try {
+                birthday = LocalDate.parse(
+                        row.get(COLUMN_LABELS_MEMBER.indexOf("geburtstag")));
+                System.err.println(lastname + " " + prename
+                        + " has invalid Geburtstag: "
+                        + row.get(COLUMN_LABELS_MEMBER
+                                .indexOf("geburtstag")));
+            } catch (DateTimeParseException ex) {
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
             boolean isMale
                     = row.get(COLUMN_LABELS_MEMBER.indexOf("istmaennlich"))
                     .equalsIgnoreCase("1");
             String iban = row.get(COLUMN_LABELS_MEMBER.indexOf("iban"));
             String bic = row.get(COLUMN_LABELS_MEMBER.indexOf("bic"));
-            LocalDate mandatsigned = LocalDate.parse(
-                    row.get(COLUMN_LABELS_MEMBER.indexOf("mandaterstellt")));
+            LocalDate mandatsigned = null;
+            try {
+                mandatsigned = LocalDate.parse(row.get(
+                        COLUMN_LABELS_MEMBER.indexOf("mandaterstellt")));
+            } catch (DateTimeParseException ex) {
+                System.err.println(lastname + " " + prename
+                        + " has invalid MandatErstellt: "
+                        + row.get(COLUMN_LABELS_MEMBER
+                                .indexOf("mandaterstellt")));
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
             String street = row.get(COLUMN_LABELS_MEMBER.indexOf("strasse"));
             String housenumber
                     = row.get(COLUMN_LABELS_MEMBER.indexOf("hausnummer"));
@@ -192,8 +224,18 @@ public class Main extends Application {
             boolean isContributionfree
                     = row.get(COLUMN_LABELS_MEMBER.indexOf("istbeitragsfrei"))
                     .equalsIgnoreCase("1");
-            int membershipnumber = Integer.parseInt(
-                    row.get(COLUMN_LABELS_MEMBER.indexOf("mitgliedsnummer")));
+            int membershipnumber = 0;
+            try {
+                membershipnumber = Integer.parseInt(row.get(
+                        COLUMN_LABELS_MEMBER.indexOf("mitgliedsnummer")));
+            } catch (NumberFormatException ex) {
+                System.err.println(lastname + " " + prename
+                        + " has invalid Mitgliedsnummer: "
+                        + row.get(COLUMN_LABELS_MEMBER
+                                .indexOf("mitgliedsnummer")) + ". Skipped.");
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
             String accountHolderPrename = row.get(
                     COLUMN_LABELS_MEMBER.indexOf("kontoinhabervorname"));
             String accountHolderLastname = row.get(
@@ -218,14 +260,52 @@ public class Main extends Application {
         return memberList;
     }
 
-    public void generateSerialLetterData() {
-        if (dbConnection == null) {
-            throw new IllegalStateException(
-                    "No connection initialised. Call start(...) first.");
-        }
+    private void generateAddresses(Future<List<Member>> member,
+            String filename) {
         try {
-            DataForSerialLettersGenerator.generateAddressData(
-                    member.get(), nicknames.get());
+            AddressGenerator
+                    .generateAddressData(member.get(), nicknames.get(), filename);
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void generateAddressesAll() {
+        generateAddresses(member, DataProvider.getSavepath()
+                + "/Serienbrief_alle.csv");
+    }
+
+    public void generateAddressesBirthdayThisYear() {
+        int currentYear = LocalDate.now().getYear();
+        generateAddresses(memberBirthdayThisYear, DataProvider.getSavepath()
+                + "/Serienbrief_Geburtstag_" + currentYear + ".csv");
+    }
+
+    public void generateAddressesBirthdayNextYear() {
+        int nextYear = LocalDate.now().getYear() + 1;
+        generateAddresses(memberBirthdayNextYear, DataProvider.getSavepath()
+                + "/Serienbrief_Geburtstag_" + nextYear + ".csv");
+    }
+
+    public void generateBirthdayThisYearInfos() {
+        try {
+            int currentYear = LocalDate.now().getYear();
+            BirthdayGenerator.generateGroupedOutput(
+                    memberBirthdayThisYear.get(), currentYear,
+                    DataProvider.getSavepath() + "/Geburtstag_" + currentYear
+                    + ".csv");
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void generateBirthdayNextYearInfos() {
+        try {
+            int nextYear = LocalDate.now().getYear() + 1;
+            BirthdayGenerator.generateGroupedOutput(
+                    memberBirthdayNextYear.get(), nextYear,
+                    DataProvider.getSavepath() + "/Geburtstag_" + nextYear
+                    + ".csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -248,12 +328,7 @@ public class Main extends Application {
         return mappedNicknames;
     }
 
-    public void startSepa() {
-        if (dbConnection == null) {
-            throw new IllegalStateException(
-                    "No connection initialised. Call start(...) first.");
-        }
-
+    private void generateSepa(List<Member> memberToSelect) {
         SepaForm sepaForm = new SepaForm();
         Originator originator = null;
         try {
@@ -265,10 +340,11 @@ public class Main extends Application {
 
         if (originator != null) {
             try {
-                Selection<Member> sel = new Selection<>(member.get());
-                sel.start(new Stage());
-                List<Member> selectedMember = sel.getSelection();
-                double contribution = sel.getContribution();
+                Selection<Member> selection = new Selection<>(memberToSelect);
+                selection.start(new Stage());
+                List<Member> selectedMember
+                        = selection.getSelection();
+                double contribution = selection.getContribution();
                 SepaPain00800302_XML_Generator.createXMLFile(selectedMember,
                         contribution, originator,
                         DataProvider.getSavepath() + "/Sepa.xml");
@@ -279,6 +355,24 @@ public class Main extends Application {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    public void generateContributionSepa() {
+        try {
+            generateSepa(member.get().stream()
+                    .filter(m -> !m.isContributionfree())
+                    .collect(Collectors.toList()));
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void generateUniversalSepa() {
+        try {
+            generateSepa(member.get());
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -1,18 +1,12 @@
-package bayern.steinbrecher.gruen2.serialLetters;
+package bayern.steinbrecher.gruen2.generator;
 
-import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.Output;
 import bayern.steinbrecher.gruen2.member.Address;
 import bayern.steinbrecher.gruen2.member.Member;
 import bayern.steinbrecher.gruen2.member.Person;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Diese Klasse fragt die Mitglieder und die Spitznamen aus der GTEV-Datenbank
@@ -22,17 +16,17 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class DataForSerialLettersGenerator {
+public class AddressGenerator {
 
-    private DataForSerialLettersGenerator() {
+    private AddressGenerator() {
         throw new UnsupportedOperationException(
                 "Construction of an object not supported");
     }
 
     public static void generateAddressData(List<Member> member,
-            Map<String, String> nicknames) {
+            Map<String, String> nicknames, String filename) {
         List<String> addresses = appendAddresses(member, nicknames);
-        createOutputCsvFile(createOutput(member, addresses));
+        Output.printContent(createOutput(member, addresses), filename);
     }
 
     /**
@@ -71,7 +65,7 @@ public class DataForSerialLettersGenerator {
     private static String createOutput(List<Member> member,
             List<String> addresses) {
         StringBuilder output = new StringBuilder(
-                "Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Anrede");
+                "Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Anrede\n");
         for (int i = 0; i < member.size(); i++) {
             Person currentPerson = member.get(i).getPerson();
             Address currentAddress = member.get(i).getHome();
@@ -85,21 +79,5 @@ public class DataForSerialLettersGenerator {
         }
 
         return output.toString();
-    }
-
-    private static void createOutputCsvFile(String output) {
-        //Datei schreiben
-        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(DataProvider.getSavepath()
-                        + "/Serienbriefdaten.csv"), "UTF-8"))) {
-            /* Dies dient dazu aus "UTF-8 ohne Bom", "UTF-8 MIT Bom" zu machen,
-             * damit Microsoft Excel Sonderzeichen korrekt interpretiert.
-             */
-            bw.append('\uFEFF')
-                    .append(output);
-        } catch (IOException ex) {
-            Logger.getLogger(DataForSerialLettersGenerator.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
     }
 }

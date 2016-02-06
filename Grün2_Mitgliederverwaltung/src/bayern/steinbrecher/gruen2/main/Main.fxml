@@ -7,6 +7,20 @@
 <?import javafx.scene.layout.*?>
 
 <HBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" fx:controller="bayern.steinbrecher.gruen2.main.MainController">
-    <Button fx:id="generateSepaButton" onAction="#startSepa" text="Sepa-Sammellastschrift erstellen" />
-    <Button fx:id="generateDataButton" onAction="#generateSerialLetterData" text="Daten für Serienbrief holen" />
+    <VBox spacing="10">
+        <Label text="Sepa-Lastschriften erstellen:" />
+        <Button fx:id="generateContribution" onAction="#generateContributionSepa" text="Mitgliedsbeiträge" />
+        <Button fx:id="generateUniversalSepa" onAction="#generateUniversalSepa" text="Beliebige Sammellastschrift" />
+    </VBox>
+    <VBox spacing="10">
+        <Label text="Adressen holen: (Für Word-Serienbriefe)" />
+        <Button fx:id="generateAllAddresses" onAction="#generateAddressesAll" text="Von allen Mitgliedern" />
+        <Button fx:id="generateAddressesBirthdayThisYear" onAction="#generateAddressesBirthdayThisYear" text="Von Geburtstagsmitgliedern" />
+        <Button fx:id="generateAddressesBirthdayNextYear" onAction="#generateAddressesBirthdayNextYear" text="Von Geburtstagsmitgliedern" />
+    </VBox>
+    <VBox spacing="10">
+        <Label text="Informationen holen:" />
+        <Button fx:id="generateBirthdayThisYearInfos" onAction="#generateBirthdayThisYearInfos" text="Geburtstagsmitglieder gruppiert" />
+        <Button fx:id="generateBirthdayNextYearInfos" onAction="#generateBirthdayNextYearInfos" text="Geburtstagsmitglieder gruppiert" />
+    </VBox>
 </HBox>
