@@ -166,7 +166,8 @@ public class SepaPain00800302_XML_Generator {
         member.parallelStream().forEach(m -> {
             Person p = m.getPerson();
             AccountHolder ah = m.getAccountHolder();
-            StringBuilder suboutput = new StringBuilder("     <DrctDbtTxInf>\n")
+            StringBuilder suboutput = new StringBuilder()
+                    .append("     <DrctDbtTxInf>\n")
                     .append("       <PmtId>\n")
                     .append("         <EndToEndId>NOTPROVIDED</EndToEndId>\n")
                     .append("       </PmtId>\n")

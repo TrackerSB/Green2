@@ -69,10 +69,10 @@ public class SepaFormController extends Controller {
          * ChangeListener<Boolean>
          */
         ChangeListener cl = (obs, oldVal, newVal) -> {
-            boolean anyInputTooLong = checkedTextFields.stream()
+            boolean anyInputTooLong = checkedTextFields.parallelStream()
                     .anyMatch(CheckedTextField::isTooLong);
             inputTooLongLabel.setVisible(anyInputTooLong);
-            boolean anyInputMissing = checkedTextFields.stream()
+            boolean anyInputMissing = checkedTextFields.parallelStream()
                     .anyMatch(ctf -> {
                         return ctf.getText() == null || ctf.getText().isEmpty();
                     }) || !executionDatePicker.isValid();
@@ -80,7 +80,7 @@ public class SepaFormController extends Controller {
             readyButton.setDisable(anyInputTooLong || anyInputMissing
                     || !executionDatePicker.isValid());
         };
-        checkedTextFields.stream()
+        checkedTextFields.parallelStream()
                 .map(CheckedTextField::textProperty)
                 .forEach(tp -> tp.addListener(cl));
         executionDatePicker.validProperty().addListener(cl);

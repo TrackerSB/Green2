@@ -1,6 +1,5 @@
 package bayern.steinbrecher.gruen2.generator;
 
-import bayern.steinbrecher.gruen2.Output;
 import bayern.steinbrecher.gruen2.member.Address;
 import bayern.steinbrecher.gruen2.member.Member;
 import bayern.steinbrecher.gruen2.member.Person;
@@ -23,10 +22,10 @@ public class AddressGenerator {
                 "Construction of an object not supported");
     }
 
-    public static void generateAddressData(List<Member> member,
-            Map<String, String> nicknames, String filename) {
-        List<String> addresses = appendAddresses(member, nicknames);
-        Output.printContent(createOutput(member, addresses), filename);
+    public static String generateAddressData(List<Member> member,
+            Map<String, String> nicknames) {
+        List<String> addresses = createAddresses(member, nicknames);
+        return createOutput(member, addresses);
     }
 
     /**
@@ -37,9 +36,8 @@ public class AddressGenerator {
      *
      * @return A list with apropriate addresses.
      */
-    private static List<String> appendAddresses(
+    private static List<String> createAddresses(
             List<Member> member, Map<String, String> nicknames) {
-
         List<String> addresses = new ArrayList<>(member.size());
         member.stream().forEach(m -> {
             String address = m.getPerson().isIsMale() ? "Lieber " : "Liebe ";

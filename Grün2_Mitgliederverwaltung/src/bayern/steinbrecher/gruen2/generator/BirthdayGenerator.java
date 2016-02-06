@@ -1,6 +1,5 @@
 package bayern.steinbrecher.gruen2.generator;
 
-import bayern.steinbrecher.gruen2.Output;
 import bayern.steinbrecher.gruen2.member.Member;
 import bayern.steinbrecher.gruen2.member.Person;
 import java.util.ArrayList;
@@ -33,38 +32,32 @@ public class BirthdayGenerator {
                 "Construction of an object not allowed.");
     }
 
-    public static void generateGroupedOutput(List<Member> member, int year,
-            String filename) {
-        Output.printContent(createGroupedOutput(member, year), filename);
-    }
-
-    private static String createGroupedOutput(List<Member> member, int year) {
+    public static String createGroupedOutput(List<Member> member, int year) {
         assert !member.isEmpty();
         member.sort(SORTING);
 
         StringBuilder output = new StringBuilder(
                 "Geburtstage " + year);
-        List<Member> currentAgeActive = new ArrayList<>();
-        List<Member> currentAgePassive = new ArrayList<>();
+        List<Member> currentActive = new ArrayList<>();
+        List<Member> currentPassive = new ArrayList<>();
         int currentAge = year
                 - member.get(0).getPerson().getBirthday().getYear();
         for (Member m : member) {
             if (year - m.getPerson().getBirthday().getYear() != currentAge) {
                 tryAppendMember(output, currentAge,
-                        currentAgeActive, currentAgePassive);
-                currentAgeActive.clear();
-                currentAgePassive.clear();
+                        currentActive, currentPassive);
+                currentActive.clear();
+                currentPassive.clear();
                 currentAge = year - m.getPerson().getBirthday().getYear();
             }
             if (m.isActive()) {
-                currentAgeActive.add(m);
+                currentActive.add(m);
             } else {
-                currentAgePassive.add(m);
+                currentPassive.add(m);
             }
         }
 
-        tryAppendMember(
-                output, currentAge, currentAgeActive, currentAgePassive);
+        tryAppendMember(output, currentAge, currentActive, currentPassive);
 
         return output.toString();
     }

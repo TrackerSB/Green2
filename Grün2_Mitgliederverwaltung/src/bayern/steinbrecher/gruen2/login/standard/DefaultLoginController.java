@@ -50,7 +50,7 @@ public class DefaultLoginController extends LoginController {
                     textInputFields.forEach(f -> f.setChecked(!newVal));
                 });
         ChangeListener<Boolean> cl = (obs, oldVal, newVal) -> {
-            boolean isAllInputValid = textInputFields.stream()
+            boolean isAllInputValid = textInputFields.parallelStream()
                     .allMatch(CheckedTextField::isValid);
             loginButton.setDisable(!isAllInputValid);
             invalidInput.setVisible(!isAllInputValid);

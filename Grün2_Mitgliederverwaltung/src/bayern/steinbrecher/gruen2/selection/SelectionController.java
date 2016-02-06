@@ -39,10 +39,10 @@ public class SelectionController<T extends Comparable> extends Controller {
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
         ObservableList<CheckBox> items = optionsListView.getItems();
-        boolean disableSelectAll = items.stream()
+        boolean disableSelectAll = items.parallelStream()
                 .allMatch(CheckBox::isSelected);
         selectAllButton.setDisable(disableSelectAll);
-        boolean disableSelectNone = items.stream()
+        boolean disableSelectNone = items.parallelStream()
                 .allMatch(cb -> !cb.isSelected());
         selectNoneButton.setDisable(disableSelectNone);
         missingInput.setVisible(disableSelectNone);
@@ -66,8 +66,7 @@ public class SelectionController<T extends Comparable> extends Controller {
     public void setOptions(List<T> options) {
         optionsListView.getItems().clear();
         this.options = options;
-        Collections.sort(options);
-        options.stream().forEach(op -> {
+        options.stream().sorted().forEach(op -> {
             CheckBox newItem = new CheckBox(op.toString());
             newItem.selectedProperty().addListener(selectionChange);
             optionsListView.getItems().add(newItem);
