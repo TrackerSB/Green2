@@ -15,7 +15,7 @@ import java.util.function.Function;
  */
 public class BirthdayGenerator {
 
-    private static final Comparator<Member> SORTING = Comparator.comparing(
+    public static final Comparator<Member> SORTING = Comparator.comparing(
             (Member m) -> m.getPerson().getBirthday().getYear()).reversed()
             .thenComparing(m -> m.getPerson().getBirthday().getMonth())
             .thenComparing(m -> m.getPerson().getBirthday().getDayOfMonth())
