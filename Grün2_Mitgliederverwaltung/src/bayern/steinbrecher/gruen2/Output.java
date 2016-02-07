@@ -15,6 +15,9 @@ import java.util.logging.Logger;
  */
 public class Output {
 
+    /**
+     * Default constructor.
+     */
     private Output() {
         throw new UnsupportedOperationException(
                 "Construction of a new object is not allowed.");

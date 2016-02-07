@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.elements;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.IntegerProperty;
@@ -34,31 +35,61 @@ public class CheckedTextField extends TextField {
      */
     private IntegerProperty maxColumnCountProperty
             = new IntegerPropertyBase() {
-                @Override
-                public Object getBean() {
-                    return CheckedTextField.this;
-                }
+        @Override
+        public CheckedTextField getBean() {
+            return CheckedTextField.this;
+        }
 
-                @Override
-                public String getName() {
-                    return "maxColumnCount";
-                }
-            };
+        @Override
+        public String getName() {
+            return "maxColumnCount";
+        }
+    };
     /**
      * Holds {@code true} only if the content has to be checked.
      */
     private final BooleanProperty checkedProperty
             = new BooleanPropertyBase(true) {
-                @Override
-                public Object getBean() {
-                    return CheckedTextField.this;
-                }
+        @Override
+        public CheckedTextField getBean() {
+            return CheckedTextField.this;
+        }
 
-                @Override
-                public String getName() {
-                    return "checked";
-                }
-            };
+        @Override
+        public String getName() {
+            return "checked";
+        }
+    };
+    /**
+     * Holds {@code true} only if the text field is empty.
+     */
+    private final BooleanProperty emptyProperty
+            = new BooleanPropertyBase() {
+        @Override
+        public CheckedTextField getBean() {
+            return CheckedTextField.this;
+        }
+
+        @Override
+        public String getName() {
+            return "emptyContent";
+        }
+    };
+    /**
+     * Holds {@code true} only if the text of the text field is too long.
+     */
+    private final BooleanProperty tooLongProperty
+            = new BooleanPropertyBase() {
+        @Override
+        public CheckedTextField getBean() {
+            return CheckedTextField.this;
+        }
+
+        @Override
+        public String getName() {
+            return "tooLongContent";
+        }
+    };
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of
      * the following is true:
@@ -67,18 +98,17 @@ public class CheckedTextField extends TextField {
      * <li>It is not empty and the content is not too long</li>
      * </ol>
      */
-    private final BooleanProperty validProperty
-            = new BooleanPropertyBase(false) {
-                @Override
-                public Object getBean() {
-                    return CheckedTextField.this;
-                }
+    private final BooleanProperty validProperty = new BooleanPropertyBase() {
+        @Override
+        public CheckedTextField getBean() {
+            return CheckedTextField.this;
+        }
 
-                @Override
-                public String getName() {
-                    return "valid";
-                }
-            };
+        @Override
+        public String getName() {
+            return "valid";
+        }
+    };
 
     /**
      * Creates a new {@code CheckedTextField} with no initial content and a
@@ -108,10 +138,50 @@ public class CheckedTextField extends TextField {
     public CheckedTextField(int maxColumnCount, String text) {
         super(text);
         setAccessibleRole(AccessibleRole.TEXT_FIELD);
+        initProperties();
+
+        //Validate properties
         setMaxColumnCount(maxColumnCount);
-        textProperty().addListener((obs, oldVal, newVal) -> checkValid());
-        checkedProperty.addListener((obs, oldVal, newVal) -> checkValid());
-        checkValid();
+        setText(text + " ");
+        setText(text);
+    }
+
+    /**
+     * Sets up all properties and bindings.
+     */
+    private void initProperties() {
+        emptyProperty.bind(textProperty().isEmpty());
+        textProperty().addListener((obs, oldVal, newVal) -> {
+            tooLongProperty.set(newVal.length() > maxColumnCountProperty.get());
+        });
+        maxColumnCountProperty.addListener((obs, oldVal, newVal) -> {
+            tooLongProperty.setValue(
+                    textProperty().get().length() > newVal.intValue());
+        });
+        validProperty.bind(((tooLongProperty.or(emptyProperty))
+                .and(checkedProperty)).not());
+        validProperty.addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                getStyleClass().removeAll(
+                        CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT);
+            } else {
+                if (emptyProperty.get()) {
+                    getStyleClass().add(CSS_CLASS_NO_CONTENT);
+                }
+                if (tooLongProperty.get()) {
+                    getStyleClass().add(CSS_CLASS_TOO_LONG_CONTENT);
+                }
+            }
+        });
+    }
+
+    /**
+     * Returns the property representing the maximum column count.
+     *
+     * @return The property representing the maximum column count.
+     */
+    public IntegerProperty maxColumnCount() {
+        return maxColumnCountProperty;
     }
 
     /**
@@ -137,22 +207,80 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Returns the property representing the maximum column count.
+     * Represents whether this text field is checked or not.
      *
-     * @return The property representing the maximum column count.
+     * @return The property representing whether this text field is checked or
+     * not.
      */
-    public IntegerProperty maxColumnCount() {
-        return maxColumnCountProperty;
+    public BooleanProperty checkedProperty() {
+        return checkedProperty;
     }
 
     /**
-     * Checks whether the currently inserted text is too long.
+     * Checks whether the text field is checked.
+     *
+     * @return {@code true} only if the text field is checked.
+     */
+    public boolean isChecked() {
+        return checkedProperty.get();
+    }
+
+    /**
+     * Sets whether to check the content of this field or not.
+     *
+     * @param checked {@code true} only if the content of this field has to be
+     * checked.
+     */
+    public void setChecked(boolean checked) {
+        checkedProperty.set(checked);
+    }
+
+    /**
+     * Returns the property representing whether there´s no text inserted.
+     *
+     * @return The property representing whether there´s no text inserted.
+     */
+    public BooleanProperty emptyProperty() {
+        return emptyProperty;
+    }
+
+    /**
+     * Checks whether the text field is empty.
+     *
+     * @return {@code true} only if the text field is empty.
+     */
+    public boolean isEmpty() {
+        return emptyProperty.get();
+    }
+
+    /**
+     * Returns the property representing whether the current content of the text
+     * field is too long.
+     *
+     * @return The property representing whether the current content of the text
+     * field is too long.
+     */
+    public BooleanProperty tooLongProperty() {
+        return tooLongProperty;
+    }
+
+    /**
+     * Checks whether the currently inserted text is too long. The input may be
+     * too long even if it is valid. E.g. when the text field is not checked.
      *
      * @return {@code true} only if the current content is too long.
      */
     public boolean isTooLong() {
-        return !validProperty.get()
-                && (getText() == null ? false : !getText().isEmpty());
+        return tooLongProperty.get();
+    }
+
+    /**
+     * Returns the binding representing the validity of the inserted content.
+     *
+     * @return The binding representing the validity of the inserted content.
+     */
+    public BooleanProperty validProperty() {
+        return validProperty;
     }
 
     /**
@@ -163,59 +291,5 @@ public class CheckedTextField extends TextField {
      */
     public boolean isValid() {
         return validProperty.get();
-    }
-
-    /**
-     * Returns the property representing the validity of the inserted content.
-     *
-     * @return The property representing the validity of the inserted content.
-     */
-    public BooleanProperty validProperty() {
-        return validProperty;
-    }
-
-    /**
-     * Checks whether the current content is valid and saves the value in
-     * {@code validProperty}.
-     */
-    private void checkValid() {
-        int textLength = getText() == null ? 0 : getText().length();
-
-        //Update validProperty
-        validProperty.set(!checkedProperty.get() || (textLength > 0
-                && textLength <= maxColumnCountProperty.get()));
-
-        //Update css classes
-        if (textLength > maxColumnCountProperty.get()
-                && checkedProperty.get()) {
-            if (!getStyleClass().contains(
-                    CheckedTextField.CSS_CLASS_TOO_LONG_CONTENT)) {
-                getStyleClass().add(
-                        CheckedTextField.CSS_CLASS_TOO_LONG_CONTENT);
-            }
-        } else {
-            getStyleClass().remove(CheckedTextField.CSS_CLASS_TOO_LONG_CONTENT);
-        }
-
-        if (textLength == 0 && checkedProperty.get()) {
-            if (!getStyleClass().contains(
-                    CheckedTextField.CSS_CLASS_NO_CONTENT)) {
-                getStyleClass().add(CheckedTextField.CSS_CLASS_NO_CONTENT);
-            }
-        } else {
-            getStyleClass().remove(CheckedTextField.CSS_CLASS_NO_CONTENT);
-        }
-    }
-
-    /**
-     * Sets whether to check the content of this field or not.
-     *
-     * @param checked {@code true} only if the content of this field has to be
-     * checked.
-     */
-    public void setChecked(boolean checked) {
-        if (checkedProperty.get() != checked) {
-            checkedProperty.set(checked);
-        }
     }
 }

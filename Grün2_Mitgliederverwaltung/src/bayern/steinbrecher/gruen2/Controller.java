@@ -4,7 +4,7 @@ import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 
 /**
- * Represents a controller.
+ * Represents a controller all other controller have to extend.
  *
  * @author Stefan Huber
  */

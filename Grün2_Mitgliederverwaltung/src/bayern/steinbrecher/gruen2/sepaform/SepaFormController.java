@@ -70,11 +70,11 @@ public class SepaFormController extends Controller {
          */
         ChangeListener cl = (obs, oldVal, newVal) -> {
             boolean anyInputTooLong = checkedTextFields.parallelStream()
-                    .anyMatch(CheckedTextField::isTooLong);
+                    .anyMatch(ctf -> !ctf.isValid() && ctf.isTooLong());
             inputTooLongLabel.setVisible(anyInputTooLong);
             boolean anyInputMissing = checkedTextFields.parallelStream()
                     .anyMatch(ctf -> {
-                        return ctf.getText() == null || ctf.getText().isEmpty();
+                        return !ctf.isValid() && ctf.isEmpty();
                     }) || !executionDatePicker.isValid();
             missingInputLabel.setVisible(anyInputMissing);
             readyButton.setDisable(anyInputTooLong || anyInputMissing
