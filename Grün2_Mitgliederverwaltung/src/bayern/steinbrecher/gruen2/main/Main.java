@@ -32,7 +32,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -47,21 +46,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    public static final Predicate<Member> TEST_BIRTHDAY_LAST_YEAR = m -> {
-        int age = LocalDate.now().getYear()
-                - m.getPerson().getBirthday().getYear() - 1;
-        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
-    };
-    public static final Predicate<Member> TEST_BIRTHDAY_THIS_YEAR = m -> {
-        int age = LocalDate.now().getYear()
-                - m.getPerson().getBirthday().getYear();
-        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
-    };
-    public static final Predicate<Member> TEST_BIRTHDAY_NEXT_YEAR = m -> {
-        int age = LocalDate.now().getYear()
-                - m.getPerson().getBirthday().getYear() + 1;
-        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
-    };
+    private static final int CURRENT_YEAR = LocalDate.now().getYear();
     private static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
             Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
                     "istmaennlich", "istaktiv", "geburtstag", "strasse",
@@ -135,21 +120,35 @@ public class Main extends Application {
         member = exserv.submit(() -> readMember(dbConnection));
         memberBirthdayLastYear = exserv.submit(() -> member.get()
                 .parallelStream()
-                .filter(TEST_BIRTHDAY_LAST_YEAR)
+                .filter(m -> hasBirthday(m, CURRENT_YEAR - 1))
                 .collect(Collectors.toList()));
         memberBirthdayThisYear = exserv.submit(() -> member.get()
                 .parallelStream()
-                .filter(TEST_BIRTHDAY_THIS_YEAR)
+                .filter(m -> hasBirthday(m, CURRENT_YEAR))
                 .collect(Collectors.toList()));
         memberBirthdayNextYear = exserv.submit(() -> member.get()
                 .parallelStream()
-                .filter(TEST_BIRTHDAY_NEXT_YEAR)
+                .filter(m -> hasBirthday(m, CURRENT_YEAR + 1))
                 .collect(Collectors.toList()));
         memberContributionfree = exserv.submit(() -> member.get()
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
                 .collect(Collectors.toList()));
         nicknames = exserv.submit(() -> readNicknames(dbConnection));
+    }
+
+    /**
+     * Checks whether the given member gets 50, 60, 70, 75, >= 80 in
+     * {@code year}.
+     *
+     * @param m The member to check.
+     * @param year The year to calculate his age at.
+     * @return {@code true} only if {@code m} has his 50th, 60th, 70th, 75th, >=
+     * 80th birthday in {@code year}.
+     */
+    private boolean hasBirthday(Member m, int year) {
+        int age = year - m.getPerson().getBirthday().getYear();
+        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
     }
 
     private DBConnection getConnection(Login login, Stage loginStage) {
@@ -232,9 +231,8 @@ public class Main extends Application {
     }
 
     void generateAddressesBirthdayNextYear() {
-        int nextYear = LocalDate.now().getYear() + 1;
         generateAddresses(memberBirthdayNextYear, DataProvider.getSavepath()
-                + "/Serienbrief_Geburtstag_" + nextYear + ".csv");
+                + "/Serienbrief_Geburtstag_" + (CURRENT_YEAR + 1) + ".csv");
     }
 
     void generateBirthdayInfos(Future<List<Member>> member, int year) {
@@ -248,18 +246,15 @@ public class Main extends Application {
     }
 
     void generateBirthdayLastYearInfos() {
-        generateBirthdayInfos(
-                memberBirthdayLastYear, LocalDate.now().getYear() - 1);
+        generateBirthdayInfos(memberBirthdayLastYear, CURRENT_YEAR - 1);
     }
 
     void generateBirthdayThisYearInfos() {
-        generateBirthdayInfos(
-                memberBirthdayThisYear, LocalDate.now().getYear());
+        generateBirthdayInfos(memberBirthdayThisYear, CURRENT_YEAR);
     }
 
     void generateBirthdayNextYearInfos() {
-        generateBirthdayInfos(
-                memberBirthdayNextYear, LocalDate.now().getYear() + 1);
+        generateBirthdayInfos(memberBirthdayNextYear, CURRENT_YEAR + 1);
     }
 
     public Map<String, String> readNicknames(DBConnection dbc) {
