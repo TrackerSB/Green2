@@ -22,9 +22,13 @@ public class MainController extends Controller {
     @FXML
     private Button generateUniversalSepa;
     @FXML
+    private Button generateAddressesBirthdayLastYear;
+    @FXML
     private Button generateAddressesBirthdayThisYear;
     @FXML
     private Button generateAddressesBirthdayNextYear;
+    @FXML
+    private Button generateBirthdayLastYearInfos;
     @FXML
     private Button generateBirthdayThisYearInfos;
     @FXML
@@ -78,6 +82,16 @@ public class MainController extends Controller {
     }
     
     @FXML
+    private void generateAddressesBirthdayLastYear() {
+        if (caller == null) {
+            throw new IllegalStateException("caller is not set");
+        }
+        generateAddressesBirthdayLastYear.setDisable(true);
+        caller.generateAddressesBirthdayLastYear();
+        generateAddressesBirthdayLastYear.setDisable(false);
+    }
+    
+    @FXML
     private void generateAddressesBirthdayThisYear() {
         if (caller == null) {
             throw new IllegalStateException("caller is not set");
@@ -95,6 +109,16 @@ public class MainController extends Controller {
         generateAddressesBirthdayNextYear.setDisable(true);
         caller.generateAddressesBirthdayNextYear();
         generateAddressesBirthdayNextYear.setDisable(false);
+    }
+    
+    @FXML
+    private void generateBirthdayLastYearInfos() {
+        if (caller == null) {
+            throw new IllegalStateException("caller is not set");
+        }
+        generateBirthdayLastYearInfos.setDisable(true);
+        caller.generateBirthdayLastYearInfos();
+        generateBirthdayLastYearInfos.setDisable(false);
     }
     
     @FXML

@@ -72,10 +72,6 @@ public class MemberGenerator {
                 Logger.getLogger(MemberGenerator.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
-
-            //Connect attributes
-            Person p = new Person(row.get(prenameIndex), row.get(lastnameIndex),
-                    row.get(titleIndex), birthday, isMale);
             String accountholderPrename = row.get(accountholderPrenameIndex);
             if (accountholderPrename.isEmpty()) {
                 accountholderPrename = row.get(prenameIndex);
@@ -84,6 +80,10 @@ public class MemberGenerator {
             if (accountholderLastname.isEmpty()) {
                 accountholderLastname = row.get(lastnameIndex);
             }
+
+            //Connect attributes
+            Person p = new Person(row.get(prenameIndex), row.get(lastnameIndex),
+                    row.get(titleIndex), birthday, isMale);
             //FIXME MandatChanged has not to be always false
             AccountHolder ah = new AccountHolder(row.get(ibanIndex),
                     row.get(bicIndex), mandatsigned, false,

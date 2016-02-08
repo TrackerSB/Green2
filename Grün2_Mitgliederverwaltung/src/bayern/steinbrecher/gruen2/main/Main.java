@@ -8,6 +8,7 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
+import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
@@ -26,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,6 +47,11 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+    public static final Predicate<Member> TEST_BIRTHDAY_LAST_YEAR = m -> {
+        int age = LocalDate.now().getYear()
+                - m.getPerson().getBirthday().getYear() - 1;
+        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
+    };
     public static final Predicate<Member> TEST_BIRTHDAY_THIS_YEAR = m -> {
         int age = LocalDate.now().getYear()
                 - m.getPerson().getBirthday().getYear();
@@ -65,8 +72,10 @@ public class Main extends Application {
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
     private MainController mcontroller;
+    private Stage primaryStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
+    private Future<List<Member>> memberBirthdayLastYear;
     private Future<List<Member>> memberBirthdayThisYear;
     private Future<List<Member>> memberBirthdayNextYear;
     private Future<List<Member>> memberContributionfree;
@@ -81,6 +90,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
+
         Login login;
         if (DataProvider.useSsh()) {
             login = new SshLogin();
@@ -122,6 +133,10 @@ public class Main extends Application {
 
     public void executeQueries(DBConnection dbConnection) {
         member = exserv.submit(() -> readMember(dbConnection));
+        memberBirthdayLastYear = exserv.submit(() -> member.get()
+                .parallelStream()
+                .filter(TEST_BIRTHDAY_LAST_YEAR)
+                .collect(Collectors.toList()));
         memberBirthdayThisYear = exserv.submit(() -> member.get()
                 .parallelStream()
                 .filter(TEST_BIRTHDAY_THIS_YEAR)
@@ -168,6 +183,8 @@ public class Main extends Application {
                         .log(Level.SEVERE, null, ex);
 
                 //Login invalid
+                ConfirmDialog.showConfirmDialog(
+                        "Prüfe deine Login-Daten", primaryStage);
                 loginInfos = login.getLoginInformation();
             }
         }
@@ -202,6 +219,12 @@ public class Main extends Application {
                 DataProvider.getSavepath() + "/Serienbrief_alle.csv");
     }
 
+    void generateAddressesBirthdayLastYear() {
+        int lastYear = LocalDate.now().getYear() - 1;
+        generateAddresses(memberBirthdayLastYear, DataProvider.getSavepath()
+                + "/Serienbrief_Geburtstag_" + lastYear + ".csv");
+    }
+
     void generateAddressesBirthdayThisYear() {
         int currentYear = LocalDate.now().getYear();
         generateAddresses(memberBirthdayThisYear, DataProvider.getSavepath()
@@ -214,28 +237,29 @@ public class Main extends Application {
                 + "/Serienbrief_Geburtstag_" + nextYear + ".csv");
     }
 
-    void generateBirthdayThisYearInfos() {
+    void generateBirthdayInfos(Future<List<Member>> member, int year) {
         try {
-            int currentYear = LocalDate.now().getYear();
-            Output.printContent(BirthdayGenerator.createGroupedOutput(
-                    memberBirthdayThisYear.get(), currentYear),
-                    DataProvider.getSavepath() + "/Geburtstag_" + currentYear
-                    + ".csv");
+            Output.printContent(
+                    BirthdayGenerator.createGroupedOutput(member.get(), year),
+                    DataProvider.getSavepath() + "/Geburtstag_" + year + ".csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    void generateBirthdayLastYearInfos() {
+        generateBirthdayInfos(
+                memberBirthdayLastYear, LocalDate.now().getYear() - 1);
+    }
+
+    void generateBirthdayThisYearInfos() {
+        generateBirthdayInfos(
+                memberBirthdayThisYear, LocalDate.now().getYear());
+    }
+
     void generateBirthdayNextYearInfos() {
-        try {
-            int nextYear = LocalDate.now().getYear() + 1;
-            Output.printContent(BirthdayGenerator.createGroupedOutput(
-                    memberBirthdayNextYear.get(), nextYear),
-                    DataProvider.getSavepath() + "/Geburtstag_" + nextYear
-                    + ".csv");
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        generateBirthdayInfos(
+                memberBirthdayNextYear, LocalDate.now().getYear() + 1);
     }
 
     public Map<String, String> readNicknames(DBConnection dbc) {
@@ -255,7 +279,7 @@ public class Main extends Application {
         return mappedNicknames;
     }
 
-    private void generateSepa(List<Member> memberToSelect) {
+    private void generateSepa(Future<List<Member>> memberToSelect) {
         SepaForm sepaForm = new SepaForm();
         Originator originator = null;
         try {
@@ -267,14 +291,26 @@ public class Main extends Application {
 
         if (originator != null) {
             try {
-                Selection<Member> selection = new Selection<>(memberToSelect);
+                Selection<Member> selection
+                        = new Selection<>(memberToSelect.get());
                 selection.start(new Stage());
                 List<Member> selectedMember = selection.getSelection();
                 double contribution = selection.getContribution();
 
-                SepaPain00800302_XML_Generator.createXMLFile(selectedMember,
-                        contribution, originator,
-                        DataProvider.getSavepath() + "/Sepa.xml");
+                List<Member> invalidMember
+                        = SepaPain00800302_XML_Generator.createXMLFile(
+                                selectedMember, contribution, originator,
+                                DataProvider.getSavepath() + "/Sepa.xml");
+                Optional<String> message = invalidMember.stream()
+                        .map(Member::toString)
+                        .map(s -> s += '\n')
+                        .reduce(String::concat);
+                if (message.isPresent()) {
+                    ConfirmDialog.showConfirmDialog(message.get()
+                            + "\nhaben keine IBAN oder keine BIC.",
+                            primaryStage);
+                }
+
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -285,21 +321,11 @@ public class Main extends Application {
         }
     }
 
-    void generateContributionSepa() {
-        try {
-            generateSepa(member.get().parallelStream()
-                    .filter(m -> !m.isContributionfree())
-                    .collect(Collectors.toList()));
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    void generateUniversalSepa() {
+        generateSepa(member);
     }
 
-    void generateUniversalSepa() {
-        try {
-            generateSepa(member.get());
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    void generateContributionSepa() {
+        generateSepa(memberContributionfree);
     }
 }

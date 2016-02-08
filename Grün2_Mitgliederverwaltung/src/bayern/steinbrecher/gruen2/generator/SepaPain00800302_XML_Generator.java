@@ -16,31 +16,43 @@ import java.util.List;
  */
 public class SepaPain00800302_XML_Generator {
 
+    /**
+     * Prohibit construction of an object.
+     */
     private SepaPain00800302_XML_Generator() {
         throw new UnsupportedOperationException(
                 "Construction of an object not supported.");
     }
 
     /**
-     * Schreibt die SepaModel-XML-Datei f&uuml;r alle beitragspflichtigen
-     * Mitglieder des GTEV Traunwalchen mit den gegebenen Daten.
+     * Generates a xml-file containing all member of {@code member}, which have
+     * a iban and a bic, and prints the generated output into
+     * {@code outputfile}. If {@code outputfile} already exists it will be
+     * replaced. If it don´t it will be created.
      *
-     * @param member Die Mitglieder, von denen abgebucht werden soll.
-     * @param contribution Der zu zahlende Beitrag
-     * @param originator Das Objekt, das die SepaModel-Eigeninfos enth&auml;lt
-     * @param outputfile Der Name der Datei f&uuml;r den XML-Quellcode
+     * @param member The member to collect money via direct debit from.
+     * @param contribution The contribution every member has to pay.
+     * @param originator The originator of the direct debit.
+     * @param outputfile The path to the file to print the xml to.
+     * @return A list containing member which are not included in the
+     * outputfile. These are member which have no iban or no bic.
      */
-    public static void createXMLFile(List<Member> member,
+    public static List<Member> createXMLFile(List<Member> member,
             double contribution, Originator originator, String outputfile) {
-        filterValidMember(member);
-        int numberOfTransactions = member.size();
-        double controlSum = numberOfTransactions * contribution;
-        Output.printContent(createXML(member, originator, numberOfTransactions,
-                contribution, controlSum), outputfile);
+        List<Member> invalidMember = filterValidMember(member);
+        Output.printContent(
+                createXML(member, originator, contribution), outputfile);
+        return invalidMember;
     }
 
-    private static void filterValidMember(List<Member> member) {
-        LinkedList<Member> invalidMember = new LinkedList<>();
+    /**
+     * Removes all member which have no iban or no bic from {@code member}.
+     *
+     * @param member The list of member to filter.
+     * @return The list containing the member EXCLUDED from {@code member}.
+     */
+    private static List<Member> filterValidMember(List<Member> member) {
+        List<Member> invalidMember = new LinkedList<>();
         member.parallelStream().forEach(m -> {
             boolean valid = true;
             Person p = m.getPerson();
@@ -59,25 +71,25 @@ public class SepaPain00800302_XML_Generator {
                 invalidMember.add(m);
             }
         });
-        synchronized (member) {
-            member.removeAll(invalidMember);
-        }
+        member.removeAll(invalidMember);
+        return invalidMember;
     }
 
     /**
-     * Liest die Datei Eigeninfos.txt ein und erstellt den Quelltext f&uuml;r
-     * alle Mitglieder im gegebenen ResultSet.
+     * Generates the output for the sepa-xml-file.
      *
-     * @param member Die Mitglieder, denen der Beitrag abgebucht werden soll.
-     * (Zeile der Spalten&uuml;berschriften vorher entfernen!)
-     * @return Eine StringBuilder-Repr&auml;sentation der XML-Datei.
+     * @param member The list of member to include in the xml.
+     * @param originator The origiantor of the direct debit.
+     * @param contribution The amount every member has to pay.
+     * @return The {@code String} representing the xml file content.
      */
-    private static String createXML(List<Member> member,
-            Originator originator, int numberOfTransactions,
-            double contribution, double controlSum) {
+    private static String createXML(List<Member> member, Originator originator,
+            double contribution) {
+        int numberOfTransactions = member.size();
+        double controlSum = numberOfTransactions * contribution;
         StringBuilder output = new StringBuilder();
 
-        //Der Beginn mit unseren Daten
+        //The beginning containing originators data.
         output.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
                 .append("<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:")
                 .append("pain.008.003.02\" xmlns:xsi")
@@ -90,7 +102,7 @@ public class SepaPain00800302_XML_Generator {
                 .append(originator.getMsgId())
                 .append("</MsgId>\n")
                 .append("     <CreDtTm>")
-                .append(getFormatedDateTimeNow())
+                .append(LocalDate.now())
                 .append("</CreDtTm>\n")
                 .append("     <NbOfTxs>")
                 .append(numberOfTransactions)
@@ -160,11 +172,8 @@ public class SepaPain00800302_XML_Generator {
                 .append("       </Id>\n")
                 .append("     </CdtrSchmeId>\n");
 
-        /*
-         * Die Mitglieder
-         */
+        //The member.
         member.parallelStream().forEach(m -> {
-            Person p = m.getPerson();
             AccountHolder ah = m.getAccountHolder();
             StringBuilder suboutput = new StringBuilder()
                     .append("     <DrctDbtTxInf>\n")
@@ -219,20 +228,11 @@ public class SepaPain00800302_XML_Generator {
             }
         });
 
-        //Der Schluss
+        //The last closing tags.
         output.append("   </PmtInf>\n")
                 .append(" </CstmrDrctDbtInitn>\n")
                 .append("</Document>");
 
         return output.toString();
-    }
-
-    /**
-     * Gibt das heutige Datum in yyyy-MM-ddThh:mm:ss formatiert zur&uuml;ck.
-     *
-     * @return Das heutige Datum als String formatiert
-     */
-    private static String getFormatedDateTimeNow() {
-        return LocalDate.now().toString();
     }
 }

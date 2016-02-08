@@ -16,7 +16,7 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
 
     /**
      * Css class attribute indicating that the current value of a
-     * {@code CheckedDoubleSpinner} is not valid
+     * {@code CheckedDoubleSpinner} is not valid.
      */
     public static final String CSS_CLASS_INVALID = "invalidSpinnerValue";
     /**
