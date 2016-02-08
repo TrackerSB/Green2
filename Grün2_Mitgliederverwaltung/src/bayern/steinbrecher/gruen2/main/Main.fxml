@@ -15,11 +15,13 @@
     <VBox spacing="10">
         <Label text="Adressen holen: (Für Word-Serienbriefe)" />
         <Button fx:id="generateAllAddresses" onAction="#generateAddressesAll" text="Von allen Mitgliedern" />
+        <Button fx:id="generateAddressesBirthdayLastYear" onAction="#generateAddressesBirthdayLastYear" text="Geburtstagsmitglieder gruppiert" />
         <Button fx:id="generateAddressesBirthdayThisYear" onAction="#generateAddressesBirthdayThisYear" text="Von Geburtstagsmitgliedern" />
         <Button fx:id="generateAddressesBirthdayNextYear" onAction="#generateAddressesBirthdayNextYear" text="Von Geburtstagsmitgliedern" />
     </VBox>
     <VBox spacing="10">
         <Label text="Informationen holen:" />
+        <Button fx:id="generateBirthdayLastYearInfos" onAction="#generateBirthdayLastYearInfos" text="Geburtstagsmitglieder gruppiert" />
         <Button fx:id="generateBirthdayThisYearInfos" onAction="#generateBirthdayThisYearInfos" text="Geburtstagsmitglieder gruppiert" />
         <Button fx:id="generateBirthdayNextYearInfos" onAction="#generateBirthdayNextYearInfos" text="Geburtstagsmitglieder gruppiert" />
     </VBox>
