@@ -1,5 +1,8 @@
 package bayern.steinbrecher.gruen2.member;
 
+import java.text.Collator;
+import java.util.Locale;
+
 /**
  * Jedes Objekt dieser Klasse stellt ein Mitglied des Trachtenvereins samt
  * seinen Kontoinformationen dar.
@@ -8,6 +11,8 @@ package bayern.steinbrecher.gruen2.member;
  */
 public class Member implements Comparable<Member> {
 
+    private static final Collator COLLATOR
+            = Collator.getInstance(Locale.GERMAN);
     private final int membershipnumber;
     private final Person person;
     private final Address home;
@@ -17,6 +22,7 @@ public class Member implements Comparable<Member> {
     public Member(int membershipnumber, Person person, Address home,
             AccountHolder accountHolder, boolean isActive,
             boolean isContributionfree) {
+        COLLATOR.setStrength(Collator.SECONDARY);
         this.membershipnumber = membershipnumber;
         this.person = person;
         this.home = home;
@@ -51,7 +57,7 @@ public class Member implements Comparable<Member> {
 
     @Override
     public int compareTo(Member compared) {
-        return person.getName().compareTo(compared.person.getName());
+        return COLLATOR.compare(person.getName(), compared.person.getName());
     }
 
     @Override
