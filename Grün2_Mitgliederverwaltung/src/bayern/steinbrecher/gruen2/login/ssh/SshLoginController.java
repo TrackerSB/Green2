@@ -77,6 +77,12 @@ public class SshLoginController extends LoginController {
         return loginInfo;
     }
 
+    /**
+     * Calls {@code login()} only if {@code kevt.getCode()} returns
+     * {@code KeyCode.ENTER}.
+     *
+     * @param kevt The keyevent that was triggered.
+     */
     @FXML
     private void loginIfEnter(KeyEvent kevt) {
         if (kevt.getCode() == KeyCode.ENTER) {
@@ -84,6 +90,9 @@ public class SshLoginController extends LoginController {
         }
     }
 
+    /**
+     * Closes the stage only if the inserted information is valid.
+     */
     @FXML
     private void login() {
         if (!loginButton.isDisabled()) {

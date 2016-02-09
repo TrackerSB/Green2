@@ -19,11 +19,22 @@ import java.util.stream.Collectors;
  */
 public class MemberGenerator {
 
+    /**
+     * Prohibit construction.
+     */
     private MemberGenerator() {
         throw new UnsupportedOperationException(
                 "Construction of an object is not allowed.");
     }
 
+    /**
+     * Generates a list of member out of {@code queryResult}.
+     *
+     * @param queryResult The table that hold the member informations. First
+     * dimension has to be row; second column. Each row is treated as one
+     * member.
+     * @return The resulting list of member.
+     */
     public static List<Member> generateMemberList(
             List<List<String>> queryResult) {
         List<String> labels = queryResult.get(0).stream()

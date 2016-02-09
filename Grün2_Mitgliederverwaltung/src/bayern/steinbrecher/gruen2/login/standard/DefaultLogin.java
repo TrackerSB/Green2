@@ -20,6 +20,9 @@ public class DefaultLogin extends Login {
     private Stage primaryStage;
     private LoginController dlController;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
@@ -38,6 +41,9 @@ public class DefaultLogin extends Login {
         primaryStage.getIcons().add(DataProvider.getIcon());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<LoginKey, String> getLoginInformation() {
         if (primaryStage == null) {

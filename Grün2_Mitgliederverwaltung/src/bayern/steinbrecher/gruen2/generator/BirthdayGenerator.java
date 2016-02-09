@@ -15,11 +15,21 @@ import java.util.function.Function;
  */
 public class BirthdayGenerator {
 
+    /**
+     * Sorts according to a members birthday (year descending, month ascending,
+     * day ascending) and then according to members name.
+     */
     public static final Comparator<Member> SORTING = Comparator.comparing(
             (Member m) -> m.getPerson().getBirthday().getYear()).reversed()
             .thenComparing(m -> m.getPerson().getBirthday().getMonth())
             .thenComparing(m -> m.getPerson().getBirthday().getDayOfMonth())
             .thenComparing(m -> m.getPerson().getName());
+    /**
+     * Represents a function creating a {@code String} out of a {@code Member}
+     * containing the prename, lastname and the birthday of the member. Values
+     * are separated by semicolon and the {@code String} is closed by a
+     * linebreak.
+     */
     private static final Function<Member, String> PRINT_LINE = m -> {
         Person p = m.getPerson();
         return new StringBuilder().append(p.getPrename()).append(';')
@@ -27,11 +37,24 @@ public class BirthdayGenerator {
                 .append(p.getBirthday()).append('\n').toString();
     };
 
+    /**
+     * Prohibit construction of an object.
+     */
     private BirthdayGenerator() {
         throw new UnsupportedOperationException(
                 "Construction of an object not allowed.");
     }
 
+    /**
+     * Creates a {@code String} representing content for a CSV-file containing a
+     * grouped list of the given member and their age they had or will have in
+     * year {@code year}.
+     *
+     * @param member The member to print.
+     * @param year The year in which the age of the given member has to be
+     * calculated.
+     * @return
+     */
     public static String createGroupedOutput(List<Member> member, int year) {
         assert !member.isEmpty();
         member.sort(SORTING);
@@ -62,6 +85,17 @@ public class BirthdayGenerator {
         return output.toString();
     }
 
+    /**
+     * Appends all member of {@code currentAgeActive} and
+     * {@code currentAgePassiv} to {@code output} if the lists are not empty.
+     *
+     * @param output The {@code StringBuilder} to append the output to.
+     * @param currentAge The age of the member in the given lists.
+     * @param currentAgeActive The list of active member which are
+     * {@code currentAge} years old.
+     * @param currentAgePassive The list of passiv member which are
+     * {@code currentAge} years old.
+     */
     private static void tryAppendMember(StringBuilder output, int currentAge,
             List<Member> currentAgeActive, List<Member> currentAgePassive) {
         if (!currentAgeActive.isEmpty() || !currentAgePassive.isEmpty()) {
