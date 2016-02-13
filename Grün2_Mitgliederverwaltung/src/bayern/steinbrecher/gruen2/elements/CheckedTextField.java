@@ -1,6 +1,5 @@
 package bayern.steinbrecher.gruen2.elements;
 
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.IntegerProperty;
@@ -158,8 +157,8 @@ public class CheckedTextField extends TextField {
             tooLongProperty.setValue(
                     textProperty().get().length() > newVal.intValue());
         });
-        validProperty.bind(((tooLongProperty.or(emptyProperty))
-                .and(checkedProperty)).not());
+        validProperty.bind(tooLongProperty.or(emptyProperty)
+                .and(checkedProperty).not());
         validProperty.addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 getStyleClass().removeAll(
