@@ -3,8 +3,7 @@ package bayern.steinbrecher.gruen2.selection;
 import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.elements.CheckedDoubleSpinner;
 import java.net.URL;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -93,7 +92,7 @@ public class SelectionController<T extends Comparable> extends Controller {
     }
 
     public List<T> getSelection() {
-        List<T> selection = new LinkedList<>();
+        List<T> selection = new ArrayList<>();
         ObservableList<CheckBox> items = optionsListView.getItems();
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).isSelected()) {
