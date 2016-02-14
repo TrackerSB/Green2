@@ -20,6 +20,10 @@ public class DataProvider {
      */
     public static final String VALUE_SEPARATOR = "=";
     /**
+     * The file to the configurations for Grün2.
+     */
+    private static File configFile = new File(getAppDataPath() + "/Grün2.conf");
+    /**
      * The configurations found in gruen2.conf.
      */
     private static Map<ConfigKey, String> configs = null;
@@ -79,6 +83,28 @@ public class DataProvider {
         }
     }
 
+    private static void readConfigs() {
+        String[] parts = null;
+        configs = new HashMap<>();
+        try (Scanner sc = new Scanner(configFile)) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine().trim();
+                parts = line.split(VALUE_SEPARATOR);
+                if (parts.length != 2) {
+                    System.err.println("\"" + line + "\" has not exactly "
+                            + "two elements. It remains ignored.");
+                } else {
+                    configs.put(ConfigKey.valueOf(parts[0].toUpperCase()),
+                            parts[1]);
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            System.err.println("Configfile \"Grün2.conf\" not found.");
+        } catch (IllegalArgumentException ex) {
+            System.err.println(parts[0] + " is no valid configattribute.");
+        }
+    }
+
     /**
      * Returns the value belonging to key {@code key} or {@code defaultValue} if
      * {@code key} could not be found or is not specified.
@@ -90,23 +116,7 @@ public class DataProvider {
      */
     public static String getOrDefault(ConfigKey key, String defaultValue) {
         if (configs == null) {
-            configs = new HashMap<>();
-            try (Scanner sc = new Scanner(
-                    new File(getAppDataPath() + "/Grün2.conf"))) {
-                while (sc.hasNextLine()) {
-                    String line = sc.nextLine().trim();
-                    String[] parts = line.split(VALUE_SEPARATOR);
-                    if (parts.length != 2) {
-                        System.err.println("\"" + line + "\" has not exactly "
-                                + "two elements. It remains ignored.");
-                    } else {
-                        configs.put(ConfigKey.valueOf(parts[0].toUpperCase()),
-                                parts[1]);
-                    }
-                }
-            } catch (FileNotFoundException ex) {
-                System.err.println("Configfile \"Grün2.conf\" not found.");
-            }
+            readConfigs();
         }
         return configs.getOrDefault(key, defaultValue);
     }
@@ -118,5 +128,12 @@ public class DataProvider {
      */
     public static boolean useSsh() {
         return getOrDefault(ConfigKey.USE_SSH, "ja").equalsIgnoreCase("ja");
+    }
+
+    public static boolean hasAllConfigs() {
+        if (configs == null) {
+            readConfigs();
+        }
+        return configs.size() == ConfigKey.values().length;
     }
 }

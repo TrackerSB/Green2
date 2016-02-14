@@ -6,6 +6,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,10 +23,6 @@ import java.util.stream.Collectors;
  */
 public final class SshConnection implements DBConnection {
 
-    /**
-     * The ssh session used to connect to the database over a secure channel.
-     */
-    private Session sshSession;
     /**
      * The default port for ssh.
      */
@@ -46,6 +43,11 @@ public final class SshConnection implements DBConnection {
      * The password used to login into the database.
      */
     private final String databasePasswd;
+    /**
+     * The ssh session used to connect to the database over a secure channel.
+     */
+    private final Session sshSession;
+    private final ByteArrayOutputStream errStream = new ByteArrayOutputStream();
 
     /**
      * Constructes a new database connection over SSH.
@@ -70,6 +72,17 @@ public final class SshConnection implements DBConnection {
         this.databaseName = databaseName;
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.sshSession.connect();
+        try {
+            execQuery("SELECT 1");
+
+            //Check whether error occured.
+            if (errStream.size() > 0) {
+                throw new JSchException("Auth fail");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SshConnection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -101,7 +114,7 @@ public final class SshConnection implements DBConnection {
             throws SQLException {
         try {
             Channel channel = sshSession.openChannel("exec");
-            ((ChannelExec) channel).setErrStream(System.err);
+            ((ChannelExec) channel).setErrStream(errStream);
             ((ChannelExec) channel).setCommand("mysql"
                     + " -u" + databaseUsername
                     + " -p" + databasePasswd

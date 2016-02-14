@@ -12,7 +12,9 @@ import java.util.Map;
 public abstract class LoginController extends Controller {
 
     /**
-     * Returns the currently entered login information.
+     * Returns the currently entered login information. It returns {@code null}
+     * only if the window was closed without pressing a confirm button. That
+     * means if {@code userConfirmed} is {@code false}.
      *
      * @return The currently entered login information.
      */

@@ -20,6 +20,7 @@ import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.MemberGenerator;
 import com.jcraft.jsch.JSchException;
+import java.net.ConnectException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -75,6 +76,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        if (!DataProvider.hasAllConfigs()) {
+            ConfirmDialog.showConfirmDialog(
+                    "Es fehlen Konfigurationseinstellungen oder die "
+                    + "Konfigurationsdatei konnte nicht gefunden werden.\n"
+                    + "Frage bei stefan.huber.niedling@outlook.com nach.",
+                    primaryStage);
+            throw new IllegalStateException("Invalid configs.");
+        }
         this.primaryStage = primaryStage;
 
         Login login;
@@ -151,6 +160,14 @@ public class Main extends Application {
         return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
     }
 
+    /**
+     *
+     * @param login
+     * @param loginStage
+     * @return {@code null} only if the connection could not be established.
+     * E.g. the user closed the window or the configured connection is not
+     * reachable.
+     */
     private DBConnection getConnection(Login login, Stage loginStage) {
         DBConnection con = null;
         Map<LoginKey, String> loginInfos = login.getLoginInformation();
@@ -181,10 +198,20 @@ public class Main extends Application {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);
 
-                //Login invalid
-                ConfirmDialog.showConfirmDialog(
-                        "Prüfe deine Login-Daten", primaryStage);
-                loginInfos = login.getLoginInformation();
+                //Check "auth fail"
+                Throwable cause = ex.getCause();
+                String message = ex.getMessage();
+                if (cause instanceof ConnectException) {
+                    ConfirmDialog.showConfirmDialog("Prüfe, ob du "
+                            + "Internetverbindung hast, und ob Grün2 richtig "
+                            + "konfiguriert hast.", primaryStage);
+                } else if (message != null && message.contains("Auth fail")) {
+                    ConfirmDialog.showConfirmDialog(
+                            "Prüfe deine Login-Daten", primaryStage);
+                    loginInfos = login.getLoginInformation();
+                } else {
+                    System.err.println("Not action specified for: " + ex);
+                }
             }
         }
         return con;
