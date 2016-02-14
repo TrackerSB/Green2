@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2.main;
+package bayern.steinbrecher.gruen2.mainmenu;
 
 import bayern.steinbrecher.gruen2.Output;
 import bayern.steinbrecher.gruen2.connection.DBConnection;
@@ -36,6 +36,7 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,10 +46,9 @@ import javafx.stage.Stage;
 /**
  * @author Stefan Huber
  */
-public class Main extends Application {
+public class MainMenu extends Application {
 
-    private static final int CURRENT_YEAR = LocalDate.now().getYear();
-    private static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
+    public static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
             Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
                     "istmaennlich", "istaktiv", "geburtstag", "strasse",
                     "hausnummer", "plz", "ort", "istbeitragsfrei", "iban",
@@ -57,23 +57,18 @@ public class Main extends Application {
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
-    private MainController mcontroller;
-    private Stage primaryStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
-    private Future<List<Member>> memberBirthdayLastYear;
-    private Future<List<Member>> memberBirthdayThisYear;
-    private Future<List<Member>> memberBirthdayNextYear;
+    private Map<Integer, Future<List<Member>>> memberBirthday
+            = new HashMap<>(3);
     private Future<List<Member>> memberContributionfree;
     private Future<Map<String, String>> nicknames;
+    private MainMenuController mcontroller;
+    private Stage primaryStage;
 
     /**
-     * @param args the command line arguments
+     * {@inheritDoc}
      */
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         if (!DataProvider.hasAllConfigs()) {
@@ -95,9 +90,11 @@ public class Main extends Application {
         Stage loginStage = new Stage();
         login.start(loginStage);
 
-        DBConnection dbConnection = getConnection(login, loginStage);
+        DBConnection dbConnection = getConnection(login);
 
         if (dbConnection != null) {
+            executeQueries(dbConnection);
+
             primaryStage.showingProperty().addListener(
                     (obs, oldVal, newVal) -> {
                 if (!newVal) {
@@ -107,7 +104,7 @@ public class Main extends Application {
             });
 
             FXMLLoader fxmlLoader
-                    = new FXMLLoader(getClass().getResource("Main.fxml"));
+                    = new FXMLLoader(getClass().getResource("MainMenu.fxml"));
             Parent root = fxmlLoader.load();
             root.getStylesheets().add(DataProvider.getStylesheetPath());
 
@@ -120,25 +117,15 @@ public class Main extends Application {
             primaryStage.setResizable(false);
             primaryStage.getIcons().add(DataProvider.getIcon());
             primaryStage.show();
-
-            executeQueries(dbConnection);
         }
     }
 
-    public void executeQueries(DBConnection dbConnection) {
+    private void executeQueries(DBConnection dbConnection) {
         member = exserv.submit(() -> readMember(dbConnection));
-        memberBirthdayLastYear = exserv.submit(() -> member.get()
-                .parallelStream()
-                .filter(m -> hasBirthday(m, CURRENT_YEAR - 1))
-                .collect(Collectors.toList()));
-        memberBirthdayThisYear = exserv.submit(() -> member.get()
-                .parallelStream()
-                .filter(m -> hasBirthday(m, CURRENT_YEAR))
-                .collect(Collectors.toList()));
-        memberBirthdayNextYear = exserv.submit(() -> member.get()
-                .parallelStream()
-                .filter(m -> hasBirthday(m, CURRENT_YEAR + 1))
-                .collect(Collectors.toList()));
+        int currentYear = LocalDate.now().getYear();
+        IntStream.rangeClosed(currentYear - 1, currentYear + 1)
+                .forEach(y -> memberBirthday.put(
+                        y, exserv.submit(() -> getBirthdayMember(y))));
         memberContributionfree = exserv.submit(() -> member.get()
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
@@ -147,28 +134,15 @@ public class Main extends Application {
     }
 
     /**
-     * Checks whether the given member gets 50, 60, 70, 75, >= 80 in
-     * {@code year}.
+     * Asks the user for the needed logindata as long as the inserted data is
+     * not correct or the user abborts.
      *
-     * @param m The member to check.
-     * @param year The year to calculate his age at.
-     * @return {@code true} only if {@code m} has his 50th, 60th, 70th, 75th, >=
-     * 80th birthday in {@code year}.
-     */
-    private boolean hasBirthday(Member m, int year) {
-        int age = year - m.getPerson().getBirthday().getYear();
-        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
-    }
-
-    /**
-     *
-     * @param login
-     * @param loginStage
+     * @param login The loginframe used to ask the user.
      * @return {@code null} only if the connection could not be established.
      * E.g. the user closed the window or the configured connection is not
      * reachable.
      */
-    private DBConnection getConnection(Login login, Stage loginStage) {
+    private DBConnection getConnection(Login login) {
         DBConnection con = null;
         Map<LoginKey, String> loginInfos = login.getLoginInformation();
         while (con == null && loginInfos != null) {
@@ -195,7 +169,7 @@ public class Main extends Application {
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
             } catch (JSchException | SQLException ex) {
-                Logger.getLogger(Main.class.getName())
+                Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);
 
                 //Check "auth fail"
@@ -203,11 +177,11 @@ public class Main extends Application {
                 String message = ex.getMessage();
                 if (cause instanceof ConnectException) {
                     ConfirmDialog.showConfirmDialog("Prüfe, ob du "
-                            + "Internetverbindung hast, und ob Grün2 richtig "
-                            + "konfiguriert hast.", primaryStage);
+                            + "Internetverbindung hast, und ob du Grün2 "
+                            + "richtig konfiguriert hast.", primaryStage);
                 } else if (message != null && message.contains("Auth fail")) {
                     ConfirmDialog.showConfirmDialog(
-                            "Prüfe deine Login-Daten", primaryStage);
+                            "Prüfe deine Eingaben.", primaryStage);
                     loginInfos = login.getLoginInformation();
                 } else {
                     System.err.println("Not action specified for: " + ex);
@@ -217,7 +191,14 @@ public class Main extends Application {
         return con;
     }
 
-    public List<Member> readMember(DBConnection dbc) {
+    /**
+     * Returns a list of all member accessable with {@code dbc}. The list
+     * contains all labels hold in {@code COLUMN_LABELS_MEMBER}.
+     *
+     * @param dbc The connection to use for accessing the data.
+     * @return The list with the member.
+     */
+    public static List<Member> readMember(DBConnection dbc) {
         try {
             return MemberGenerator.generateMemberList(dbc.execQuery(
                     "SELECT " + ALL_COLUMN_LABELS_MEMBER
@@ -225,9 +206,18 @@ public class Main extends Application {
                     + " FROM Mitglieder "
                     + "WHERE AusgetretenSeit='0000-00-00'"));
         } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
             return null;
         }
+    }
+
+    private List<Member> getBirthdayMember(int year)
+            throws InterruptedException, ExecutionException {
+        return member.get()
+                .parallelStream()
+                .filter(m -> BirthdayGenerator.getsNotify(m, year))
+                .collect(Collectors.toList());
     }
 
     private void generateAddresses(Future<List<Member>> member,
@@ -236,7 +226,8 @@ public class Main extends Application {
             Output.printContent(AddressGenerator.generateAddressData(
                     member.get(), nicknames.get()), filename);
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
     }
 
@@ -245,46 +236,29 @@ public class Main extends Application {
                 DataProvider.getSavepath() + "/Serienbrief_alle.csv");
     }
 
-    void generateAddressesBirthdayLastYear() {
-        int lastYear = LocalDate.now().getYear() - 1;
-        generateAddresses(memberBirthdayLastYear, DataProvider.getSavepath()
-                + "/Serienbrief_Geburtstag_" + lastYear + ".csv");
+    void generateAddressesBirthday(int year) {
+        memberBirthday.putIfAbsent(
+                year, exserv.submit(() -> getBirthdayMember(year)));
+        generateAddresses(memberBirthday.get(year), DataProvider.getSavepath()
+                + "/Serienbrief_Geburtstag_" + year + ".csv");
     }
 
-    void generateAddressesBirthdayThisYear() {
-        int currentYear = LocalDate.now().getYear();
-        generateAddresses(memberBirthdayThisYear, DataProvider.getSavepath()
-                + "/Serienbrief_Geburtstag_" + currentYear + ".csv");
-    }
-
-    void generateAddressesBirthdayNextYear() {
-        generateAddresses(memberBirthdayNextYear, DataProvider.getSavepath()
-                + "/Serienbrief_Geburtstag_" + (CURRENT_YEAR + 1) + ".csv");
-    }
-
-    void generateBirthdayInfos(Future<List<Member>> member, int year) {
+    void generateBirthdayInfos(int year) {
+        memberBirthday.putIfAbsent(
+                year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             Output.printContent(
-                    BirthdayGenerator.createGroupedOutput(member.get(), year),
-                    DataProvider.getSavepath() + "/Geburtstag_" + year + ".csv");
+                    BirthdayGenerator.createGroupedOutput(
+                            memberBirthday.get(year).get(), year),
+                    DataProvider.getSavepath()
+                    + "/Geburtstag_" + year + ".csv");
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
     }
 
-    void generateBirthdayLastYearInfos() {
-        generateBirthdayInfos(memberBirthdayLastYear, CURRENT_YEAR - 1);
-    }
-
-    void generateBirthdayThisYearInfos() {
-        generateBirthdayInfos(memberBirthdayThisYear, CURRENT_YEAR);
-    }
-
-    void generateBirthdayNextYearInfos() {
-        generateBirthdayInfos(memberBirthdayNextYear, CURRENT_YEAR + 1);
-    }
-
-    public Map<String, String> readNicknames(DBConnection dbc) {
+    public static Map<String, String> readNicknames(DBConnection dbc) {
         Map<String, String> mappedNicknames = new HashMap<>();
         try {
             List<List<String>> queriedNicknames
@@ -296,7 +270,8 @@ public class Main extends Application {
                 mappedNicknames.put(row.get(nameIndex), row.get(nicknameIndex));
             });
         } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
         return mappedNicknames;
     }
@@ -308,7 +283,8 @@ public class Main extends Application {
             sepaForm.start(new Stage());
             originator = sepaForm.getOriginator();
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
 
         if (originator != null) {
@@ -334,10 +310,10 @@ public class Main extends Application {
                 }
 
             } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(Main.class.getName())
+                Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName())
+                Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
         }
@@ -349,5 +325,14 @@ public class Main extends Application {
 
     void generateContributionSepa() {
         generateSepa(memberContributionfree);
+    }
+
+    /**
+     * The starting point of the hole application.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
     }
 }

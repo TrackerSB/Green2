@@ -114,4 +114,18 @@ public class BirthdayGenerator {
             }
         }
     }
+
+    /**
+     * Checks whether the given member gets 50, 60, 70, 75, >= 80 in
+     * {@code year}.
+     *
+     * @param m The member to check.
+     * @param year The year to calculate his age at.
+     * @return {@code true} only if {@code m} has his 50th, 60th, 70th, 75th, >=
+     * 80th birthday in {@code year}.
+     */
+    public static boolean getsNotify(Member m, int year) {
+        int age = year - m.getPerson().getBirthday().getYear();
+        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
+    }
 }

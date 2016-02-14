@@ -15,8 +15,26 @@ import javafx.stage.Window;
  *
  * @author Stefan Huber
  */
-public class ConfirmDialog {
+public final class ConfirmDialog {
 
+    private static final int MIN_WIDTH = 250;
+    private static final int MIN_HEIGHT = 100;
+
+    /**
+     * Prohibit construction of an object.
+     */
+    private ConfirmDialog() {
+        throw new UnsupportedOperationException(
+                "Construction of an object not allowed.");
+    }
+
+    /**
+     * Creates a new dialog showing {@code message} and a single button for
+     * confirmation. This method blocks until the dialog is closed.
+     *
+     * @param message The message to display.
+     * @param owner The window making unaccessible until this dialog is closed.
+     */
     public static void showConfirmDialog(String message, Window owner) {
         Stage stage = new Stage();
         stage.initModality(Modality.WINDOW_MODAL);
@@ -32,8 +50,8 @@ public class ConfirmDialog {
         dialogContent.setStyle("-fx-spacing:10px");
         dialogContent.setAlignment(Pos.CENTER);
 
-        stage.setMinWidth(250);
-        stage.setMinHeight(100);
+        stage.setMinWidth(MIN_WIDTH);
+        stage.setMinHeight(MIN_HEIGHT);
         Scene scene = new Scene(dialogContent);
         stage.setScene(scene);
         stage.setTitle("Info");

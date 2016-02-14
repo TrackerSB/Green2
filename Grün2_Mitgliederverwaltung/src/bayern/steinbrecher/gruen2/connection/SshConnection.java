@@ -72,6 +72,8 @@ public final class SshConnection implements DBConnection {
         this.databaseName = databaseName;
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.sshSession.connect();
+
+        //Check correctness of the database login data
         try {
             execQuery("SELECT 1");
 

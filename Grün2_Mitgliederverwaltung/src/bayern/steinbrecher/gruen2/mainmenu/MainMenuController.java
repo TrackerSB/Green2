@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2.main;
+package bayern.steinbrecher.gruen2.mainmenu;
 
 import bayern.steinbrecher.gruen2.Controller;
 import java.net.URL;
@@ -8,13 +8,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 /**
- * Controller for Main.fxml.
+ * Controller for MainMenu.fxml.
  *
  * @author Stefan Huber
  */
-public class MainController extends Controller {
+public class MainMenuController extends Controller {
 
-    private Main caller;
+    private static final int CURRENT_YEAR = LocalDate.now().getYear();
+    private MainMenu caller;
     @FXML
     private Button generateContribution;
     @FXML
@@ -34,24 +35,26 @@ public class MainController extends Controller {
     @FXML
     private Button generateBirthdayNextYearInfos;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        int currentYear = LocalDate.now().getYear();
         generateAddressesBirthdayLastYear.setText(
-                "Von Geburtstagsmitgliedern " + (currentYear - 1));
+                "Von Geburtstagsmitgliedern " + (CURRENT_YEAR - 1));
         generateAddressesBirthdayThisYear.setText(
-                "Von Geburtstagsmitgliedern " + currentYear);
+                "Von Geburtstagsmitgliedern " + CURRENT_YEAR);
         generateAddressesBirthdayNextYear.setText(
-                "Von Geburtstagsmitgliedern " + (currentYear + 1));
+                "Von Geburtstagsmitgliedern " + (CURRENT_YEAR + 1));
         generateBirthdayLastYearInfos.setText(
-                "Geburtstagsmitglieder " + (currentYear - 1) + " gruppiert");
+                "Geburtstagsmitglieder " + (CURRENT_YEAR - 1) + " gruppiert");
         generateBirthdayThisYearInfos.setText(
-                "Geburtstagsmitglieder " + currentYear + " gruppiert");
+                "Geburtstagsmitglieder " + CURRENT_YEAR + " gruppiert");
         generateBirthdayNextYearInfos.setText(
-                "Geburtstagsmitglieder " + (currentYear + 1) + " gruppiert");
+                "Geburtstagsmitglieder " + (CURRENT_YEAR + 1) + " gruppiert");
     }
 
-    public void setCaller(Main caller) {
+    public void setCaller(MainMenu caller) {
         this.caller = caller;
     }
 
@@ -91,7 +94,7 @@ public class MainController extends Controller {
             throw new IllegalStateException("caller is not set");
         }
         generateAddressesBirthdayLastYear.setDisable(true);
-        caller.generateAddressesBirthdayLastYear();
+        caller.generateAddressesBirthday(CURRENT_YEAR - 1);
         generateAddressesBirthdayLastYear.setDisable(false);
     }
 
@@ -101,7 +104,7 @@ public class MainController extends Controller {
             throw new IllegalStateException("caller is not set");
         }
         generateAddressesBirthdayThisYear.setDisable(true);
-        caller.generateAddressesBirthdayThisYear();
+        caller.generateAddressesBirthday(CURRENT_YEAR);
         generateAddressesBirthdayThisYear.setDisable(false);
     }
 
@@ -111,7 +114,7 @@ public class MainController extends Controller {
             throw new IllegalStateException("caller is not set");
         }
         generateAddressesBirthdayNextYear.setDisable(true);
-        caller.generateAddressesBirthdayNextYear();
+        caller.generateAddressesBirthday(CURRENT_YEAR + 1);
         generateAddressesBirthdayNextYear.setDisable(false);
     }
 
@@ -121,7 +124,7 @@ public class MainController extends Controller {
             throw new IllegalStateException("caller is not set");
         }
         generateBirthdayLastYearInfos.setDisable(true);
-        caller.generateBirthdayLastYearInfos();
+        caller.generateBirthdayInfos(CURRENT_YEAR - 1);
         generateBirthdayLastYearInfos.setDisable(false);
     }
 
@@ -131,7 +134,7 @@ public class MainController extends Controller {
             throw new IllegalStateException("caller is not set");
         }
         generateBirthdayThisYearInfos.setDisable(true);
-        caller.generateBirthdayThisYearInfos();
+        caller.generateBirthdayInfos(CURRENT_YEAR);
         generateBirthdayThisYearInfos.setDisable(false);
     }
 
@@ -141,7 +144,7 @@ public class MainController extends Controller {
             throw new IllegalStateException("caller is not set");
         }
         generateBirthdayNextYearInfos.setDisable(true);
-        caller.generateBirthdayNextYearInfos();
+        caller.generateBirthdayInfos(CURRENT_YEAR + 1);
         generateBirthdayNextYearInfos.setDisable(false);
     }
 }

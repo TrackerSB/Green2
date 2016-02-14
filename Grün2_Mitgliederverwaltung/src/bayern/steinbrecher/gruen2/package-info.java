@@ -20,12 +20,14 @@
  *     <li>KontoinhaberVorname (Only needed when Vorname is different from the prename of the account holder)</li>
  *     <li>KontoinhaberNachname (Only needed when Nachname is different from the lastname of the account holder)</li>
  *     <li>istBeitragsfrei (0=has to pay contribution, 1=has not to pay contribution)</li>
- *     </ul></li>
+ *     </ul>
+ * </li>
  * <li>Spitznamen
  *     <ul>
  *     <li>Name (The real name; primary key)</li>
- *     <li>Nichname (The associated name)</li>
- *     </ul></li>
+ *     <li>Nickname (The associated name)</li>
+ *     </ul>
+ * </li>
  * </ul>
  */
 package bayern.steinbrecher.gruen2;
