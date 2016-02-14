@@ -77,6 +77,7 @@ public final class SshConnection implements DBConnection {
 
             //Check whether error occured.
             if (errStream.size() > 0) {
+                close();
                 throw new JSchException("Auth fail");
             }
         } catch (SQLException ex) {
