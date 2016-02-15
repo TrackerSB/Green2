@@ -5,7 +5,7 @@
 <?import bayern.steinbrecher.gruen2.elements.*?>
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.sepaform.SepaFormController">
-    <Label text="Name des Einreichers: (Max. 70 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <Label text="Name des Einreichers:&#10;(Max. 70 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="0" />
     <CheckedTextField maxColumnCount="70" promptText="Name des Einreichers" fx:id="creatorTextField" onAction="#ready" GridPane.columnIndex="1" GridPane.rowIndex="0" />
     <Label text="Kontoinhaber:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
     <CheckedTextField promptText="Kontoinhaber" fx:id="creditorTextField" onAction="#ready" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -19,12 +19,12 @@
     <CheckedTextField promptText="Verwendungszweck" fx:id="purposeTextField" onAction="#ready" GridPane.columnIndex="1" GridPane.rowIndex="5" />
     <Label text="Ausführungsdatum:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
     <CheckedDatePicker promptText="Ausführungsdatum" fx:id="executionDatePicker" onKeyPressed="#readyIfEnter"  GridPane.columnIndex="1" GridPane.rowIndex="6" />
-    <Label text="Message-ID: (Max. 35 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+    <Label text="Message-ID:&#10;(Max. 35 Zeichen)&#10;(Muss für 15 Tage eindeutig sein)" GridPane.columnIndex="0" GridPane.rowIndex="7" />
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="7" spacing="5" >
         <CheckedTextField maxColumnCount="35" promptText="Message-ID" fx:id="messageIdTextField" onAction="#ready" />
         <Button text="Erstellen" onAction="#generateMessageId" />
     </HBox>
-    <Label text="Payment Information Identification: (Max. 35 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+    <Label text="Payment Information Identification:&#10;(Max. 35 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="8" />
     <CheckedTextField maxColumnCount="35" promptText="Payment Information Identification" fx:id="pmtInfIdTextField" onAction="#ready" GridPane.columnIndex="1" GridPane.rowIndex="8" />
     
     <Label text="Eingabe zu lang" styleClass="warningLabel" visible="false" fx:id="inputTooLongLabel" GridPane.columnIndex="1" GridPane.rowIndex="9" />

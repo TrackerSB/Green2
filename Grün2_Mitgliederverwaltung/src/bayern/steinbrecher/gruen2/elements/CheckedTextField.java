@@ -151,7 +151,8 @@ public class CheckedTextField extends TextField {
     private void initProperties() {
         emptyProperty.bind(textProperty().isEmpty());
         textProperty().addListener((obs, oldVal, newVal) -> {
-            tooLongProperty.set(newVal.length() > maxColumnCountProperty.get());
+            tooLongProperty.set(newVal != null
+                    && newVal.length() > maxColumnCountProperty.get());
         });
         maxColumnCountProperty.addListener((obs, oldVal, newVal) -> {
             tooLongProperty.setValue(
