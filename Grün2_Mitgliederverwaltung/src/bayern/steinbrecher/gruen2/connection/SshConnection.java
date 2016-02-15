@@ -47,6 +47,10 @@ public final class SshConnection implements DBConnection {
      * The ssh session used to connect to the database over a secure channel.
      */
     private final Session sshSession;
+    /**
+     * The stream representing the output of the error stream of the ssh
+     * session.
+     */
     private final ByteArrayOutputStream errStream = new ByteArrayOutputStream();
 
     /**

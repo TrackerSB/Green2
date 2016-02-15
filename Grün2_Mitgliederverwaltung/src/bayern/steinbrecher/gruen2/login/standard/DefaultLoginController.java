@@ -87,6 +87,9 @@ public class DefaultLoginController extends LoginController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<LoginKey, String> getLoginInformation() {
         Map<LoginKey, String> loginInfo = new HashMap<>(2);
