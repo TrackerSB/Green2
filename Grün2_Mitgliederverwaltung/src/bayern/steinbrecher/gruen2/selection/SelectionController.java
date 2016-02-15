@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ListPropertyBase;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -26,7 +29,18 @@ public class SelectionController<T extends Comparable> extends Controller {
 
     @FXML
     private ListView<CheckBox> optionsListView;
-    private List<T> options;
+    private ListProperty<T> optionsProperty
+            = new ListPropertyBase<T>(FXCollections.observableArrayList()) {
+        @Override
+        public SelectionController getBean() {
+            return SelectionController.this;
+        }
+
+        @Override
+        public String getName() {
+            return "options";
+        }
+    };
     @FXML
     private Button selectAllButton;
     @FXML
@@ -54,14 +68,6 @@ public class SelectionController<T extends Comparable> extends Controller {
     private CheckedDoubleSpinner contributionSpinner;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
-        ObservableList<CheckBox> items = optionsListView.getItems();
-        boolean disableSelectAll = items.parallelStream()
-                .allMatch(CheckBox::isSelected);
-        selectAllButton.setDisable(disableSelectAll);
-        boolean disableSelectNone = items.parallelStream()
-                .allMatch(cb -> !cb.isSelected());
-        selectNoneButton.setDisable(disableSelectNone);
-        missingInput.setVisible(disableSelectNone);
         if (newVal) {
             currentSelectedCount.set(currentSelectedCount.get() + 1);
         } else {
@@ -71,31 +77,38 @@ public class SelectionController<T extends Comparable> extends Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        contributionSpinner.validProperty()
-                .addListener((obs, oldVal, newVal) -> {
-                    selectButton.setDisable(
-                            selectNoneButton.isDisabled() || !newVal);
-                });
         contributionSpinner.getEditor().setOnAction(aevt -> select());
-        selectNoneButton.disabledProperty()
-                .addListener((obs, oldValue, newValue) -> {
-                    selectButton.setDisable(selectNoneButton.isDisabled()
-                            || !contributionSpinner.validProperty().get());
+        contributionSpinner.validProperty()
+                .not()
+                .or(currentSelectedCount.lessThanOrEqualTo(0))
+                .addListener((obs, oldVal, newVal) -> {
+                    missingInput.setVisible(newVal);
+                    selectButton.setDisable(newVal);
+                });
+        currentSelectedCount.lessThanOrEqualTo(0)
+                .addListener((obs, oldVal, newVal) -> {
+                    selectNoneButton.setDisable(newVal);
                 });
         currentSelectedCount.addListener((obs, oldVal, newVal) -> {
             selectedCount.setText(newVal.toString());
         });
+        optionsProperty.addListener((obs, oldVal, newVal) -> {
+            optionsListView.getItems().clear();
+            newVal.stream().sorted().forEach(op -> {
+                CheckBox newItem = new CheckBox(op.toString());
+                newItem.selectedProperty().addListener(selectionChange);
+                optionsListView.getItems().add(newItem);
+            });
+            itemCount.setText(String.valueOf(newVal.size()));
+            currentSelectedCount.greaterThanOrEqualTo(newVal.size())
+                    .addListener((obss, oldVall, newVall) -> {
+                        selectAllButton.setDisable(newVall);
+                    });
+        });
     }
 
     public void setOptions(List<T> options) {
-        optionsListView.getItems().clear();
-        this.options = options;
-        options.stream().sorted().forEach(op -> {
-            CheckBox newItem = new CheckBox(op.toString());
-            newItem.selectedProperty().addListener(selectionChange);
-            optionsListView.getItems().add(newItem);
-        });
-        itemCount.setText(String.valueOf(options.size()));
+        this.optionsProperty.setAll(options);
     }
 
     @FXML
@@ -122,7 +135,7 @@ public class SelectionController<T extends Comparable> extends Controller {
         ObservableList<CheckBox> items = optionsListView.getItems();
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).isSelected()) {
-                selection.add(options.get(i));
+                selection.add(optionsProperty.get(i));
             }
         }
         return selection;
