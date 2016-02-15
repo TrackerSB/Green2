@@ -4,15 +4,24 @@
 <?import javafx.scene.layout.*?>
 <?import bayern.steinbrecher.gruen2.elements.*?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.selection.SelectionController">
-    <ListView fx:id="optionsListView" maxHeight="300" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2" />
-    <Label text="Betrag in €" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <CheckedTextField onAction="#select" fx:id="contributionTextField" text="10" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-    <CheckedDoubleSpinner min="0" max="200" initialValue="10" amountToStepBy="1" fx:id="contributionSpinner" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="true" />
-    
-    <Button fx:id="selectAllButton" text="Alles auswählen" onAction="#selectAllOptions" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-    <Button fx:id="selectNoneButton" text="Nichts auswählen" disable="true" onAction="#selectNoOption" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-    
-    <Button text="Fertig" fx:id="selectButton" disable="true" onAction="#select" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-    <Label fx:id="missingInput" text="Auswahl fehlt" styleClass="warningLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-</GridPane>
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.selection.SelectionController">
+    <ListView fx:id="optionsListView" maxHeight="300" />
+    <HBox spacing="10">
+        <Label text="Betrag in €" />
+        <CheckedDoubleSpinner min="0" max="200" initialValue="10" amountToStepBy="1" fx:id="contributionSpinner" editable="true" />
+    </HBox>
+    <HBox>
+        <Label fx:id="selectedCount" text="0" />
+        <Label text=" von " />
+        <Label fx:id="itemCount" text="0" />
+        <Label text=" ausgewählt" />
+    </HBox>
+    <HBox spacing="10">
+        <Button fx:id="selectAllButton" text="Alles auswählen" onAction="#selectAllOptions" />
+        <Button fx:id="selectNoneButton" text="Nichts auswählen" disable="true" onAction="#selectNoOption" />
+    </HBox>
+    <HBox spacing="10">
+        <Button text="Fertig" fx:id="selectButton" disable="true" onAction="#select" />
+        <Label fx:id="missingInput" text="Auswahl fehlt" styleClass="warningLabel" />
+    </HBox>
+</VBox>

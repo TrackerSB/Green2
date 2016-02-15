@@ -82,7 +82,7 @@ public class MainMenu extends Application {
             throw new IllegalStateException("Invalid configs.");
         }
         this.primaryStage = primaryStage;
-
+        
         Login login;
         if (DataProvider.useSsh()) {
             login = new SshLogin();

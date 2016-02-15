@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -34,6 +36,21 @@ public class SelectionController<T extends Comparable> extends Controller {
     @FXML
     private Label missingInput;
     @FXML
+    private Label selectedCount;
+    private IntegerProperty currentSelectedCount = new IntegerPropertyBase() {
+        @Override
+        public Object getBean() {
+            return SelectionController.this;
+        }
+
+        @Override
+        public String getName() {
+            return "currentSelectedCount";
+        }
+    };
+    @FXML
+    private Label itemCount;
+    @FXML
     private CheckedDoubleSpinner contributionSpinner;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
@@ -45,6 +62,11 @@ public class SelectionController<T extends Comparable> extends Controller {
                 .allMatch(cb -> !cb.isSelected());
         selectNoneButton.setDisable(disableSelectNone);
         missingInput.setVisible(disableSelectNone);
+        if (newVal) {
+            currentSelectedCount.set(currentSelectedCount.get() + 1);
+        } else {
+            currentSelectedCount.set(currentSelectedCount.get() - 1);
+        }
     };
 
     @Override
@@ -54,12 +76,15 @@ public class SelectionController<T extends Comparable> extends Controller {
                     selectButton.setDisable(
                             selectNoneButton.isDisabled() || !newVal);
                 });
-
+        contributionSpinner.getEditor().setOnAction(aevt -> select());
         selectNoneButton.disabledProperty()
                 .addListener((obs, oldValue, newValue) -> {
                     selectButton.setDisable(selectNoneButton.isDisabled()
                             || !contributionSpinner.validProperty().get());
                 });
+        currentSelectedCount.addListener((obs, oldVal, newVal) -> {
+            selectedCount.setText(newVal.toString());
+        });
     }
 
     public void setOptions(List<T> options) {
@@ -70,6 +95,7 @@ public class SelectionController<T extends Comparable> extends Controller {
             newItem.selectedProperty().addListener(selectionChange);
             optionsListView.getItems().add(newItem);
         });
+        itemCount.setText(String.valueOf(options.size()));
     }
 
     @FXML
