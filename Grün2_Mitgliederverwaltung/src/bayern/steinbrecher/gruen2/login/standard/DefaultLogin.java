@@ -18,9 +18,6 @@ import javafx.stage.Stage;
  */
 public class DefaultLogin extends Login {
 
-    private Stage primaryStage;
-    private LoginController dlController;
-
     /**
      * {@inheritDoc}
      */
@@ -33,25 +30,12 @@ public class DefaultLogin extends Login {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        dlController = fxmlLoader.getController();
-        dlController.setStage(primaryStage);
+        loginContoller = fxmlLoader.getController();
+        loginContoller.setStage(primaryStage);
 
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("Login");
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(DataProvider.getIcon());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<Map<LoginKey, String>> getLoginInformation() {
-        if (primaryStage == null) {
-            throw new IllegalStateException(
-                    "start(...) has to be called first");
-        }
-        primaryStage.showAndWait();
-        return dlController.getLoginInformation();
     }
 }

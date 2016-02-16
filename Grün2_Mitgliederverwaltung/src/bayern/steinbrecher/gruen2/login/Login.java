@@ -13,6 +13,9 @@ import javafx.stage.Stage;
  */
 public abstract class Login extends Application {
 
+    protected Stage primaryStage;
+    protected LoginController loginContoller;
+
     /**
      * Returns the Information that was entered in the login. This method blocks
      * until the frame is closed or hidden.
@@ -20,5 +23,12 @@ public abstract class Login extends Application {
      * @return The Information that was entered in the login.
      * @see Stage#showAndWait()
      */
-    public abstract Optional<Map<LoginKey, String>> getLoginInformation();
+    public Optional<Map<LoginKey, String>> getLoginInformation() {
+        if (primaryStage == null) {
+            throw new IllegalStateException(
+                    "start(...) has to be called first");
+        }
+        primaryStage.showAndWait();
+        return loginContoller.getLoginInformation();
+    }
 }

@@ -19,15 +19,6 @@ import javafx.stage.Stage;
 public class SshLogin extends Login {
 
     /**
-     * The stage used to show this login.
-     */
-    private Stage primaryStage;
-    /**
-     * The controller used for the view.
-     */
-    private LoginController sshController;
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -39,25 +30,12 @@ public class SshLogin extends Login {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        sshController = fxmlLoader.getController();
-        sshController.setStage(primaryStage);
+        loginContoller = fxmlLoader.getController();
+        loginContoller.setStage(primaryStage);
 
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("Login");
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(DataProvider.getIcon());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<Map<LoginKey, String>> getLoginInformation() {
-        if (primaryStage == null) {
-            throw new IllegalStateException(
-                    "start(...) has to be called first");
-        }
-        primaryStage.showAndWait();
-        return sshController.getLoginInformation();
     }
 }
