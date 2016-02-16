@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -66,7 +67,7 @@ public class SshLoginController extends LoginController {
      * {@inheritDoc}
      */
     @Override
-    public Map<LoginKey, String> getLoginInformation() {
+    public Optional<Map<LoginKey, String>> getLoginInformation() {
         Map<LoginKey, String> loginInfo = new HashMap<>(4);
         loginInfo.put(LoginKey.DATABASE_USERNAME,
                 databaseUsernameField.getText());
@@ -74,7 +75,10 @@ public class SshLoginController extends LoginController {
                 databasePasswordField.getText());
         loginInfo.put(LoginKey.SSH_USERNAME, sshUsernameField.getText());
         loginInfo.put(LoginKey.SSH_PASSWORD, sshPasswordField.getText());
-        return loginInfo;
+        if (userConfirmed) {
+            return Optional.of(loginInfo);
+        }
+        return Optional.empty();
     }
 
     /**

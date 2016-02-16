@@ -3,6 +3,7 @@ package bayern.steinbrecher.gruen2.login;
 import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents a controller for a login.
@@ -18,5 +19,5 @@ public abstract class LoginController extends Controller {
      *
      * @return The currently entered login information.
      */
-    public abstract Map<LoginKey, String> getLoginInformation();
+    public abstract Optional<Map<LoginKey, String>> getLoginInformation();
 }

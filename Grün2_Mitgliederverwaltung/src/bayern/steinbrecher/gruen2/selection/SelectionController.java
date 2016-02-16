@@ -5,6 +5,7 @@ import bayern.steinbrecher.gruen2.elements.CheckedDoubleSpinner;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
@@ -130,21 +131,24 @@ public class SelectionController<T extends Comparable> extends Controller {
                 .forEach(cb -> cb.setSelected(false));
     }
 
-    public List<T> getSelection() {
-        List<T> selection = new ArrayList<>();
-        ObservableList<CheckBox> items = optionsListView.getItems();
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).isSelected()) {
-                selection.add(optionsProperty.get(i));
+    public Optional<List<T>> getSelection() {
+        if (userConfirmed) {
+            List<T> selection = new ArrayList<>();
+            ObservableList<CheckBox> items = optionsListView.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).isSelected()) {
+                    selection.add(optionsProperty.get(i));
+                }
             }
+            return Optional.of(selection);
         }
-        return selection;
+        return Optional.empty();
     }
 
-    public Double getContribution() {
+    public Optional<Double> getContribution() {
         if (userConfirmed) {
-            return contributionSpinner.getValue();
+            return Optional.of(contributionSpinner.getValue());
         }
-        return null;
+        return Optional.empty();
     }
 }

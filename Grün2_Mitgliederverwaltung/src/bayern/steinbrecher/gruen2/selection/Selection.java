@@ -2,6 +2,7 @@ package bayern.steinbrecher.gruen2.selection;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -24,10 +25,20 @@ public class Selection<T extends Comparable> extends Application {
     private boolean gotShown = false;
     private boolean gotClosed = false;
 
+    /**
+     * Greates a new Frame representing the given options as selectable
+     * {@code CheckBox}es and representing a {@code TextField} for entering a
+     * number.
+     *
+     * @param options The options the user is allowed to select.
+     */
     public Selection(List<T> options) {
         this.options = options;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
@@ -47,16 +58,40 @@ public class Selection<T extends Comparable> extends Application {
         primaryStage.getIcons().add(DataProvider.getIcon());
     }
 
-    public List<T> getSelection() {
+    /**
+     * The list of items which were selected when the user closed the window.
+     * This is list won´t be empty.
+     *
+     * @return An not-empty list containing the selection.
+     */
+    public Optional<List<T>> getSelection() {
+        if (primaryStage == null) {
+            throw new IllegalStateException(
+                    "start(...) has to be called first");
+        }
         onlyShowOnce();
         return scontroller.getSelection();
     }
 
-    public double getContribution() {
+    /**
+     * Returns the value entered in the the {@code TextField}.
+     *
+     * @return The value entered in the the {@code TextField}.
+     */
+    public Optional<Double> getContribution() {
+        if (primaryStage == null) {
+            throw new IllegalStateException(
+                    "start(...) has to be called first");
+        }
         onlyShowOnce();
         return scontroller.getContribution();
     }
 
+    /**
+     * Makes sure the window is only shown once. That means frequently calling
+     * {@code getContribution()} or {@code getSelection()} won´t open the frame
+     * again if it already was open.
+     */
     private synchronized void onlyShowOnce() {
         if (!gotShown) {
             gotShown = true;

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -137,10 +138,10 @@ public class SepaFormController extends Controller {
         }
     }
 
-    public Originator getOriginator() {
+    public Optional<Originator> getOriginator() {
         if (userConfirmed) {
-            return originator;
+            return Optional.of(originator);
         }
-        return null;
+        return Optional.empty();
     }
 }

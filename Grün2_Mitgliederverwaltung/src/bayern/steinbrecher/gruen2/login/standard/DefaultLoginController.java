@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -91,12 +92,15 @@ public class DefaultLoginController extends LoginController {
      * {@inheritDoc}
      */
     @Override
-    public Map<LoginKey, String> getLoginInformation() {
+    public Optional<Map<LoginKey, String>> getLoginInformation() {
         Map<LoginKey, String> loginInfo = new HashMap<>(2);
         loginInfo.put(LoginKey.DATABASE_USERNAME,
                 databaseUsernameField.getText());
         loginInfo.put(LoginKey.DATABASE_PASSWORD,
                 databasePasswordField.getText());
-        return loginInfo;
+        if (userConfirmed) {
+            return Optional.of(loginInfo);
+        }
+        return Optional.empty();
     }
 }

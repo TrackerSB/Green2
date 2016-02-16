@@ -2,6 +2,7 @@ package bayern.steinbrecher.gruen2.sepaform;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.sepa.Originator;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -37,7 +38,11 @@ public class SepaForm extends Application {
         primaryStage.getIcons().add(DataProvider.getIcon());
     }
 
-    public Originator getOriginator() {
+    public Optional<Originator> getOriginator() {
+        if (primaryStage == null) {
+            throw new IllegalStateException(
+                    "start(...) has to be called first");
+        }
         if (!wasShown) {
             primaryStage.showAndWait();
             wasShown = true;

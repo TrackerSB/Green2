@@ -5,6 +5,7 @@ import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.LoginController;
 import java.util.Map;
+import java.util.Optional;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -51,15 +52,12 @@ public class SshLogin extends Login {
      * {@inheritDoc}
      */
     @Override
-    public Map<LoginKey, String> getLoginInformation() {
+    public Optional<Map<LoginKey, String>> getLoginInformation() {
         if (primaryStage == null) {
             throw new IllegalStateException(
                     "start(...) has to be called first");
         }
         primaryStage.showAndWait();
-        if (!sshController.userConfirmed()) {
-            return null;
-        }
         return sshController.getLoginInformation();
     }
 }

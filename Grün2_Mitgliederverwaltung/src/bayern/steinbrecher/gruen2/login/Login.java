@@ -2,6 +2,7 @@ package bayern.steinbrecher.gruen2.login;
 
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import java.util.Map;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -19,5 +20,5 @@ public abstract class Login extends Application {
      * @return The Information that was entered in the login.
      * @see Stage#showAndWait()
      */
-    public abstract Map<LoginKey, String> getLoginInformation();
+    public abstract Optional<Map<LoginKey, String>> getLoginInformation();
 }

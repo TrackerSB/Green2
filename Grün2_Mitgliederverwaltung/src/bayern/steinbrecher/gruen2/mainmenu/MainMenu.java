@@ -10,8 +10,6 @@ import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
-import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
-import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.member.Member;
 import bayern.steinbrecher.gruen2.sepa.Originator;
@@ -19,6 +17,8 @@ import bayern.steinbrecher.gruen2.generator.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.MemberGenerator;
+import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
+import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import com.jcraft.jsch.JSchException;
 import java.net.ConnectException;
 import java.sql.SQLException;
@@ -146,27 +146,29 @@ public class MainMenu extends Application {
      */
     private DBConnection getConnection(Login login) {
         DBConnection con = null;
-        Map<LoginKey, String> loginInfos = login.getLoginInformation();
-        while (con == null && loginInfos != null) {
+        Optional<Map<LoginKey, String>> loginInfos
+                = login.getLoginInformation();
+        while (con == null && loginInfos.isPresent()) {
             try {
+                Map<LoginKey, String> loginValues = loginInfos.get();
                 if (DataProvider.useSsh()) {
                     con = new SshConnection(
                             DataProvider.getOrDefault(
                                     ConfigKey.SSH_HOST, "localhost"),
-                            loginInfos.get(LoginKey.SSH_USERNAME),
-                            loginInfos.get(LoginKey.SSH_PASSWORD),
+                            loginValues.get(LoginKey.SSH_USERNAME),
+                            loginValues.get(LoginKey.SSH_PASSWORD),
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_HOST, "localhost"),
-                            loginInfos.get(LoginKey.DATABASE_USERNAME),
-                            loginInfos.get(LoginKey.DATABASE_PASSWORD),
+                            loginValues.get(LoginKey.DATABASE_USERNAME),
+                            loginValues.get(LoginKey.DATABASE_PASSWORD),
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 } else {
                     con = new DefaultConnection(
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_HOST, "localhost"),
-                            loginInfos.get(LoginKey.DATABASE_USERNAME),
-                            loginInfos.get(LoginKey.DATABASE_PASSWORD),
+                            loginValues.get(LoginKey.DATABASE_USERNAME),
+                            loginValues.get(LoginKey.DATABASE_PASSWORD),
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
@@ -280,7 +282,7 @@ public class MainMenu extends Application {
 
     private void generateSepa(Future<List<Member>> memberToSelect) {
         SepaForm sepaForm = new SepaForm();
-        Originator originator = null;
+        Optional<Originator> originator = Optional.empty();
         try {
             sepaForm.start(new Stage());
             originator = sepaForm.getOriginator();
@@ -289,28 +291,31 @@ public class MainMenu extends Application {
                     .log(Level.SEVERE, null, ex);
         }
 
-        if (originator != null) {
+        if (originator.isPresent()) {
             try {
                 Selection<Member> selection
                         = new Selection<>(memberToSelect.get());
                 selection.start(new Stage());
-                List<Member> selectedMember = selection.getSelection();
-                double contribution = selection.getContribution();
+                Optional<List<Member>> selectedMember
+                        = selection.getSelection();
+                Optional<Double> contribution = selection.getContribution();
 
-                List<Member> invalidMember
-                        = SepaPain00800302_XML_Generator.createXMLFile(
-                                selectedMember, contribution, originator,
-                                DataProvider.getSavepath() + "/Sepa.xml");
-                Optional<String> message = invalidMember.stream()
-                        .map(Member::toString)
-                        .map(s -> s += '\n')
-                        .reduce(String::concat);
-                if (message.isPresent()) {
-                    ConfirmDialog.showConfirmDialog(message.get()
-                            + "\nhaben keine IBAN oder keine BIC.",
-                            primaryStage);
+                if (selectedMember.isPresent() && contribution.isPresent()) {
+                    List<Member> invalidMember
+                            = SepaPain00800302_XML_Generator.createXMLFile(
+                                    selectedMember.get(), contribution.get(),
+                                    originator.get(),
+                                    DataProvider.getSavepath() + "/Sepa.xml");
+                    Optional<String> message = invalidMember.stream()
+                            .map(Member::toString)
+                            .map(s -> s += '\n')
+                            .reduce(String::concat);
+                    if (message.isPresent()) {
+                        ConfirmDialog.showConfirmDialog(message.get()
+                                + "\nhaben keine IBAN oder keine BIC.",
+                                primaryStage);
+                    }
                 }
-
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);

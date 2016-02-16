@@ -83,6 +83,7 @@ public class Originator {
             originatorProps.load(new FileInputStream(new File(filename)));
             Arrays.stream(getClass().getDeclaredFields())
                     .parallel()
+                    .filter(f -> !f.getName().equalsIgnoreCase("filename"))
                     .forEach(f -> {
                         try {
                             String property
@@ -120,6 +121,7 @@ public class Originator {
                 .parallel()
                 .filter(f ->
                         !f.getName().equalsIgnoreCase("default_properties"))
+                .filter(f -> !f.getName().equalsIgnoreCase("filename"))
                 .forEach(f -> {
                     try {
                         originatorProps.put(
