@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -45,6 +46,7 @@ public final class ConfirmDialog {
         Button okButton = new Button("OK");
         okButton.setOnAction(aevt -> stage.close());
         VBox dialogContent = new VBox();
+        dialogContent.setStyle("-fx-margin: 10px");
         dialogContent.getChildren()
                 .addAll(messageLabel, okButton);
         dialogContent.setStyle("-fx-spacing:10px");

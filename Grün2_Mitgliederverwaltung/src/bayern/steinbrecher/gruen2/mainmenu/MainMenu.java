@@ -21,6 +21,7 @@ import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import com.jcraft.jsch.JSchException;
 import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -179,16 +180,19 @@ public class MainMenu extends Application {
                 //Check "auth fail"
                 Throwable cause = ex.getCause();
                 String message = ex.getMessage();
-                if (cause instanceof ConnectException) {
+                if (cause instanceof ConnectException
+                        || cause instanceof UnknownHostException) {
                     ConfirmDialog.showConfirmDialog("Prüfe, ob du "
                             + "Internetverbindung hast, und ob du Grün2 "
                             + "richtig konfiguriert hast.", primaryStage);
+                    return null;
                 } else if (message != null && message.contains("Auth fail")) {
                     ConfirmDialog.showConfirmDialog(
                             "Prüfe deine Eingaben.", primaryStage);
                     loginInfos = login.getLoginInformation();
                 } else {
-                    System.err.println("Not action specified for: " + ex);
+                    System.err.println("Not action specified for: ");
+                    return null;
                 }
             }
         }
