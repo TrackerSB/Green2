@@ -5,7 +5,8 @@ import bayern.steinbrecher.gruen2.member.AccountHolder;
 import bayern.steinbrecher.gruen2.member.Member;
 import bayern.steinbrecher.gruen2.member.Person;
 import bayern.steinbrecher.gruen2.sepa.Originator;
-import java.time.LocalDate;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +16,9 @@ import java.util.List;
  * @author Stefan Huber
  */
 public class SepaPain00800302_XML_Generator {
+
+    private static final SimpleDateFormat SDF
+            = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
      * Prohibit construction of an object.
@@ -102,7 +106,7 @@ public class SepaPain00800302_XML_Generator {
                 .append(originator.getMsgId())
                 .append("</MsgId>\n")
                 .append("     <CreDtTm>")
-                .append(LocalDate.now())
+                .append(SDF.format(new Date()))
                 .append("</CreDtTm>\n")
                 .append("     <NbOfTxs>")
                 .append(numberOfTransactions)

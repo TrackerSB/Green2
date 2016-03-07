@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.ListProperty;
@@ -95,7 +96,7 @@ public class SelectionController<T extends Comparable> extends Controller {
         });
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
-            newVal.stream().sorted().forEach(op -> {
+            newVal.stream().forEach(op -> {
                 CheckBox newItem = new CheckBox(op.toString());
                 newItem.selectedProperty().addListener(selectionChange);
                 optionsListView.getItems().add(newItem);
@@ -109,7 +110,8 @@ public class SelectionController<T extends Comparable> extends Controller {
     }
 
     public void setOptions(List<T> options) {
-        this.optionsProperty.setAll(options);
+        this.optionsProperty.setAll(
+                options.stream().sorted().collect(Collectors.toList()));
     }
 
     @FXML
