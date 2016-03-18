@@ -3,7 +3,7 @@
  *
  * For using Grün2 you need a database with at least the following tables and
  * attributes.
- * <ul>
+ * <ol>
  * <li>Mitglieder
  *     <ul>
  *     <li>Mitgliedsnummer (primary key)</li>
@@ -27,9 +27,11 @@
  * <li>Spitznamen
  *     <ul>
  *     <li>Name (The real name; primary key)</li>
- *     <li>Nickname (The associated name)</li>
+ *     <li>Spitzname (The associated name)</li>
  *     </ul>
  * </li>
- * </ul>
+ * </ol>
+ *
+ * @version 2
  */
 package bayern.steinbrecher.gruen2;
