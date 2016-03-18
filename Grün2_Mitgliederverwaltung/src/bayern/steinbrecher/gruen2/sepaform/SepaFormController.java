@@ -4,7 +4,7 @@ import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.elements.CheckedDatePicker;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
-import bayern.steinbrecher.gruen2.sepa.Originator;
+import bayern.steinbrecher.gruen2.people.Originator;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.text.SimpleDateFormat;

@@ -1,10 +1,10 @@
 package bayern.steinbrecher.gruen2.generator;
 
 import bayern.steinbrecher.gruen2.Output;
-import bayern.steinbrecher.gruen2.member.AccountHolder;
-import bayern.steinbrecher.gruen2.member.Member;
-import bayern.steinbrecher.gruen2.member.Person;
-import bayern.steinbrecher.gruen2.sepa.Originator;
+import bayern.steinbrecher.gruen2.people.AccountHolder;
+import bayern.steinbrecher.gruen2.people.Member;
+import bayern.steinbrecher.gruen2.people.Person;
+import bayern.steinbrecher.gruen2.people.Originator;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;

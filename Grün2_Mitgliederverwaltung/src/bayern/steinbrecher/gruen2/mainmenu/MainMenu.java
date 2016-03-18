@@ -11,8 +11,8 @@ import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.selection.Selection;
-import bayern.steinbrecher.gruen2.member.Member;
-import bayern.steinbrecher.gruen2.sepa.Originator;
+import bayern.steinbrecher.gruen2.people.Member;
+import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.generator.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
@@ -45,7 +45,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Represents the main menu containing the main functions of Grün2.
+ * Represents the main menu containing the main functions.
  *
  * @author Stefan Huber
  * @version 2
@@ -225,7 +225,7 @@ public class MainMenu extends Application {
             throws InterruptedException, ExecutionException {
         return member.get()
                 .parallelStream()
-                .filter(m -> BirthdayGenerator.getsNotify(m, year))
+                .filter(m -> BirthdayGenerator.getsNotified(m, year))
                 .collect(Collectors.toList());
     }
 

@@ -1,8 +1,8 @@
 package bayern.steinbrecher.gruen2.generator;
 
-import bayern.steinbrecher.gruen2.member.Address;
-import bayern.steinbrecher.gruen2.member.Member;
-import bayern.steinbrecher.gruen2.member.Person;
+import bayern.steinbrecher.gruen2.people.Address;
+import bayern.steinbrecher.gruen2.people.Member;
+import bayern.steinbrecher.gruen2.people.Person;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

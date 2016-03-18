@@ -1,4 +1,6 @@
 /**
+ * Contains the hole application.
+ *
  * For using Grün2 you need a database with at least the following tables and
  * attributes.
  * <ul>

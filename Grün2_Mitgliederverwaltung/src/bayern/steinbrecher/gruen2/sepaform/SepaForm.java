@@ -1,7 +1,7 @@
 package bayern.steinbrecher.gruen2.sepaform;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.sepa.Originator;
+import bayern.steinbrecher.gruen2.people.Originator;
 import java.util.Optional;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

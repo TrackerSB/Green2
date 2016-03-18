@@ -1,7 +1,7 @@
 package bayern.steinbrecher.gruen2.generator;
 
-import bayern.steinbrecher.gruen2.member.Member;
-import bayern.steinbrecher.gruen2.member.Person;
+import bayern.steinbrecher.gruen2.people.Member;
+import bayern.steinbrecher.gruen2.people.Person;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -53,7 +53,7 @@ public class BirthdayGenerator {
      * @param member The member to print.
      * @param year The year in which the age of the given member has to be
      * calculated.
-     * @return
+     * @return A string representing the hole content of a CSV file.
      */
     public static String createGroupedOutput(List<Member> member, int year) {
         assert !member.isEmpty();
@@ -116,15 +116,15 @@ public class BirthdayGenerator {
     }
 
     /**
-     * Checks whether the given member gets 50, 60, 70, 75, >= 80 in
+     * Checks whether the given member gets 50, 60, 70, 75, &gt;= 80 in
      * {@code year}.
      *
      * @param m The member to check.
      * @param year The year to calculate his age at.
-     * @return {@code true} only if {@code m} has his 50th, 60th, 70th, 75th, >=
-     * 80th birthday in {@code year}.
+     * @return {@code true} only if {@code m} has his 50th, 60th, 70th, 75th,
+     * &gt;= 80th birthday in {@code year}.
      */
-    public static boolean getsNotify(Member m, int year) {
+    public static boolean getsNotified(Member m, int year) {
         int age = year - m.getPerson().getBirthday().getYear();
         return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
     }
