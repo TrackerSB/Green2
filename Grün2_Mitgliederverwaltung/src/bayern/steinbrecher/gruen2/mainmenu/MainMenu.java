@@ -48,6 +48,7 @@ import javafx.stage.Stage;
  * Represents the main menu containing the main functions of Grün2.
  *
  * @author Stefan Huber
+ * @version 2
  */
 public class MainMenu extends Application {
 
