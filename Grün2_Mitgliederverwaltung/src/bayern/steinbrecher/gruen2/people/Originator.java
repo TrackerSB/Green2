@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represents an originator of a "Sepa-Sammellastschrift".
+ * Represents an originator of a Sepa direct debit.
  *
  * @author Stefan Huber
  */
@@ -43,25 +43,24 @@ public class Originator {
     private LocalDate executionDate;
 
     /**
-     * Erstellt ein Objekt, das die Sepa-Eigeninfos der Datei
-     * <code>filename</code> repr&auml;sentiert.
+     * Constructes a new originator which has owns the attributes specified in
+     * {@code filename}. HINT: Attributes are only set after calling
+     * {@code readOriginatorInfo()}.
      *
-     * @param filename Der Name der Eigeninfos-Datei
+     * @param filename The file containing all attributes.
      */
     public Originator(String filename) {
         this.filename = filename;
     }
 
     /**
-     * Erstellt ein Originator-Objekt und liest die Datei <code>filename</code>
-     * ein, die Informationen &uuml;ber den Ersteller des Einzuges enth&auml;lt,
-     * falls die Datei existiert.
+     * Constructes a new originator out of the attributes specified in
+     * {@code filename}.
      *
-     * @param filename Die einzulesende Datei
-     * @return Neues Originator-Objekt, das <code>filename</code> bereits
-     * eingelesen hat.
-     * @throws java.io.FileNotFoundException Tritt auf, wenn die Datei nicht
-     * gefunden werden konnte.
+     * @param filename The file to read from.
+     * @return The new originator
+     * @throws java.io.FileNotFoundException Thrown if the file could not be
+     * found.
      */
     public static Originator readOriginatorInfo(String filename)
             throws FileNotFoundException {
@@ -71,11 +70,9 @@ public class Originator {
     }
 
     /**
-     * Liest die Datei, die den Originator-Objekt bei der Erzeugung
-     * &uuml;bergeben wurde ein, falls die Datei existiert.
+     * Reads in the specified file and sets the apropriate attributes.
      *
-     * @throws FileNotFoundException Tritt auf, wenn die Datei nicht gefunden
-     * werden konnte.
+     * @throws FileNotFoundException Thrown if the file could not be found.
      */
     public void readOriginatorInfo() throws FileNotFoundException {
         try {
@@ -112,8 +109,7 @@ public class Originator {
     }
 
     /**
-     * Schreibt die eingegebenen Daten in {@code filename}. Falls die Datei noch
-     * nicht existiert, wird sie erstellt.
+     * Saves the currently set attributes into file given at construction.
      */
     public void saveOriginator() {
         Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
@@ -141,74 +137,164 @@ public class Originator {
         }
     }
 
+    /**
+     * Returns the name of the creator.
+     *
+     * @return The name of the creator.
+     */
     public String getCreator() {
         return creator;
     }
 
+    /**
+     * Sets a new name for the creator.
+     *
+     * @param creator The new name for the creator.
+     */
     public void setCreator(String creator) {
         this.creator = creator;
     }
 
+    /**
+     * Returns the message id.
+     *
+     * @return The message id.
+     */
     public String getMsgId() {
         return msgId;
     }
 
+    /**
+     * Sets a new message id.
+     *
+     * @param msgId The new message id.
+     */
     public void setMsgId(String msgId) {
         this.msgId = msgId;
     }
 
+    /**
+     * Returns the name of the creditor.
+     *
+     * @return The name of the creditor.
+     */
     public String getCreditor() {
         return creditor;
     }
 
+    /**
+     * Sets a new name for the creditor.
+     *
+     * @param creditor The new name of the creditor.
+     */
     public void setCreditor(String creditor) {
         this.creditor = creditor;
     }
 
+    /**
+     * Returns the IBAN.
+     *
+     * @return The IBAN.
+     */
     public String getIban() {
         return iban;
     }
 
+    /**
+     * Sets a new IBAN.
+     *
+     * @param iban The new IBAN.
+     */
     public void setIban(String iban) {
         this.iban = iban;
     }
 
+    /**
+     * Returns the BIC.
+     *
+     * @return The BIC.
+     */
     public String getBic() {
         return bic;
     }
 
+    /**
+     * Sets a new BIC.
+     *
+     * @param bic The new BIC.
+     */
     public void setBic(String bic) {
         this.bic = bic;
     }
 
+    /**
+     * Returns the current truster id.
+     *
+     * @return The truster id.
+     */
     public String getTrusterId() {
         return trusterId;
     }
 
+    /**
+     * Sets a new truster id.
+     *
+     * @param trusterId The new truster id.
+     */
     public void setTrusterId(String trusterId) {
         this.trusterId = trusterId;
     }
 
+    /**
+     * Returns the currently set payment information id.
+     *
+     * @return The payment information id.
+     */
     public String getPmtInfId() {
         return pmtInfId;
     }
 
+    /**
+     * Sets a new payment information id.
+     *
+     * @param pmtInfId The new payment information id.
+     */
     public void setPmtInfId(String pmtInfId) {
         this.pmtInfId = pmtInfId;
     }
 
+    /**
+     * Returns the execution date.
+     *
+     * @return The execution date.
+     */
     public LocalDate getExecutiondate() {
         return executionDate;
     }
 
+    /**
+     * Sets a new execution date.
+     *
+     * @param executionDate The new execution date.
+     */
     public void setExecutiondate(LocalDate executionDate) {
         this.executionDate = executionDate;
     }
 
+    /**
+     * Returns the purpose of direct debits.
+     *
+     * @return The purpose of direct debits.
+     */
     public String getPurpose() {
         return purpose;
     }
 
+    /**
+     * Sets a new purpose for direct debits.
+     *
+     * @param purpose The new purpose for direct debits.
+     */
     public void setPurpose(String purpose) {
         this.purpose = purpose;
     }

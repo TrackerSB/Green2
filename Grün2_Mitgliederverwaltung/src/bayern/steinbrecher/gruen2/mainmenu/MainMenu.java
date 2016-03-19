@@ -51,6 +51,10 @@ import javafx.stage.Stage;
  */
 public class MainMenu extends Application {
 
+    /**
+     * A list containing all names of needed columns for queries in the member
+     * table.
+     */
     public static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
             Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
                     "istmaennlich", "istaktiv", "geburtstag", "strasse",
@@ -266,6 +270,12 @@ public class MainMenu extends Application {
         }
     }
 
+    /**
+     * Queries the nickname table of the specified connection.
+     *
+     * @param dbc The connection to query through.
+     * @return A map from prenames to nicknames.
+     */
     public static Map<String, String> readNicknames(DBConnection dbc) {
         Map<String, String> mappedNicknames = new HashMap<>();
         try {

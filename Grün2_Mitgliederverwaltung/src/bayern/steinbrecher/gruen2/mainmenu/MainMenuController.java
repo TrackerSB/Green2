@@ -56,6 +56,12 @@ public class MainMenuController extends Controller {
                 "Geburtstagsmitglieder " + (CURRENT_YEAR + 1) + " gruppiert");
     }
 
+    /**
+     * Sets the caller which provides the funcionality this controller has to
+     * use.
+     *
+     * @param caller The provider of the functionality.
+     */
     public void setCaller(MainMenu caller) {
         this.caller = caller;
     }
@@ -79,10 +85,10 @@ public class MainMenuController extends Controller {
         caller.generateUniversalSepa();
         generateUniversalSepa.setDisable(false);
     }
-    
+
     @FXML
-    private void checkIban(){
-        if(caller == null){
+    private void checkIban() {
+        if (caller == null) {
             throw new IllegalStateException("caller is not set");
         }
         checkIban.setDisable(true);

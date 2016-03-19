@@ -4,8 +4,7 @@ import java.text.Collator;
 import java.util.Locale;
 
 /**
- * Jedes Objekt dieser Klasse stellt ein Mitglied des Trachtenvereins samt
- * seinen Kontoinformationen dar.
+ * Represents member of a Trachtenverein.
  *
  * @author Stefan Huber
  */
@@ -19,6 +18,18 @@ public class Member implements Comparable<Member> {
     private final AccountHolder accountHolder;
     private final boolean active, contributionfree;
 
+    /**
+     * Constructes a new member.
+     *
+     * @param membershipnumber The mandat number.
+     * @param person The person itself.
+     * @param home The homelocation.
+     * @param accountHolder The owner of the account to book off the
+     * contribution.
+     * @param isActive {@code true} only if this member is an active one.
+     * @param isContributionfree {@code true} only if this member does not have
+     * to pay contribution.
+     */
     public Member(int membershipnumber, Person person, Address home,
             AccountHolder accountHolder, boolean isActive,
             boolean isContributionfree) {
@@ -31,35 +42,71 @@ public class Member implements Comparable<Member> {
         this.contributionfree = isContributionfree;
     }
 
+    /**
+     * Returns the mandat number.
+     *
+     * @return The mandat number.
+     */
     public int getMembershipnumber() {
         return membershipnumber;
     }
 
+    /**
+     * Returns the person itself.
+     *
+     * @return The person representing this member.
+     */
     public Person getPerson() {
         return person;
     }
 
+    /**
+     * Returns the homelocation.
+     *
+     * @return The homelocation.
+     */
     public Address getHome() {
         return home;
     }
 
+    /**
+     * Returns the holder of the account where to book off contribution.
+     *
+     * @return The account holder.
+     */
     public AccountHolder getAccountHolder() {
         return accountHolder;
     }
 
+    /**
+     * Checks whether this member is an active one.
+     *
+     * @return {@code true} only if this member is active.
+     */
     public boolean isActive() {
         return active;
     }
 
+    /**
+     * Checks whether this member has to pay contribution.
+     *
+     * @return {@code true} only if this member has NOT to pay contribution.
+     */
     public boolean isContributionfree() {
         return contributionfree;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(Member compared) {
         return COLLATOR.compare(person.getName(), compared.person.getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return membershipnumber + ":\t" + person.getName();

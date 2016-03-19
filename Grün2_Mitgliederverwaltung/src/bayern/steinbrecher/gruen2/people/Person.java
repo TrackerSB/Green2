@@ -11,15 +11,15 @@ public class Person {
 
     private final String prename, lastname, title;
     private final LocalDate birthday;
-    private final boolean isMale;
+    private final boolean male;
 
     public Person(String prename, String lastname, String title,
-            LocalDate birthday, boolean isMale) {
+            LocalDate birthday, boolean male) {
         this.prename = prename;
         this.lastname = lastname;
         this.title = title;
         this.birthday = birthday;
-        this.isMale = isMale;
+        this.male = male;
     }
 
     public String getPrename() {
@@ -42,7 +42,7 @@ public class Person {
         return birthday;
     }
 
-    public boolean isIsMale() {
-        return isMale;
+    public boolean isMale() {
+        return male;
     }
 }

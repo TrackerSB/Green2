@@ -4,12 +4,24 @@ package bayern.steinbrecher.gruen2.data;
  * Represents constants for description of login information such as ssh
  * password or ssh username.
  *
- * @author huberst
+ * @author Stefan Huber
  */
 public enum LoginKey {
 
     /**
-     * Keys representing username and password for each of database and ssh.
+     * SSH username.
      */
-    SSH_USERNAME, SSH_PASSWORD, DATABASE_USERNAME, DATABASE_PASSWORD;
+    SSH_USERNAME,
+    /**
+     * SSH password.
+     */
+    SSH_PASSWORD,
+    /**
+     * Database username.
+     */
+    DATABASE_USERNAME,
+    /**
+     * Database password.
+     */
+    DATABASE_PASSWORD;
 }

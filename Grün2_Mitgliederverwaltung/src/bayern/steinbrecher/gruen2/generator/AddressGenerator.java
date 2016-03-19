@@ -53,7 +53,7 @@ public class AddressGenerator {
             List<Member> member, Map<String, String> nicknames) {
         List<String> addresses = new ArrayList<>(member.size());
         member.stream().forEach(m -> {
-            String address = m.getPerson().isIsMale() ? "Lieber " : "Liebe ";
+            String address = m.getPerson().isMale() ? "Lieber " : "Liebe ";
             address += nicknames.getOrDefault(
                     m.getPerson().getPrename(), m.getPerson().getPrename());
             addresses.add(address);
