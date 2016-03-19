@@ -5,6 +5,7 @@ import bayern.steinbrecher.gruen2.people.AccountHolder;
 import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Person;
 import bayern.steinbrecher.gruen2.people.Originator;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -19,6 +20,7 @@ public class SepaPain00800302_XML_Generator {
 
     private static final SimpleDateFormat SDF
             = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private static final int SHIFT_ASCII_ALPHABET = 55;
 
     /**
      * Prohibit construction of an object.
@@ -26,6 +28,33 @@ public class SepaPain00800302_XML_Generator {
     private SepaPain00800302_XML_Generator() {
         throw new UnsupportedOperationException(
                 "Construction of an object not supported.");
+    }
+
+    /**
+     * Checks whether the IBAN of the given member has a valid checksum.
+     *
+     * @param m The member whose IBAN to check.
+     * @return {@code true }, only if members IBAN has a valid checksum.
+     */
+    public static boolean hasValidIban(Member m) {
+        if (!m.getAccountHolder().hasIban()) {
+            return false;
+        }
+
+        String iban = m.getAccountHolder().getIban();
+        int posAlphabetFirstChar
+                = ((int) iban.charAt(0)) - SHIFT_ASCII_ALPHABET;
+        int posAlphabetSecondChar
+                = ((int) iban.charAt(1)) - SHIFT_ASCII_ALPHABET;
+        if (iban.length() < 5
+                || posAlphabetFirstChar < 10 || posAlphabetSecondChar < 10) {
+            return false;
+        }
+
+        iban = iban.substring(4) + posAlphabetFirstChar + posAlphabetSecondChar
+                + iban.substring(2, 4);
+        return new BigInteger(iban).mod(BigInteger.valueOf(97))
+                .equals(BigInteger.ONE);
     }
 
     /**

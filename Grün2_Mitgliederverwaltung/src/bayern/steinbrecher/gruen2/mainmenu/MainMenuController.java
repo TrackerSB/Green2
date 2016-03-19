@@ -23,6 +23,8 @@ public class MainMenuController extends Controller {
     @FXML
     private Button generateUniversalSepa;
     @FXML
+    private Button checkIban;
+    @FXML
     private Button generateAddressesBirthdayLastYear;
     @FXML
     private Button generateAddressesBirthdayThisYear;
@@ -76,6 +78,16 @@ public class MainMenuController extends Controller {
         generateUniversalSepa.setDisable(true);
         caller.generateUniversalSepa();
         generateUniversalSepa.setDisable(false);
+    }
+    
+    @FXML
+    private void checkIban(){
+        if(caller == null){
+            throw new IllegalStateException("caller is not set");
+        }
+        checkIban.setDisable(true);
+        caller.checkIban();
+        checkIban.setDisable(false);
     }
 
     @FXML

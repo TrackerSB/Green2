@@ -338,6 +338,31 @@ public class MainMenu extends Application {
         generateSepa(memberContributionfree);
     }
 
+    void checkIban() {
+        List<Member> badIban = new ArrayList<>();
+        try {
+            for (Member m : member.get()) {
+                if (!SepaPain00800302_XML_Generator.hasValidIban(m)) {
+                    badIban.add(m);
+                }
+            }
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        if (badIban.isEmpty()) {
+            ConfirmDialog.showConfirmDialog(
+                    "Alle IBANs haben eine korrekte Prüfsumme", primaryStage);
+        } else {
+            String message = "Folgende Mitglieder haben eine IBAN mit falscher "
+                    + "Prüfsumme:\n";
+            message = badIban.stream()
+                    .map(m -> m + "\n")
+                    .reduce(message, String::concat);
+            ConfirmDialog.showConfirmDialog(message, primaryStage);
+        }
+    }
+
     /**
      * The starting point of the hole application.
      *
