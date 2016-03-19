@@ -8,8 +8,24 @@ package bayern.steinbrecher.gruen2.data;
 public enum ConfigKey {
 
     /**
-     * Keys indicating configurations like addresses of database- and ssh-host,
-     * the name of the database or whether to use ssh to connect to a database.
+     * Indicating whether to use SSH or not. Write "Ja" to use SSH.
      */
-    USE_SSH, SSH_HOST, DATABASE_HOST, DATABASE_NAME, BIRTHDAY_EXPRESSION;
+    USE_SSH,
+    /**
+     * The host for connecting over SSH.
+     */
+    SSH_HOST,
+    /**
+     * The host for connecting to the database.
+     */
+    DATABASE_HOST,
+    /**
+     * The name of the database to connect to.
+     */
+    DATABASE_NAME,
+    /**
+     * The expression to indicate which people get birthday notifications.
+     * Like =50,=60,=70,=75,&gt;=80
+     */
+    BIRTHDAY_EXPRESSION;
 }

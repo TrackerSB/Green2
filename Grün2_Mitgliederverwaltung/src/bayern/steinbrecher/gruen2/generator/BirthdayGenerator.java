@@ -117,13 +117,12 @@ public class BirthdayGenerator {
     }
 
     /**
-     * Checks whether the given member gets 50, 60, 70, 75, &gt;= 80 in
-     * {@code year}.
+     * Checks whether the given member fits the configured birthday criteria.
      *
      * @param m The member to check.
      * @param year The year to calculate his age at.
-     * @return {@code true} only if {@code m} has his 50th, 60th, 70th, 75th,
-     * &gt;= 80th birthday in {@code year}.
+     * @return {@code true} only if {@code m} fits the configured criteria.
+     * @see DataProvider#getAgeFunction()
      */
     public static boolean getsNotified(Member m, int year) {
         int age = year - m.getPerson().getBirthday().getYear();

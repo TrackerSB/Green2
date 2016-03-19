@@ -29,9 +29,9 @@ public class AddressGenerator {
      * addresses and their salutation. It also contains column labels and you
      * can import it into Word for serial letters.
      *
-     * @param member
-     * @param nicknames
-     * @return
+     * @param member The member to generate output for.
+     * @param nicknames The nicknames to use for addresses.
+     * @return The content for the output CSV file.
      */
     public static String generateAddressData(List<Member> member,
             Map<String, String> nicknames) {

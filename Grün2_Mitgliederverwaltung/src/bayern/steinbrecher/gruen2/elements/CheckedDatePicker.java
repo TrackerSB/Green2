@@ -52,7 +52,7 @@ public class CheckedDatePicker extends DatePicker {
      * Constructes a {@code CheckedDatePicker} with {@code locale} as initial
      * date.
      *
-     * @param locale
+     * @param locale The initial date.
      */
     public CheckedDatePicker(LocalDate locale) {
         super(locale);

@@ -136,6 +136,13 @@ public class DataProvider {
         return configs.getOrDefault(key, defaultValue);
     }
 
+    /**
+     * Returns the function that checks whether a person with a certain age has
+     * to be notified on birthday according to the configured criteria.
+     *
+     * @return The function for calculating whether a person has to be notified
+     * on birthday.
+     */
     public static synchronized IntFunction<Boolean> getAgeFunction() {
         if (ageFunction == null) {
             String birthdayExpression
@@ -197,6 +204,12 @@ public class DataProvider {
         return getOrDefault(ConfigKey.USE_SSH, "ja").equalsIgnoreCase("ja");
     }
 
+    /**
+     * Checks whether all allowed configurations are specified.
+     *
+     * @return {@code true} only if all allowed configurations are specified.
+     * @see ConfigKey
+     */
     public static boolean hasAllConfigs() {
         if (configs == null) {
             readConfigs();
