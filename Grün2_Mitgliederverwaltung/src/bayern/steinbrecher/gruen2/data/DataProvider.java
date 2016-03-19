@@ -2,9 +2,13 @@ package bayern.steinbrecher.gruen2.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.IntFunction;
 import javafx.scene.image.Image;
 
 /**
@@ -18,7 +22,7 @@ public class DataProvider {
      * The symbol used to separate the config key on the left side and the value
      * on the right side in gruen2.conf.
      */
-    public static final String VALUE_SEPARATOR = "=";
+    public static final String VALUE_SEPARATOR = ":";
     /**
      * The file to the configurations for Grün2.
      */
@@ -27,6 +31,17 @@ public class DataProvider {
      * The configurations found in gruen2.conf.
      */
     private static Map<ConfigKey, String> configs = null;
+    /**
+     * Representing a function for calculating whether a person with a specific
+     * age gets notified.
+     */
+    private static IntFunction<Boolean> ageFunction = null;
+    /**
+     * Containing all parts of the configfile which are relevant to calculate
+     * the ageFunction.
+     */
+    private static List<IntFunction<Boolean>> ageFunctionParts
+            = new ArrayList<>();
 
     /**
      * Prohibit construction of a new object.
@@ -119,6 +134,58 @@ public class DataProvider {
             readConfigs();
         }
         return configs.getOrDefault(key, defaultValue);
+    }
+
+    public static synchronized IntFunction<Boolean> getAgeFunction() {
+        if (ageFunction == null) {
+            String birthdayExpression
+                    = getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, "");
+            ageFunction = age -> false;
+            for (String part : Arrays.asList(birthdayExpression.split(","))) {
+                try {
+                    switch (part.charAt(0)) {
+                    case '>':
+                        switch (part.charAt(1)) {
+                        case '=':
+                            ageFunctionParts.add(age -> {
+                                return age >= new Integer(part.substring(2));
+                            });
+                            break;
+                        default:
+                            ageFunctionParts.add(age -> {
+                                return age > new Integer(part.substring(1));
+                            });
+                        }
+                        break;
+                    case '<':
+                        switch (part.charAt(1)) {
+                        case '=':
+                            ageFunctionParts.add(age -> {
+                                return age <= new Integer(part.substring(2));
+                            });
+                            break;
+                        default:
+                            ageFunctionParts.add(age -> {
+                                return age < new Integer(part.substring(1));
+                            });
+                        }
+                        break;
+                    case '=':
+                        ageFunctionParts.add(age -> {
+                            return age == new Integer(part.substring(1));
+                        });
+                        break;
+                    default:
+                        System.err.println(part + " gets skipped");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.err.println(part + " gets skipped");
+                }
+            }
+            ageFunction = age -> ageFunctionParts.parallelStream()
+                    .anyMatch(intFunc -> intFunc.apply(age));
+        }
+        return ageFunction;
     }
 
     /**

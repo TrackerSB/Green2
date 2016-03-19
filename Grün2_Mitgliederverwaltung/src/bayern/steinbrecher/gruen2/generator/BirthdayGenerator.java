@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.generator;
 
+import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Person;
 import java.util.ArrayList;
@@ -126,6 +127,6 @@ public class BirthdayGenerator {
      */
     public static boolean getsNotified(Member m, int year) {
         int age = year - m.getPerson().getBirthday().getYear();
-        return age == 50 || age == 60 || age == 70 || age == 75 || age >= 80;
+        return DataProvider.getAgeFunction().apply(age);
     }
 }
