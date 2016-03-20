@@ -54,11 +54,17 @@ public class SelectionController<T extends Comparable> extends Controller {
     @FXML
     private Label selectedCount;
     private IntegerProperty currentSelectedCount = new IntegerPropertyBase() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Object getBean() {
             return SelectionController.this;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getName() {
             return "currentSelectedCount";
@@ -77,6 +83,9 @@ public class SelectionController<T extends Comparable> extends Controller {
         }
     };
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contributionSpinner.getEditor().setOnAction(aevt -> select());
@@ -109,6 +118,11 @@ public class SelectionController<T extends Comparable> extends Controller {
         });
     }
 
+    /**
+     * Removes all options and replaces them with the new list of options.
+     *
+     * @param options The list of new options.
+     */
     public void setOptions(List<T> options) {
         this.optionsProperty.setAll(
                 options.stream().sorted().collect(Collectors.toList()));
@@ -133,6 +147,12 @@ public class SelectionController<T extends Comparable> extends Controller {
                 .forEach(cb -> cb.setSelected(false));
     }
 
+    /**
+     * Returns the list of currently selected items. Returns
+     * {@code Optional.empty} if the user didn´t confirm the selection yet.
+     *
+     * @return An Optional containing the selection if any.
+     */
     public Optional<List<T>> getSelection() {
         if (userConfirmed) {
             List<T> selection = new ArrayList<>();
@@ -147,6 +167,12 @@ public class SelectionController<T extends Comparable> extends Controller {
         return Optional.empty();
     }
 
+    /**
+     * Returns the currently inserted contribution. Returns
+     * {@code Optional.empty} if the user didn´t confirm the contribution yet.
+     *
+     * @return The currently inserted contribution.
+     */
     public Optional<Double> getContribution() {
         if (userConfirmed) {
             return Optional.of(contributionSpinner.getValue());

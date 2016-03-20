@@ -59,10 +59,14 @@ public class Selection<T extends Comparable> extends Application {
     }
 
     /**
-     * The list of items which were selected when the user closed the window.
-     * This is list won´t be empty.
+     * Opens the selection window if no other process yet opened one, blocks
+     * until the window is closed and retruns the list of items which were
+     * selected. Returns {@code Optional.empty} if the user did not confirm the
+     * selection. The window will only be opened ONCE; even if multiple threads
+     * are calling this function. They will be blocked until the window is
+     * closed.
      *
-     * @return An not-empty list containing the selection.
+     * @return The selection if any.
      */
     public Optional<List<T>> getSelection() {
         if (primaryStage == null) {
@@ -74,9 +78,14 @@ public class Selection<T extends Comparable> extends Application {
     }
 
     /**
-     * Returns the value entered in the the {@code TextField}.
+     * Opens the selection window if no other process yet opened one, blocks
+     * until the window is closed and returns the value entered in the
+     * {@code TextField}. Returns {@code Optional.empty} if the user did not
+     * confirm the contribution. The window will only be opened ONCE; even if
+     * multiple threads are calling this function. They will be blocked until
+     * the window is closed.
      *
-     * @return The value entered in the the {@code TextField}.
+     * @return The value entered in the the {@code TextField} if any.
      */
     public Optional<Double> getContribution() {
         if (primaryStage == null) {
@@ -90,7 +99,7 @@ public class Selection<T extends Comparable> extends Application {
     /**
      * Makes sure the window is only shown once. That means frequently calling
      * {@code getContribution()} or {@code getSelection()} won´t open the frame
-     * again if it already was open.
+     * again if it already was opened.
      */
     private synchronized void onlyShowOnce() {
         if (!gotShown) {
