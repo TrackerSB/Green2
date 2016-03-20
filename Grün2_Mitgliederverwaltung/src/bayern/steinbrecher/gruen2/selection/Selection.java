@@ -1,11 +1,9 @@
 package bayern.steinbrecher.gruen2.selection;
 
+import bayern.steinbrecher.gruen2.Model;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,13 +15,10 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  * @param <T> The type of the attributes being able to selct.
  */
-public class Selection<T extends Comparable> extends Application {
+public class Selection<T extends Comparable> extends Model {
 
-    private Stage primaryStage;
     private SelectionController<T> scontroller;
     private final List<T> options;
-    private boolean gotShown = false;
-    private boolean gotClosed = false;
 
     /**
      * Greates a new Frame representing the given options as selectable
@@ -41,7 +36,7 @@ public class Selection<T extends Comparable> extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.primaryStage = primaryStage;
+        this.stage = primaryStage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Selection.fxml"));
@@ -69,7 +64,7 @@ public class Selection<T extends Comparable> extends Application {
      * @return The selection if any.
      */
     public Optional<List<T>> getSelection() {
-        if (primaryStage == null) {
+        if (stage == null) {
             throw new IllegalStateException(
                     "start(...) has to be called first");
         }
@@ -88,33 +83,11 @@ public class Selection<T extends Comparable> extends Application {
      * @return The value entered in the the {@code TextField} if any.
      */
     public Optional<Double> getContribution() {
-        if (primaryStage == null) {
+        if (stage == null) {
             throw new IllegalStateException(
                     "start(...) has to be called first");
         }
         onlyShowOnce();
         return scontroller.getContribution();
-    }
-
-    /**
-     * Makes sure the window is only shown once. That means frequently calling
-     * {@code getContribution()} or {@code getSelection()} won´t open the frame
-     * again if it already was opened.
-     */
-    private synchronized void onlyShowOnce() {
-        if (!gotShown) {
-            gotShown = true;
-            primaryStage.showAndWait();
-            gotClosed = true;
-            notifyAll();
-        }
-        while (!gotClosed) {
-            try {
-                wait();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Selection.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
-        }
     }
 }

@@ -33,15 +33,15 @@ public class SepaPain00800302_XML_Generator {
     /**
      * Checks whether the IBAN of the given member has a valid checksum.
      *
-     * @param m The member whose IBAN to check.
+     * @param ah The account holder whose IBAN to check.
      * @return {@code true }, only if members IBAN has a valid checksum.
      */
-    public static boolean hasValidIban(Member m) {
-        if (!m.getAccountHolder().hasIban()) {
+    public static boolean hasValidIban(AccountHolder ah) {
+        if (!ah.hasIban()) {
             return false;
         }
 
-        String iban = m.getAccountHolder().getIban();
+        String iban = ah.getIban();
         int posAlphabetFirstChar
                 = ((int) iban.charAt(0)) - SHIFT_ASCII_ALPHABET;
         int posAlphabetSecondChar
@@ -90,10 +90,10 @@ public class SepaPain00800302_XML_Generator {
             boolean valid = true;
             Person p = m.getPerson();
             AccountHolder ah = m.getAccountHolder();
-            if (!ah.hasIban()) {
+            if (!hasValidIban(ah)) {
                 valid = false;
                 System.err.println(p.getPrename() + p.getLastname()
-                        + " has no IBAN");
+                        + " has an invalid IBAN");
             }
             if (!ah.hasBic()) {
                 valid = false;

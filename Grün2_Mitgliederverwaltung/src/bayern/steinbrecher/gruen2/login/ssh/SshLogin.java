@@ -18,8 +18,8 @@ public class SshLogin extends Login {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.primaryStage = primaryStage;
+    public void start(Stage stage) throws Exception {
+        this.stage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("SshLogin.fxml"));
@@ -27,11 +27,11 @@ public class SshLogin extends Login {
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
         loginContoller = fxmlLoader.getController();
-        loginContoller.setStage(primaryStage);
+        loginContoller.setStage(stage);
 
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Login");
-        primaryStage.setResizable(false);
-        primaryStage.getIcons().add(DataProvider.getIcon());
+        stage.setScene(new Scene(root));
+        stage.setTitle("Login");
+        stage.setResizable(false);
+        stage.getIcons().add(DataProvider.getIcon());
     }
 }

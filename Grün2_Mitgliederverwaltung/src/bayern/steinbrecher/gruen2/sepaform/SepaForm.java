@@ -1,9 +1,9 @@
 package bayern.steinbrecher.gruen2.sepaform;
 
+import bayern.steinbrecher.gruen2.Model;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.people.Originator;
 import java.util.Optional;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,15 +14,16 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class SepaForm extends Application {
+public class SepaForm extends Model {
 
-    private Stage primaryStage;
     private SepaFormController sfcontroller;
-    private boolean wasShown = false;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.primaryStage = primaryStage;
+        this.stage = primaryStage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("SepaForm.fxml"));
@@ -38,15 +39,21 @@ public class SepaForm extends Application {
         primaryStage.getIcons().add(DataProvider.getIcon());
     }
 
+    /**
+     * Opens the sepa form window if no other process yet opened one, blocks
+     * until the window is closed and returns the originator. Returns
+     * {@code Optional.empty} if the user did not confirm the input. The window
+     * will only be opened ONCE; even if multiple threads are calling this
+     * function. They will be blocked until the window is closed.
+     *
+     * @return The originator or {@code Optional.empty}.
+     */
     public Optional<Originator> getOriginator() {
-        if (primaryStage == null) {
+        if (stage == null) {
             throw new IllegalStateException(
                     "start(...) has to be called first");
         }
-        if (!wasShown) {
-            primaryStage.showAndWait();
-            wasShown = true;
-        }
+        onlyShowOnce();
         return sfcontroller.getOriginator();
     }
 }

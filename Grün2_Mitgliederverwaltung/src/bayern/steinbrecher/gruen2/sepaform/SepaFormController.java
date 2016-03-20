@@ -59,6 +59,9 @@ public class SepaFormController extends Controller {
     @FXML
     private Button readyButton;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         checkedTextFields = Arrays.asList(creatorTextField, creditorTextField,
@@ -138,6 +141,12 @@ public class SepaFormController extends Controller {
         }
     }
 
+    /**
+     * Returns the currently set originator. Returns {@code Optional.empty} if
+     * the user did not confirm input.
+     *
+     * @return
+     */
     public Optional<Originator> getOriginator() {
         if (userConfirmed) {
             return Optional.of(originator);

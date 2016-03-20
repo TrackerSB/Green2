@@ -351,11 +351,10 @@ public class MainMenu extends Application {
     void checkIban() {
         List<Member> badIban = new ArrayList<>();
         try {
-            for (Member m : member.get()) {
-                if (!SepaPain00800302_XML_Generator.hasValidIban(m)) {
-                    badIban.add(m);
-                }
-            }
+            badIban = member.get().parallelStream()
+                    .filter(m -> !SepaPain00800302_XML_Generator
+                            .hasValidIban(m.getAccountHolder()))
+                    .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(MainMenu.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -364,10 +363,11 @@ public class MainMenu extends Application {
             ConfirmDialog.showConfirmDialog(
                     "Alle IBANs haben eine korrekte Prüfsumme", primaryStage);
         } else {
-            String message = "Folgende Mitglieder haben eine IBAN mit falscher "
-                    + "Prüfsumme:\n";
+            String message = "Folgende Mitglieder haben keine IBAN oder eine "
+                    + "IBAN mit falscher Prüfsumme:\n";
             message = badIban.stream()
-                    .map(m -> m + "\n")
+                    .map(m -> m + ": \"" + m.getAccountHolder().getIban()
+                            + "\"\n")
                     .reduce(message, String::concat);
             ConfirmDialog.showConfirmDialog(message, primaryStage);
         }
