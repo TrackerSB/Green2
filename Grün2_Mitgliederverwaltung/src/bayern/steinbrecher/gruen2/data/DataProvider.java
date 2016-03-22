@@ -16,7 +16,7 @@ import javafx.scene.image.Image;
  *
  * @author Stefan Huber
  */
-public class DataProvider {
+public final class DataProvider {
 
     /**
      * The symbol used to separate the config key on the left side and the value
