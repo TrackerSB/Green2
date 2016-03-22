@@ -2,12 +2,12 @@ package bayern.steinbrecher.gruen2.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.function.IntFunction;
 import javafx.scene.image.Image;
 
@@ -40,8 +40,7 @@ public class DataProvider {
      * Containing all parts of the configfile which are relevant to calculate
      * the ageFunction.
      */
-    private static List<IntFunction<Boolean>> ageFunctionParts
-            = new ArrayList<>();
+    private static Set<IntFunction<Boolean>> ageFunctionParts = new HashSet<>();
 
     /**
      * Prohibit construction of a new object.
