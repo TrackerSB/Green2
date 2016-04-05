@@ -4,8 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Properties;
@@ -130,7 +132,8 @@ public class Originator {
                 });
         try {
             originatorProps.store(
-                    new BufferedWriter(new FileWriter(filename)), null);
+                    new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(filename), "UTF-8")), null);
         } catch (Exception ex) {
             Logger.getLogger(Originator.class.getName())
                     .log(Level.SEVERE, null, ex);
