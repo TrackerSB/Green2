@@ -195,12 +195,23 @@ public final class DataProvider {
     }
 
     /**
-     * Checks whether to use SSH or not.
+     * Checks whether to use SSH or not. (Default is yes)
      *
      * @return {@code true} only if the connections have to use SSH.
      */
     public static boolean useSsh() {
         return getOrDefault(ConfigKey.USE_SSH, "ja").equalsIgnoreCase("ja");
+    }
+
+    /**
+     * Checks whether every member has a individual contribution. (Default is
+     * no)
+     *
+     * @return {@code true} only if every member has a individual contribution.
+     */
+    public static boolean useIndividualContributions() {
+        return getOrDefault(ConfigKey.USE_INDIVIDUAL_CONTRIBUTION, "nein")
+                .equalsIgnoreCase("ja");
     }
 
     /**

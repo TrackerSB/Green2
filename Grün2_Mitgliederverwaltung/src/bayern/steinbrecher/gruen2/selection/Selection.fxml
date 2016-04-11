@@ -6,10 +6,6 @@
 
 <VBox spacing="10" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.selection.SelectionController">
     <ListView fx:id="optionsListView" maxHeight="300" focusTraversable="false" />
-    <HBox alignment="CENTER" spacing="10">
-        <Label text="Betrag in €" />
-        <CheckedDoubleSpinner min="0" max="200" initialValue="10" amountToStepBy="1" fx:id="contributionSpinner" editable="true" />
-    </HBox>
     <HBox>
         <Label fx:id="selectedCount" text="0" />
         <Label text=" von " />

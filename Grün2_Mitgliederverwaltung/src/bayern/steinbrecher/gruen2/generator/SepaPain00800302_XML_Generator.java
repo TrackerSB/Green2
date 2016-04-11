@@ -7,6 +7,7 @@ import bayern.steinbrecher.gruen2.people.Person;
 import bayern.steinbrecher.gruen2.people.Originator;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,14 +65,18 @@ public class SepaPain00800302_XML_Generator {
      * replaced. If it don´t it will be created.
      *
      * @param member The member to collect money via direct debit from.
-     * @param contribution The contribution every member has to pay.
+     * @param contribution The list of contributions every member has to pay.
      * @param originator The originator of the direct debit.
      * @param outputfile The path to the file to print the xml to.
      * @return A list containing member which are not included in the
      * outputfile. These are member which have no iban or no bic.
      */
     public static List<Member> createXMLFile(List<Member> member,
-            double contribution, Originator originator, String outputfile) {
+            Double[] contribution, Originator originator, String outputfile) {
+        if (contribution.length != member.size()) {
+            throw new IllegalArgumentException(
+                    "Sizes of conribution and member has to be equal.");
+        }
         List<Member> invalidMember = filterValidMember(member);
         Output.printContent(
                 createXML(member, originator, contribution), outputfile);
@@ -113,13 +118,14 @@ public class SepaPain00800302_XML_Generator {
      *
      * @param member The list of member to include in the xml.
      * @param originator The origiantor of the direct debit.
-     * @param contribution The amount every member has to pay.
+     * @param contribution The list of contributions every member has to pay.
      * @return The {@code String} representing the xml file content.
      */
     private static String createXML(List<Member> member, Originator originator,
-            double contribution) {
+            Double[] contribution) {
         int numberOfTransactions = member.size();
-        double controlSum = numberOfTransactions * contribution;
+        double controlSum = Arrays.stream(contribution)
+                .reduce(0.0, Double::sum);
         StringBuilder output = new StringBuilder();
 
         //The beginning containing originators data.

@@ -108,6 +108,29 @@ public class Member implements Comparable<Member> {
      * {@inheritDoc}
      */
     @Override
+    public boolean equals(Object comp) {
+        if (comp == this) {
+            return true;
+        }
+        if (comp instanceof Member) {
+            return this.membershipnumber == ((Member) comp).membershipnumber;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return this.membershipnumber;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         return membershipnumber + ":\t" + person.getName();
     }

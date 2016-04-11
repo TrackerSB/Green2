@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.contribution.ContributionController">
+    <HBox spacing="10">
+        <Label text="Betrag in €" />
+        <CheckedDoubleSpinner min="0" max="200" initialValue="10" amountToStepBy="1" fx:id="contributionSpinner" editable="true" />
+    </HBox>
+    <HBox spacing="10">
+        <Button text="Fertig" fx:id="selectButton" disable="true" onAction="#select" />
+        <Label fx:id="missingInput" text="Ungültige oder fehlende Angaben" styleClass="warningLabel" />
+    </HBox>
+</VBox>

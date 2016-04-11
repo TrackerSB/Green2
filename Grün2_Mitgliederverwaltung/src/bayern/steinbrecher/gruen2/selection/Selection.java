@@ -71,23 +71,4 @@ public class Selection<T extends Comparable> extends Model {
         onlyShowOnce();
         return scontroller.getSelection();
     }
-
-    /**
-     * Opens the selection window if no other process yet opened one, blocks
-     * until the window is closed and returns the value entered in the
-     * {@code TextField}. Returns {@code Optional.empty} if the user did not
-     * confirm the contribution. The window will only be opened ONCE; even if
-     * multiple threads are calling this function. They will be blocked until
-     * the window is closed.
-     *
-     * @return The value entered in the the {@code TextField} if any.
-     */
-    public Optional<Double> getContribution() {
-        if (stage == null) {
-            throw new IllegalStateException(
-                    "start(...) has to be called first");
-        }
-        onlyShowOnce();
-        return scontroller.getContribution();
-    }
 }

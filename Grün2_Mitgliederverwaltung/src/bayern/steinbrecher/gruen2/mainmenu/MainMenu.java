@@ -4,6 +4,7 @@ import bayern.steinbrecher.gruen2.Output;
 import bayern.steinbrecher.gruen2.connection.DBConnection;
 import bayern.steinbrecher.gruen2.connection.DefaultConnection;
 import bayern.steinbrecher.gruen2.connection.SshConnection;
+import bayern.steinbrecher.gruen2.contribution.Contribution;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
@@ -68,7 +69,7 @@ public class MainMenu extends Application {
     private Future<List<Member>> member;
     private Map<Integer, Future<List<Member>>> memberBirthday
             = new HashMap<>(3);
-    private Future<List<Member>> memberContributionfree;
+    private Future<List<Member>> memberNonContributionfree;
     private Future<Map<String, String>> nicknames;
     private MainMenuController mcontroller;
     private Stage primaryStage;
@@ -133,7 +134,7 @@ public class MainMenu extends Application {
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
                 .forEach(y -> memberBirthday.put(
                         y, exserv.submit(() -> getBirthdayMember(y))));
-        memberContributionfree = exserv.submit(() -> member.get()
+        memberNonContributionfree = exserv.submit(() -> member.get()
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
                 .collect(Collectors.toList()));
@@ -294,7 +295,8 @@ public class MainMenu extends Application {
         return mappedNicknames;
     }
 
-    private void generateSepa(Future<List<Member>> memberToSelect) {
+    private void generateSepa(Future<List<Member>> memberToSelect,
+            Map<Integer, Double> contribution) {
         SepaForm sepaForm = new SepaForm();
         Optional<Originator> originator = Optional.empty();
         try {
@@ -312,12 +314,11 @@ public class MainMenu extends Application {
                 selection.start(new Stage());
                 Optional<List<Member>> selectedMember
                         = selection.getSelection();
-                Optional<Double> contribution = selection.getContribution();
 
-                if (selectedMember.isPresent() && contribution.isPresent()) {
+                if (selectedMember.isPresent()) {
                     List<Member> invalidMember
                             = SepaPain00800302_XML_Generator.createXMLFile(
-                                    selectedMember.get(), contribution.get(),
+                                    selectedMember.get(), contribution,
                                     originator.get(),
                                     DataProvider.getSavepath() + "/Sepa.xml");
                     Optional<String> message = invalidMember.stream()
@@ -341,11 +342,21 @@ public class MainMenu extends Application {
     }
 
     void generateUniversalSepa() {
-        generateSepa(member);
+        try {
+            Double contribution = Contribution.askForContribution().get();
+            Map<Integer, Double> contributions = new HashMap<>();
+            member.get().stream().forEach(m -> {
+                contributions.put(m.getMembershipnumber(), contribution);
+            });
+            generateSepa(member, contributions);
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
     }
 
     void generateContributionSepa() {
-        generateSepa(memberContributionfree);
+        generateSepa(memberNonContributionfree);
     }
 
     void checkIban() {

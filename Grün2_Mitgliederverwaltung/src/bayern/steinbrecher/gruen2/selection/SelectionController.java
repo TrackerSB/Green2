@@ -72,8 +72,6 @@ public class SelectionController<T extends Comparable> extends Controller {
     };
     @FXML
     private Label itemCount;
-    @FXML
-    private CheckedDoubleSpinner contributionSpinner;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
         if (newVal) {
@@ -88,10 +86,7 @@ public class SelectionController<T extends Comparable> extends Controller {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        contributionSpinner.getEditor().setOnAction(aevt -> select());
-        contributionSpinner.validProperty()
-                .not()
-                .or(currentSelectedCount.lessThanOrEqualTo(0))
+        currentSelectedCount.lessThanOrEqualTo(0)
                 .addListener((obs, oldVal, newVal) -> {
                     missingInput.setVisible(newVal);
                     selectButton.setDisable(newVal);
@@ -163,19 +158,6 @@ public class SelectionController<T extends Comparable> extends Controller {
                 }
             }
             return Optional.of(selection);
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Returns the currently inserted contribution. Returns
-     * {@code Optional.empty} if the user didn´t confirm the contribution yet.
-     *
-     * @return The currently inserted contribution.
-     */
-    public Optional<Double> getContribution() {
-        if (userConfirmed) {
-            return Optional.of(contributionSpinner.getValue());
         }
         return Optional.empty();
     }
