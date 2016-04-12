@@ -71,6 +71,7 @@ public class MainMenu extends Application {
             = new HashMap<>(3);
     private Future<List<Member>> memberNonContributionfree;
     private Future<Map<String, String>> nicknames;
+    private Future<Optional<Map<Integer, Double>>> individualContributions;
     private MainMenuController mcontroller;
     private Stage primaryStage;
 
@@ -139,6 +140,9 @@ public class MainMenu extends Application {
                 .filter(m -> !m.isContributionfree())
                 .collect(Collectors.toList()));
         nicknames = exserv.submit(() -> readNicknames(dbConnection));
+        individualContributions = exserv.submit(() -> {
+            return readIndividualContributions(dbConnection);
+        });
     }
 
     /**
@@ -295,6 +299,36 @@ public class MainMenu extends Application {
         return mappedNicknames;
     }
 
+    /**
+     * Reads the individual contributions of every member - if specified.
+     *
+     * @param dbc The connection to use to query.
+     * @return A Optional containing the individual contributions or
+     * {@code Optional.empty()} if inidividual contributions are not specified.
+     */
+    public static Optional<Map<Integer, Double>> readIndividualContributions(
+            DBConnection dbc) {
+        Map<Integer, Double> contributions = new HashMap<>();
+        if (DataProvider.useIndividualContributions()) {
+            try {
+                List<List<String>> result
+                        = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag"
+                                + "FROM Mitglieder");
+                result.parallelStream()
+                        .skip(1)
+                        .forEach(row -> {
+                            contributions.put(Integer.parseInt(row.get(0)),
+                                    Double.parseDouble(
+                                            row.get(1).replaceAll(",", ".")));
+                        });
+            } catch (SQLException ex) {
+                Logger.getLogger(MainMenu.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+        }
+        return Optional.empty();
+    }
+
     private void generateSepa(Future<List<Member>> memberToSelect,
             Map<Integer, Double> contribution) {
         SepaForm sepaForm = new SepaForm();
@@ -352,11 +386,31 @@ public class MainMenu extends Application {
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(MainMenu.class.getName())
                     .log(Level.SEVERE, null, ex);
+            ConfirmDialog.showConfirmDialog(
+                    "Sepalastschrift konnte nicht erstellt werden",
+                    primaryStage);
         }
     }
 
     void generateContributionSepa() {
-        generateSepa(memberNonContributionfree);
+        Map<Integer, Double> contributions = new HashMap<>();
+        try {
+            if (DataProvider.useIndividualContributions()) {
+                contributions = individualContributions.get().get();
+            } else {
+                Double contribution = Contribution.askForContribution().get();
+                for (Member m : member.get()) {
+                    contributions.put(m.getMembershipnumber(), contribution);
+                }
+            }
+            generateSepa(memberNonContributionfree, contributions);
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            ConfirmDialog.showConfirmDialog(
+                    "Sepalastschrift konnte nicht erstellt werden",
+                    primaryStage);
+        }
     }
 
     void checkIban() {

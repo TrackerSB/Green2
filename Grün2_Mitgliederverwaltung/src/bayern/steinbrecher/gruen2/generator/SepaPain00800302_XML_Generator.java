@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Generates a Sepa.Pain.008.003.02.
@@ -65,21 +66,22 @@ public class SepaPain00800302_XML_Generator {
      * replaced. If it don´t it will be created.
      *
      * @param member The member to collect money via direct debit from.
-     * @param contribution The list of contributions every member has to pay.
+     * @param contributions The mapping of membershipnumbers to contributions.
      * @param originator The originator of the direct debit.
      * @param outputfile The path to the file to print the xml to.
      * @return A list containing member which are not included in the
      * outputfile. These are member which have no iban or no bic.
      */
     public static List<Member> createXMLFile(List<Member> member,
-            Double[] contribution, Originator originator, String outputfile) {
-        if (contribution.length != member.size()) {
+            Map<Integer, Double> contributions, Originator originator,
+            String outputfile) {
+        if (contributions.size() != member.size()) {
             throw new IllegalArgumentException(
                     "Sizes of conribution and member has to be equal.");
         }
         List<Member> invalidMember = filterValidMember(member);
         Output.printContent(
-                createXML(member, originator, contribution), outputfile);
+                createXML(member, originator, contributions), outputfile);
         return invalidMember;
     }
 
@@ -118,13 +120,13 @@ public class SepaPain00800302_XML_Generator {
      *
      * @param member The list of member to include in the xml.
      * @param originator The origiantor of the direct debit.
-     * @param contribution The list of contributions every member has to pay.
+     * @param contributions The mapping of membershipnumbers to contributions.
      * @return The {@code String} representing the xml file content.
      */
     private static String createXML(List<Member> member, Originator originator,
-            Double[] contribution) {
+            Map<Integer, Double> contributions) {
         int numberOfTransactions = member.size();
-        double controlSum = Arrays.stream(contribution)
+        double controlSum = contributions.values().stream()
                 .reduce(0.0, Double::sum);
         StringBuilder output = new StringBuilder();
 
@@ -220,7 +222,7 @@ public class SepaPain00800302_XML_Generator {
                     .append("         <EndToEndId>NOTPROVIDED</EndToEndId>\n")
                     .append("       </PmtId>\n")
                     .append("       <InstdAmt Ccy=\"EUR\">")
-                    .append(contribution)
+                    .append(contributions)
                     .append("</InstdAmt>\n")
                     .append("       <DrctDbtTx>\n")
                     .append("         <MndtRltdInf>\n")
