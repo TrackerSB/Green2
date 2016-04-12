@@ -16,7 +16,7 @@ public abstract class Login extends Model {
 
     /**
      * Returns the Information that was entered in the login. This method blocks
-     * until the frame is closed or hidden. It won´t show more than once even if
+     * until the frame is closed or hidden. It won't show more than once even if
      * multiple threads call it. They will be blocked and notified when the
      * login window closes.
      *

@@ -79,7 +79,8 @@ public class Originator {
     public void readOriginatorInfo() throws FileNotFoundException {
         try {
             Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
-            originatorProps.load(new InputStreamReader(new FileInputStream(new File(filename)), "UTF-8"));
+            originatorProps.load(new InputStreamReader(
+                    new FileInputStream(new File(filename)), "UTF-8"));
             Arrays.stream(getClass().getDeclaredFields())
                     .parallel()
                     .filter(f -> !f.getName().equalsIgnoreCase("filename"))
@@ -133,7 +134,7 @@ public class Originator {
         try {
             originatorProps.store(
                     new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filename), "UTF-8")), null);
+                            new FileOutputStream(filename), "UTF-8")), null);
         } catch (Exception ex) {
             Logger.getLogger(Originator.class.getName())
                     .log(Level.SEVERE, null, ex);
