@@ -309,24 +309,24 @@ public class MainMenu extends Application {
     public static Optional<Map<Integer, Double>> readIndividualContributions(
             DBConnection dbc) {
         Map<Integer, Double> contributions = new HashMap<>();
-        if (DataProvider.useIndividualContributions()) {
-            try {
-                List<List<String>> result
-                        = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag"
-                                + "FROM Mitglieder");
-                result.parallelStream()
-                        .skip(1)
-                        .forEach(row -> {
-                            contributions.put(Integer.parseInt(row.get(0)),
-                                    Double.parseDouble(
-                                            row.get(1).replaceAll(",", ".")));
-                        });
-            } catch (SQLException ex) {
-                Logger.getLogger(MainMenu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
+        try {
+            //FIXME Check existence of column Beitrag not using Exception.
+            List<List<String>> result
+                    = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag "
+                            + "FROM Mitglieder");
+            result.parallelStream()
+                    .skip(1)
+                    .forEach(row -> {
+                        contributions.put(Integer.parseInt(row.get(0)),
+                                Double.parseDouble(
+                                        row.get(1).replaceAll(",", ".")));
+                    });
+            return Optional.of(contributions);
+        } catch (SQLException ex) {
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     private void generateSepa(Future<List<Member>> memberToSelect,
@@ -361,7 +361,8 @@ public class MainMenu extends Application {
                             .reduce(String::concat);
                     if (message.isPresent()) {
                         ConfirmDialog.showConfirmDialog(message.get()
-                                + "\nhaben keine IBAN oder keine BIC.",
+                                + "\nhaben keine bzw. eine ungültige IBAN "
+                                + "und/oder keine BIC.",
                                 primaryStage);
                     }
                 }
@@ -396,9 +397,11 @@ public class MainMenu extends Application {
 
     void generateContributionSepa() {
         try {
-            if (DataProvider.useIndividualContributions()) {
+            Optional<Map<Integer, Double>> optContributions
+                    = individualContributions.get();
+            if (optContributions.isPresent()) {
                 generateSepa(memberNonContributionfree,
-                        individualContributions.get().get());
+                        optContributions.get());
             } else {
                 Optional<Double> contribution
                         = Contribution.askForContribution();

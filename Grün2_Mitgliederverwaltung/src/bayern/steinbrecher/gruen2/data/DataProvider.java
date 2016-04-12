@@ -204,17 +204,6 @@ public final class DataProvider {
     }
 
     /**
-     * Checks whether every member has a individual contribution. (Default is
-     * no)
-     *
-     * @return {@code true} only if every member has a individual contribution.
-     */
-    public static boolean useIndividualContributions() {
-        return getOrDefault(ConfigKey.USE_INDIVIDUAL_CONTRIBUTION, "nein")
-                .equalsIgnoreCase("ja");
-    }
-
-    /**
      * Checks whether all allowed configurations are specified.
      *
      * @return {@code true} only if all allowed configurations are specified.

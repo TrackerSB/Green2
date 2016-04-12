@@ -27,9 +27,5 @@ public enum ConfigKey {
      * The expression to indicate which people get birthday notifications. Like
      * =50,=60,=70,=75,&gt;=80
      */
-    BIRTHDAY_EXPRESSION,
-    /**
-     * Indicating whether a "Beitrag" column is specified.
-     */
-    USE_INDIVIDUAL_CONTRIBUTION;
+    BIRTHDAY_EXPRESSION;
 }

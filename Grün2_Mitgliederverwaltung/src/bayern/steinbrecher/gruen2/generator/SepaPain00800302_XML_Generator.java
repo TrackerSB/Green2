@@ -100,13 +100,11 @@ public class SepaPain00800302_XML_Generator {
             AccountHolder ah = m.getAccountHolder();
             if (!hasValidIban(ah)) {
                 valid = false;
-                System.err.println(p.getPrename() + p.getLastname()
-                        + " has an invalid IBAN");
+                System.err.println(m + " has an invalid IBAN");
             }
             if (!ah.hasBic()) {
                 valid = false;
-                System.err.println(p.getPrename() + p.getLastname()
-                        + " has no BIC");
+                System.err.println(m + " has no BIC");
             }
             if (!valid) {
                 invalidMember.add(m);
@@ -224,7 +222,7 @@ public class SepaPain00800302_XML_Generator {
                     .append("         <EndToEndId>NOTPROVIDED</EndToEndId>\n")
                     .append("       </PmtId>\n")
                     .append("       <InstdAmt Ccy=\"EUR\">")
-                    .append(contributions)
+                    .append(contributions.get(m.getMembershipnumber()))
                     .append("</InstdAmt>\n")
                     .append("       <DrctDbtTx>\n")
                     .append("         <MndtRltdInf>\n")
