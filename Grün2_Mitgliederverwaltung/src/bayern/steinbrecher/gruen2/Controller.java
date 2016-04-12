@@ -15,9 +15,9 @@ public abstract class Controller implements Initializable {
      */
     protected Stage stage = null;
     /**
-     * Only {@code true} when the stage is closed because the explicitly
-     * confirmed his input. (E.g. pressing "Login" confirms; closing the window
-     * with "X" does not confirm.)
+     * Only {@code true} when the user explicitly confirmed his input. (E.g.
+     * pressing "Login" or "Auswählen" confirms; closing the window with "X"
+     * does not confirm.)
      */
     protected boolean userConfirmed = false;
 
