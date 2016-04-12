@@ -7,7 +7,6 @@ import bayern.steinbrecher.gruen2.people.Person;
 import bayern.steinbrecher.gruen2.people.Originator;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,9 +74,11 @@ public class SepaPain00800302_XML_Generator {
     public static List<Member> createXMLFile(List<Member> member,
             Map<Integer, Double> contributions, Originator originator,
             String outputfile) {
-        if (contributions.size() != member.size()) {
-            throw new IllegalArgumentException(
-                    "Sizes of conribution and member has to be equal.");
+        for (Member m : member) {
+            if (!contributions.containsKey(m.getMembershipnumber())) {
+                throw new IllegalArgumentException(
+                        "No contribution specified at least for: " + m);
+            }
         }
         List<Member> invalidMember = filterValidMember(member);
         Output.printContent(
@@ -126,8 +127,9 @@ public class SepaPain00800302_XML_Generator {
     private static String createXML(List<Member> member, Originator originator,
             Map<Integer, Double> contributions) {
         int numberOfTransactions = member.size();
-        double controlSum = contributions.values().stream()
-                .reduce(0.0, Double::sum);
+        double controlSum = member.parallelStream()
+                .mapToDouble(m -> contributions.get(m.getMembershipnumber()))
+                .sum();
         StringBuilder output = new StringBuilder();
 
         //The beginning containing originators data.

@@ -376,34 +376,41 @@ public class MainMenu extends Application {
     }
 
     void generateUniversalSepa() {
-        try {
-            Double contribution = Contribution.askForContribution().get();
+        Optional<Double> contribution = Contribution.askForContribution();
+        if (contribution.isPresent()) {
             Map<Integer, Double> contributions = new HashMap<>();
-            member.get().stream().forEach(m -> {
-                contributions.put(m.getMembershipnumber(), contribution);
-            });
-            generateSepa(member, contributions);
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MainMenu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            ConfirmDialog.showConfirmDialog(
-                    "Sepalastschrift konnte nicht erstellt werden",
-                    primaryStage);
+            try {
+                member.get().stream().forEach(m -> {
+                    contributions.put(m.getMembershipnumber(), contribution.get());
+                });
+                generateSepa(member, contributions);
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(MainMenu.class.getName())
+                        .log(Level.SEVERE, null, ex);
+                ConfirmDialog.showConfirmDialog(
+                        "Sepalastschrift konnte nicht erstellt werden",
+                        primaryStage);
+            }
         }
     }
 
     void generateContributionSepa() {
-        Map<Integer, Double> contributions = new HashMap<>();
         try {
             if (DataProvider.useIndividualContributions()) {
-                contributions = individualContributions.get().get();
+                generateSepa(memberNonContributionfree,
+                        individualContributions.get().get());
             } else {
-                Double contribution = Contribution.askForContribution().get();
-                for (Member m : member.get()) {
-                    contributions.put(m.getMembershipnumber(), contribution);
+                Optional<Double> contribution
+                        = Contribution.askForContribution();
+                if (contribution.isPresent()) {
+                    Map<Integer, Double> contributions = new HashMap<>();
+                    for (Member m : member.get()) {
+                        contributions.put(
+                                m.getMembershipnumber(), contribution.get());
+                    }
+                    generateSepa(memberNonContributionfree, contributions);
                 }
             }
-            generateSepa(memberNonContributionfree, contributions);
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(MainMenu.class.getName())
                     .log(Level.SEVERE, null, ex);

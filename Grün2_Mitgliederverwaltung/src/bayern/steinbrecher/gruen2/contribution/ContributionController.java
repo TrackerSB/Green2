@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
 /**
  * Represents a window for inserting a double value.
@@ -19,6 +20,8 @@ public class ContributionController extends Controller {
     private Button selectButton;
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
+    @FXML
+    private Label missingInput;
 
     /**
      * {@inheritDoc}
@@ -26,6 +29,11 @@ public class ContributionController extends Controller {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contributionSpinner.getEditor().setOnAction(aevt -> select());
+        contributionSpinner.validProperty().addListener(
+                (obs, oldVal, newVal) -> {
+            missingInput.setVisible(!newVal);
+            selectButton.setDisable(!newVal);
+        });
     }
 
     @FXML

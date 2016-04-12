@@ -44,9 +44,9 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
      * value will be used.
      * @param amountToStepBy The amount to increment or decrement by, per step.
      */
-    public CheckedDoubleSpinner(@NamedArg("min") int min,
-            @NamedArg("max") int max,
-            @NamedArg("initialValue") int initialValue,
+    public CheckedDoubleSpinner(@NamedArg("min") double min,
+            @NamedArg("max") double max,
+            @NamedArg("initialValue") double initialValue,
             @NamedArg("amountToStepBy") double amountToStepBy) {
         super(min, max, initialValue, amountToStepBy);
 

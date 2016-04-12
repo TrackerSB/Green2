@@ -10,7 +10,7 @@
         <CheckedDoubleSpinner min="0" max="200" initialValue="10" amountToStepBy="1" fx:id="contributionSpinner" editable="true" />
     </HBox>
     <HBox spacing="10">
-        <Button text="Fertig" fx:id="selectButton" disable="true" onAction="#select" />
-        <Label fx:id="missingInput" text="Ungültige oder fehlende Angaben" styleClass="warningLabel" />
+        <Button text="Fertig" fx:id="selectButton" onAction="#select" />
+        <Label visible="false" fx:id="missingInput" text="Ungültige oder fehlende Angaben" styleClass="warningLabel" />
     </HBox>
 </VBox>

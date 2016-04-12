@@ -90,9 +90,6 @@ public class SelectionController<T extends Comparable> extends Controller {
                 .addListener((obs, oldVal, newVal) -> {
                     missingInput.setVisible(newVal);
                     selectButton.setDisable(newVal);
-                });
-        currentSelectedCount.lessThanOrEqualTo(0)
-                .addListener((obs, oldVal, newVal) -> {
                     selectNoneButton.setDisable(newVal);
                 });
         currentSelectedCount.addListener((obs, oldVal, newVal) -> {
