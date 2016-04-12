@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
+ * Represents the contribution inserted.
  *
  * @author Stefan Huber
  */

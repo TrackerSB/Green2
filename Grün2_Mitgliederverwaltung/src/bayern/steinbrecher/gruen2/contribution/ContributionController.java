@@ -10,7 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 /**
- * Represents a window for inserting a double value.
+ * Contains a window for inserting a double value representing a contribution.
  *
  * @author Stefan Huber
  */
