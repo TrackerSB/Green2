@@ -41,7 +41,7 @@ public class Contribution extends Model {
     }
 
     /**
-     * Opens the selection window if no other process yet opened one, blocks
+     * Opens the contribution window if no other process yet opened one, blocks
      * until the window is closed and returns the value entered in the
      * {@code TextField}. Returns {@code Optional.empty} if the user did not
      * confirm the contribution. The window will only be opened ONCE; even if
