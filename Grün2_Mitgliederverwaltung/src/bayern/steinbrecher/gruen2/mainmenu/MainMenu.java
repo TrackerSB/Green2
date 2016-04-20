@@ -198,6 +198,7 @@ public class MainMenu extends Application {
                 } else if (message != null && message.contains("Auth fail")) {
                     ConfirmDialog.showConfirmDialog(
                             "Prüfe deine Eingaben.", primaryStage);
+                    login.reset();
                     loginInfos = login.getLoginInformation();
                 } else {
                     System.err.println("Not action specified for: ");
@@ -308,12 +309,12 @@ public class MainMenu extends Application {
      */
     public static Optional<Map<Integer, Double>> readIndividualContributions(
             DBConnection dbc) {
-        Map<Integer, Double> contributions = new HashMap<>();
         try {
             //FIXME Check existence of column Beitrag not using Exception.
             List<List<String>> result
                     = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag "
                             + "FROM Mitglieder");
+            Map<Integer, Double> contributions = new HashMap<>();
             result.parallelStream()
                     .skip(1)
                     .forEach(row -> {
@@ -358,6 +359,7 @@ public class MainMenu extends Application {
                     Optional<String> message = invalidMember.stream()
                             .map(Member::toString)
                             .map(s -> s += '\n')
+                            //FIXME Replace with StringBuilder
                             .reduce(String::concat);
                     if (message.isPresent()) {
                         ConfirmDialog.showConfirmDialog(message.get()
@@ -382,7 +384,8 @@ public class MainMenu extends Application {
             Map<Integer, Double> contributions = new HashMap<>();
             try {
                 member.get().stream().forEach(m -> {
-                    contributions.put(m.getMembershipnumber(), contribution.get());
+                    contributions.put(
+                            m.getMembershipnumber(), contribution.get());
                 });
                 generateSepa(member, contributions);
             } catch (InterruptedException | ExecutionException ex) {

@@ -43,4 +43,13 @@ public abstract class Model extends Application {
             }
         }
     }
+
+    /**
+     * After calling this method the window can be opened once again. But
+     * previously inserted data stays unchanged.
+     */
+    public synchronized void reset() {
+        gotClosed = false;
+        gotShown = false;
+    }
 }

@@ -77,18 +77,14 @@ public final class SshConnection implements DBConnection {
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.sshSession.connect();
 
-        //Check correctness of the database login data
         try {
+            //Check authentification
             execQuery("SELECT 1");
-
-            //Check whether error occured.
-            if (errStream.size() > 0) {
-                close();
-                throw new JSchException("Auth fail");
-            }
         } catch (SQLException ex) {
             Logger.getLogger(SshConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
+            close();
+            throw new JSchException("Auth fail");
         }
     }
 
@@ -121,6 +117,7 @@ public final class SshConnection implements DBConnection {
             throws SQLException {
         try {
             Channel channel = sshSession.openChannel("exec");
+            errStream.reset();
             ((ChannelExec) channel).setErrStream(errStream);
             ((ChannelExec) channel).setCommand("mysql"
                     + " -u" + databaseUsername
@@ -133,7 +130,7 @@ public final class SshConnection implements DBConnection {
             channel.connect();
 
             String result = readResult(in);
-            if (result == null) {
+            if (result == null || errStream.size() > 0) {
                 throw new SQLException("Invalid SQL-Code");
             }
             String[] rows = result.split("\n");

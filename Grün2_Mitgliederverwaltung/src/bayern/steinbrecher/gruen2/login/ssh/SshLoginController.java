@@ -68,15 +68,15 @@ public class SshLoginController extends LoginController {
      */
     @Override
     public Optional<Map<LoginKey, String>> getLoginInformation() {
-        Map<LoginKey, String> loginInfo
-                = new HashMap<>(LoginKey.values().length);
-        loginInfo.put(LoginKey.DATABASE_USERNAME,
-                databaseUsernameField.getText());
-        loginInfo.put(LoginKey.DATABASE_PASSWORD,
-                databasePasswordField.getText());
-        loginInfo.put(LoginKey.SSH_USERNAME, sshUsernameField.getText());
-        loginInfo.put(LoginKey.SSH_PASSWORD, sshPasswordField.getText());
         if (userConfirmed) {
+            Map<LoginKey, String> loginInfo
+                    = new HashMap<>(LoginKey.values().length);
+            loginInfo.put(LoginKey.DATABASE_USERNAME,
+                    databaseUsernameField.getText());
+            loginInfo.put(LoginKey.DATABASE_PASSWORD,
+                    databasePasswordField.getText());
+            loginInfo.put(LoginKey.SSH_USERNAME, sshUsernameField.getText());
+            loginInfo.put(LoginKey.SSH_PASSWORD, sshPasswordField.getText());
             return Optional.of(loginInfo);
         }
         return Optional.empty();
