@@ -264,6 +264,7 @@ public class SepaPain00800302_XML_Generator {
                     .append("</Ustrd>\n")
                     .append("       </RmtInf>\n")
                     .append("     </DrctDbtTxInf>\n");
+
             synchronized (output) {
                 output.append(suboutput);
             }
