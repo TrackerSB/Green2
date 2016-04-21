@@ -107,8 +107,7 @@ public final class SshConnection extends DBConnection {
      * {@inheritDoc}
      */
     @Override
-    public List<List<String>> execQuery(String sqlCode)
-            throws SQLException {
+    public List<List<String>> execQuery(String sqlCode) throws SQLException {
         try {
             Channel channel = sshSession.openChannel("exec");
             ByteArrayOutputStream errStream = new ByteArrayOutputStream();

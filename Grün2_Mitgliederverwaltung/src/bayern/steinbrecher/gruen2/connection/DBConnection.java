@@ -2,6 +2,7 @@ package bayern.steinbrecher.gruen2.connection;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Represents a database connection.
