@@ -309,25 +309,26 @@ public class MainMenu extends Application {
      */
     public static Optional<Map<Integer, Double>> readIndividualContributions(
             DBConnection dbc) {
-        try {
-            //FIXME Check existence of column Beitrag not using Exception.
-            List<List<String>> result
-                    = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag "
-                            + "FROM Mitglieder");
-            Map<Integer, Double> contributions = new HashMap<>();
-            result.parallelStream()
-                    .skip(1)
-                    .forEach(row -> {
-                        contributions.put(Integer.parseInt(row.get(0)),
-                                Double.parseDouble(
-                                        row.get(1).replaceAll(",", ".")));
-                    });
-            return Optional.of(contributions);
-        } catch (SQLException ex) {
-            Logger.getLogger(MainMenu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return Optional.empty();
+        if (dbc.checkColumn("Mitglieder", "Beitrag")) {
+            try {
+                List<List<String>> result
+                        = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag "
+                                + "FROM Mitglieder");
+                Map<Integer, Double> contributions = new HashMap<>();
+                result.parallelStream()
+                        .skip(1)
+                        .forEach(row -> {
+                            contributions.put(Integer.parseInt(row.get(0)),
+                                    Double.parseDouble(
+                                            row.get(1).replaceAll(",", ".")));
+                        });
+                return Optional.of(contributions);
+            } catch (SQLException ex) {
+                Logger.getLogger(MainMenu.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
         }
+        return Optional.empty();
     }
 
     private void generateSepa(Future<List<Member>> memberToSelect,
@@ -356,13 +357,11 @@ public class MainMenu extends Application {
                                     selectedMember.get(), contribution,
                                     originator.get(),
                                     DataProvider.getSavepath() + "/Sepa.xml");
-                    Optional<String> message = invalidMember.stream()
-                            .map(Member::toString)
-                            .map(s -> s += '\n')
-                            //FIXME Replace with StringBuilder
-                            .reduce(String::concat);
+                    Optional<StringBuilder> message = invalidMember.stream()
+                            .map(m -> new StringBuilder(m.toString() + "\n"))
+                            .reduce(StringBuilder::append);
                     if (message.isPresent()) {
-                        ConfirmDialog.showConfirmDialog(message.get()
+                        ConfirmDialog.showConfirmDialog(message.get().toString()
                                 + "\nhaben keine bzw. eine ungültige IBAN "
                                 + "und/oder keine BIC.",
                                 primaryStage);

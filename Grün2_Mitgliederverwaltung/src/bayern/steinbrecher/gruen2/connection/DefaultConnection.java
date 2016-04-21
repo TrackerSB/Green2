@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 /**
  * @author Stefan Huber
  */
-public final class DefaultConnection implements DBConnection {
+public final class DefaultConnection extends DBConnection {
 
     /**
      * The name of the used driver.

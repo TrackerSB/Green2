@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  *
  * @author Stefan Huber
  */
-public final class SshConnection implements DBConnection {
+public final class SshConnection extends DBConnection {
 
     /**
      * The default port for ssh.
@@ -47,11 +47,6 @@ public final class SshConnection implements DBConnection {
      * The ssh session used to connect to the database over a secure channel.
      */
     private final Session sshSession;
-    /**
-     * The stream representing the output of the error stream of the ssh
-     * session.
-     */
-    private final ByteArrayOutputStream errStream = new ByteArrayOutputStream();
 
     /**
      * Constructes a new database connection over SSH.
@@ -111,13 +106,12 @@ public final class SshConnection implements DBConnection {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("SleepWhileInLoop")
     @Override
     public List<List<String>> execQuery(String sqlCode)
             throws SQLException {
         try {
             Channel channel = sshSession.openChannel("exec");
-            errStream.reset();
+            ByteArrayOutputStream errStream = new ByteArrayOutputStream();
             ((ChannelExec) channel).setErrStream(errStream);
             ((ChannelExec) channel).setCommand("mysql"
                     + " -u" + databaseUsername

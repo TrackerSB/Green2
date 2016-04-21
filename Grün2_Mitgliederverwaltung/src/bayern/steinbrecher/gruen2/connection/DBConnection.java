@@ -8,13 +8,13 @@ import java.util.List;
  *
  * @author Stefan Huber
  */
-public interface DBConnection extends AutoCloseable {
+public abstract class DBConnection implements AutoCloseable {
 
     /**
      * Closes this connection.
      */
     @Override
-    void close();
+    public abstract void close();
 
     /**
      * Executes a query and returns the result.
@@ -24,5 +24,24 @@ public interface DBConnection extends AutoCloseable {
      * First dimension rows; second columns.
      * @throws SQLException Thrown if the sql code is invalid.
      */
-    List<List<String>> execQuery(String sqlCode) throws SQLException;
+    public abstract List<List<String>> execQuery(String sqlCode)
+            throws SQLException;
+
+    /**
+     * Checks whether the given table of the configured database contains a
+     * specific column.
+     *
+     * @param table The name of the table to search for the column.
+     * @param column The column name to search for.
+     * @return {@code true} only if the given table contains the given column.
+     */
+    public boolean checkColumn(String table, String column) {
+        //FIXME Try to find other solution not using SQLException.
+        try {
+            execQuery("SELECT " + column + " FROM " + table);
+            return true;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
 }
