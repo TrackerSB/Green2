@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2;
+package bayern.steinbrecher.gruen2.data;
 
 import bayern.steinbrecher.gruen2.generator.SepaPain00800302_XML_Generator;
 import java.io.BufferedWriter;

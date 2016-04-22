@@ -1,6 +1,5 @@
 package bayern.steinbrecher.gruen2.mainmenu;
 
-import bayern.steinbrecher.gruen2.Output;
 import bayern.steinbrecher.gruen2.connection.DBConnection;
 import bayern.steinbrecher.gruen2.connection.DefaultConnection;
 import bayern.steinbrecher.gruen2.connection.SshConnection;
@@ -9,6 +8,7 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
+import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.selection.Selection;

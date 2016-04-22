@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.generator;
 
-import bayern.steinbrecher.gruen2.Output;
+import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.people.AccountHolder;
 import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Person;
