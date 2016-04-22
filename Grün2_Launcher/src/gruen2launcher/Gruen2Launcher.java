@@ -17,7 +17,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -70,30 +69,34 @@ public final class Gruen2Launcher {
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             }
 
-            ZipInputStream gruen2zip = new ZipInputStream(new FileInputStream(
-                    tempFile.getAbsolutePath()), Charset.forName("UTF8"));
-            ZipEntry entry = gruen2zip.getNextEntry();
-            while (entry != null) {
-                String fileName = entry.getName();
-                File newFile = new File(tempDir.toString() + "/" + fileName);
-                //create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int in;
-                while ((in = gruen2zip.read()) > 0) {
-                    fos.write(in);
+            try (ZipInputStream gruen2zip = new ZipInputStream(
+                    new FileInputStream(tempFile.getAbsolutePath()),
+                    Charset.forName("CP437"))) {
+                ZipEntry entry = gruen2zip.getNextEntry();
+                while (entry != null) {
+                    String fileName = entry.getName();
+                    File newFile
+                            = new File(tempDir.toString() + "/" + fileName);
+                    //create directories for sub directories in zip
+                    new File(newFile.getParent()).mkdirs();
+                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                        int in;
+                        while ((in = gruen2zip.read()) > 0) {
+                            fos.write(in);
+                        }
+                    }
+                    //close this ZipEntry
+                    entry = gruen2zip.getNextEntry();
                 }
-                fos.close();
-                //close this ZipEntry
-                entry = gruen2zip.getNextEntry();
+                gruen2zip.closeEntry();
             }
-            gruen2zip.closeEntry();
-            gruen2zip.close();
 
             //Install
-            Runtime.getRuntime()
-                    .exec("cmd \"" + tempDir.toString() + "/install.bat\"");
-        } catch (MalformedURLException | FileNotFoundException ex) {
+            Process p = Runtime.getRuntime()
+                    .exec("cmd /C \"" + tempDir.toString() + "/install.bat\"");
+            p.waitFor();
+        } catch (MalformedURLException | FileNotFoundException |
+                InterruptedException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
@@ -131,12 +134,10 @@ public final class Gruen2Launcher {
                 if (!localVersion.equalsIgnoreCase(onlineVersion)) {
                     downloadAndInstallGruen2();
                 }
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(Gruen2Launcher.class.getName())
-                        .log(Level.SEVERE, null, ex);
             }
         }
-        Runtime.getRuntime().exec("java -jar \"%ProgramFiles/"
-                + "Grün2_Mitgliederverwaltung/Grün2.jar\"");
+        Runtime.getRuntime()
+                .exec("java -jar \"%ProgramFiles%/Grün2_Mitgliederverwaltung/"
+                        + "Grün2_Mitgliederverwaltung.jar\"");
     }
 }
