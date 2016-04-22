@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
@@ -150,8 +151,6 @@ public final class Gruen2Launcher {
                 }
             }
         }
-        Runtime.getRuntime()
-                .exec("java -jar %ProgramFiles%/Grün2_Mitgliederverwaltung/"
-                        + "Grün2_Mitgliederverwaltung.jar").waitFor();
+        new ProcessBuilder().command("launch.bat").start().waitFor();
     }
 }
