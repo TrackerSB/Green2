@@ -1,10 +1,12 @@
 package gruen2launcher;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -55,14 +57,15 @@ public final class Gruen2Launcher {
     /**
      * Downloads and installs Grün2.
      */
-    private static void downloadAndInstallGruen2() throws IOException {
+    private static void downloadAndInstallGruen2(String newVersion)
+            throws IOException {
         File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
                 .toFile();
         Path tempDir = Files.createTempDirectory(null, new FileAttribute[0]);
 
         try {
             //Download
-            URL downloadUrl = new URL(GRUEN2_HOST + "/Grün2.zip");
+            URL downloadUrl = new URL(GRUEN2_HOST + "/Gruen2.zip");
             ReadableByteChannel rbc
                     = Channels.newChannel(downloadUrl.openStream());
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
@@ -92,9 +95,19 @@ public final class Gruen2Launcher {
             }
 
             //Install
-            Process p = Runtime.getRuntime()
-                    .exec("cmd /C \"" + tempDir.toString() + "/install.bat\"");
-            p.waitFor();
+            Runtime.getRuntime()
+                    .exec("cmd /C \"" + tempDir.toString() + "/install.bat\"")
+                    .waitFor();
+
+            //Update version.txt
+            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(getVersionPath()), "UTF-8"))) {
+                //To make no UTF-8 without BOM but with BOM.
+                bw.append(newVersion);
+            } catch (IOException ex) {
+                Logger.getLogger(Gruen2Launcher.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
         } catch (MalformedURLException | FileNotFoundException |
                 InterruptedException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
@@ -123,21 +136,22 @@ public final class Gruen2Launcher {
      * @param args the command line arguments
      * @throws java.io.IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)
+            throws IOException, InterruptedException {
         File localVersionfile = new File(getVersionPath());
+        String onlineVersion = readOnlineVersion();
         if (!localVersionfile.exists()) {
-            downloadAndInstallGruen2();
+            downloadAndInstallGruen2(onlineVersion);
         } else {
             try (Scanner sc = new Scanner(localVersionfile)) {
                 String localVersion = sc.nextLine();
-                String onlineVersion = readOnlineVersion();
                 if (!localVersion.equalsIgnoreCase(onlineVersion)) {
-                    downloadAndInstallGruen2();
+                    downloadAndInstallGruen2(onlineVersion);
                 }
             }
         }
         Runtime.getRuntime()
-                .exec("java -jar \"%ProgramFiles%/Grün2_Mitgliederverwaltung/"
-                        + "Grün2_Mitgliederverwaltung.jar\"");
+                .exec("java -jar %ProgramFiles%/Grün2_Mitgliederverwaltung/"
+                        + "Grün2_Mitgliederverwaltung.jar").waitFor();
     }
 }
