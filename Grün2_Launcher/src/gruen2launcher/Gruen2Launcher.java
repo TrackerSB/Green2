@@ -2,25 +2,22 @@ package gruen2launcher;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 /**
  * Installs Grün2 and checks for updates.
@@ -73,7 +70,16 @@ public final class Gruen2Launcher {
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             }
 
-            try (ZipInputStream gruen2zip = new ZipInputStream(
+            try {
+                //Unzip
+                ZipFile zipFile = new ZipFile(tempFile.getAbsolutePath());
+                zipFile.extractAll(tempDir.toString());
+            } catch (ZipException ex) {
+                Logger.getLogger(Gruen2Launcher.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+
+            /*try (ZipInputStream gruen2zip = new ZipInputStream(
                     new FileInputStream(tempFile.getAbsolutePath()),
                     Charset.forName("CP437"))) {
                 ZipEntry entry = gruen2zip.getNextEntry();
@@ -90,11 +96,10 @@ public final class Gruen2Launcher {
                         }
                     }
                     //close this ZipEntry
+                    gruen2zip.closeEntry();
                     entry = gruen2zip.getNextEntry();
                 }
-                gruen2zip.closeEntry();
-            }
-
+            }*/
             //Install
             Runtime.getRuntime()
                     .exec("cmd /C \"" + tempDir.toString() + "/install.bat\"")
@@ -136,6 +141,7 @@ public final class Gruen2Launcher {
      *
      * @param args the command line arguments
      * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
      */
     public static void main(String[] args)
             throws IOException, InterruptedException {
@@ -151,6 +157,6 @@ public final class Gruen2Launcher {
                 }
             }
         }
-        new ProcessBuilder().command("launch.bat").start().waitFor();
+        new ProcessBuilder().command("cmd.exe /C launch.bat").start().waitFor();
     }
 }
