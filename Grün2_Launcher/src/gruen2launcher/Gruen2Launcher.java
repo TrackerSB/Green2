@@ -79,27 +79,6 @@ public final class Gruen2Launcher {
                         .log(Level.SEVERE, null, ex);
             }
 
-            /*try (ZipInputStream gruen2zip = new ZipInputStream(
-                    new FileInputStream(tempFile.getAbsolutePath()),
-                    Charset.forName("CP437"))) {
-                ZipEntry entry = gruen2zip.getNextEntry();
-                while (entry != null) {
-                    String fileName = entry.getName();
-                    File newFile
-                            = new File(tempDir.toString() + "/" + fileName);
-                    //create directories for sub directories in zip
-                    new File(newFile.getParent()).mkdirs();
-                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
-                        int in;
-                        while ((in = gruen2zip.read()) > 0) {
-                            fos.write(in);
-                        }
-                    }
-                    //close this ZipEntry
-                    gruen2zip.closeEntry();
-                    entry = gruen2zip.getNextEntry();
-                }
-            }*/
             //Install
             Runtime.getRuntime()
                     .exec("cmd /C \"" + tempDir.toString() + "/install.bat\"")
@@ -157,6 +136,8 @@ public final class Gruen2Launcher {
                 }
             }
         }
-        new ProcessBuilder().command("cmd.exe /C launch.bat").start().waitFor();
+        Runtime.getRuntime()
+                .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
+                .waitFor();
     }
 }
