@@ -1,4 +1,4 @@
-package gruen2launcher;
+package bayern.steinbrecher.gruen2launcher;
 
 import java.io.BufferedWriter;
 import java.io.File;
