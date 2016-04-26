@@ -1,5 +1,7 @@
 package bayern.steinbrecher.gruen2launcher;
 
+import java.awt.Desktop;
+import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,13 +44,13 @@ public final class Gruen2Launcher {
      *
      * @return The path of the version file.
      */
-    private static String getVersionPath() {
+    private static String getConfigDirPath() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             return System.getProperty("user.home").replaceAll("\\\\", "/")
-                    + "/AppData/Roaming/Grün2_Mitgliederverwaltung/version.txt";
+                    + "/AppData/Roaming/Grün2_Mitgliederverwaltung";
         } else {
             return System.getProperty("user.home")
-                    + "/.Grün2_Mitgliederverwaltung/version.txt";
+                    + "/.Grün2_Mitgliederverwaltung";
         }
     }
 
@@ -86,7 +88,8 @@ public final class Gruen2Launcher {
 
             //Update version.txt
             try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(getVersionPath()), "UTF-8"))) {
+                    new FileOutputStream(getConfigDirPath() + "/version.txt"),
+                    "UTF-8"))) {
                 //To make no UTF-8 without BOM but with BOM.
                 bw.append(newVersion);
             } catch (IOException ex) {
@@ -124,10 +127,12 @@ public final class Gruen2Launcher {
      */
     public static void main(String[] args)
             throws IOException, InterruptedException {
-        File localVersionfile = new File(getVersionPath());
+        File localVersionfile = new File(getConfigDirPath() + "/version.txt");
         String onlineVersion = readOnlineVersion();
         if (!localVersionfile.exists()) {
             downloadAndInstallGruen2(onlineVersion);
+            Desktop.getDesktop()
+                    .open(new File(getConfigDirPath() + "/Grün2.conf"));
         } else {
             try (Scanner sc = new Scanner(localVersionfile)) {
                 String localVersion = sc.nextLine();
@@ -135,9 +140,9 @@ public final class Gruen2Launcher {
                     downloadAndInstallGruen2(onlineVersion);
                 }
             }
+            Runtime.getRuntime()
+                    .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
+                    .waitFor();
         }
-        Runtime.getRuntime()
-                .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
-                .waitFor();
     }
 }
