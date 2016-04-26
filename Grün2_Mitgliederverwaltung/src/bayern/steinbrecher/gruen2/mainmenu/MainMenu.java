@@ -102,6 +102,9 @@ public class MainMenu extends Application {
         DBConnection dbConnection = getConnection(login);
 
         if (dbConnection != null) {
+            if (!tablesExist(dbConnection)) {
+                createTables(dbConnection);
+            }
             executeQueries(dbConnection);
 
             primaryStage.showingProperty().addListener(
@@ -126,6 +129,47 @@ public class MainMenu extends Application {
             primaryStage.setResizable(false);
             primaryStage.getIcons().add(DataProvider.getIcon());
             primaryStage.show();
+        }
+    }
+
+    private boolean tablesExist(DBConnection dbConnection) {
+        try {
+            dbConnection.execQuery("SELECT COUNT(*) FROM Mitglieder;");
+            dbConnection.execQuery("SELECT COUNT(*) FROM Spitznamen;");
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    private void createTables(DBConnection dbConnection) {
+        try {
+            dbConnection.execQuery("CREATE TABLE Mitglieder ("
+                    + "Mitgliedsnummer INTEGER PRIMARY KEY,"
+                    + "Titel VARCHAR(255) NOT NULL,"
+                    + "Vorname VARCHAR(255) NOT NULL,"
+                    + "Nachname VARCHAR(255) NOT NULL,"
+                    + "istMaennlich BOOLEAN NOT NULL,"
+                    + "Strasse VARCHAR(255) NOT NULL,"
+                    + "Hausnummer VARCHAR(255) NOT NULL"
+                    + "PLZ VARCHAR(255) NOT NULL"
+                    + "Ort VARCHAR(255) NOT NULL"
+                    + "AusgetretenSeit DATE NOT NULL DEFAULT '0000-00-00',"
+                    + "IBAN VARCHAR(255) NOT NULL,"
+                    + "BIC VARCHAR(255) NOT NULL,"
+                    + "MandatErstellt DATE NOT NULL DEFAULT GETDATE(),"
+                    + "KontoinhaberVorname VARCHAR(255) NOT NULL,"
+                    + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
+                    + "istBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
+                    + "Beitrag FLOAT NOT NULL);");
+            dbConnection.execQuery("CREATE TABLE Spitznamen ("
+                    + "Name VARCHAR(255) PRIMARY KEY,"
+                    + "Spitzname VARCHAR(255) NOT NULL);");
+        } catch (SQLException ex) {
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
     }
 
@@ -222,7 +266,7 @@ public class MainMenu extends Application {
                     "SELECT " + ALL_COLUMN_LABELS_MEMBER
                     .substring(0, ALL_COLUMN_LABELS_MEMBER.length() - 1)
                     + " FROM Mitglieder "
-                    + "WHERE AusgetretenSeit='0000-00-00'"));
+                    + "WHERE AusgetretenSeit='0000-00-00';"));
         } catch (SQLException ex) {
             Logger.getLogger(MainMenu.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -286,7 +330,7 @@ public class MainMenu extends Application {
         Map<String, String> mappedNicknames = new HashMap<>();
         try {
             List<List<String>> queriedNicknames
-                    = dbc.execQuery("SELECT * FROM Spitznamen");
+                    = dbc.execQuery("SELECT * FROM Spitznamen;");
             int nameIndex = queriedNicknames.get(0).indexOf("Name");
             int nicknameIndex = queriedNicknames.get(0).indexOf("Spitzname");
 
@@ -313,7 +357,7 @@ public class MainMenu extends Application {
             try {
                 List<List<String>> result
                         = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag "
-                                + "FROM Mitglieder");
+                                + "FROM Mitglieder;");
                 Map<Integer, Double> contributions = new HashMap<>();
                 result.parallelStream()
                         .skip(1)

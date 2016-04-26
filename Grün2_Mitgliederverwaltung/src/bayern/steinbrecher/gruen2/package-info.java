@@ -2,7 +2,7 @@
  * Contains the hole application.
  *
  * For using Grün2 you need a database with at least the following tables and
- * attributes.
+ * attributes. (Grün2 creates these tables for you if the not already exist)
  * <ol>
  * <li>Mitglieder
  * <ul>
