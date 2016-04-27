@@ -89,7 +89,6 @@ public final class Gruen2Launcher {
             try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(getConfigDirPath() + "/version.txt"),
                     "UTF-8"))) {
-                //To make no UTF-8 without BOM but with BOM.
                 bw.append(newVersion);
             } catch (IOException ex) {
                 Logger.getLogger(Gruen2Launcher.class.getName())
