@@ -57,7 +57,11 @@ public class BirthdayGenerator {
      * @return A string representing the hole content of a CSV file.
      */
     public static String createGroupedOutput(List<Member> member, int year) {
-        assert !member.isEmpty();
+        if (member.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Can't create output when member is empty.");
+        }
+
         member.sort(SORTING);
 
         StringBuilder output = new StringBuilder(
