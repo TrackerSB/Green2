@@ -1,7 +1,6 @@
 package bayern.steinbrecher.gruen2launcher;
 
 import java.awt.Desktop;
-import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
