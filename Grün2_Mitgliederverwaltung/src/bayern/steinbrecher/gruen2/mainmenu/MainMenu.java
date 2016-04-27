@@ -151,6 +151,7 @@ public class MainMenu extends Application {
                     + "Titel VARCHAR(255) NOT NULL,"
                     + "Vorname VARCHAR(255) NOT NULL,"
                     + "Nachname VARCHAR(255) NOT NULL,"
+                    + "istAktiv BOOLEAN NOT NULL,"
                     + "istMaennlich BOOLEAN NOT NULL,"
                     + "Strasse VARCHAR(255) NOT NULL,"
                     + "Hausnummer VARCHAR(255) NOT NULL,"

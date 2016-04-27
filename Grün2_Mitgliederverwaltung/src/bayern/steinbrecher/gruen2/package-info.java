@@ -10,6 +10,7 @@
  * <li>Titel</li>
  * <li>Vorname</li>
  * <li>Nachname</li>
+ * <li>istAktiv (0=passive, 1=aktive)</li>
  * <li>istMaennlich (0=women, 1=men)</li>
  * <li>Strasse</li>
  * <li>Hausnummer</li>
