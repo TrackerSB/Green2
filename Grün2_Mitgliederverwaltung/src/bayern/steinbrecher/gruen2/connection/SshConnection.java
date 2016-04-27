@@ -144,6 +144,34 @@ public final class SshConnection extends DBConnection {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void execUpdate(String sqlCode) throws SQLException {
+        try {
+            Channel channel = sshSession.openChannel("exec");
+            ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+            ((ChannelExec) channel).setErrStream(errStream);
+            ((ChannelExec) channel).setCommand("mysql"
+                    + " -u" + databaseUsername
+                    + " -p" + databasePasswd
+                    + " -h" + databaseHost
+                    + " -e'" + sqlCode + "' " + databaseName);
+
+            channel.connect();
+
+            if (errStream.size() > 0) {
+                throw new SQLException("Invalid SQL-Code");
+            }
+
+            channel.disconnect();
+        } catch (JSchException ex) {
+            Logger.getLogger(SshConnection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
      * Reads the result of a SQL-Query bytewise.
      *
      * @param in The inputstream to read from.

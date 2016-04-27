@@ -84,6 +84,14 @@ public final class DefaultConnection extends DBConnection {
      * {@inheritDoc}
      */
     @Override
+    public void execUpdate(String sqlCode) throws SQLException {
+        connection.prepareStatement(sqlCode).executeUpdate();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void close() {
         try {
             connection.close();

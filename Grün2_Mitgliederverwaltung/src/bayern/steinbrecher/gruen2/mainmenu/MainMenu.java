@@ -146,25 +146,30 @@ public class MainMenu extends Application {
 
     private void createTables(DBConnection dbConnection) {
         try {
-            dbConnection.execQuery("CREATE TABLE Mitglieder ("
+            dbConnection.execUpdate("CREATE TABLE Mitglieder ("
                     + "Mitgliedsnummer INTEGER PRIMARY KEY,"
                     + "Titel VARCHAR(255) NOT NULL,"
                     + "Vorname VARCHAR(255) NOT NULL,"
                     + "Nachname VARCHAR(255) NOT NULL,"
                     + "istMaennlich BOOLEAN NOT NULL,"
                     + "Strasse VARCHAR(255) NOT NULL,"
-                    + "Hausnummer VARCHAR(255) NOT NULL"
-                    + "PLZ VARCHAR(255) NOT NULL"
-                    + "Ort VARCHAR(255) NOT NULL"
+                    + "Hausnummer VARCHAR(255) NOT NULL,"
+                    + "PLZ VARCHAR(255) NOT NULL,"
+                    + "Ort VARCHAR(255) NOT NULL,"
                     + "AusgetretenSeit DATE NOT NULL DEFAULT '0000-00-00',"
                     + "IBAN VARCHAR(255) NOT NULL,"
                     + "BIC VARCHAR(255) NOT NULL,"
-                    + "MandatErstellt DATE NOT NULL DEFAULT GETDATE(),"
+                    + "MandatErstellt DATE NOT NULL,"
                     + "KontoinhaberVorname VARCHAR(255) NOT NULL,"
                     + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
                     + "istBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
                     + "Beitrag FLOAT NOT NULL);");
-            dbConnection.execQuery("CREATE TABLE Spitznamen ("
+        } catch (SQLException ex) {
+            Logger.getLogger(MainMenu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        try {
+            dbConnection.execUpdate("CREATE TABLE Spitznamen ("
                     + "Name VARCHAR(255) PRIMARY KEY,"
                     + "Spitzname VARCHAR(255) NOT NULL);");
         } catch (SQLException ex) {

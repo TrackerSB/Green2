@@ -2,7 +2,6 @@ package bayern.steinbrecher.gruen2.connection;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Represents a database connection.
@@ -20,13 +19,21 @@ public abstract class DBConnection implements AutoCloseable {
     /**
      * Executes a query and returns the result.
      *
-     * @param sqlCode The sql code.
+     * @param sqlCode The sql code to execute.
      * @return Table containing the results AND the headings of each column.
      * First dimension rows; second columns.
      * @throws SQLException Thrown if the sql code is invalid.
      */
     public abstract List<List<String>> execQuery(String sqlCode)
             throws SQLException;
+
+    /**
+     * Executes a command like INSERT INTO, UPDATE or CREATE.
+     *
+     * @param sqlCode The sql code to execute.
+     * @throws SQLException Thrown if the sql code is invalid.
+     */
+    public abstract void execUpdate(String sqlCode) throws SQLException;
 
     /**
      * Checks whether the given table of the configured database contains a
