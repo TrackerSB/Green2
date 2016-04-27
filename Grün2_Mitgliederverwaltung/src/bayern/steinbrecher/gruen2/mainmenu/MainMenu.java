@@ -316,11 +316,14 @@ public class MainMenu extends Application {
         memberBirthday.putIfAbsent(
                 year, exserv.submit(() -> getBirthdayMember(year)));
         try {
-            Output.printContent(
-                    BirthdayGenerator.createGroupedOutput(
-                            memberBirthday.get(year).get(), year),
-                    DataProvider.getSavepath()
-                    + "/Geburtstag_" + year + ".csv");
+            List<Member> birthdayList = memberBirthday.get(year).get();
+            if (!birthdayList.isEmpty()) {
+                Output.printContent(
+                        BirthdayGenerator.createGroupedOutput(
+                                birthdayList, year),
+                        DataProvider.getSavepath()
+                        + "/Geburtstag_" + year + ".csv");
+            }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(MainMenu.class.getName())
                     .log(Level.SEVERE, null, ex);
