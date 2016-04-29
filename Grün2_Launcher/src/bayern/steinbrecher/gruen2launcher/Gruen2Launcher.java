@@ -9,11 +9,13 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,11 +103,14 @@ public final class Gruen2Launcher {
         }
     }
 
-    private static String readOnlineVersion() {
+    private static Optional<String> readOnlineVersion() {
         try {
             URL onlineVersionUrl = new URL(GRUEN2_HOST + "/version.txt");
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
-            return sc.nextLine();
+            return Optional.of(sc.nextLine());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Gruen2Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -113,7 +118,7 @@ public final class Gruen2Launcher {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -126,21 +131,32 @@ public final class Gruen2Launcher {
     public static void main(String[] args)
             throws IOException, InterruptedException {
         File localVersionfile = new File(getConfigDirPath() + "/version.txt");
-        String onlineVersion = readOnlineVersion();
-        if (!localVersionfile.exists()) {
-            downloadAndInstallGruen2(onlineVersion);
-            Desktop.getDesktop()
-                    .open(new File(getConfigDirPath() + "/Grün2.conf"));
-        } else {
-            try (Scanner sc = new Scanner(localVersionfile)) {
-                String localVersion = sc.nextLine();
-                if (!localVersion.equalsIgnoreCase(onlineVersion)) {
-                    downloadAndInstallGruen2(onlineVersion);
+        Optional<String> optOnlineVersion = readOnlineVersion();
+
+        if (optOnlineVersion.isPresent()) {
+            String onlineVersion = optOnlineVersion.get();
+            if (localVersionfile.exists()) {
+                try (Scanner sc = new Scanner(localVersionfile)) {
+                    String localVersion = sc.nextLine();
+                    if (!localVersion.equalsIgnoreCase(onlineVersion)) {
+                        downloadAndInstallGruen2(onlineVersion);
+                    }
                 }
+                Runtime.getRuntime()
+                        .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
+                        .waitFor();
+            } else {
+                downloadAndInstallGruen2(onlineVersion);
+                Desktop.getDesktop()
+                        .open(new File(getConfigDirPath() + "/Grün2.conf"));
             }
+        } else if (localVersionfile.exists()) {
             Runtime.getRuntime()
                     .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
                     .waitFor();
+        } else {
+            throw new IllegalStateException("Grün2 is currently not installed "
+                    + "and there´s no connection to install it.");
         }
     }
 }
