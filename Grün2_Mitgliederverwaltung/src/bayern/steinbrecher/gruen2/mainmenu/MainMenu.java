@@ -109,11 +109,11 @@ public class MainMenu extends Application {
 
             primaryStage.showingProperty().addListener(
                     (obs, oldVal, newVal) -> {
-                if (!newVal) {
-                    dbConnection.close();
-                    exserv.shutdownNow();
-                }
-            });
+                        if (!newVal) {
+                            dbConnection.close();
+                            exserv.shutdownNow();
+                        }
+                    });
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("MainMenu.fxml"));
@@ -242,9 +242,9 @@ public class MainMenu extends Application {
                 String message = ex.getMessage();
                 if (cause instanceof ConnectException
                         || cause instanceof UnknownHostException) {
-                    ConfirmDialog.showConfirmDialog("Prüfe, ob du "
-                            + "Internetverbindung hast, und ob du Grün2 "
-                            + "richtig konfiguriert hast.", primaryStage);
+                    ConfirmDialog.showConfirmDialog("Prüfe, ob die Datenbank "
+                            + "erreichbar ist, und ob du Grün2 richtig "
+                            + "konfiguriert hast.", primaryStage);
                     return null;
                 } else if (message != null && message.contains("Auth fail")) {
                     ConfirmDialog.showConfirmDialog(
