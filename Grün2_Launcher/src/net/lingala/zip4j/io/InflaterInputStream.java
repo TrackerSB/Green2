@@ -155,7 +155,6 @@ public class InflaterInputStream extends PartInputStream {
      * bytes that could be read without blocking.
      *
      * @return 1 before EOF and 0 after EOF.
-     * @throws IOException if an I/O error occurs.
      *
      */
     public int available() {
