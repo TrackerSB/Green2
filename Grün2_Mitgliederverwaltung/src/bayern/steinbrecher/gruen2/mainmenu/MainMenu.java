@@ -497,8 +497,12 @@ public class MainMenu extends Application {
             String message = "Folgende Mitglieder haben keine IBAN oder eine "
                     + "IBAN mit falscher Prüfsumme:\n";
             message = badIban.stream()
-                    .map(m -> m + ": \"" + m.getAccountHolder().getIban()
-                            + "\"\n")
+                    .map(m -> {
+                        String iban = m.getAccountHolder().getIban();
+                        return m + ": \""
+                                + (iban.isEmpty() ? "Keine IBAN" : iban)
+                                + "\"\n";
+                    })
                     .reduce(message, String::concat);
             ConfirmDialog.showConfirmDialog(message, primaryStage);
         }
