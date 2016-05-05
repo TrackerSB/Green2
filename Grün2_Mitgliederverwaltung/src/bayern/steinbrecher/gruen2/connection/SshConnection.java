@@ -8,6 +8,11 @@ import com.jcraft.jsch.Session;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,11 +186,19 @@ public final class SshConnection extends DBConnection {
      */
     private String readResult(BufferedInputStream in) throws IOException {
         StringBuilder output = new StringBuilder();
-        int nextByte;
-        do {
-            nextByte = in.read();
-            output.append((char) nextByte);
-        } while (nextByte != -1);
+
+        try (ReadableByteChannel rbc = Channels.newChannel(in)) {
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024);
+            CharBuffer charBuffer;
+            int bytesRead = rbc.read(byteBuffer);
+            while (bytesRead != -1) {
+                byteBuffer.flip();
+                charBuffer = StandardCharsets.UTF_8.decode(byteBuffer);
+                output.append(charBuffer);
+                byteBuffer.clear();
+                bytesRead = rbc.read(byteBuffer);
+            }
+        }
 
         return output.toString();
     }
