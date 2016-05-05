@@ -46,7 +46,7 @@ public abstract class DBConnection implements AutoCloseable {
     public boolean checkColumn(String table, String column) {
         //FIXME Try to find other solution not using SQLException.
         try {
-            execQuery("SELECT " + column + " FROM " + table);
+            execQuery("SELECT " + column + " FROM " + table + ";");
             return true;
         } catch (SQLException ex) {
             return false;
