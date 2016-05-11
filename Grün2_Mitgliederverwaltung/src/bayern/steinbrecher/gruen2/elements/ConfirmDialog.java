@@ -42,8 +42,11 @@ public final class ConfirmDialog {
 
         Label messageLabel = new Label(message);
         messageLabel.setStyle("-fx-font-size:14px");
+        
         Button okButton = new Button("OK");
+        okButton.setDefaultButton(true);
         okButton.setOnAction(aevt -> stage.close());
+        
         VBox dialogContent = new VBox();
         dialogContent.setStyle("-fx-margin: 10px");
         dialogContent.getChildren()
@@ -54,6 +57,7 @@ public final class ConfirmDialog {
         stage.setMinWidth(MIN_WIDTH);
         stage.setMinHeight(MIN_HEIGHT);
         Scene scene = new Scene(dialogContent);
+        scene.getStylesheets().add(DataProvider.getStylesheetPath());
         stage.setScene(scene);
         stage.setTitle("Info");
         stage.setResizable(false);

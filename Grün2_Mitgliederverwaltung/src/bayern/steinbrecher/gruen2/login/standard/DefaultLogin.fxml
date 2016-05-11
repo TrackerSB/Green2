@@ -12,5 +12,5 @@
     
     <Label text="Ungültige oder fehlende Angaben" fx:id="invalidInput" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
     <CheckBox onKeyPressed="#loginIfEnter" text="Leere Felder zulassen" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" />
-    <Button fx:id="loginButton" disable="true" text="Login" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+    <Button fx:id="loginButton" defaultButton="true" disable="true" text="Login" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
 </GridPane>

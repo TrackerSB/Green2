@@ -30,5 +30,5 @@
     <Label text="Eingabe zu lang" styleClass="warningLabel" visible="false" fx:id="inputTooLongLabel" GridPane.columnIndex="1" GridPane.rowIndex="9" />
     <Label text="Fehlende Angaben" styleClass="warningLabel" fx:id="missingInputLabel" GridPane.columnIndex="1" GridPane.rowIndex="10" />
     
-    <Button text="Fertig" fx:id="readyButton" onAction="#ready" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+    <Button text="Fertig" defaultButton="true" fx:id="readyButton" onAction="#ready" GridPane.columnIndex="0" GridPane.rowIndex="10" />
 </GridPane>

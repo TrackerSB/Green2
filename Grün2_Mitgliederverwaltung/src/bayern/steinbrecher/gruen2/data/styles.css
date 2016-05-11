@@ -10,6 +10,11 @@
     -fx-vgap: 10px;
 }
 
+.button[defaultButton="true"]{
+    -fx-background-color: red;
+    -fx-border-color: red;
+}
+
 .text-field{
     -fx-highlight-fill: forestgreen;
     -fx-border-color: transparent;

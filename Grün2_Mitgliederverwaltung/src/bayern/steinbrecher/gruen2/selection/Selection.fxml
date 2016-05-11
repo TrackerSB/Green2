@@ -17,7 +17,7 @@
         <Button fx:id="selectNoneButton" text="Nichts auswählen" disable="true" onAction="#selectNoOption" />
     </HBox>
     <HBox spacing="10">
-        <Button text="Fertig" fx:id="selectButton" disable="true" onAction="#select" />
+        <Button text="Fertig" defaultButton="true" fx:id="selectButton" disable="true" onAction="#select" />
         <Label fx:id="missingInput" text="Ungültige oder fehlende Angaben" styleClass="warningLabel" />
     </HBox>
 </VBox>
