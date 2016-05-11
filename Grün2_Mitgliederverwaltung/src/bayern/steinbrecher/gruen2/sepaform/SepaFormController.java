@@ -134,13 +134,6 @@ public class SepaFormController extends Controller {
         }
     }
 
-    @FXML
-    private void readyIfEnter(KeyEvent kevt) {
-        if (kevt.getCode() == KeyCode.ENTER) {
-            ready();
-        }
-    }
-
     /**
      * Returns the currently set originator. Returns {@code Optional.empty} if
      * the user did not confirm input.

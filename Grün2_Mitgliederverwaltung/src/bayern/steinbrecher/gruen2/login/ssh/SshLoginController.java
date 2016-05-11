@@ -16,8 +16,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 /**
  * The controller for SshLogin.fxml.
@@ -80,19 +78,6 @@ public class SshLoginController extends LoginController {
             return Optional.of(loginInfo);
         }
         return Optional.empty();
-    }
-
-    /**
-     * Calls {@code login()} only if {@code kevt.getCode()} returns
-     * {@code KeyCode.ENTER}.
-     *
-     * @param kevt The keyevent that was triggered.
-     */
-    @FXML
-    private void loginIfEnter(KeyEvent kevt) {
-        if (kevt.getCode() == KeyCode.ENTER) {
-            login();
-        }
     }
 
     /**
