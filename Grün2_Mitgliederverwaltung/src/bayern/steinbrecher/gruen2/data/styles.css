@@ -17,7 +17,7 @@
     -fx-default-button: -fx-focus-color;
 }
 
-.date-picker > .text-field, .text-field{
+.date-picker, .text-field{
     -fx-highlight-fill: -fx-main-color;
     -fx-border-color: transparent;
     -fx-background-radius: 3px;
