@@ -75,6 +75,7 @@ public final class SshConnection extends DBConnection {
         this.databasePasswd = databasePasswd;
         this.databaseName = databaseName;
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
+
         this.sshSession.connect();
 
         try {
@@ -105,6 +106,7 @@ public final class SshConnection extends DBConnection {
                 .getSession(sshUsername, sshHost, DEFAULT_SSH_PORT);
         session.setPassword(sshPassword);
         session.setConfig("StrictHostKeyChecking", "no");
+        session.setDaemonThread(true);
         return session;
     }
 
@@ -188,7 +190,7 @@ public final class SshConnection extends DBConnection {
         StringBuilder output = new StringBuilder();
 
         try (ReadableByteChannel rbc = Channels.newChannel(in)) {
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024);
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(2048);
             CharBuffer charBuffer;
             int bytesRead = rbc.read(byteBuffer);
             while (bytesRead != -1) {

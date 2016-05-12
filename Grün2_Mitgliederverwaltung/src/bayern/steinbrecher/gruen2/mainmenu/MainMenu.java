@@ -109,11 +109,11 @@ public class MainMenu extends Application {
 
             primaryStage.showingProperty().addListener(
                     (obs, oldVal, newVal) -> {
-                        if (!newVal) {
-                            dbConnection.close();
-                            exserv.shutdownNow();
-                        }
-                    });
+                if (!newVal) {
+                    dbConnection.close();
+                    exserv.shutdownNow();
+                }
+            });
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("MainMenu.fxml"));
@@ -134,8 +134,8 @@ public class MainMenu extends Application {
 
     private boolean tablesExist(DBConnection dbConnection) {
         try {
-            dbConnection.execQuery("SELECT COUNT(*) FROM Mitglieder;");
-            dbConnection.execQuery("SELECT COUNT(*) FROM Spitznamen;");
+            dbConnection.execQuery(
+                    "SELECT COUNT(*) FROM Mitglieder, Spitznamen;");
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(MainMenu.class.getName())
