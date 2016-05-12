@@ -2,7 +2,8 @@
  * Contains the hole application.
  *
  * For using Grün2 you need a MySQL database with at least the following tables
- * and attributes. (Grün2 creates these tables for you if the not already exist)
+ * and attributes. (Grün2 creates these tables for you if they not already
+ * exist)
  * <ol>
  * <li>Mitglieder
  * <ul>
