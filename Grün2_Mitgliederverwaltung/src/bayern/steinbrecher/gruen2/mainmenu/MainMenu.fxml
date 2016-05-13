@@ -8,7 +8,7 @@
 
 <HBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" fx:controller="bayern.steinbrecher.gruen2.mainmenu.MainMenuController">
     <VBox spacing="10">
-        <Label text="Sepa-Lastschriften erstellen:" />
+        <Label text="Rund um Sepa:" />
         <Button fx:id="generateContribution" onAction="#generateContributionSepa" text="Mitgliedsbeiträge" />
         <Button fx:id="generateUniversalSepa" onAction="#generateUniversalSepa" text="Beliebige Sammellastschrift" />
         <Button fx:id="checkIban" onAction="#checkIban" text="IBAN prüfen" />
