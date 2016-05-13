@@ -29,7 +29,7 @@ import net.lingala.zip4j.exception.ZipException;
  */
 public final class Gruen2Launcher {
 
-    private static final String GRUEN2_HOST
+    private static final String GRUEN2_HOST_URL
             = "http://www.traunviertler-traunwalchen.de/programme";
 
     /**
@@ -37,7 +37,7 @@ public final class Gruen2Launcher {
      */
     private Gruen2Launcher() {
         throw new UnsupportedOperationException(
-                "Construction of an object not allowed.");
+                "Construction of an object is not allowed.");
     }
 
     /**
@@ -66,7 +66,7 @@ public final class Gruen2Launcher {
 
         try {
             //Download
-            URL downloadUrl = new URL(GRUEN2_HOST + "/Gruen2.zip");
+            URL downloadUrl = new URL(GRUEN2_HOST_URL + "/Gruen2.zip");
             ReadableByteChannel rbc
                     = Channels.newChannel(downloadUrl.openStream());
             try (FileOutputStream fos = new FileOutputStream(tempFile)) {
@@ -105,7 +105,7 @@ public final class Gruen2Launcher {
 
     private static Optional<String> readOnlineVersion() {
         try {
-            URL onlineVersionUrl = new URL(GRUEN2_HOST + "/version.txt");
+            URL onlineVersionUrl = new URL(GRUEN2_HOST_URL + "/version.txt");
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
             return Optional.of(sc.nextLine());
         } catch (UnknownHostException ex) {
@@ -121,15 +121,24 @@ public final class Gruen2Launcher {
         return Optional.empty();
     }
 
+    private static void executeGruen2() {
+        try {
+            Runtime.getRuntime()
+                    .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
+                    .waitFor();
+        } catch (InterruptedException | IOException ex) {
+            Logger.getLogger(Gruen2Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * The starting point of the hole application.
      *
      * @param args the command line arguments
      * @throws java.io.IOException
-     * @throws java.lang.InterruptedException
      */
-    public static void main(String[] args)
-            throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         File localVersionfile = new File(getConfigDirPath() + "/version.txt");
         Optional<String> optOnlineVersion = readOnlineVersion();
 
@@ -142,18 +151,14 @@ public final class Gruen2Launcher {
                         downloadAndInstallGruen2(onlineVersion);
                     }
                 }
-                Runtime.getRuntime()
-                        .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
-                        .waitFor();
+                executeGruen2();
             } else {
                 downloadAndInstallGruen2(onlineVersion);
                 Desktop.getDesktop()
                         .open(new File(getConfigDirPath() + "/Grün2.conf"));
             }
         } else if (localVersionfile.exists()) {
-            Runtime.getRuntime()
-                    .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
-                    .waitFor();
+            executeGruen2();
         } else {
             throw new IllegalStateException("Grün2 is currently not installed "
                     + "and there´s no connection to install it.");
