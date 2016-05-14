@@ -412,10 +412,10 @@ public class MainMenu extends Application {
                                     originator.get(),
                                     DataProvider.getSavepath() + "/Sepa.xml");
                     Optional<StringBuilder> message = invalidMember.stream()
-                            .map(m -> new StringBuilder(m.toString() + "\n"))
+                            .map(m -> new StringBuilder(m + "\n"))
                             .reduce(StringBuilder::append);
                     if (message.isPresent()) {
-                        ConfirmDialog.showConfirmDialog(message.get().toString()
+                        ConfirmDialog.showConfirmDialog(message.get()
                                 + "\nhaben keine bzw. eine ungültige IBAN "
                                 + "und/oder keine BIC.",
                                 primaryStage);

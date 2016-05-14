@@ -135,7 +135,6 @@ public final class SshConnection extends DBConnection {
             }
             String[] rows = result.split("\n");
             List<List<String>> resultTable = Arrays.stream(rows)
-                    .limit(rows.length - 1) //Remove EOF
                     .parallel()
                     .map(row -> splitUp(row, '\t'))
                     .collect(Collectors.toList());
@@ -190,7 +189,7 @@ public final class SshConnection extends DBConnection {
         StringBuilder output = new StringBuilder();
 
         try (ReadableByteChannel rbc = Channels.newChannel(in)) {
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(2048);
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024);
             CharBuffer charBuffer;
             int bytesRead = rbc.read(byteBuffer);
             while (bytesRead != -1) {
