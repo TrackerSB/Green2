@@ -10,6 +10,7 @@ import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
+import bayern.steinbrecher.gruen2.elements.WaitScreen;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.people.Member;
@@ -109,11 +110,11 @@ public class MainMenu extends Application {
 
             primaryStage.showingProperty().addListener(
                     (obs, oldVal, newVal) -> {
-                if (!newVal) {
-                    dbConnection.close();
-                    exserv.shutdownNow();
-                }
-            });
+                        if (!newVal) {
+                            dbConnection.close();
+                            exserv.shutdownNow();
+                        }
+                    });
 
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("MainMenu.fxml"));
@@ -209,8 +210,10 @@ public class MainMenu extends Application {
         DBConnection con = null;
         Optional<Map<LoginKey, String>> loginInfos
                 = login.getLoginInformation();
+        WaitScreen waitScreen = new WaitScreen();
         while (con == null && loginInfos.isPresent()) {
             try {
+                waitScreen.start(new Stage());
                 Map<LoginKey, String> loginValues = loginInfos.get();
                 if (DataProvider.useSsh()) {
                     con = new SshConnection(
@@ -233,9 +236,17 @@ public class MainMenu extends Application {
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
+                waitScreen.stop();
             } catch (JSchException | SQLException ex) {
                 Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);
+
+                try {
+                    waitScreen.stop();
+                } catch (Exception ex1) {
+                    Logger.getLogger(MainMenu.class.getName())
+                            .log(Level.SEVERE, null, ex1);
+                }
 
                 //Check "auth fail"
                 Throwable cause = ex.getCause();
@@ -255,6 +266,9 @@ public class MainMenu extends Application {
                     System.err.println("Not action specified for: ");
                     return null;
                 }
+            } catch (Exception ex) {
+                Logger.getLogger(MainMenu.class.getName())
+                        .log(Level.SEVERE, null, ex);
             }
         }
         return con;
