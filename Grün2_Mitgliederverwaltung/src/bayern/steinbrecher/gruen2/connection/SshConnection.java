@@ -194,7 +194,7 @@ public final class SshConnection extends DBConnection {
             int bytesRead = rbc.read(byteBuffer);
             while (bytesRead != -1) {
                 byteBuffer.flip();
-                charBuffer = StandardCharsets.UTF_8.decode(byteBuffer);
+                charBuffer = StandardCharsets.ISO_8859_1.decode(byteBuffer);
                 output.append(charBuffer);
                 byteBuffer.clear();
                 bytesRead = rbc.read(byteBuffer);
