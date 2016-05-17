@@ -14,8 +14,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 /**
@@ -23,7 +25,7 @@ import javafx.util.Duration;
  *
  * @author Stefan Huber
  */
-public class WaitScreen extends Application {
+public class WaitScreen {
 
     private static final int CORNERCOUNT = 6;
     private static final double ANGLE = 360.0 / CORNERCOUNT;
@@ -32,12 +34,12 @@ public class WaitScreen extends Application {
     private static final int RADIUS = 15;
     private static final int DIAMETER = 2 * RADIUS;
     private static final int VERTICAL_COUNT = 5;
-    private static final int HORIZONTAL_COUNT = 8;
+    private static final int HORIZONTAL_COUNT = 9;
     private static final Duration DURATION_ANIMATION = Duration.millis(600);
     private static final Duration DURATION_PAUSE = Duration.seconds(3);
     private static final int DELAY = 200;
     private static final int STAGE_MARGIN = 10;
-    private Stage primaryStage;
+    private Stage stage;
 
     static {
         DIRECTION_VECTORS[0] = new Point2D(0, -1);
@@ -46,21 +48,14 @@ public class WaitScreen extends Application {
         }
     }
 
-    public WaitScreen() {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.primaryStage = primaryStage;
-
+    public WaitScreen(Stage stage) {
+        this.stage = stage;
+        
         Pane root = new Pane();
 
         for (double row = 0; row < VERTICAL_COUNT; row++) {
             int shorten = (int) Math.floor((row + 1) % 2);
-            for (double column = 0; column < HORIZONTAL_COUNT; column++) {
+            for (double column = 0; column < HORIZONTAL_COUNT - shorten; column++) {
                 double xCoo = column * DIAMETER + (shorten + 1) * RADIUS
                         + STAGE_MARGIN;
                 double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4
@@ -68,7 +63,8 @@ public class WaitScreen extends Application {
                 Polygon p = createPentagon(new Point2D(xCoo, yCoo), RADIUS);
                 p.setStroke(Color.FORESTGREEN);
                 p.setStrokeWidth(RADIUS / 4);
-                p.setFill(null);
+                p.setOpacity(0.5);
+                p.setFill(Color.WHITE);
 
                 RotateTransition rt1
                         = new RotateTransition(DURATION_ANIMATION, p);
@@ -106,7 +102,7 @@ public class WaitScreen extends Application {
                         = new SequentialTransition(plt1, pt1, plt2, pt2);
                 sequence.setDelay(Duration.millis((column + row) * DELAY));
                 sequence.setCycleCount(Animation.INDEFINITE);
-                sequence.playFromStart();
+                sequence.play();
 
                 root.getChildren().add(p);
             }
@@ -115,20 +111,27 @@ public class WaitScreen extends Application {
         Scene scene = new Scene(root, (HORIZONTAL_COUNT + 1) * DIAMETER,
                 (VERTICAL_COUNT + 1) * DIAMETER);
         scene.setFill(null);
-        primaryStage.setScene(scene);
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.setTitle("Einen Moment bitte");
-        primaryStage.setResizable(false);
-        primaryStage.getIcons().add(DataProvider.getIcon());
-        primaryStage.show();
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.setTitle("Einen Moment bitte");
+        stage.setResizable(false);
+        stage.getIcons().add(DataProvider.getIcon());
+        stage.show();
     }
 
-    @Override
-    public void stop() throws Exception {
-        primaryStage.close();
+    public void hide() {
+        stage.close();
+    }
+    
+    public static WaitScreen showWaitScreen(Window owner){
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
+        WaitScreen ws = new WaitScreen(stage);
+        return ws;
     }
 
-    public static final Polygon createPentagon(Point2D center, double radius) {
+    public static Polygon createPentagon(Point2D center, double radius) {
         double[] coo = new double[DIRECTION_VECTORS.length * 2];
         for (int i = 0; i < DIRECTION_VECTORS.length; i++) {
             Point2D vector = center.add(DIRECTION_VECTORS[i].multiply(radius));

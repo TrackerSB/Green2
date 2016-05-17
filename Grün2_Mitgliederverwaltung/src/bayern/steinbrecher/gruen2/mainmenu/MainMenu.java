@@ -90,7 +90,6 @@ public class MainMenu extends Application {
             throw new IllegalStateException("Invalid configs.");
         }
         this.primaryStage = primaryStage;
-
         Login login;
         if (DataProvider.useSsh()) {
             login = new SshLogin();
@@ -210,10 +209,10 @@ public class MainMenu extends Application {
         DBConnection con = null;
         Optional<Map<LoginKey, String>> loginInfos
                 = login.getLoginInformation();
-        WaitScreen waitScreen = new WaitScreen();
+        WaitScreen waitScreen = null;
         while (con == null && loginInfos.isPresent()) {
+                waitScreen = WaitScreen.showWaitScreen(primaryStage);
             try {
-                waitScreen.start(new Stage());
                 Map<LoginKey, String> loginValues = loginInfos.get();
                 if (DataProvider.useSsh()) {
                     con = new SshConnection(
@@ -236,17 +235,12 @@ public class MainMenu extends Application {
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
-                waitScreen.stop();
+                waitScreen.hide();
             } catch (JSchException | SQLException ex) {
                 Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);
 
-                try {
-                    waitScreen.stop();
-                } catch (Exception ex1) {
-                    Logger.getLogger(MainMenu.class.getName())
-                            .log(Level.SEVERE, null, ex1);
-                }
+                waitScreen.hide();
 
                 //Check "auth fail"
                 Throwable cause = ex.getCause();
@@ -266,9 +260,6 @@ public class MainMenu extends Application {
                     System.err.println("Not action specified for: ");
                     return null;
                 }
-            } catch (Exception ex) {
-                Logger.getLogger(MainMenu.class.getName())
-                        .log(Level.SEVERE, null, ex);
             }
         }
         return con;
