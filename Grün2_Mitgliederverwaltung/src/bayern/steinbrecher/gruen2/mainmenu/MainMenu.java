@@ -212,6 +212,7 @@ public class MainMenu extends Application {
         Optional<Map<LoginKey, String>> loginInfos
                 = login.getLoginInformation();
         while (con == null && loginInfos.isPresent()) {
+            Stage waitScreen = WaitScreen.showWaitScreen(primaryStage);
             try {
                 Map<LoginKey, String> loginValues = loginInfos.get();
                 if (DataProvider.useSsh()) {
@@ -235,12 +236,12 @@ public class MainMenu extends Application {
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
-                //waitScreen.hide();
+                waitScreen.hide();
             } catch (JSchException | SQLException ex) {
                 Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);
 
-                //waitScreen.hide();
+                waitScreen.hide();
 
                 //Check "auth fail"
                 Throwable cause = ex.getCause();
