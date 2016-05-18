@@ -41,9 +41,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 /**
@@ -209,9 +211,7 @@ public class MainMenu extends Application {
         DBConnection con = null;
         Optional<Map<LoginKey, String>> loginInfos
                 = login.getLoginInformation();
-        WaitScreen waitScreen = null;
         while (con == null && loginInfos.isPresent()) {
-                waitScreen = WaitScreen.showWaitScreen(primaryStage);
             try {
                 Map<LoginKey, String> loginValues = loginInfos.get();
                 if (DataProvider.useSsh()) {
@@ -235,12 +235,12 @@ public class MainMenu extends Application {
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
-                waitScreen.hide();
+                //waitScreen.hide();
             } catch (JSchException | SQLException ex) {
                 Logger.getLogger(MainMenu.class.getName())
                         .log(Level.SEVERE, null, ex);
 
-                waitScreen.hide();
+                //waitScreen.hide();
 
                 //Check "auth fail"
                 Throwable cause = ex.getCause();

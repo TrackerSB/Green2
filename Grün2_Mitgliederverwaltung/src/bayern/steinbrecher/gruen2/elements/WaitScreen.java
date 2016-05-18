@@ -7,7 +7,6 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.SequentialTransition;
-import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -47,9 +46,11 @@ public class WaitScreen {
             DIRECTION_VECTORS[i] = ROTATION.transform(DIRECTION_VECTORS[i - 1]);
         }
     }
-
-    public WaitScreen(Stage stage) {
-        this.stage = stage;
+    
+    public static Stage showWaitScreen(Window owner){
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
         
         Pane root = new Pane();
 
@@ -117,18 +118,8 @@ public class WaitScreen {
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
         stage.show();
-    }
-
-    public void hide() {
-        stage.close();
-    }
-    
-    public static WaitScreen showWaitScreen(Window owner){
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(owner);
-        WaitScreen ws = new WaitScreen(stage);
-        return ws;
+        
+        return stage;
     }
 
     public static Polygon createPentagon(Point2D center, double radius) {
