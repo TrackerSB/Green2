@@ -24,6 +24,8 @@ import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import com.jcraft.jsch.JSchException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -69,6 +71,7 @@ public class MainMenu extends Application {
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
     private final ExecutorService exserv = Executors.newWorkStealingPool();
+    private Stage waitScreen;
     private Future<List<Member>> member;
     private Map<Integer, Future<List<Member>>> memberBirthday
             = new HashMap<>(3);
@@ -92,6 +95,7 @@ public class MainMenu extends Application {
             throw new IllegalStateException("Invalid configs.");
         }
         this.primaryStage = primaryStage;
+        waitScreen = WaitScreen.showWaitScreen(primaryStage);
         Login login;
         if (DataProvider.useSsh()) {
             login = new SshLogin();
@@ -212,7 +216,7 @@ public class MainMenu extends Application {
         Optional<Map<LoginKey, String>> loginInfos
                 = login.getLoginInformation();
         while (con == null && loginInfos.isPresent()) {
-            Stage waitScreen = WaitScreen.showWaitScreen(primaryStage);
+            waitScreen.show();
             try {
                 Map<LoginKey, String> loginValues = loginInfos.get();
                 if (DataProvider.useSsh()) {

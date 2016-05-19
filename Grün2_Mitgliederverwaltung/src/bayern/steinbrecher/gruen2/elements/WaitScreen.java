@@ -117,7 +117,6 @@ public class WaitScreen {
         stage.setTitle("Einen Moment bitte");
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
-        stage.show();
         
         return stage;
     }
