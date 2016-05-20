@@ -7,7 +7,6 @@ import java.util.Locale;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
 
 /**
  * Represents a DatePicker which sets a css class attribute when it is empty or

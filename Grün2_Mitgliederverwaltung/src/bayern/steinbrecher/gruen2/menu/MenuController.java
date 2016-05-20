@@ -1,6 +1,7 @@
-package bayern.steinbrecher.gruen2.mainmenu;
+package bayern.steinbrecher.gruen2.menu;
 
 import bayern.steinbrecher.gruen2.Controller;
+import bayern.steinbrecher.gruen2.main.Main;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -8,14 +9,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 /**
- * Controller for MainMenu.fxml.
+ * Controller for Menu.fxml.
  *
  * @author Stefan Huber
  */
-public class MainMenuController extends Controller {
+public class MenuController extends Controller {
 
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
-    private MainMenu caller;
+    private Main caller;
     @FXML
     private Button generateContribution;
     @FXML
@@ -62,7 +63,7 @@ public class MainMenuController extends Controller {
      *
      * @param caller The provider of the functionality.
      */
-    public void setCaller(MainMenu caller) {
+    public void setMain(Main caller) {
         this.caller = caller;
     }
 

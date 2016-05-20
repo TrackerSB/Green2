@@ -4,6 +4,7 @@ import bayern.steinbrecher.gruen2.selection.Selection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -11,7 +12,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public abstract class Model extends Application {
+public abstract class View extends Application {
 
     /**
      * The stage which has to be set in every start-Method of implementing
@@ -27,16 +28,24 @@ public abstract class Model extends Application {
      * one opens the stage set in {@code start}, blocks until the window is
      * closed and then notifies all other threads.
      */
-    protected synchronized void onlyShowOnce() {
+    protected void onlyShowOnce() {
         if (!gotShown) {
             gotShown = true;
-            stage.showAndWait();
-            gotClosed = true;
-            notifyAll();
+            stage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                if (!newVal) {
+                    gotClosed = true;
+                    synchronized (this) {
+                        notifyAll();
+                    }
+                }
+            });
+            Platform.runLater(() -> stage.show());
         }
         while (!gotClosed) {
             try {
-                wait();
+                synchronized (this) {
+                    wait();
+                }
             } catch (InterruptedException ex) {
                 Logger.getLogger(Selection.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -51,5 +60,16 @@ public abstract class Model extends Application {
     public synchronized void reset() {
         gotClosed = false;
         gotShown = false;
+    }
+
+    /**
+     * Checks whether the next call of {@code onlyShowOnce()} would open the
+     * window.
+     *
+     * @return {@code true} only if the next call of {@code onlyShowOnce()}
+     * would open the window.
+     */
+    public boolean wouldShow() {
+        return !gotShown;
     }
 }

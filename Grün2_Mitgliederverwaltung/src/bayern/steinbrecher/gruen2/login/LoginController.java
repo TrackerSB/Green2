@@ -13,9 +13,9 @@ import java.util.Optional;
 public abstract class LoginController extends Controller {
 
     /**
-     * Returns the currently entered login information. It returns {@code null}
-     * only if the window was closed without pressing a confirm button. That
-     * means if {@code userConfirmed} is {@code false}.
+     * Returns the currently entered login information. It returns
+     * {@code Optional.empty()} only if the window was closed without pressing a
+     * confirm button. That means if {@code userConfirmed} is {@code false}.
      *
      * @return The currently entered login information.
      */

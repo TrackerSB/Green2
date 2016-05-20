@@ -46,12 +46,16 @@ public class WaitScreen {
             DIRECTION_VECTORS[i] = ROTATION.transform(DIRECTION_VECTORS[i - 1]);
         }
     }
-    
-    public static Stage showWaitScreen(Window owner){
+
+    /**
+     * Crates a {@code Stage} containing an animation indicating waiting.
+     *
+     * @return A {@code Stage} containing an animation indicating waiting.
+     */
+    public static Stage createWaitScreen() {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(owner);
-        
+
         Pane root = new Pane();
 
         for (double row = 0; row < VERTICAL_COUNT; row++) {
@@ -61,7 +65,7 @@ public class WaitScreen {
                         + STAGE_MARGIN;
                 double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4
                         + STAGE_MARGIN;
-                Polygon p = createPentagon(new Point2D(xCoo, yCoo), RADIUS);
+                Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
                 p.setStroke(Color.FORESTGREEN);
                 p.setStrokeWidth(RADIUS / 4);
                 p.setOpacity(0.5);
@@ -117,11 +121,18 @@ public class WaitScreen {
         stage.setTitle("Einen Moment bitte");
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
-        
+
         return stage;
     }
 
-    public static Polygon createPentagon(Point2D center, double radius) {
+    /**
+     * Creates a hexagon.
+     *
+     * @param center The center of the hexagon.
+     * @param radius The radius of the circle the hexagon is within.
+     * @return The polygon representing the hexagon.
+     */
+    public static Polygon createHexagon(Point2D center, double radius) {
         double[] coo = new double[DIRECTION_VECTORS.length * 2];
         for (int i = 0; i < DIRECTION_VECTORS.length; i++) {
             Point2D vector = center.add(DIRECTION_VECTORS[i].multiply(radius));

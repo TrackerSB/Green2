@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.selection;
 
-import bayern.steinbrecher.gruen2.Model;
+import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  * @param <T> The type of the attributes being able to selct.
  */
-public class Selection<T extends Comparable> extends Model {
+public class Selection<T extends Comparable> extends View {
 
     private SelectionController<T> scontroller;
     private final List<T> options;

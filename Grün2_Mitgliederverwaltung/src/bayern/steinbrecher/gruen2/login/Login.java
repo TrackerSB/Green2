@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.login;
 
-import bayern.steinbrecher.gruen2.Model;
+import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import java.util.Map;
 import java.util.Optional;
@@ -10,12 +10,12 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public abstract class Login extends Model {
+public abstract class Login extends View {
 
     protected LoginController loginContoller;
 
     /**
-     * Returns the Information that was entered in the login. This method blocks
+     * Returns the information that was entered in the login. This method blocks
      * until the frame is closed or hidden. It won't show more than once even if
      * multiple threads call it. They will be blocked and notified when the
      * login window closes.

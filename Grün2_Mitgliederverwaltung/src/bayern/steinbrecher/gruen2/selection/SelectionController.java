@@ -1,7 +1,6 @@
 package bayern.steinbrecher.gruen2.selection;
 
 import bayern.steinbrecher.gruen2.Controller;
-import bayern.steinbrecher.gruen2.elements.CheckedDoubleSpinner;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;

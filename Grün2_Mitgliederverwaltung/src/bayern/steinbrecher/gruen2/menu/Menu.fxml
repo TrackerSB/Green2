@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" fx:controller="bayern.steinbrecher.gruen2.mainmenu.MainMenuController">
+<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" fx:controller="bayern.steinbrecher.gruen2.menu.MenuController">
     <VBox spacing="10">
         <Label text="Rund um Sepa:" />
         <Button fx:id="generateContribution" onAction="#generateContributionSepa" text="Mitgliedsbeiträge" />

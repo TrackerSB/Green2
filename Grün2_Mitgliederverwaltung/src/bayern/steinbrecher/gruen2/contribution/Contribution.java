@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.contribution;
 
-import bayern.steinbrecher.gruen2.Model;
+import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Contribution extends Model {
+public class Contribution extends View {
 
     private ContributionController ccontroller;
 

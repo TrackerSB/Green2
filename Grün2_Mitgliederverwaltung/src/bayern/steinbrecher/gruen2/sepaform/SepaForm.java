@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.sepaform;
 
-import bayern.steinbrecher.gruen2.Model;
+import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.people.Originator;
 import java.util.Optional;
@@ -14,7 +14,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class SepaForm extends Model {
+public class SepaForm extends View {
 
     private SepaFormController sfcontroller;
 
