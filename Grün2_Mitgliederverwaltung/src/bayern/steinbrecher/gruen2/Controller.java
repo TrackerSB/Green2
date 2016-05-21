@@ -40,7 +40,8 @@ public abstract class Controller implements Initializable {
      */
     public void checkStage() {
         if (stage == null) {
-            throw new IllegalStateException("First call setStage(...)");
+            throw new IllegalStateException(
+                    "You have to call setStage(...) first");
         }
     }
 
