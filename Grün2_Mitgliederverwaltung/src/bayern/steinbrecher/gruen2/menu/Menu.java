@@ -1,8 +1,8 @@
 package bayern.steinbrecher.gruen2.menu;
 
+import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.main.Main;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,10 +13,9 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Menu extends Application {
+public class Menu extends View {
 
     private MenuController mcontroller;
-    private Stage primaryStage;
     private Main main;
 
     public Menu(Main main) {
@@ -28,7 +27,7 @@ public class Menu extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.primaryStage = primaryStage;
+        this.stage = primaryStage;
 
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource("Menu.fxml"));
@@ -44,5 +43,17 @@ public class Menu extends Application {
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(DataProvider.getIcon());
         primaryStage.show();
+    }
+
+    /**
+     * Unsupported operation. ConfirmDialog contains no data to confirm.
+     *
+     * @return Does not return.
+     * @throws UnsupportedOperationException Thrown on every call.
+     */
+    @Override
+    public boolean userConfirmed() {
+        throw new UnsupportedOperationException(
+                "Menu contains no data to be confirmed.");
     }
 }
