@@ -19,7 +19,7 @@ public abstract class View extends Application {
      * The stage which has to be set in every start-Method of implementing
      * classes.
      */
-    protected Stage stage;
+    protected Stage stage = null;
     private BooleanProperty gotShownProperty = new BooleanPropertyBase(false) {
         @Override
         public Object getBean() {
@@ -45,12 +45,22 @@ public abstract class View extends Application {
     private BooleanBinding wouldShowProperty = gotShownProperty.not();
 
     /**
+     * Throws a {@code IllegalStateException} only if stage is {@code null}.
+     */
+    public void checkStage() {
+        if (stage == null) {
+            throw new IllegalStateException("You have to call start(...)first");
+        }
+    }
+
+    /**
      * Makes sure the window is only shown once. When multiple threads are
-     * calling this method they will be blocked apart from the first one. This
-     * one opens the stage set in {@code start}, blocks until the window is
-     * closed and then notifies all other threads.
+     * calling this method they will be set to {@code wait} apart from the first
+     * one. This one opens the stage set in {@code start}, blocks until the
+     * window is closed and then notifies all other threads.
      */
     protected void onlyShowOnce() {
+        checkStage();
         if (!gotShownProperty.get()) {
             gotShownProperty.set(true);
             stage.showingProperty().addListener((obs, oldVal, newVal) -> {
@@ -85,4 +95,14 @@ public abstract class View extends Application {
     public BooleanBinding wouldShowBinding() {
         return wouldShowProperty;
     }
+
+    /**
+     * Indicates whether the currently inserted data is confirmed by the user.
+     *
+     * @return {@code true} only if the user confirmed the currently inserted
+     * data.
+     */
+    public abstract boolean userConfirmed();
+    //FIXME Find a way to implement userConfirmed()
+    //return controller.userConfirmed();
 }

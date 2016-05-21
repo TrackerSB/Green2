@@ -23,11 +23,15 @@ public abstract class Login extends View {
      * @return The Information that was entered in the login.
      */
     public Optional<Map<LoginKey, String>> getLoginInformation() {
-        if (stage == null) {
-            throw new IllegalStateException(
-                    "start(...) has to be called first");
-        }
         onlyShowOnce();
         return loginContoller.getLoginInformation();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean userConfirmed() {
+        return loginContoller.userConfirmed();
     }
 }

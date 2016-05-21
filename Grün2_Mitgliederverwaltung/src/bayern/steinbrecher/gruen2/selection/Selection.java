@@ -64,11 +64,15 @@ public class Selection<T extends Comparable> extends View {
      * @return The selection if any.
      */
     public Optional<List<T>> getSelection() {
-        if (stage == null) {
-            throw new IllegalStateException(
-                    "start(...) has to be called first");
-        }
         onlyShowOnce();
         return scontroller.getSelection();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean userConfirmed() {
+        return scontroller.userConfirmed();
     }
 }

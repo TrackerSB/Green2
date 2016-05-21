@@ -67,4 +67,16 @@ public class ConfirmDialog extends View {
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }
+
+    /**
+     * Unsupported operation. ConfirmDialog contains no data to confirm.
+     *
+     * @return Does not return.
+     * @throws UnsupportedOperationException Thrown on every call.
+     */
+    @Override
+    public boolean userConfirmed() {
+        throw new UnsupportedOperationException(
+                "ConfirmDialog contains no data to confirm");
+    }
 }

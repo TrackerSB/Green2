@@ -51,10 +51,6 @@ public class Contribution extends View {
      * @return The value entered in the the {@code TextField} if any.
      */
     public Optional<Double> getContribution() {
-        if (stage == null) {
-            throw new IllegalStateException(
-                    "start(...) has to be called first");
-        }
         onlyShowOnce();
         return ccontroller.getContribution();
     }
@@ -75,5 +71,13 @@ public class Contribution extends View {
                     .log(Level.SEVERE, null, ex);
             return Optional.empty();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean userConfirmed() {
+        return ccontroller.userConfirmed();
     }
 }

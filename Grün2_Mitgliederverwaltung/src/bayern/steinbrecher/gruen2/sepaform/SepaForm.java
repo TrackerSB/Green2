@@ -49,11 +49,15 @@ public class SepaForm extends View {
      * @return The originator or {@code Optional.empty}.
      */
     public Optional<Originator> getOriginator() {
-        if (stage == null) {
-            throw new IllegalStateException(
-                    "start(...) has to be called first");
-        }
         onlyShowOnce();
         return sfcontroller.getOriginator();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean userConfirmed() {
+        return sfcontroller.userConfirmed();
     }
 }
