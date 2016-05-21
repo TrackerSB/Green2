@@ -123,7 +123,7 @@ public class Main extends Application {
         loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 waitScreen.close();
-            } else {
+            } else if (login.userConfirmed()) {
                 waitScreen.show();
             }
         });
