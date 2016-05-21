@@ -11,10 +11,22 @@ import javafx.concurrent.Task;
  */
 public final class ServiceFactory {
 
+    /**
+     * Prohibit construction of an object.
+     */
     private ServiceFactory() {
         throw new UnsupportedOperationException("Construction not supported.");
     }
 
+    /**
+     * Creates a service which executes {@code task} and returns a value of type
+     * {@code V}.
+     *
+     * @param <V> The type of the value to return.
+     * @param task The task to execute.
+     * @return The service which executes {@code task} and returns a value of
+     * type {@code V}.
+     */
     public static <V> Service<V> createService(Callable<V> task) {
         return new Service<V>() {
             @Override

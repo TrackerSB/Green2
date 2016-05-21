@@ -20,7 +20,7 @@ public final class ThreadUtility {
     }
 
     /**
-     * Calls {@code wait()}. When it´s notified it checks {@code exp}. If
+     * Calls {@code wait()} and when it´s notified it checks {@code exp}. If
      * {@code exp} returns {@code true} it calls {@code wait()} again.
      *
      * @param monitor The monitor whose {@code wait()} to call.
