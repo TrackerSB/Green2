@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Represents a connection not using SSH.
+ *
  * @author Stefan Huber
  */
 public final class DefaultConnection extends DBConnection {
