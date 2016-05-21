@@ -31,13 +31,14 @@ public class ContributionController extends Controller {
         contributionSpinner.getEditor().setOnAction(aevt -> select());
         contributionSpinner.validProperty().addListener(
                 (obs, oldVal, newVal) -> {
-                    missingInput.setVisible(!newVal);
-                    selectButton.setDisable(!newVal);
-                });
+            missingInput.setVisible(!newVal);
+            selectButton.setDisable(!newVal);
+        });
     }
 
     @FXML
     private void select() {
+        checkStage();
         if (!selectButton.isDisabled()) {
             userConfirmed = true;
             stage.close();

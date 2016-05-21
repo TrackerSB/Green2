@@ -62,14 +62,10 @@ public class DefaultLoginController extends LoginController {
      */
     @FXML
     private void login() {
+        checkStage();
         if (!loginButton.isDisabled()) {
-            if (stage == null) {
-                throw new IllegalStateException(
-                        "Stage is not set. Use setStage().");
-            } else {
-                userConfirmed = true;
-                stage.close();
-            }
+            userConfirmed = true;
+            stage.close();
         }
     }
 

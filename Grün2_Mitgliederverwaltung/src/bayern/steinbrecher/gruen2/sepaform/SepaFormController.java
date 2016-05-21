@@ -116,6 +116,7 @@ public class SepaFormController extends Controller {
 
     @FXML
     private void ready() {
+        checkStage();
         if (!readyButton.isDisabled()) {
             originator.setCreator(creatorTextField.getText());
             originator.setCreditor(creditorTextField.getText());

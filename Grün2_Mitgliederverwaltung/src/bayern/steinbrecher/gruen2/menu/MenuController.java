@@ -67,11 +67,15 @@ public class MenuController extends Controller {
         this.caller = caller;
     }
 
-    @FXML
-    private void generateContributionSepa() {
+    private void checkCaller() {
         if (caller == null) {
             throw new IllegalStateException("caller is not set");
         }
+    }
+
+    @FXML
+    private void generateContributionSepa() {
+        checkCaller();
         generateContribution.setDisable(true);
         caller.generateContributionSepa();
         generateContribution.setDisable(false);
@@ -79,9 +83,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateUniversalSepa() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateUniversalSepa.setDisable(true);
         caller.generateUniversalSepa();
         generateUniversalSepa.setDisable(false);
@@ -89,9 +91,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void checkIban() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         checkIban.setDisable(true);
         caller.checkIban();
         checkIban.setDisable(false);
@@ -99,9 +99,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateAddressesAll() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateAllAddresses.setDisable(true);
         caller.generateAddressesAll();
         generateAllAddresses.setDisable(false);
@@ -109,9 +107,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateAddressesBirthdayLastYear() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateAddressesBirthdayLastYear.setDisable(true);
         caller.generateAddressesBirthday(CURRENT_YEAR - 1);
         generateAddressesBirthdayLastYear.setDisable(false);
@@ -119,9 +115,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateAddressesBirthdayThisYear() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateAddressesBirthdayThisYear.setDisable(true);
         caller.generateAddressesBirthday(CURRENT_YEAR);
         generateAddressesBirthdayThisYear.setDisable(false);
@@ -129,9 +123,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateAddressesBirthdayNextYear() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateAddressesBirthdayNextYear.setDisable(true);
         caller.generateAddressesBirthday(CURRENT_YEAR + 1);
         generateAddressesBirthdayNextYear.setDisable(false);
@@ -139,9 +131,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateBirthdayLastYearInfos() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateBirthdayLastYearInfos.setDisable(true);
         caller.generateBirthdayInfos(CURRENT_YEAR - 1);
         generateBirthdayLastYearInfos.setDisable(false);
@@ -149,9 +139,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateBirthdayThisYearInfos() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateBirthdayThisYearInfos.setDisable(true);
         caller.generateBirthdayInfos(CURRENT_YEAR);
         generateBirthdayThisYearInfos.setDisable(false);
@@ -159,9 +147,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void generateBirthdayNextYearInfos() {
-        if (caller == null) {
-            throw new IllegalStateException("caller is not set");
-        }
+        checkCaller();
         generateBirthdayNextYearInfos.setDisable(true);
         caller.generateBirthdayInfos(CURRENT_YEAR + 1);
         generateBirthdayNextYearInfos.setDisable(false);

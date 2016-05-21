@@ -121,6 +121,7 @@ public class SelectionController<T extends Comparable> extends Controller {
 
     @FXML
     private void select() {
+        checkStage();
         if (!selectButton.isDisabled()) {
             userConfirmed = true;
             stage.close();

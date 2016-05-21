@@ -36,6 +36,15 @@ public abstract class Controller implements Initializable {
     }
 
     /**
+     * Throws a {@code IllegalStateException} only if stage is {@code null}.
+     */
+    public void checkStage() {
+        if (stage == null) {
+            throw new IllegalStateException("First call setStage(...)");
+        }
+    }
+
+    /**
      * Checks whether the user confirmed his input.
      *
      * @return {@code true} only if the user confirmed his input explicitly.
