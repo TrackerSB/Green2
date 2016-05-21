@@ -16,7 +16,6 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 import javafx.util.Duration;
 
 /**
@@ -57,6 +56,7 @@ public class WaitScreen {
         stage.initModality(Modality.APPLICATION_MODAL);
 
         Pane root = new Pane();
+        root.setStyle("-fx-background-color: rgba(0,0,0,0)");
 
         for (double row = 0; row < VERTICAL_COUNT; row++) {
             int shorten = (int) Math.floor((row + 1) % 2);
@@ -66,10 +66,8 @@ public class WaitScreen {
                 double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4
                         + STAGE_MARGIN;
                 Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
-                p.setStroke(Color.FORESTGREEN);
-                p.setStrokeWidth(RADIUS / 4);
                 p.setOpacity(0.5);
-                p.setFill(Color.WHITE);
+                p.setFill(Color.FORESTGREEN);
 
                 RotateTransition rt1
                         = new RotateTransition(DURATION_ANIMATION, p);

@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.main;
 
-import bayern.steinbrecher.gruen2.ServiceFactory;
+import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.connection.DBConnection;
 import bayern.steinbrecher.gruen2.connection.DefaultConnection;
 import bayern.steinbrecher.gruen2.connection.SshConnection;
@@ -23,6 +23,7 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
+import bayern.steinbrecher.gruen2.utility.ThreadUtility;
 import com.jcraft.jsch.JSchException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.concurrent.Service;
 import javafx.stage.Stage;
 
@@ -249,16 +251,7 @@ public class Main extends Application {
 
                 checkAuth(login, waitScreen, ex);
 
-                while (!login.wouldShow()) {
-                    try {
-                        synchronized (this) {
-                            wait();
-                        }
-                    } catch (InterruptedException ex1) {
-                        Logger.getLogger(Main.class.getName())
-                                .log(Level.SEVERE, null, ex1);
-                    }
-                }
+                ThreadUtility.waitWhile(this, login.wouldShowBinding().not());
 
                 return getConnection(login, waitScreen);
             }
