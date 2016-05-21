@@ -49,28 +49,11 @@ public class Contribution extends View {
      * the window is closed.
      *
      * @return The value entered in the the {@code TextField} if any.
+     * @see ContributionController#getContribution()
      */
     public Optional<Double> getContribution() {
         onlyShowOnce();
         return ccontroller.getContribution();
-    }
-
-    /**
-     * Creates a contribution dialog, blocks until the user inserted a valid
-     * number and returns the result.
-     *
-     * @return The inserted contribution.
-     */
-    public static Optional<Double> askForContribution() {
-        try {
-            Contribution c = new Contribution();
-            c.start(new Stage());
-            return c.getContribution();
-        } catch (Exception ex) {
-            Logger.getLogger(Contribution.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return Optional.empty();
-        }
     }
 
     /**

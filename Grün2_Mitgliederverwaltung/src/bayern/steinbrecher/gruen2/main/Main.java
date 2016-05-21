@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.BooleanBinding;
 import javafx.concurrent.Service;
 import javafx.stage.Stage;
 
@@ -494,7 +493,7 @@ public class Main extends Application {
         return Optional.empty();
     }
 
-    private void generateSepa(List<Member> memberToSelect,
+    private void generateCustomSepa(List<Member> memberToSelect,
             Map<Integer, Double> contribution) {
         SepaForm sepaForm = new SepaForm();
         Optional<Originator> originator;
@@ -551,15 +550,22 @@ public class Main extends Application {
             throw new IllegalStateException(
                     "You have to call start(...) first");
         }
-        Optional<Double> contribution = Contribution.askForContribution();
-        if (contribution.isPresent()) {
+        Contribution contribution = new Contribution();
+        try {
+            contribution.start(new Stage());
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        Optional<Double> optContribution = contribution.getContribution();
+        if (optContribution.isPresent()) {
             Map<Integer, Double> contributions = new HashMap<>();
             try {
                 member.get().stream().forEach(m -> {
                     contributions.put(
-                            m.getMembershipnumber(), contribution.get());
+                            m.getMembershipnumber(), optContribution.get());
                 });
-                generateSepa(member.get(), contributions);
+                generateCustomSepa(member.get(), contributions);
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -589,18 +595,25 @@ public class Main extends Application {
             Optional<Map<Integer, Double>> optContributions
                     = individualContributions.get();
             if (optContributions.isPresent()) {
-                generateSepa(memberNonContributionfree.get(),
+                generateCustomSepa(memberNonContributionfree.get(),
                         optContributions.get());
             } else {
-                Optional<Double> contribution
-                        = Contribution.askForContribution();
-                if (contribution.isPresent()) {
+                Contribution contribution = new Contribution();
+                try {
+                    contribution.start(new Stage());
+                } catch (Exception ex) {
+                    Logger.getLogger(Main.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                }
+                Optional<Double> optContribution
+                        = contribution.getContribution();
+                if (optContribution.isPresent()) {
                     Map<Integer, Double> contributions = new HashMap<>();
                     for (Member m : member.get()) {
-                        contributions.put(
-                                m.getMembershipnumber(), contribution.get());
+                        contributions.put(m.getMembershipnumber(),
+                                optContribution.get());
                     }
-                    generateSepa(memberNonContributionfree.get(),
+                    generateCustomSepa(memberNonContributionfree.get(),
                             contributions);
                 }
             }

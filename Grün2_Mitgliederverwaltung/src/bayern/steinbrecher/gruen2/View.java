@@ -53,25 +53,35 @@ public abstract class View extends Application {
         }
     }
 
+    private void closeAndNotify() {
+        gotClosedProperty.set(true);
+        synchronized (this) {
+            notifyAll();
+        }
+    }
+
     /**
      * Makes sure the window is only shown once. When multiple threads are
      * calling this method they will be set to {@code wait} apart from the first
      * one. This one opens the stage set in {@code start}, blocks until the
-     * window is closed and then notifies all other threads.
+     * window is closed and then notifies all other threads. If the JavaFX
+     * Application Thread calls it, it calls {@code showAndWait}.
      */
     protected void onlyShowOnce() {
         checkStage();
         if (!gotShownProperty.get()) {
             gotShownProperty.set(true);
-            stage.showingProperty().addListener((obs, oldVal, newVal) -> {
-                if (!newVal) {
-                    gotClosedProperty.set(true);
-                    synchronized (this) {
-                        notifyAll();
+            if (Platform.isFxApplicationThread()) {
+                stage.showAndWait();
+                closeAndNotify();
+            } else {
+                stage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                    if (!newVal) {
+                        closeAndNotify();
                     }
-                }
-            });
-            Platform.runLater(() -> stage.show());
+                });
+                Platform.runLater(() -> stage.show());
+            }
         }
         ThreadUtility.waitWhile(this, gotClosedProperty.not());
     }
