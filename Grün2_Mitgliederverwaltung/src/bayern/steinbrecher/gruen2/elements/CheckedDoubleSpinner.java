@@ -3,6 +3,7 @@ package bayern.steinbrecher.gruen2.elements;
 import javafx.beans.NamedArg;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
@@ -82,7 +83,7 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
      * @return The {@code BooleanProperty} representing whether the current
      * value is valid or not.
      */
-    public BooleanProperty validProperty() {
+    public ReadOnlyBooleanProperty validProperty() {
         return validProperty;
     }
 }

@@ -4,6 +4,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 
@@ -180,7 +182,7 @@ public class CheckedTextField extends TextField {
      *
      * @return The property representing the maximum column count.
      */
-    public IntegerProperty maxColumnCount() {
+    public ReadOnlyIntegerProperty maxColumnCount() {
         return maxColumnCountProperty;
     }
 
@@ -212,7 +214,7 @@ public class CheckedTextField extends TextField {
      * @return The property representing whether this text field is checked or
      * not.
      */
-    public BooleanProperty checkedProperty() {
+    public ReadOnlyBooleanProperty checkedProperty() {
         return checkedProperty;
     }
 
@@ -240,7 +242,7 @@ public class CheckedTextField extends TextField {
      *
      * @return The property representing whether there´s no text inserted.
      */
-    public BooleanProperty emptyProperty() {
+    public ReadOnlyBooleanProperty emptyProperty() {
         return emptyProperty;
     }
 
@@ -260,7 +262,7 @@ public class CheckedTextField extends TextField {
      * @return The property representing whether the current content of the text
      * field is too long.
      */
-    public BooleanProperty tooLongProperty() {
+    public ReadOnlyBooleanProperty tooLongProperty() {
         return tooLongProperty;
     }
 
@@ -279,7 +281,7 @@ public class CheckedTextField extends TextField {
      *
      * @return The binding representing the validity of the inserted content.
      */
-    public BooleanProperty validProperty() {
+    public ReadOnlyBooleanProperty validProperty() {
         return validProperty;
     }
 

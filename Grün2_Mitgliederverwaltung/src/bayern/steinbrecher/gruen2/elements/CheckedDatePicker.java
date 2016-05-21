@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.control.DatePicker;
 
 /**
@@ -93,7 +94,7 @@ public class CheckedDatePicker extends DatePicker {
      * @return The {@code BooleanProperty} representing whether the current
      * value is valid or not.
      */
-    public BooleanProperty validProperty() {
+    public ReadOnlyBooleanProperty validProperty() {
         return validProperty;
     }
 }
