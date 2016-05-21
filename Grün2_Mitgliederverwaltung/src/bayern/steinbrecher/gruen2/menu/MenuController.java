@@ -63,7 +63,7 @@ public class MenuController extends Controller {
      *
      * @param caller The provider of the functionality.
      */
-    public void setMain(Main caller) {
+    public void setCaller(Main caller) {
         this.caller = caller;
     }
 

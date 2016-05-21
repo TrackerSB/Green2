@@ -16,10 +16,10 @@ import javafx.stage.Stage;
 public class Menu extends View {
 
     private MenuController mcontroller;
-    private Main main;
+    private Main caller;
 
-    public Menu(Main main) {
-        this.main = main;
+    public Menu(Main caller) {
+        this.caller = caller;
     }
 
     /**
@@ -36,7 +36,7 @@ public class Menu extends View {
 
         mcontroller = fxmlLoader.getController();
         mcontroller.setStage(primaryStage);
-        mcontroller.setMain(main);
+        mcontroller.setCaller(caller);
 
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("Programm wählen");
