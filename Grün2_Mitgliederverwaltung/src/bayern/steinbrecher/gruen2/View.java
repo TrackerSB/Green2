@@ -1,10 +1,11 @@
 package bayern.steinbrecher.gruen2;
 
-import bayern.steinbrecher.gruen2.selection.Selection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import bayern.steinbrecher.gruen2.utility.ThreadUtility;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.BooleanPropertyBase;
 import javafx.stage.Stage;
 
 /**
@@ -19,8 +20,29 @@ public abstract class View extends Application {
      * classes.
      */
     protected Stage stage;
-    private boolean gotShown = false;
-    private boolean gotClosed = false;
+    private BooleanProperty gotShownProperty = new BooleanPropertyBase(false) {
+        @Override
+        public Object getBean() {
+            return View.this;
+        }
+
+        @Override
+        public String getName() {
+            return "gotShown";
+        }
+    };
+    private BooleanProperty gotClosedProperty = new BooleanPropertyBase(false) {
+        @Override
+        public Object getBean() {
+            return View.this;
+        }
+
+        @Override
+        public String getName() {
+            return "gotClosed";
+        }
+    };
+    private BooleanBinding wouldShowProperty = gotShownProperty.not();
 
     /**
      * Makes sure the window is only shown once. When multiple threads are
@@ -29,11 +51,11 @@ public abstract class View extends Application {
      * closed and then notifies all other threads.
      */
     protected void onlyShowOnce() {
-        if (!gotShown) {
-            gotShown = true;
+        if (!gotShownProperty.get()) {
+            gotShownProperty.set(true);
             stage.showingProperty().addListener((obs, oldVal, newVal) -> {
                 if (!newVal) {
-                    gotClosed = true;
+                    gotClosedProperty.set(true);
                     synchronized (this) {
                         notifyAll();
                     }
@@ -41,16 +63,7 @@ public abstract class View extends Application {
             });
             Platform.runLater(() -> stage.show());
         }
-        while (!gotClosed) {
-            try {
-                synchronized (this) {
-                    wait();
-                }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Selection.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
-        }
+        ThreadUtility.waitWhile(this, gotClosedProperty.not());
     }
 
     /**
@@ -58,18 +71,18 @@ public abstract class View extends Application {
      * previously inserted data stays unchanged.
      */
     public synchronized void reset() {
-        gotClosed = false;
-        gotShown = false;
+        gotClosedProperty.set(false);
+        gotShownProperty.set(false);
     }
 
     /**
-     * Checks whether the next call of {@code onlyShowOnce()} would open the
-     * window.
+     * Returns the property indicating whether the next call of
+     * {@code onlyShowOnce()} would open the window.
      *
-     * @return {@code true} only if the next call of {@code onlyShowOnce()}
-     * would open the window.
+     * @return The property indicating whether the next call of
+     * {@code onlyShowOnce()} would open the window.
      */
-    public boolean wouldShow() {
-        return !gotShown;
+    public BooleanBinding wouldShowBinding() {
+        return wouldShowProperty;
     }
 }
