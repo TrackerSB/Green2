@@ -9,6 +9,7 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.data.Output;
+import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
@@ -69,6 +70,7 @@ public class Main extends Application {
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
+    private static final long SPLASHSCREEN_MILLIS = 2500;
     private static final ConfirmDialog BAD_CONFIGS = new ConfirmDialog(
             "Es fehlen Konfigurationseinstellungen oder die "
             + "Konfigurationsdatei konnte nicht gefunden werden.\n"
@@ -110,10 +112,10 @@ public class Main extends Application {
             badConfigsStage.showAndWait();
             throw new IllegalStateException("Invalid configs.");
         }
-        
+
         Splashscreen splashScreen = new Splashscreen();
         splashScreen.start(new Stage());
-        splashScreen.showSplashscreen(5000);
+        splashScreen.showSplashscreen(SPLASHSCREEN_MILLIS);
 
         Login login;
         if (DataProvider.useSsh()) {
