@@ -6,7 +6,6 @@ import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
