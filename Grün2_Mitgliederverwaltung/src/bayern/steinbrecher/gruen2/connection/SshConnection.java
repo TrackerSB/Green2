@@ -32,6 +32,7 @@ public final class SshConnection extends DBConnection {
      * The default port for ssh.
      */
     public static final int DEFAULT_SSH_PORT = 22;
+    private static final int BYTEBUFFER_SIZE = 1024;
     /**
      * The name of the database.
      */
@@ -189,7 +190,7 @@ public final class SshConnection extends DBConnection {
         StringBuilder output = new StringBuilder();
 
         try (ReadableByteChannel rbc = Channels.newChannel(in)) {
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1024);
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_SIZE);
             CharBuffer charBuffer;
             int bytesRead = rbc.read(byteBuffer);
             while (bytesRead != -1) {
