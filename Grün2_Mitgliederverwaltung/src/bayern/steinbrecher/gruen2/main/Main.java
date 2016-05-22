@@ -10,6 +10,7 @@ import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
+import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
@@ -109,6 +110,10 @@ public class Main extends Application {
             badConfigsStage.showAndWait();
             throw new IllegalStateException("Invalid configs.");
         }
+        
+        Splashscreen splashScreen = new Splashscreen();
+        splashScreen.start(new Stage());
+        splashScreen.showSplashscreen(5000);
 
         Login login;
         if (DataProvider.useSsh()) {

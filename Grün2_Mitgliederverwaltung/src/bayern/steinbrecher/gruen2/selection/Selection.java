@@ -35,8 +35,8 @@ public class Selection<T extends Comparable> extends View {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.stage = primaryStage;
+    public void start(Stage stage) throws Exception {
+        this.stage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Selection.fxml"));
@@ -44,13 +44,13 @@ public class Selection<T extends Comparable> extends View {
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
         scontroller = fxmlLoader.getController();
-        scontroller.setStage(primaryStage);
+        scontroller.setStage(stage);
         scontroller.setOptions(options);
 
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Auswählen");
-        primaryStage.setResizable(false);
-        primaryStage.getIcons().add(DataProvider.getIcon());
+        stage.setScene(new Scene(root));
+        stage.setTitle("Auswählen");
+        stage.setResizable(false);
+        stage.getIcons().add(DataProvider.getIcon());
     }
 
     /**

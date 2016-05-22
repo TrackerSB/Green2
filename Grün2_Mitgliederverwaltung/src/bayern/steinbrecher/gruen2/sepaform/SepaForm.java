@@ -22,8 +22,8 @@ public class SepaForm extends View {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.stage = primaryStage;
+    public void start(Stage stage) throws Exception {
+        this.stage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("SepaForm.fxml"));
@@ -31,12 +31,12 @@ public class SepaForm extends View {
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
         sfcontroller = fxmlLoader.getController();
-        sfcontroller.setStage(primaryStage);
+        sfcontroller.setStage(stage);
 
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Lastschrift Infos eintragen");
-        primaryStage.setResizable(false);
-        primaryStage.getIcons().add(DataProvider.getIcon());
+        stage.setScene(new Scene(root));
+        stage.setTitle("Lastschrift Infos eintragen");
+        stage.setResizable(false);
+        stage.getIcons().add(DataProvider.getIcon());
     }
 
     /**

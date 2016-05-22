@@ -26,8 +26,8 @@ public class Menu extends View {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.stage = primaryStage;
+    public void start(Stage stage) throws Exception {
+        this.stage = stage;
 
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource("Menu.fxml"));
@@ -35,14 +35,14 @@ public class Menu extends View {
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
         mcontroller = fxmlLoader.getController();
-        mcontroller.setStage(primaryStage);
+        mcontroller.setStage(stage);
         mcontroller.setCaller(caller);
 
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Programm wählen");
-        primaryStage.setResizable(false);
-        primaryStage.getIcons().add(DataProvider.getIcon());
-        primaryStage.show();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Programm wählen");
+        stage.setResizable(false);
+        stage.getIcons().add(DataProvider.getIcon());
+        stage.show();
     }
 
     /**

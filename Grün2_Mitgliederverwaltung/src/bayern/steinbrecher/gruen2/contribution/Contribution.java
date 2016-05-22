@@ -3,8 +3,6 @@ package bayern.steinbrecher.gruen2.contribution;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,8 +21,8 @@ public class Contribution extends View {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.stage = primaryStage;
+    public void start(Stage stage) throws Exception {
+        this.stage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Contribution.fxml"));
@@ -32,12 +30,12 @@ public class Contribution extends View {
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
         ccontroller = fxmlLoader.getController();
-        ccontroller.setStage(primaryStage);
+        ccontroller.setStage(stage);
 
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Beitrag angeben");
-        primaryStage.setResizable(false);
-        primaryStage.getIcons().add(DataProvider.getIcon());
+        stage.setScene(new Scene(root));
+        stage.setTitle("Beitrag angeben");
+        stage.setResizable(false);
+        stage.getIcons().add(DataProvider.getIcon());
     }
 
     /**
