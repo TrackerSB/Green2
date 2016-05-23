@@ -34,10 +34,12 @@ public class Splashscreen extends View {
                 new Image("bayern/steinbrecher/gruen2/data/splashscreen.png"));
         root.getChildren().add(imageView);
 
+        Scene scene = new Scene(root);
+        scene.setFill(null);
+        stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initStyle(StageStyle.TRANSPARENT);
         stage.getIcons().add(DataProvider.getIcon());
-        stage.setScene(new Scene(root));
     }
 
     public void showSplashscreen(long millis) {
