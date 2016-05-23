@@ -31,7 +31,7 @@ public class Splashscreen extends View {
         Pane root = new Pane();
         ImageView imageView = new ImageView();
         imageView.setImage(
-                new Image("bayern/steinbrecher/gruen2/data/splashscreen.jpg"));
+                new Image("bayern/steinbrecher/gruen2/data/splashscreen.png"));
         root.getChildren().add(imageView);
 
         stage.initModality(Modality.APPLICATION_MODAL);
