@@ -112,7 +112,8 @@ public abstract class View extends Application {
      * @return {@code true} only if the user confirmed the currently inserted
      * data.
      */
-    public abstract boolean userConfirmed();
-    //FIXME Find a way to implement userConfirmed()
-    //return controller.userConfirmed();
+    public boolean userConfirmed() {
+        throw new UnsupportedOperationException(
+                "Contains no data to be confirmed");
+    }
 }

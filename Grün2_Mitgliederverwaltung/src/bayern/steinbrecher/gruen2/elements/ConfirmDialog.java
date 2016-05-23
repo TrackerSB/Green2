@@ -2,6 +2,7 @@ package bayern.steinbrecher.gruen2.elements;
 
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -69,14 +70,11 @@ public class ConfirmDialog extends View {
     }
 
     /**
-     * Unsupported operation. ConfirmDialog contains no data to confirm.
-     *
-     * @return Does not return.
-     * @throws UnsupportedOperationException Thrown on every call.
+     * {@inheritDoc}
      */
     @Override
-    public boolean userConfirmed() {
+    public BooleanBinding wouldShowBinding() {
         throw new UnsupportedOperationException(
-                "ConfirmDialog contains no data to confirm");
+                "ConfirmDialog does not use onlyShowOnce()");
     }
 }

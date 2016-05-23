@@ -53,13 +53,4 @@ public class Splashscreen extends View {
         }).start();
         onlyShowOnce();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean userConfirmed() {
-        throw new UnsupportedOperationException(
-                "Splashscreen has no data to confirm.");
-    }
 }

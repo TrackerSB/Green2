@@ -1,12 +1,15 @@
 package bayern.steinbrecher.gruen2.elements;
 
+import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import java.util.stream.IntStream;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.SequentialTransition;
+import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -23,7 +26,7 @@ import javafx.util.Duration;
  *
  * @author Stefan Huber
  */
-public class WaitScreen {
+public class WaitScreen extends View {
 
     private static final int CORNERCOUNT = 6;
     private static final double ANGLE = 360.0 / CORNERCOUNT;
@@ -37,7 +40,8 @@ public class WaitScreen {
     private static final Duration DURATION_PAUSE = Duration.seconds(3);
     private static final int DELAY = 200;
     private static final int STAGE_MARGIN = 10;
-    private Stage stage;
+    private final ParallelTransition overallTransition
+            = new ParallelTransition();
 
     static {
         DIRECTION_VECTORS[0] = new Point2D(0, -1);
@@ -47,23 +51,28 @@ public class WaitScreen {
     }
 
     /**
-     * Crates a {@code Stage} containing an animation indicating waiting.
-     *
-     * @return A {@code Stage} containing an animation indicating waiting.
+     * Default constructor.
      */
-    public static Stage createWaitScreen() {
-        Stage stage = new Stage();
+    public WaitScreen() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void start(Stage stage) throws Exception {
+        this.stage = stage;
         stage.initModality(Modality.APPLICATION_MODAL);
 
         Pane root = new Pane();
         root.setStyle("-fx-background-color: rgba(0,0,0,0)");
 
-        for (double row = 0; row < VERTICAL_COUNT; row++) {
+        IntStream.range(0, VERTICAL_COUNT).parallel().forEach(row -> {
             int shorten = (int) Math.floor((row + 1) % 2);
-            for (double column = 0; column < HORIZONTAL_COUNT - shorten; column++) {
+            double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4
+                    + STAGE_MARGIN;
+            IntStream.range(0, HORIZONTAL_COUNT - shorten).parallel().forEach(column -> {
                 double xCoo = column * DIAMETER + (shorten + 1) * RADIUS
-                        + STAGE_MARGIN;
-                double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4
                         + STAGE_MARGIN;
                 Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
                 p.setOpacity(0.5);
@@ -105,11 +114,17 @@ public class WaitScreen {
                         = new SequentialTransition(plt1, pt1, plt2, pt2);
                 sequence.setDelay(Duration.millis((column + row) * DELAY));
                 sequence.setCycleCount(Animation.INDEFINITE);
-                sequence.play();
 
-                root.getChildren().add(p);
-            }
-        }
+                synchronized (root) {
+                    root.getChildren().add(p);
+                }
+                synchronized (overallTransition) {
+                    overallTransition.getChildren().add(sequence);
+                }
+            });
+        });
+
+        overallTransition.play();
 
         Scene scene = new Scene(root, (HORIZONTAL_COUNT + 1) * DIAMETER,
                 (VERTICAL_COUNT + 1) * DIAMETER);
@@ -119,8 +134,22 @@ public class WaitScreen {
         stage.setTitle("Einen Moment bitte");
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
+    }
 
-        return stage;
+    /**
+     * Closes this WaitScreen if still open.
+     */
+    public void close() {
+        checkStage();
+        stage.close();
+    }
+
+    /**
+     * Shows this WaitScreen if not yet shown.
+     */
+    public void show() {
+        checkStage();
+        stage.show();
     }
 
     /**
@@ -138,5 +167,14 @@ public class WaitScreen {
             coo[2 * i + 1] = vector.getY();
         }
         return new Polygon(coo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BooleanBinding wouldShowBinding() {
+        throw new UnsupportedOperationException(
+                "WaitScreen does not use onlyShowOnce()");
     }
 }

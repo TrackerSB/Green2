@@ -9,7 +9,6 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.data.Output;
-import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
@@ -124,7 +123,8 @@ public class Main extends Application {
             login = new DefaultLogin();
         }
 
-        Stage waitScreen = WaitScreen.createWaitScreen();
+        WaitScreen waitScreen = new WaitScreen();
+        waitScreen.start(new Stage());
         Stage loginStage = new Stage();
         loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
@@ -177,7 +177,7 @@ public class Main extends Application {
         connectionService.start();
     }
 
-    private void checkAuth(Login login, Stage waitScreen, Exception ex) {
+    private void checkAuth(Login login, WaitScreen waitScreen, Exception ex) {
         Platform.runLater(() -> {
             waitScreen.close();
 
@@ -222,7 +222,8 @@ public class Main extends Application {
      * established. E.g. the user closed the window or the configured connection
      * is not reachable.
      */
-    private Optional<DBConnection> getConnection(Login login, Stage waitScreen) {
+    private Optional<DBConnection> getConnection(
+            Login login, WaitScreen waitScreen) {
         DBConnection con = null;
 
         Optional<Map<LoginKey, String>> loginInfos

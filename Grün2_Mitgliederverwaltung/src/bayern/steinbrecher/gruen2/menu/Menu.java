@@ -44,16 +44,4 @@ public class Menu extends View {
         stage.getIcons().add(DataProvider.getIcon());
         stage.show();
     }
-
-    /**
-     * Unsupported operation. ConfirmDialog contains no data to confirm.
-     *
-     * @return Does not return.
-     * @throws UnsupportedOperationException Thrown on every call.
-     */
-    @Override
-    public boolean userConfirmed() {
-        throw new UnsupportedOperationException(
-                "Menu contains no data to be confirmed.");
-    }
 }
