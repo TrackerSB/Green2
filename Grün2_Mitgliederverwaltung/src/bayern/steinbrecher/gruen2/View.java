@@ -53,7 +53,7 @@ public abstract class View extends Application {
         }
     }
 
-    private void closeAndNotify() {
+    private void setClosedAndNotify() {
         gotClosedProperty.set(true);
         synchronized (this) {
             notifyAll();
@@ -73,11 +73,11 @@ public abstract class View extends Application {
             gotShownProperty.set(true);
             if (Platform.isFxApplicationThread()) {
                 stage.showAndWait();
-                closeAndNotify();
+                setClosedAndNotify();
             } else {
                 stage.showingProperty().addListener((obs, oldVal, newVal) -> {
                     if (!newVal) {
-                        closeAndNotify();
+                        setClosedAndNotify();
                     }
                 });
                 Platform.runLater(() -> stage.show());
