@@ -47,7 +47,10 @@ import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Represents the entry of the hole application.
@@ -70,25 +73,21 @@ public class Main extends Application {
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
     private static final long SPLASHSCREEN_MILLIS = 2500;
-    private static final ConfirmDialog BAD_CONFIGS = new ConfirmDialog(
-            "Es fehlen Konfigurationseinstellungen oder die "
-            + "Konfigurationsdatei konnte nicht gefunden werden.\n"
-            + "Frage bei stefan.huber.niedling@outlook.com nach.", null);
-    private static final ConfirmDialog CHECK_CONNECTION = new ConfirmDialog(
-            "Prüfe, ob die Datenbank "
-            + "erreichbar ist, und ob du Grün2 richtig "
-            + "konfiguriert hast.", null);
-    private static final ConfirmDialog CHECK_INPUT
-            = new ConfirmDialog("Prüfe deine Eingaben.", null);
+    private static final String BAD_CONFIGS = "Es fehlen Konfigurations"
+            + "einstellungen oder die Konfigurationsdatei konnte nicht "
+            + "gefunden werden.\n"
+            + "Frage bei stefan.huber.niedling@outlook.com nach.";
+    private static final String CHECK_CONNECTION = "Prüfe, ob die Datenbank "
+            + "erreichbar ist, und ob du Grün2 richtig konfiguriert hast.";
+    private static final String CHECK_INPUT = "Prüfe deine Eingaben.";
     private Stage menuStage;
-    private final ConfirmDialog NO_SEPA_DEBIT
-            = new ConfirmDialog("Sepalastschrift konnte nicht erstellt werden",
-                    menuStage);
-    private final ConfirmDialog CORRECT_IBANS = new ConfirmDialog(
-            "Alle IBANs haben eine korrekte Prüfsumme", menuStage);
+    private final String NO_SEPA_DEBIT = "Sepalastschrift konnte nicht "
+            + "erstellt werden";
+    private final String CORRECT_IBANS = "Alle IBANs haben eine korrekte "
+            + "Prüfsumme";
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
-    private Map<Integer, Future<List<Member>>> memberBirthday
+    private final Map<Integer, Future<List<Member>>> memberBirthday
             = new HashMap<>(3);
     private Future<List<Member>> memberNonContributionfree;
     private Future<Map<String, String>> nicknames;
@@ -105,11 +104,15 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+        menuStage = primaryStage;
+
+        Platform.setImplicitExit(false);
+
         if (!DataProvider.hasAllConfigs()) {
-            Stage badConfigsStage = new Stage();
-            BAD_CONFIGS.start(badConfigsStage);
-            badConfigsStage.showAndWait();
-            throw new IllegalStateException("Invalid configs.");
+            ConfirmDialog badConfigs = new ConfirmDialog(BAD_CONFIGS, null);
+            badConfigs.start(new Stage());
+            badConfigs.showOnceAndWait();
+            cleanupAndExit();
         }
 
         Splashscreen splashScreen = new Splashscreen();
@@ -131,6 +134,8 @@ public class Main extends Application {
                 waitScreen.close();
             } else if (login.userConfirmed()) {
                 waitScreen.show();
+            } else {
+                cleanupAndExit();
             }
         });
         login.start(loginStage);
@@ -155,16 +160,15 @@ public class Main extends Application {
                 }
                 executeQueries(dbConnection);
 
-                menuStage = new Stage();
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        waitScreen.close();
-                    } else {
-                        dbConnection.close();
-                        exserv.shutdownNow();
-                    }
-                });
+                            if (newVal) {
+                                waitScreen.close();
+                            } else {
+                                dbConnection.close();
+                                cleanupAndExit();
+                            }
+                        });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -177,27 +181,41 @@ public class Main extends Application {
         connectionService.start();
     }
 
+    private void cleanupAndExit() {
+        exserv.shutdownNow();
+        Platform.exit();
+    }
+
     private void checkAuth(Login login, WaitScreen waitScreen, Exception ex) {
         Platform.runLater(() -> {
             waitScreen.close();
 
             Throwable cause = ex.getCause();
             String message = ex.getMessage();
-            Stage dialogStage = new Stage();
             try {
                 if (cause instanceof ConnectException
                         || cause instanceof UnknownHostException) {
-                    CHECK_CONNECTION.start(dialogStage);
-                    dialogStage.show();
+                    ConfirmDialog confirm
+                            = new ConfirmDialog(CHECK_CONNECTION, null);
+                    confirm.start(new Stage());
+                    confirm.showOnceAndWait();
+                    cleanupAndExit();
                 } else if (message != null
                         && message.contains("Auth fail")) {
-                    CHECK_INPUT.start(dialogStage);
+                    ConfirmDialog confirm
+                            = new ConfirmDialog(CHECK_INPUT, null);
+                    Stage dialogStage = new Stage();
+                    confirm.start(dialogStage);
                     dialogStage.showingProperty()
                             .addListener((obs, oldVal, newVal) -> {
                                 if (!newVal) {
-                                    login.reset();
-                                    synchronized (this) {
-                                        notifyAll();
+                                    if (confirm.userConfirmed()) {
+                                        login.reset();
+                                        synchronized (this) {
+                                            notifyAll();
+                                        }
+                                    } else {
+                                        cleanupAndExit();
                                     }
                                 }
                             });
@@ -578,9 +596,10 @@ public class Main extends Application {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
                 try {
-                    Stage noSepaDebitStage = new Stage();
-                    NO_SEPA_DEBIT.start(noSepaDebitStage);
-                    noSepaDebitStage.showAndWait();
+                    ConfirmDialog noSepaDebit
+                            = new ConfirmDialog(NO_SEPA_DEBIT, menuStage);
+                    noSepaDebit.start(new Stage());
+                    noSepaDebit.showOnceAndWait();
                 } catch (Exception ex1) {
                     Logger.getLogger(Main.class.getName())
                             .log(Level.SEVERE, null, ex1);
@@ -629,9 +648,10 @@ public class Main extends Application {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
             try {
-                Stage noSepaDebitStage = new Stage();
-                NO_SEPA_DEBIT.start(noSepaDebitStage);
-                noSepaDebitStage.showAndWait();
+                ConfirmDialog noSepaDebit
+                        = new ConfirmDialog(NO_SEPA_DEBIT, menuStage);
+                noSepaDebit.start(new Stage());
+                noSepaDebit.showOnceAndWait();
             } catch (Exception ex1) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex1);
@@ -660,9 +680,9 @@ public class Main extends Application {
         }
         if (badIban.isEmpty()) {
             try {
-                Stage correctIbansSTage = new Stage();
-                CORRECT_IBANS.start(correctIbansSTage);
-                correctIbansSTage.showAndWait();
+                ConfirmDialog confirm = new ConfirmDialog(CORRECT_IBANS, menuStage);
+                confirm.start(new Stage());
+                confirm.showOnceAndWait();
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);

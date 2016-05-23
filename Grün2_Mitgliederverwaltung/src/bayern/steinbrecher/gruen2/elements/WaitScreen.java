@@ -44,7 +44,7 @@ public class WaitScreen extends View {
             = new ParallelTransition();
 
     static {
-        DIRECTION_VECTORS[0] = new Point2D(0, -1);
+        DIRECTION_VECTORS[0] = new Point2D(0, 1);
         for (int i = 1; i < CORNERCOUNT; i++) {
             DIRECTION_VECTORS[i] = ROTATION.transform(DIRECTION_VECTORS[i - 1]);
         }

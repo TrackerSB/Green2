@@ -23,6 +23,7 @@ public class ConfirmDialog extends View {
     private static final int MIN_HEIGHT = 100;
     private String message;
     private Window owner;
+    private boolean userConfirmed = false;
 
     /**
      * Creates a new dialog showing {@code message} and a single button for
@@ -50,7 +51,10 @@ public class ConfirmDialog extends View {
 
         Button okButton = new Button("OK");
         okButton.setDefaultButton(true);
-        okButton.setOnAction(aevt -> stage.close());
+        okButton.setOnAction(aevt -> {
+            userConfirmed = true;
+            stage.close();
+        });
 
         VBox dialogContent = new VBox();
         dialogContent.setStyle("-fx-margin: 10px");
@@ -70,11 +74,17 @@ public class ConfirmDialog extends View {
     }
 
     /**
+     * Shows this dialog only once and blocks until it is closed.
+     */
+    public void showOnceAndWait() {
+        onlyShowOnce();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public BooleanBinding wouldShowBinding() {
-        throw new UnsupportedOperationException(
-                "ConfirmDialog does not use onlyShowOnce()");
+    public boolean userConfirmed() {
+        return userConfirmed;
     }
 }
