@@ -47,10 +47,7 @@ import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 /**
  * Represents the entry of the hole application.
@@ -85,6 +82,9 @@ public class Main extends Application {
             + "erstellt werden";
     private final String CORRECT_IBANS = "Alle IBANs haben eine korrekte "
             + "Prüfsumme";
+    private final String UNEXPECTED_ABBORT = "Die Verbindung konnte nicht "
+            + "aufgebaut werden oder wurde unterbrochen. Versuche es einfach "
+            + "nochmal.";
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
     private final Map<Integer, Future<List<Member>>> memberBirthday
@@ -92,6 +92,7 @@ public class Main extends Application {
     private Future<List<Member>> memberNonContributionfree;
     private Future<Map<String, String>> nicknames;
     private Future<Optional<Map<Integer, Double>>> individualContributions;
+    private DBConnection dbConnection = null;
 
     /**
      * Default constructor.
@@ -154,11 +155,11 @@ public class Main extends Application {
             Optional<DBConnection> optDBConnection
                     = connectionService.getValue();
             if (optDBConnection.isPresent()) {
-                DBConnection dbConnection = optDBConnection.get();
-                if (!tablesExist(dbConnection)) {
-                    createTables(dbConnection);
+                dbConnection = optDBConnection.get();
+                if (!tablesExist()) {
+                    createTables();
                 }
-                executeQueries(dbConnection);
+                executeQueries();
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
@@ -223,6 +224,10 @@ public class Main extends Application {
                 } else {
                     System.err.println(
                             "Not action specified for: " + cause);
+                    ConfirmDialog confirm
+                            = new ConfirmDialog(UNEXPECTED_ABBORT, null);
+                    confirm.showOnceAndWait();
+                    cleanupAndExit();
                 }
             } catch (Exception exc) {
                 Logger.getLogger(Menu.class.getName())
@@ -285,7 +290,7 @@ public class Main extends Application {
         return Optional.ofNullable(con);
     }
 
-    private boolean tablesExist(DBConnection dbConnection) {
+    private boolean tablesExist() {
         try {
             dbConnection.execQuery(
                     "SELECT COUNT(*) FROM Mitglieder, Spitznamen;");
@@ -297,7 +302,7 @@ public class Main extends Application {
         }
     }
 
-    private void createTables(DBConnection dbConnection) {
+    private void createTables() {
         try {
             dbConnection.execUpdate("CREATE TABLE Mitglieder ("
                     + "Mitgliedsnummer INTEGER PRIMARY KEY,"
@@ -362,7 +367,7 @@ public class Main extends Application {
                 .collect(Collectors.toList());
     }
 
-    private void executeQueries(DBConnection dbConnection) {
+    private void executeQueries() {
         member = exserv.submit(() -> readMember(dbConnection));
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
@@ -378,12 +383,23 @@ public class Main extends Application {
         });
     }
 
-    private void generateAddresses(List<Member> member,
-            String filename) {
-        if (nicknames == null) {
+    /**
+     * Checks whether all objects are not {@code null}. If any is {@code null}
+     * it throws a {@code IllegalStateException} saying that the caller has to
+     * call {@code start(...)} first.
+     *
+     * @param obj The objects to test.
+     */
+    private void checkNull(Object... obj) {
+        if (Arrays.stream(obj).anyMatch(o -> o == null)) {
             throw new IllegalStateException(
                     "You have to call start(...) first");
         }
+    }
+
+    private void generateAddresses(List<Member> member,
+            String filename) {
+        checkNull(nicknames);
         try {
             Output.printContent(AddressGenerator.generateAddressData(
                     member, nicknames.get()), filename);
@@ -399,10 +415,7 @@ public class Main extends Application {
      * @see DataProvider#getSavepath()
      */
     public void generateAddressesAll() {
-        if (member == null) {
-            throw new IllegalStateException(
-                    "You have to call start(...) first");
-        }
+        checkNull(member);
         try {
             generateAddresses(member.get(),
                     DataProvider.getSavepath() + "/Serienbrief_alle.csv");
@@ -420,10 +433,7 @@ public class Main extends Application {
      * @see DataProvider#getSavepath()
      */
     public void generateAddressesBirthday(int year) {
-        if (memberBirthday == null) {
-            throw new IllegalStateException(
-                    "You have to call start(...) first");
-        }
+        checkNull(memberBirthday);
         memberBirthday.putIfAbsent(
                 year, exserv.submit(() -> getBirthdayMember(year)));
         try {
@@ -443,10 +453,7 @@ public class Main extends Application {
      * @see DataProvider#getSavepath()
      */
     public void generateBirthdayInfos(int year) {
-        if (memberBirthday == null) {
-            throw new IllegalStateException(
-                    "You have to call start(...) first");
-        }
+        checkNull(memberBirthday);
         memberBirthday.putIfAbsent(
                 year, exserv.submit(() -> getBirthdayMember(year)));
         try {
@@ -572,10 +579,7 @@ public class Main extends Application {
      * Asks for contribution and for member to debit from.
      */
     public void generateUniversalSepa() {
-        if (member == null) {
-            throw new IllegalStateException(
-                    "You have to call start(...) first");
-        }
+        checkNull(member);
         Contribution contribution = new Contribution();
         try {
             contribution.start(new Stage());
@@ -613,11 +617,7 @@ public class Main extends Application {
      * shown) to debit from.
      */
     public void generateContributionSepa() {
-        if (individualContributions == null || member == null
-                || memberNonContributionfree == null) {
-            throw new IllegalStateException(
-                    "You have to call start(...) first");
-        }
+        checkNull(individualContributions, member, memberNonContributionfree);
         try {
             Optional<Map<Integer, Double>> optContributions
                     = individualContributions.get();
@@ -664,10 +664,7 @@ public class Main extends Application {
      * IBANs.
      */
     public void checkIban() {
-        if (member == null) {
-            throw new IllegalStateException(
-                    "You have to call start(...) first");
-        }
+        checkNull(member);
         List<Member> badIban = new ArrayList<>();
         try {
             badIban = member.get().parallelStream()
