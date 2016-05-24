@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.connection;
 
+import bayern.steinbrecher.gruen2.exception.AuthException;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -64,29 +65,27 @@ public final class SshConnection extends DBConnection {
      * @param databaseUsername The username for the database.
      * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
-     * @throws JSchException Thrown if some of username, password or host is
+     * @throws AuthException Thrown if some of username, password or host is
      * wrong or not reachable.
      */
     public SshConnection(String sshHost, String sshUsername,
             String sshPassword, String databaseHost, String databaseUsername,
             String databasePasswd, String databaseName)
-            throws JSchException {
+            throws AuthException {
         this.databaseHost = databaseHost;
         this.databaseUsername = databaseUsername;
         this.databasePasswd = databasePasswd;
         this.databaseName = databaseName;
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
 
-        this.sshSession.connect();
-
         try {
+            this.sshSession.connect();
+
             //Check authentification
             execQuery("SELECT 1");
-        } catch (SQLException ex) {
-            Logger.getLogger(SshConnection.class.getName())
-                    .log(Level.SEVERE, null, ex);
+        } catch (SQLException | JSchException ex) {
             close();
-            throw new JSchException("Auth fail");
+            throw new AuthException();
         }
     }
 
@@ -102,13 +101,17 @@ public final class SshConnection extends DBConnection {
      */
     private Session createSshSession(String sshHost, String sshUsername,
             String sshPassword)
-            throws JSchException {
-        Session session = new JSch()
-                .getSession(sshUsername, sshHost, DEFAULT_SSH_PORT);
-        session.setPassword(sshPassword);
-        session.setConfig("StrictHostKeyChecking", "no");
-        session.setDaemonThread(true);
-        return session;
+            throws AuthException {
+        try {
+            Session session = new JSch()
+                    .getSession(sshUsername, sshHost, DEFAULT_SSH_PORT);
+            session.setPassword(sshPassword);
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.setDaemonThread(true);
+            return session;
+        } catch (JSchException ex) {
+            throw new AuthException();
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.connection;
 
+import bayern.steinbrecher.gruen2.exception.AuthException;
 import com.mysql.jdbc.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -36,11 +37,11 @@ public final class DefaultConnection extends DBConnection {
      * @param databaseUsername The username for the database.
      * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
-     * @throws SQLException Is thrown if some username, password or address is
+     * @throws AuthException Is thrown if some username, password or address is
      * wrong.
      */
     public DefaultConnection(String databaseHost, String databaseUsername,
-            String databasePasswd, String databaseName) throws SQLException {
+            String databasePasswd, String databaseName) throws AuthException {
         try {
             Class.forName(DRIVER);
             if (!databaseHost.endsWith("/")) {
@@ -49,10 +50,13 @@ public final class DefaultConnection extends DBConnection {
             connection = (Connection) DriverManager.getConnection(
                     DRIVER_PROTOCOL + databaseHost
                     + databaseName, databaseUsername, databasePasswd);
-            execQuery("SELECT 1");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Connection.class.getName())
                     .log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DefaultConnection.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            throw new AuthException();
         }
     }
 

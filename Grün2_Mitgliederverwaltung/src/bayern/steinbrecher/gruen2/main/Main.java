@@ -12,6 +12,7 @@ import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
+import bayern.steinbrecher.gruen2.exception.AuthException;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.generator.MemberGenerator;
@@ -25,7 +26,6 @@ import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
-import com.jcraft.jsch.JSchException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -83,8 +83,8 @@ public class Main extends Application {
     private final String CORRECT_IBANS = "Alle IBANs haben eine korrekte "
             + "Prüfsumme";
     private final String UNEXPECTED_ABBORT = "Die Verbindung konnte nicht "
-            + "aufgebaut werden oder wurde unterbrochen. Versuche es einfach "
-            + "nochmal.";
+            + "aufgebaut werden oder wurde unterbrochen. Starten Sie das "
+            + "Programm neu.";
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
     private final Map<Integer, Future<List<Member>>> memberBirthday
@@ -166,7 +166,6 @@ public class Main extends Application {
                             if (newVal) {
                                 waitScreen.close();
                             } else {
-                                dbConnection.close();
                                 cleanupAndExit();
                             }
                         });
@@ -183,16 +182,18 @@ public class Main extends Application {
     }
 
     private void cleanupAndExit() {
+        if (dbConnection != null) {
+            dbConnection.close();
+        }
         exserv.shutdownNow();
         Platform.exit();
     }
 
-    private void checkAuth(Login login, WaitScreen waitScreen, Exception ex) {
+    private void checkAuthException(Login login, WaitScreen waitScreen,
+            Exception cause) {
         Platform.runLater(() -> {
             waitScreen.close();
 
-            Throwable cause = ex.getCause();
-            String message = ex.getMessage();
             try {
                 if (cause instanceof ConnectException
                         || cause instanceof UnknownHostException) {
@@ -201,8 +202,7 @@ public class Main extends Application {
                     confirm.start(new Stage());
                     confirm.showOnceAndWait();
                     cleanupAndExit();
-                } else if (message != null
-                        && message.contains("Auth fail")) {
+                } else if (cause instanceof AuthException) {
                     ConfirmDialog confirm
                             = new ConfirmDialog(CHECK_INPUT, null);
                     Stage dialogStage = new Stage();
@@ -226,6 +226,7 @@ public class Main extends Application {
                             "Not action specified for: " + cause);
                     ConfirmDialog confirm
                             = new ConfirmDialog(UNEXPECTED_ABBORT, null);
+                    confirm.start(new Stage());
                     confirm.showOnceAndWait();
                     cleanupAndExit();
                 }
@@ -275,11 +276,11 @@ public class Main extends Application {
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
-            } catch (JSchException | SQLException ex) {
+            } catch (AuthException ex) {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
 
-                checkAuth(login, waitScreen, ex);
+                checkAuthException(login, waitScreen, ex);
 
                 ThreadUtility.waitWhile(this, login.wouldShowBinding().not());
 
