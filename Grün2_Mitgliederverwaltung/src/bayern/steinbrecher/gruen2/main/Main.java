@@ -82,9 +82,8 @@ public class Main extends Application {
             + "erstellt werden";
     private final String CORRECT_IBANS = "Alle IBANs haben eine korrekte "
             + "Prüfsumme";
-    private final String UNEXPECTED_ABBORT = "Die Verbindung konnte nicht "
-            + "aufgebaut werden oder wurde unterbrochen. Starten Sie das "
-            + "Programm neu.";
+    private final String UNEXPECTED_ABBORT = "Die Verbindung wurde "
+            + "zurückgewiesen oder unterbrochen. Starten Sie das Programm neu.";
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
     private final Map<Integer, Future<List<Member>>> memberBirthday
@@ -163,12 +162,12 @@ public class Main extends Application {
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                            if (newVal) {
-                                waitScreen.close();
-                            } else {
-                                cleanupAndExit();
-                            }
-                        });
+                    if (newVal) {
+                        waitScreen.close();
+                    } else {
+                        cleanupAndExit();
+                    }
+                });
 
                 try {
                     new Menu(this).start(menuStage);
