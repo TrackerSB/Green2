@@ -39,7 +39,8 @@ public class WaitScreen extends View {
     private static final Duration DURATION_ANIMATION = Duration.millis(600);
     private static final Duration DURATION_PAUSE = Duration.seconds(3);
     private static final int DELAY = 200;
-    private static final int STAGE_MARGIN = 10;
+    private static final double START_OPACITY = 0.5;
+    private static final double CENTER_OPACITY = 1;
     private final ParallelTransition overallTransition
             = new ParallelTransition();
 
@@ -69,13 +70,11 @@ public class WaitScreen extends View {
 
         IntStream.range(0, VERTICAL_COUNT).parallel().forEach(row -> {
             int shorten = (int) Math.floor((row + 1) % 2);
-            double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4
-                    + STAGE_MARGIN;
+            double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4;
             IntStream.range(0, HORIZONTAL_COUNT - shorten).parallel().forEach(column -> {
-                double xCoo = column * DIAMETER + (shorten + 1) * RADIUS
-                        + STAGE_MARGIN;
+                double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
                 Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
-                p.setOpacity(0.5);
+                p.setOpacity(START_OPACITY);
                 p.setFill(Color.FORESTGREEN);
 
                 RotateTransition rt1
@@ -83,12 +82,12 @@ public class WaitScreen extends View {
                 rt1.setByAngle(ANGLE / 2);
                 FadeTransition ft11
                         = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft11.setFromValue(0.5);
-                ft11.setToValue(1);
+                ft11.setFromValue(START_OPACITY);
+                ft11.setToValue(CENTER_OPACITY);
                 FadeTransition ft12
                         = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft12.setFromValue(1);
-                ft12.setToValue(0.5);
+                ft12.setFromValue(CENTER_OPACITY);
+                ft12.setToValue(START_OPACITY);
                 SequentialTransition st1 = new SequentialTransition(ft11, ft12);
                 ParallelTransition plt1 = new ParallelTransition(rt1, st1);
 
@@ -99,12 +98,12 @@ public class WaitScreen extends View {
                 rt2.setByAngle(ANGLE / 2);
                 FadeTransition ft21
                         = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft21.setFromValue(0.5);
-                ft21.setToValue(1);
+                ft21.setFromValue(START_OPACITY);
+                ft21.setToValue(CENTER_OPACITY);
                 FadeTransition ft22
                         = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft22.setFromValue(0.5);
-                ft22.setToValue(1);
+                ft22.setFromValue(START_OPACITY);
+                ft22.setToValue(CENTER_OPACITY);
                 SequentialTransition st2 = new SequentialTransition(ft11, ft12);
                 ParallelTransition plt2 = new ParallelTransition(rt2, st2);
 
