@@ -63,14 +63,14 @@ public class WaitScreen extends View {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        stage.initModality(Modality.APPLICATION_MODAL);
 
         Pane root = new Pane();
         root.setStyle("-fx-background-color: rgba(0,0,0,0)");
 
         IntStream.range(0, VERTICAL_COUNT).parallel().forEach(row -> {
-            int shorten = (int) Math.floor((row + 1) % 2);
-            double yCoo = row * DIAMETER + RADIUS - row * RADIUS / 4;
+            int shorten = (row + 1) % 2;
+            double yCoo = row * DIAMETER + RADIUS
+                    - 1.5 * row * RADIUS / CORNERCOUNT;
             IntStream.range(0, HORIZONTAL_COUNT - shorten).parallel().forEach(column -> {
                 double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
                 Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
@@ -125,10 +125,11 @@ public class WaitScreen extends View {
 
         overallTransition.play();
 
-        Scene scene = new Scene(root, (HORIZONTAL_COUNT + 1) * DIAMETER,
-                (VERTICAL_COUNT + 1) * DIAMETER);
+        Scene scene = new Scene(root, HORIZONTAL_COUNT * DIAMETER,
+                VERTICAL_COUNT * DIAMETER);
         scene.setFill(null);
         stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setTitle("Einen Moment bitte");
         stage.setResizable(false);
