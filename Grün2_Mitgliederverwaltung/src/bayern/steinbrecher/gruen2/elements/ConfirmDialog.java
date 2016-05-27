@@ -2,7 +2,6 @@ package bayern.steinbrecher.gruen2.elements;
 
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
