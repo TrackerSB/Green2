@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 /**
@@ -43,8 +44,6 @@ public class ConfirmDialog extends View {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(owner);
 
         Label messageLabel = new Label(message);
         messageLabel.setStyle("-fx-font-size:14px");
@@ -63,11 +62,14 @@ public class ConfirmDialog extends View {
         dialogContent.setStyle("-fx-spacing:10px");
         dialogContent.setAlignment(Pos.CENTER);
 
-        stage.setMinWidth(MIN_WIDTH);
-        stage.setMinHeight(MIN_HEIGHT);
         Scene scene = new Scene(dialogContent);
         scene.getStylesheets().add(DataProvider.getStylesheetPath());
         stage.setScene(scene);
+        stage.setMinWidth(MIN_WIDTH);
+        stage.setMinHeight(MIN_HEIGHT);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initStyle(StageStyle.UTILITY);
+        stage.initOwner(owner);
         stage.setTitle("Info");
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
