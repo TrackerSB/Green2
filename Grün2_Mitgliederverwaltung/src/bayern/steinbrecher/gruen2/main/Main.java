@@ -69,7 +69,7 @@ public class Main extends Application {
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
-    private static final long SPLASHSCREEN_MILLIS = 2500;
+    private static final long SPLASHSCREEN_MILLIS = 1500;
     private static final String BAD_CONFIGS = "Es fehlen Konfigurations"
             + "einstellungen oder die Konfigurationsdatei konnte nicht "
             + "gefunden werden.\n"
