@@ -56,19 +56,6 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    /**
-     * A list containing all names of needed columns for queries in the member
-     * table.
-     */
-    public static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
-            Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
-                    "istmaennlich", "istaktiv", "geburtstag", "strasse",
-                    "hausnummer", "plz", "ort", "istbeitragsfrei", "iban",
-                    "bic", "kontoinhabervorname", "kontoinhabernachname",
-                    "mandaterstellt"));
-    private static final String ALL_COLUMN_LABELS_MEMBER
-            = COLUMN_LABELS_MEMBER.stream()
-            .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
     private static final long SPLASHSCREEN_MILLIS = 5000;
     private Stage menuStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
@@ -280,17 +267,7 @@ public class Main extends Application {
      * @return The list with the member.
      */
     public static List<Member> readMember(DBConnection dbc) {
-        try {
-            return MemberGenerator.generateMemberList(dbc.execQuery(
-                    "SELECT " + ALL_COLUMN_LABELS_MEMBER
-                    .substring(0, ALL_COLUMN_LABELS_MEMBER.length() - 1)
-                    + " FROM Mitglieder "
-                    + "WHERE AusgetretenSeit='0000-00-00';"));
-        } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return null;
-        }
+        return MemberGenerator.generateMemberList(dbc.getAllMember());
     }
 
     private List<Member> getBirthdayMember(int year)
@@ -403,30 +380,6 @@ public class Main extends Application {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Queries the nickname table of the specified connection.
-     *
-     * @param dbc The connection to query through.
-     * @return A map from prenames to nicknames.
-     */
-    public static Map<String, String> readNicknames(DBConnection dbc) {
-        Map<String, String> mappedNicknames = new HashMap<>();
-        try {
-            List<List<String>> queriedNicknames
-                    = dbc.execQuery("SELECT * FROM Spitznamen;");
-            int nameIndex = queriedNicknames.get(0).indexOf("Name");
-            int nicknameIndex = queriedNicknames.get(0).indexOf("Spitzname");
-
-            queriedNicknames.parallelStream().skip(1).forEach(row -> {
-                mappedNicknames.put(row.get(nameIndex), row.get(nicknameIndex));
-            });
-        } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        return mappedNicknames;
     }
 
     /**
