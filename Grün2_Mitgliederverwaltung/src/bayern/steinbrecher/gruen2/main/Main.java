@@ -70,20 +70,7 @@ public class Main extends Application {
             = COLUMN_LABELS_MEMBER.stream()
             .reduce("", (s1, s2) -> s1.concat(s2).concat(","));
     private static final long SPLASHSCREEN_MILLIS = 5000;
-    private static final String BAD_CONFIGS = "Es fehlen Konfigurations"
-            + "einstellungen oder die Konfigurationsdatei konnte nicht "
-            + "gefunden werden.\n"
-            + "Frage bei stefan.huber.niedling@outlook.com nach.";
-    private static final String CHECK_CONNECTION = "Prüfe, ob die Datenbank "
-            + "erreichbar ist, und ob du Grün2 richtig konfiguriert hast.";
-    private static final String CHECK_INPUT = "Prüfe deine Eingaben.";
     private Stage menuStage;
-    private final String NO_SEPA_DEBIT = "Sepalastschrift konnte nicht "
-            + "erstellt werden";
-    private final String CORRECT_IBANS = "Alle IBANs haben eine korrekte "
-            + "Prüfsumme";
-    private final String UNEXPECTED_ABBORT = "Die Verbindung wurde "
-            + "zurückgewiesen oder unterbrochen. Starten Sie das Programm neu.";
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
     private final Map<Integer, Future<List<Member>>> memberBirthday
@@ -109,9 +96,8 @@ public class Main extends Application {
         Platform.setImplicitExit(false);
 
         if (!DataProvider.hasAllConfigs()) {
-            ConfirmDialog badConfigs = new ConfirmDialog(BAD_CONFIGS, null);
-            badConfigs.start(new Stage());
-            badConfigs.showOnceAndWait();
+            ConfirmDialog.createBadConfigsDialog(null)
+                    .showOnceAndWait();
             cleanupAndExit();
         }
 
@@ -155,19 +141,19 @@ public class Main extends Application {
                     = connectionService.getValue();
             if (optDBConnection.isPresent()) {
                 dbConnection = optDBConnection.get();
-                if (!tablesExist()) {
-                    createTables();
+                if (!dbConnection.tablesExist()) {
+                    dbConnection.createTables();
                 }
                 executeQueries();
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        waitScreen.close();
-                    } else {
-                        cleanupAndExit();
-                    }
-                });
+                            if (newVal) {
+                                waitScreen.close();
+                            } else {
+                                cleanupAndExit();
+                            }
+                        });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -196,14 +182,12 @@ public class Main extends Application {
             try {
                 if (cause instanceof ConnectException
                         || cause instanceof UnknownHostException) {
-                    ConfirmDialog confirm
-                            = new ConfirmDialog(CHECK_CONNECTION, null);
-                    confirm.start(new Stage());
-                    confirm.showOnceAndWait();
+                    ConfirmDialog.createCheckConnectionDialog(null)
+                            .showOnceAndWait();
                     cleanupAndExit();
                 } else if (cause instanceof AuthException) {
-                    ConfirmDialog confirm
-                            = new ConfirmDialog(CHECK_INPUT, null);
+                    ConfirmDialog confirm = new ConfirmDialog(
+                            ConfirmDialog.CHECK_INPUT, null);
                     Stage dialogStage = new Stage();
                     confirm.start(dialogStage);
                     dialogStage.showingProperty()
@@ -223,10 +207,8 @@ public class Main extends Application {
                 } else {
                     System.err.println(
                             "Not action specified for: " + cause);
-                    ConfirmDialog confirm
-                            = new ConfirmDialog(UNEXPECTED_ABBORT, null);
-                    confirm.start(new Stage());
-                    confirm.showOnceAndWait();
+                    ConfirmDialog.createUnexpectedAbbortDialog(null)
+                            .showOnceAndWait();
                     cleanupAndExit();
                 }
             } catch (Exception exc) {
@@ -288,54 +270,6 @@ public class Main extends Application {
         }
 
         return Optional.ofNullable(con);
-    }
-
-    private boolean tablesExist() {
-        try {
-            dbConnection.execQuery(
-                    "SELECT COUNT(*) FROM Mitglieder, Spitznamen;");
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
-    private void createTables() {
-        try {
-            dbConnection.execUpdate("CREATE TABLE Mitglieder ("
-                    + "Mitgliedsnummer INTEGER PRIMARY KEY,"
-                    + "Titel VARCHAR(255) NOT NULL,"
-                    + "Vorname VARCHAR(255) NOT NULL,"
-                    + "Nachname VARCHAR(255) NOT NULL,"
-                    + "istAktiv BOOLEAN NOT NULL,"
-                    + "istMaennlich BOOLEAN NOT NULL,"
-                    + "Geburtstag DATE NOT NULL,"
-                    + "Strasse VARCHAR(255) NOT NULL,"
-                    + "Hausnummer VARCHAR(255) NOT NULL,"
-                    + "PLZ VARCHAR(255) NOT NULL,"
-                    + "Ort VARCHAR(255) NOT NULL,"
-                    + "AusgetretenSeit DATE NOT NULL DEFAULT '0000-00-00',"
-                    + "IBAN VARCHAR(255) NOT NULL,"
-                    + "BIC VARCHAR(255) NOT NULL,"
-                    + "MandatErstellt DATE NOT NULL,"
-                    + "KontoinhaberVorname VARCHAR(255) NOT NULL,"
-                    + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
-                    + "istBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
-                    + "Beitrag FLOAT NOT NULL);");
-        } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        try {
-            dbConnection.execUpdate("CREATE TABLE Spitznamen ("
-                    + "Name VARCHAR(255) PRIMARY KEY,"
-                    + "Spitzname VARCHAR(255) NOT NULL);");
-        } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
@@ -600,10 +534,8 @@ public class Main extends Application {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
                 try {
-                    ConfirmDialog noSepaDebit
-                            = new ConfirmDialog(NO_SEPA_DEBIT, menuStage);
-                    noSepaDebit.start(new Stage());
-                    noSepaDebit.showOnceAndWait();
+                    ConfirmDialog.createNoSepaDebitDialog(menuStage)
+                            .showOnceAndWait();
                 } catch (Exception ex1) {
                     Logger.getLogger(Main.class.getName())
                             .log(Level.SEVERE, null, ex1);
@@ -648,10 +580,8 @@ public class Main extends Application {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
             try {
-                ConfirmDialog noSepaDebit
-                        = new ConfirmDialog(NO_SEPA_DEBIT, menuStage);
-                noSepaDebit.start(new Stage());
-                noSepaDebit.showOnceAndWait();
+                ConfirmDialog.createNoSepaDebitDialog(menuStage)
+                        .showOnceAndWait();
             } catch (Exception ex1) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex1);
@@ -677,9 +607,8 @@ public class Main extends Application {
         }
         if (badIban.isEmpty()) {
             try {
-                ConfirmDialog confirm = new ConfirmDialog(CORRECT_IBANS, menuStage);
-                confirm.start(new Stage());
-                confirm.showOnceAndWait();
+                ConfirmDialog.createCorrectIbansDialog(menuStage)
+                        .showOnceAndWait();
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -696,9 +625,9 @@ public class Main extends Application {
                     })
                     .reduce(message, String::concat);
             try {
-                Stage messageStage = new Stage();
-                new ConfirmDialog(message, menuStage).start(messageStage);
-                messageStage.showAndWait();
+                ConfirmDialog dialog = new ConfirmDialog(message, menuStage);
+                dialog.start(new Stage());
+                dialog.showOnceAndWait();
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);

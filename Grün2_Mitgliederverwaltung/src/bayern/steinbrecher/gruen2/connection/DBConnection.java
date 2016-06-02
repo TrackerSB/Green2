@@ -1,7 +1,10 @@
 package bayern.steinbrecher.gruen2.connection;
 
+import bayern.steinbrecher.gruen2.menu.Menu;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a database connection.
@@ -34,6 +37,54 @@ public abstract class DBConnection implements AutoCloseable {
      * @throws SQLException Thrown if the sql code is invalid.
      */
     public abstract void execUpdate(String sqlCode) throws SQLException;
+
+    public boolean tablesExist() {
+        try {
+            execQuery(
+                    "SELECT COUNT(*) FROM Mitglieder, Spitznamen;");
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(Menu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public void createTables() {
+        try {
+            execUpdate("CREATE TABLE Mitglieder ("
+                    + "Mitgliedsnummer INTEGER PRIMARY KEY,"
+                    + "Titel VARCHAR(255) NOT NULL,"
+                    + "Vorname VARCHAR(255) NOT NULL,"
+                    + "Nachname VARCHAR(255) NOT NULL,"
+                    + "istAktiv BOOLEAN NOT NULL,"
+                    + "istMaennlich BOOLEAN NOT NULL,"
+                    + "Geburtstag DATE NOT NULL,"
+                    + "Strasse VARCHAR(255) NOT NULL,"
+                    + "Hausnummer VARCHAR(255) NOT NULL,"
+                    + "PLZ VARCHAR(255) NOT NULL,"
+                    + "Ort VARCHAR(255) NOT NULL,"
+                    + "AusgetretenSeit DATE NOT NULL DEFAULT '0000-00-00',"
+                    + "IBAN VARCHAR(255) NOT NULL,"
+                    + "BIC VARCHAR(255) NOT NULL,"
+                    + "MandatErstellt DATE NOT NULL,"
+                    + "KontoinhaberVorname VARCHAR(255) NOT NULL,"
+                    + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
+                    + "istBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
+                    + "Beitrag FLOAT NOT NULL);");
+        } catch (SQLException ex) {
+            Logger.getLogger(Menu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        try {
+            execUpdate("CREATE TABLE Spitznamen ("
+                    + "Name VARCHAR(255) PRIMARY KEY,"
+                    + "Spitzname VARCHAR(255) NOT NULL);");
+        } catch (SQLException ex) {
+            Logger.getLogger(Menu.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * Checks whether the given table of the configured database contains a
