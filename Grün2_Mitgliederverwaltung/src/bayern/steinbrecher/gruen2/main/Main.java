@@ -1,6 +1,5 @@
 package bayern.steinbrecher.gruen2.main;
 
-import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.connection.DBConnection;
 import bayern.steinbrecher.gruen2.connection.DefaultConnection;
 import bayern.steinbrecher.gruen2.connection.SshConnection;
@@ -15,7 +14,6 @@ import bayern.steinbrecher.gruen2.elements.WaitScreen;
 import bayern.steinbrecher.gruen2.exception.AuthException;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
-import bayern.steinbrecher.gruen2.generator.MemberGenerator;
 import bayern.steinbrecher.gruen2.generator.SepaPain00800302_XML_Generator;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
@@ -25,10 +23,10 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
+import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +54,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private static final long SPLASHSCREEN_MILLIS = 5000;
+    private static final long SPLASHSCREEN_MILLIS = 2500;
     private Stage menuStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
@@ -85,7 +83,7 @@ public class Main extends Application {
         if (!DataProvider.hasAllConfigs()) {
             ConfirmDialog.createBadConfigsDialog(null)
                     .showOnceAndWait();
-            cleanupAndExit();
+            Platform.exit();
         }
 
         Splashscreen splashScreen = new Splashscreen();
@@ -108,7 +106,7 @@ public class Main extends Application {
             } else if (login.userConfirmed()) {
                 waitScreen.show();
             } else {
-                cleanupAndExit();
+                Platform.exit();
             }
         });
         login.start(loginStage);
@@ -129,18 +127,18 @@ public class Main extends Application {
             if (optDBConnection.isPresent()) {
                 dbConnection = optDBConnection.get();
                 if (!dbConnection.tablesExist()) {
-                    dbConnection.createTables();
+                    dbConnection.createTablesIfNeeded();
                 }
                 executeQueries();
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                            if (newVal) {
-                                waitScreen.close();
-                            } else {
-                                cleanupAndExit();
-                            }
-                        });
+                    if (newVal) {
+                        waitScreen.close();
+                    } else {
+                        Platform.exit();
+                    }
+                });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -153,12 +151,18 @@ public class Main extends Application {
         connectionService.start();
     }
 
-    private void cleanupAndExit() {
+    /**
+     * This method is called when the application should stop, destroys
+     * resources and prepares for application exit.
+     *
+     * @throws Exception
+     */
+    @Override
+    public void stop() throws Exception {
         if (dbConnection != null) {
             dbConnection.close();
         }
         exserv.shutdownNow();
-        Platform.exit();
     }
 
     private void checkAuthException(Login login, WaitScreen waitScreen,
@@ -171,7 +175,7 @@ public class Main extends Application {
                         || cause instanceof UnknownHostException) {
                     ConfirmDialog.createCheckConnectionDialog(null)
                             .showOnceAndWait();
-                    cleanupAndExit();
+                    Platform.exit();
                 } else if (cause instanceof AuthException) {
                     ConfirmDialog confirm = new ConfirmDialog(
                             ConfirmDialog.CHECK_INPUT, null);
@@ -186,21 +190,20 @@ public class Main extends Application {
                                             notifyAll();
                                         }
                                     } else {
-                                        cleanupAndExit();
+                                        Platform.exit();
                                     }
                                 }
                             });
                     dialogStage.show();
                 } else {
-                    System.err.println(
-                            "Not action specified for: " + cause);
+                    System.err.println("Not action specified for: " + cause);
                     ConfirmDialog.createUnexpectedAbbortDialog(null)
                             .showOnceAndWait();
-                    cleanupAndExit();
+                    Platform.exit();
                 }
-            } catch (Exception exc) {
+            } catch (Exception ex) {
                 Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, exc);
+                        .log(Level.SEVERE, null, ex);
             }
         });
     }
@@ -259,17 +262,6 @@ public class Main extends Application {
         return Optional.ofNullable(con);
     }
 
-    /**
-     * Returns a list of all member accessable with {@code dbc}. The list
-     * contains all labels hold in {@code COLUMN_LABELS_MEMBER}.
-     *
-     * @param dbc The connection to use for accessing the data.
-     * @return The list with the member.
-     */
-    public static List<Member> readMember(DBConnection dbc) {
-        return MemberGenerator.generateMemberList(dbc.getAllMember());
-    }
-
     private List<Member> getBirthdayMember(int year)
             throws InterruptedException, ExecutionException {
         return member.get()
@@ -279,7 +271,7 @@ public class Main extends Application {
     }
 
     private void executeQueries() {
-        member = exserv.submit(() -> readMember(dbConnection));
+        member = exserv.submit(() -> dbConnection.getAllMember());
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
                 .forEach(y -> memberBirthday.put(
@@ -288,10 +280,9 @@ public class Main extends Application {
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
                 .collect(Collectors.toList()));
-        nicknames = exserv.submit(() -> readNicknames(dbConnection));
-        individualContributions = exserv.submit(() -> {
-            return readIndividualContributions(dbConnection);
-        });
+        nicknames = exserv.submit(() -> dbConnection.getAllNicknames());
+        individualContributions = exserv.submit(
+                () -> dbConnection.readIndividualContributions());
     }
 
     /**
@@ -380,37 +371,6 @@ public class Main extends Application {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Reads the individual contributions of every member - if specified.
-     *
-     * @param dbc The connection to use to query.
-     * @return A Optional containing the individual contributions or
-     * {@code Optional.empty()} if inidividual contributions are not specified.
-     */
-    public static Optional<Map<Integer, Double>> readIndividualContributions(
-            DBConnection dbc) {
-        if (dbc.checkColumn("Mitglieder", "Beitrag")) {
-            try {
-                List<List<String>> result
-                        = dbc.execQuery("SELECT Mitgliedsnummer, Beitrag "
-                                + "FROM Mitglieder;");
-                Map<Integer, Double> contributions = new HashMap<>();
-                result.parallelStream()
-                        .skip(1)
-                        .forEach(row -> {
-                            contributions.put(Integer.parseInt(row.get(0)),
-                                    Double.parseDouble(
-                                            row.get(1).replaceAll(",", ".")));
-                        });
-                return Optional.of(contributions);
-            } catch (SQLException ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
-        }
-        return Optional.empty();
     }
 
     private void generateCustomSepa(List<Member> memberToSelect,

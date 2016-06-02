@@ -105,7 +105,7 @@ public class ConfirmDialog extends View {
      * Shows this dialog only once and blocks until it is closed.
      */
     public void showOnceAndWait() {
-        onlyShowOnce();
+        onlyShowOnceAndWait();
     }
 
     /**

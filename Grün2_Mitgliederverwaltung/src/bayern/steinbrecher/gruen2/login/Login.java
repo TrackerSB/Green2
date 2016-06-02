@@ -23,7 +23,7 @@ public abstract class Login extends View {
      * @return The Information that was entered in the login.
      */
     public Optional<Map<LoginKey, String>> getLoginInformation() {
-        onlyShowOnce();
+        onlyShowOnceAndWait();
         return loginContoller.getLoginInformation();
     }
 

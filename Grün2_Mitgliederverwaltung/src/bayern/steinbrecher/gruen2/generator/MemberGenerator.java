@@ -6,7 +6,6 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Person;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +31,7 @@ public class MemberGenerator {
      *
      * @param queryResult The table that hold the member informations. First
      * dimension has to be row; second column. Each row is treated as one
-     * member.
+     * member. First row has to contain the headings.
      * @return The resulting list of member.
      */
     public static List<Member> generateMemberList(
@@ -40,7 +39,6 @@ public class MemberGenerator {
         List<String> labels = queryResult.get(0).stream()
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
-        List<Member> memberList = new ArrayList<>(queryResult.size());
 
         int prenameIndex = labels.indexOf("vorname");
         int lastnameIndex = labels.indexOf("nachname");
@@ -60,7 +58,7 @@ public class MemberGenerator {
         int accountholderPrenameIndex = labels.indexOf("kontoinhabervorname");
         int accountholderLastnameIndex = labels.indexOf("kontoinhabernachname");
 
-        queryResult.parallelStream().skip(1).forEach(row -> {
+        return queryResult.parallelStream().skip(1).map(row -> {
             //Read attributes
             LocalDate birthday = null;
             LocalDate mandatsigned = null;
@@ -103,14 +101,8 @@ public class MemberGenerator {
             Address ad = new Address(row.get(streetIndex),
                     row.get(housenumberIndex), row.get(postcodeIndex),
                     row.get(placeIndex));
-            Member m = new Member(
+            return new Member(
                     membershipnumber, p, ad, ah, isActive, isContributionfree);
-
-            synchronized (memberList) {
-                memberList.add(m);
-            }
-        });
-
-        return memberList;
+        }).collect(Collectors.toList());
     }
 }

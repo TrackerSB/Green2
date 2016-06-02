@@ -67,7 +67,7 @@ public abstract class View extends Application {
      * window is closed and then notifies all other threads. If the JavaFX
      * Application Thread calls it, it calls {@code showAndWait}.
      */
-    protected void onlyShowOnce() {
+    protected void onlyShowOnceAndWait() {
         checkStage();
         if (!gotShownProperty.get()) {
             gotShownProperty.set(true);
@@ -97,10 +97,10 @@ public abstract class View extends Application {
 
     /**
      * Returns the property indicating whether the next call of
-     * {@code onlyShowOnce()} would open the window.
+     * {@code onlyShowOnceAndWait()} would open the window.
      *
      * @return The property indicating whether the next call of
-     * {@code onlyShowOnce()} would open the window.
+     * {@code onlyShowOnceAndWait()} would open the window.
      */
     public BooleanBinding wouldShowBinding() {
         return wouldShowProperty;

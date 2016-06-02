@@ -1,14 +1,18 @@
 package bayern.steinbrecher.gruen2.connection;
 
+import bayern.steinbrecher.gruen2.generator.MemberGenerator;
 import bayern.steinbrecher.gruen2.menu.Menu;
+import bayern.steinbrecher.gruen2.people.Member;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Represents a database connection.
@@ -27,7 +31,8 @@ public abstract class DBConnection implements AutoCloseable {
                     "hausnummer", "plz", "ort", "istbeitragsfrei", "iban",
                     "bic", "kontoinhabervorname", "kontoinhabernachname",
                     "mandaterstellt"));
-    private static final String ALL_COLUMN_LABELS_MEMBER;
+    private static final String ALL_COLUMN_LABELS_MEMBER
+            = COLUMN_LABELS_MEMBER.stream().collect(Collectors.joining(","));
     private static final String EXIST_TEST
             = "SELECT COUNT(*) FROM Mitglieder, Spitznamen;";
     private static final String CREATE_MITGLIEDER = "CREATE TABLE Mitglieder ("
@@ -53,20 +58,14 @@ public abstract class DBConnection implements AutoCloseable {
     private static final String CREATE_SPITZNAMEN = "CREATE TABLE Spitznamen ("
             + "Name VARCHAR(255) PRIMARY KEY,"
             + "Spitzname VARCHAR(255) NOT NULL);";
-    private static final String QUERY_ALL_MEMBER;
+    private static final String QUERY_ALL_MEMBER
+            = "SELECT " + ALL_COLUMN_LABELS_MEMBER
+            + " FROM Mitglieder "
+            + "WHERE AusgetretenSeit='0000-00-00';";
     private static final String QUERY_ALL_NICKNAMES
-            = "SELECT * FROM Spitznamen;";
-
-    static {
-        String all = COLUMN_LABELS_MEMBER.stream()
-                .map(s -> s + ",")
-                .reduce("", String::concat);
-        ALL_COLUMN_LABELS_MEMBER = all.substring(0, all.length() - 1);
-        QUERY_ALL_MEMBER
-                = "SELECT " + ALL_COLUMN_LABELS_MEMBER
-                + " FROM Mitglieder "
-                + "WHERE AusgetretenSeit='0000-00-00';";
-    }
+            = "SELECT Name, Spitzname FROM Spitznamen;";
+    private static final String QUERY_ALL_CONTRIBUTIONS
+            = "SELECT Mitgliedsnummer, Beitrag FROM Mitglieder;";
 
     /**
      * Closes this connection.
@@ -93,6 +92,13 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public abstract void execUpdate(String sqlCode) throws SQLException;
 
+    /**
+     * Checks whether tables &bdquo;Mitglieder&ldquo; and
+     * &bdquo;Spitznamen&ldquo; exist. It DOES NOT check whether they have all
+     * needed columns and are configured right.
+     *
+     * @return {@code true} only if both tables exist.
+     */
     public boolean tablesExist() {
         try {
             execQuery(EXIST_TEST);
@@ -104,24 +110,37 @@ public abstract class DBConnection implements AutoCloseable {
         }
     }
 
-    public void createTables() {
-        try {
-            execUpdate(CREATE_MITGLIEDER);
-        } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        try {
-            execUpdate(CREATE_SPITZNAMEN);
-        } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
+    /**
+     * Creates table &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; if
+     * they not already exist.
+     */
+    public void createTablesIfNeeded() {
+        if (!tablesExist()) {
+            try {
+                execUpdate(CREATE_MITGLIEDER);
+            } catch (SQLException ex) {
+                Logger.getLogger(Menu.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+            try {
+                execUpdate(CREATE_SPITZNAMEN);
+            } catch (SQLException ex) {
+                Logger.getLogger(Menu.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
         }
     }
 
-    public List<List<String>> getAllMember() {
+    /**
+     * Returns a list of all member accessable with {@code dbc}. The list
+     * contains all labels hold in {@code COLUMN_LABELS_MEMBER}.
+     *
+     * @return The list with the member.
+     */
+    public List<Member> getAllMember() {
         try {
-            return execQuery(QUERY_ALL_MEMBER);
+            return MemberGenerator.generateMemberList(
+                    execQuery(QUERY_ALL_MEMBER));
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -132,19 +151,16 @@ public abstract class DBConnection implements AutoCloseable {
     /**
      * Queries the nickname table of the specified connection.
      *
-     * @param dbc The connection to query through.
      * @return A map from prenames to nicknames.
      */
     public Map<String, String> getAllNicknames() {
         try {
             List<List<String>> queriedNicknames
                     = execQuery(QUERY_ALL_NICKNAMES);
-            int nameIndex = queriedNicknames.get(0).indexOf("Name");
-            int nicknameIndex = queriedNicknames.get(0).indexOf("Spitzname");
 
             Map<String, String> mappedNicknames = new HashMap<>();
             queriedNicknames.parallelStream().skip(1).forEach(row -> {
-                mappedNicknames.put(row.get(nameIndex), row.get(nicknameIndex));
+                mappedNicknames.put(row.get(0), row.get(1));
             });
             return mappedNicknames;
         } catch (SQLException ex) {
@@ -156,7 +172,8 @@ public abstract class DBConnection implements AutoCloseable {
 
     /**
      * Checks whether the given table of the configured database contains a
-     * specific column.
+     * specific column. You should NEVER call this function with parameters
+     * provided by the user in order to prohibit SQL INJECTION.
      *
      * @param table The name of the table to search for the column.
      * @param column The column name to search for.
@@ -170,5 +187,32 @@ public abstract class DBConnection implements AutoCloseable {
         } catch (SQLException ex) {
             return false;
         }
+    }
+
+    /**
+     * Reads the individual contributions of every member - if specified.
+     *
+     * @return A Optional containing the individual contributions or
+     * {@code Optional.empty()} if inidividual contributions are not specified.
+     */
+    public Optional<Map<Integer, Double>> readIndividualContributions() {
+        if (checkColumn("Mitglieder", "Beitrag")) {
+            try {
+                List<List<String>> result = execQuery(QUERY_ALL_CONTRIBUTIONS);
+                Map<Integer, Double> contributions = new HashMap<>();
+                result.parallelStream()
+                        .skip(1)
+                        .forEach(row -> {
+                            contributions.put(Integer.parseInt(row.get(0)),
+                                    Double.parseDouble(
+                                            row.get(1).replaceAll(",", ".")));
+                        });
+                return Optional.of(contributions);
+            } catch (SQLException ex) {
+                Logger.getLogger(Menu.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+        }
+        return Optional.empty();
     }
 }
