@@ -3,6 +3,7 @@ package bayern.steinbrecher.gruen2.elements;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
+import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -26,12 +27,13 @@ public class Splashscreen extends View {
      */
     @Override
     public void start(Stage stage) throws Exception {
+        SvgImageLoaderFactory.install();
         this.stage = stage;
 
         Pane root = new Pane();
         ImageView imageView = new ImageView();
         imageView.setImage(
-                new Image("bayern/steinbrecher/gruen2/data/splashscreen.png"));
+                new Image("bayern/steinbrecher/gruen2/data/splashscreen.svg"));
         root.getChildren().add(imageView);
 
         Scene scene = new Scene(root);
