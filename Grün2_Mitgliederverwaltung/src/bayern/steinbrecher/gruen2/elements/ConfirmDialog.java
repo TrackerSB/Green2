@@ -22,17 +22,35 @@ import javafx.stage.Window;
  */
 public class ConfirmDialog extends View {
 
+    /**
+     * Message indicating that the configurations of the user are invalid.
+     */
     public static final String BAD_CONFIGS = "Es fehlen Konfigurations"
             + "einstellungen oder die Konfigurationsdatei konnte nicht "
             + "gefunden werden.\n"
             + "Frage bei stefan.huber.niedling@outlook.com nach.";
+    /**
+     * Telling the user to check whether the database is reachable.
+     */
     public static final String CHECK_CONNECTION = "Prüfe, ob die Datenbank "
             + "erreichbar ist, und ob du Grün2 richtig konfiguriert hast.";
+    /**
+     * Telling the user to check his input.
+     */
     public static final String CHECK_INPUT = "Prüfe deine Eingaben.";
+    /**
+     * Indicating that a SEPA debit could not be created.
+     */
     public static final String NO_SEPA_DEBIT = "Sepalastschrift konnte nicht "
             + "erstellt werden";
+    /**
+     * Telling the user that every IBAN has a correct checksum.
+     */
     public static final String CORRECT_IBANS = "Alle IBANs haben eine korrekte "
             + "Prüfsumme";
+    /**
+     * Indicating that the connection broke or was not able to establish.
+     */
     public static final String UNEXPECTED_ABBORT = "Die Verbindung wurde "
             + "zurückgewiesen oder unterbrochen. Starten Sie das Programm neu.";
     private static final int MIN_WIDTH = 250;
@@ -116,36 +134,74 @@ public class ConfirmDialog extends View {
         return userConfirmed;
     }
 
+    /**
+     * Creates a dialog indicating that the configurations are bad.
+     *
+     * @param owner The owner of the dialog.
+     * @return The created dialog.
+     */
     public static ConfirmDialog createBadConfigsDialog(Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(BAD_CONFIGS, owner);
         dialog.initDialog();
         return dialog;
     }
 
+    /**
+     * Creates a dialog telling the user to check his input.
+     *
+     * @param owner The owner of the dialog.
+     * @return The created dialog.
+     */
     public static ConfirmDialog createCheckInputDialog(Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CHECK_INPUT, owner);
         dialog.initDialog();
         return dialog;
     }
 
+    /**
+     * Creates a dialog telling the user to check whether the database is
+     * reachable.
+     *
+     * @param owner The owner of the dialog.
+     * @return The created dialog.
+     */
     public static ConfirmDialog createCheckConnectionDialog(Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION, owner);
         dialog.initDialog();
         return dialog;
     }
 
+    /**
+     * Creates a dialog indicating that the connection broke or was not able to
+     * establish.
+     *
+     * @param owner The owner of the dialog.
+     * @return The created dialog.
+     */
     public static ConfirmDialog createUnexpectedAbbortDialog(Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(UNEXPECTED_ABBORT, owner);
         dialog.initDialog();
         return dialog;
     }
 
+    /**
+     * Creates a dialog indicating that a SEPA debit could not be created.
+     *
+     * @param owner The owner of the dialog.
+     * @return The created dialog.
+     */
     public static ConfirmDialog createNoSepaDebitDialog(Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(NO_SEPA_DEBIT, owner);
         dialog.initDialog();
         return dialog;
     }
 
+    /**
+     * Creates a dialog telling the user that every IBAN has a correct checksum.
+     *
+     * @param owner The owner of the dialog.
+     * @return The created dialog.
+     */
     public static ConfirmDialog createCorrectIbansDialog(Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CORRECT_IBANS, owner);
         dialog.initDialog();
