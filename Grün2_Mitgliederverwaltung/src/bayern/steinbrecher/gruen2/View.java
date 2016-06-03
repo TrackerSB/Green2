@@ -66,8 +66,11 @@ public abstract class View extends Application {
      * one. This one opens the stage set in {@code start}, blocks until the
      * window is closed and then notifies all other threads. If the JavaFX
      * Application Thread calls it, it calls {@code showAndWait}.
+     *
+     * @see Stage#showAndWait()
+     * @see View#showOnce(java.lang.Runnable)
      */
-    protected void onlyShowOnceAndWait() {
+    public void showOnceAndWait() {
         checkStage();
         if (!gotShownProperty.get()) {
             gotShownProperty.set(true);
@@ -87,6 +90,28 @@ public abstract class View extends Application {
     }
 
     /**
+     * Makes sure the window is only shown once. The first call opens the view
+     * and returns. Further calls have no effect until {@code reset()} is
+     * called. This method does NOT block.
+     *
+     * @param callback The runnable to call when the view gets closed.
+     * @see View#showOnceAndWait()
+     */
+    public void showOnce(Runnable callback) {
+        checkStage();
+        if (!gotShownProperty.get()) {
+            gotShownProperty.set(true);
+            stage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                if (!newVal) {
+                    callback.run();
+                    setClosedAndNotify();
+                }
+            });
+            Platform.runLater(() -> stage.show());
+        }
+    }
+
+    /**
      * After calling this method the window can be opened once again. But
      * previously inserted data stays unchanged.
      */
@@ -97,10 +122,10 @@ public abstract class View extends Application {
 
     /**
      * Returns the property indicating whether the next call of
-     * {@code onlyShowOnceAndWait()} would open the window.
+     * {@code showOnceAndWait()} would open the window.
      *
      * @return The property indicating whether the next call of
-     * {@code onlyShowOnceAndWait()} would open the window.
+     * {@code showOnceAndWait()} would open the window.
      */
     public BooleanBinding wouldShowBinding() {
         return wouldShowProperty;

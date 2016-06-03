@@ -64,7 +64,7 @@ public class Selection<T extends Comparable> extends View {
      * @return The selection if any.
      */
     public Optional<List<T>> getSelection() {
-        onlyShowOnceAndWait();
+        showOnceAndWait();
         return scontroller.getSelection();
     }
 

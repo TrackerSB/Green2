@@ -4,7 +4,6 @@ import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -108,22 +107,13 @@ public class ConfirmDialog extends View {
         stage.getIcons().add(DataProvider.getIcon());
     }
 
-    private void initDialog() {
-        Platform.runLater(() -> {
-            try {
-                start(new Stage());
-            } catch (Exception ex) {
-                Logger.getLogger(ConfirmDialog.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
-        });
-    }
-
-    /**
-     * Shows this dialog only once and blocks until it is closed.
-     */
-    public void showOnceAndWait() {
-        onlyShowOnceAndWait();
+    private void initDialog(Stage s) {
+        try {
+            start(s);
+        } catch (Exception ex) {
+            Logger.getLogger(ConfirmDialog.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -138,11 +128,12 @@ public class ConfirmDialog extends View {
      * Creates a dialog indicating that the configurations are bad.
      *
      * @param owner The owner of the dialog.
+     * @param s The stage to use.
      * @return The created dialog.
      */
-    public static ConfirmDialog createBadConfigsDialog(Window owner) {
+    public static ConfirmDialog createBadConfigsDialog(Stage s, Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(BAD_CONFIGS, owner);
-        dialog.initDialog();
+        dialog.initDialog(s);
         return dialog;
     }
 
@@ -150,11 +141,12 @@ public class ConfirmDialog extends View {
      * Creates a dialog telling the user to check his input.
      *
      * @param owner The owner of the dialog.
+     * @param s The stage to use.
      * @return The created dialog.
      */
-    public static ConfirmDialog createCheckInputDialog(Window owner) {
+    public static ConfirmDialog createCheckInputDialog(Stage s, Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CHECK_INPUT, owner);
-        dialog.initDialog();
+        dialog.initDialog(s);
         return dialog;
     }
 
@@ -163,11 +155,13 @@ public class ConfirmDialog extends View {
      * reachable.
      *
      * @param owner The owner of the dialog.
+     * @param s The stage to use.
      * @return The created dialog.
      */
-    public static ConfirmDialog createCheckConnectionDialog(Window owner) {
+    public static ConfirmDialog createCheckConnectionDialog(Stage s,
+            Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION, owner);
-        dialog.initDialog();
+        dialog.initDialog(s);
         return dialog;
     }
 
@@ -176,11 +170,13 @@ public class ConfirmDialog extends View {
      * establish.
      *
      * @param owner The owner of the dialog.
+     * @param s The stage to use.
      * @return The created dialog.
      */
-    public static ConfirmDialog createUnexpectedAbbortDialog(Window owner) {
+    public static ConfirmDialog createUnexpectedAbbortDialog(Stage s,
+            Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(UNEXPECTED_ABBORT, owner);
-        dialog.initDialog();
+        dialog.initDialog(s);
         return dialog;
     }
 
@@ -188,11 +184,12 @@ public class ConfirmDialog extends View {
      * Creates a dialog indicating that a SEPA debit could not be created.
      *
      * @param owner The owner of the dialog.
+     * @param s The stage to use.
      * @return The created dialog.
      */
-    public static ConfirmDialog createNoSepaDebitDialog(Window owner) {
+    public static ConfirmDialog createNoSepaDebitDialog(Stage s, Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(NO_SEPA_DEBIT, owner);
-        dialog.initDialog();
+        dialog.initDialog(s);
         return dialog;
     }
 
@@ -200,11 +197,13 @@ public class ConfirmDialog extends View {
      * Creates a dialog telling the user that every IBAN has a correct checksum.
      *
      * @param owner The owner of the dialog.
+     * @param s The stage to use.
      * @return The created dialog.
      */
-    public static ConfirmDialog createCorrectIbansDialog(Window owner) {
+    public static ConfirmDialog createCorrectIbansDialog(Stage s,
+            Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CORRECT_IBANS, owner);
-        dialog.initDialog();
+        dialog.initDialog(s);
         return dialog;
     }
 }

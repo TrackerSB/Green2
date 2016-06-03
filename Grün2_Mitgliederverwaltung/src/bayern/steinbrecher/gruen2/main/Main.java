@@ -81,7 +81,7 @@ public class Main extends Application {
         Platform.setImplicitExit(false);
 
         if (!DataProvider.hasAllConfigs()) {
-            ConfirmDialog.createBadConfigsDialog(null)
+            ConfirmDialog.createBadConfigsDialog(new Stage(), null)
                     .showOnceAndWait();
             Platform.exit();
         }
@@ -113,13 +113,7 @@ public class Main extends Application {
 
         Service<Optional<DBConnection>> connectionService
                 = ServiceFactory.createService(() -> {
-                    try {
-                        return getConnection(login, waitScreen);
-                    } catch (Exception ex) {
-                        Logger.getLogger(Main.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    }
-                    return Optional.empty();
+                    return getConnection(login, waitScreen);
                 });
         connectionService.setOnSucceeded(wse -> {
             Optional<DBConnection> optDBConnection
@@ -154,11 +148,9 @@ public class Main extends Application {
     /**
      * This method is called when the application should stop, destroys
      * resources and prepares for application exit.
-     *
-     * @throws Exception
      */
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         if (dbConnection != null) {
             dbConnection.close();
         }
@@ -169,42 +161,29 @@ public class Main extends Application {
             Exception cause) {
         Platform.runLater(() -> {
             waitScreen.close();
+            Stage s = new Stage();
+            ConfirmDialog confirm;
 
-            try {
-                if (cause instanceof ConnectException
-                        || cause instanceof UnknownHostException) {
-                    ConfirmDialog.createCheckConnectionDialog(null)
-                            .showOnceAndWait();
-                    Platform.exit();
-                } else if (cause instanceof AuthException) {
-                    ConfirmDialog confirm = new ConfirmDialog(
-                            ConfirmDialog.CHECK_INPUT, null);
-                    Stage dialogStage = new Stage();
-                    confirm.start(dialogStage);
-                    dialogStage.showingProperty()
-                            .addListener((obs, oldVal, newVal) -> {
-                                if (!newVal) {
-                                    if (confirm.userConfirmed()) {
-                                        login.reset();
-                                        synchronized (this) {
-                                            notifyAll();
-                                        }
-                                    } else {
-                                        Platform.exit();
-                                    }
-                                }
-                            });
-                    dialogStage.show();
+            if (cause instanceof ConnectException
+                    || cause instanceof UnknownHostException) {
+                confirm = ConfirmDialog.createCheckConnectionDialog(s, null);
+            } else if (cause instanceof AuthException) {
+                confirm = ConfirmDialog.createCheckInputDialog(s, null);
+            } else {
+                System.err.println("Not action specified for: " + cause);
+                confirm = ConfirmDialog.createUnexpectedAbbortDialog(s, null);
+            }
+
+            confirm.showOnce(() -> {
+                if (confirm.userConfirmed()) {
+                    login.reset();
+                    synchronized (this) {
+                        notifyAll();
+                    }
                 } else {
-                    System.err.println("Not action specified for: " + cause);
-                    ConfirmDialog.createUnexpectedAbbortDialog(null)
-                            .showOnceAndWait();
                     Platform.exit();
                 }
-            } catch (Exception ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
+            });
         });
     }
 
@@ -447,7 +426,8 @@ public class Main extends Application {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
                 try {
-                    ConfirmDialog.createNoSepaDebitDialog(menuStage)
+                    ConfirmDialog.createNoSepaDebitDialog(
+                            new Stage(), menuStage)
                             .showOnceAndWait();
                 } catch (Exception ex1) {
                     Logger.getLogger(Main.class.getName())
@@ -493,7 +473,7 @@ public class Main extends Application {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
             try {
-                ConfirmDialog.createNoSepaDebitDialog(menuStage)
+                ConfirmDialog.createNoSepaDebitDialog(new Stage(), menuStage)
                         .showOnceAndWait();
             } catch (Exception ex1) {
                 Logger.getLogger(Main.class.getName())
@@ -520,7 +500,7 @@ public class Main extends Application {
         }
         if (badIban.isEmpty()) {
             try {
-                ConfirmDialog.createCorrectIbansDialog(menuStage)
+                ConfirmDialog.createCorrectIbansDialog(new Stage(), menuStage)
                         .showOnceAndWait();
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName())

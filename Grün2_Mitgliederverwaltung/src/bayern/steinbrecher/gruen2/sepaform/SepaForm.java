@@ -49,7 +49,7 @@ public class SepaForm extends View {
      * @return The originator or {@code Optional.empty}.
      */
     public Optional<Originator> getOriginator() {
-        onlyShowOnceAndWait();
+        showOnceAndWait();
         return sfcontroller.getOriginator();
     }
 

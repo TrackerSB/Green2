@@ -50,7 +50,7 @@ public class Contribution extends View {
      * @see ContributionController#getContribution()
      */
     public Optional<Double> getContribution() {
-        onlyShowOnceAndWait();
+        showOnceAndWait();
         return ccontroller.getContribution();
     }
 

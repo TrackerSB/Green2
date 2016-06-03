@@ -55,6 +55,6 @@ public class Splashscreen extends View {
             Platform.runLater(() -> stage.close());
             return null;
         }).start();
-        onlyShowOnceAndWait();
+        showOnceAndWait();
     }
 }
