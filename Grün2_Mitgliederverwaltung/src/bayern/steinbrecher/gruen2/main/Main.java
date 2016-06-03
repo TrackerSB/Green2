@@ -373,7 +373,7 @@ public class Main extends Application {
         }
     }
 
-    private void generateCustomSepa(List<Member> memberToSelect,
+    private void generateSepa(List<Member> memberToSelect,
             Map<Integer, Double> contribution) {
         SepaForm sepaForm = new SepaForm();
         Optional<Originator> originator;
@@ -442,7 +442,7 @@ public class Main extends Application {
                     contributions.put(
                             m.getMembershipnumber(), optContribution.get());
                 });
-                generateCustomSepa(member.get(), contributions);
+                generateSepa(member.get(), contributions);
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -467,7 +467,7 @@ public class Main extends Application {
             Optional<Map<Integer, Double>> optContributions
                     = individualContributions.get();
             if (optContributions.isPresent()) {
-                generateCustomSepa(memberNonContributionfree.get(),
+                generateSepa(memberNonContributionfree.get(),
                         optContributions.get());
             } else {
                 Contribution contribution = new Contribution();
@@ -485,7 +485,7 @@ public class Main extends Application {
                         contributions.put(m.getMembershipnumber(),
                                 optContribution.get());
                     }
-                    generateCustomSepa(memberNonContributionfree.get(),
+                    generateSepa(memberNonContributionfree.get(),
                             contributions);
                 }
             }
