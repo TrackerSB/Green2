@@ -15,108 +15,114 @@ import com.sun.javafx.iio.common.ImageLoaderImpl;
 
 public class SvgImageLoader extends ImageLoaderImpl {
 
-	private static final int DEFAULT_SIZE = 400;
+    private static final int DEFAULT_SIZE = 400;
 
-	private static final int BYTES_PER_PIXEL = 4; // RGBA
+    private static final int BYTES_PER_PIXEL = 4; // RGBA
 
-	private final InputStream input;
+    private final InputStream input;
 
-	private float maxPixelScale = 0;
+    private float maxPixelScale = 0;
 
-	protected SvgImageLoader(InputStream input) {
-		super(SvgDescriptor.getInstance());
+    protected SvgImageLoader(InputStream input) {
+        super(SvgDescriptor.getInstance());
 
-		if (input == null) {
-			throw new IllegalArgumentException("input == null!");
-		}
+        if (input == null) {
+            throw new IllegalArgumentException("input == null!");
+        }
 
-		this.input = input;
-	}
+        this.input = input;
+    }
 
-	@Override
-	public ImageFrame load(int imageIndex, int width, int height, boolean preserveAspectRatio, boolean smooth)
-			throws IOException {
-		if (0 != imageIndex) {
-			return null;
-		}
+    @Override
+    public ImageFrame load(int imageIndex, int width, int height,
+            boolean preserveAspectRatio, boolean smooth) throws IOException {
+        if (0 != imageIndex) {
+            return null;
+        }
 
-		int imageWidth = width > 0 ? width : DEFAULT_SIZE;
-		int imageHeight = height > 0 ? height : DEFAULT_SIZE;
+        int imageWidth = width > 0 ? width : DEFAULT_SIZE;
+        int imageHeight = height > 0 ? height : DEFAULT_SIZE;
 
-		try {
-			return createImageFrame(imageWidth, imageHeight, getPixelScale());
-		} catch (TranscoderException ex) {
-			throw new IOException(ex);
-		}
-	}
+        try {
+            return createImageFrame(imageWidth, imageHeight, getPixelScale());
+        } catch (TranscoderException ex) {
+            throw new IOException(ex);
+        }
+    }
 
-	public float getPixelScale() {
-		if (maxPixelScale == 0) {
-			maxPixelScale = calculateMaxRenderScale();
-		}
-		return maxPixelScale;
-	}
+    public float getPixelScale() {
+        if (maxPixelScale == 0) {
+            maxPixelScale = calculateMaxRenderScale();
+        }
+        return maxPixelScale;
+    }
 
-	public float calculateMaxRenderScale() {
-		float maxRenderScale = 0;
-		for (Screen screen : Screen.getScreens()) {
-			maxRenderScale = Math.max(maxRenderScale, screen.getRenderScale());
-		}
-		return maxRenderScale;
-	}
+    public float calculateMaxRenderScale() {
+        float maxRenderScale = 0;
+        for (Screen screen : Screen.getScreens()) {
+            maxRenderScale = Math.max(maxRenderScale, screen.getRenderScale());
+        }
+        return maxRenderScale;
+    }
 
-	private ImageFrame createImageFrame(int width, int height, float pixelScale) throws TranscoderException {
-		BufferedImage bufferedImage = getTranscodedImage(width * pixelScale, height * pixelScale);
-		ByteBuffer imageData = getImageData(bufferedImage);
+    private ImageFrame createImageFrame(int width, int height, float pixelScale)
+            throws TranscoderException {
+        BufferedImage bufferedImage
+                = getTranscodedImage(width * pixelScale, height * pixelScale);
+        ByteBuffer imageData = getImageData(bufferedImage);
 
-		return new FixedPixelDensityImageFrame(ImageStorage.ImageType.RGBA, imageData, bufferedImage.getWidth(),
-				bufferedImage.getHeight(), getStride(bufferedImage), null, pixelScale, null);
-	}
+        return new FixedPixelDensityImageFrame(ImageStorage.ImageType.RGBA,
+                imageData, bufferedImage.getWidth(), bufferedImage.getHeight(),
+                getStride(bufferedImage), null, pixelScale, null);
+    }
 
-	private BufferedImage getTranscodedImage(float width, float height) throws TranscoderException {
-		BufferedImageTranscoder trans = new BufferedImageTranscoder(BufferedImage.TYPE_INT_ARGB);
-		trans.setImageSize(width, height);
-		trans.transcode(new TranscoderInput(input), null);
+    private BufferedImage getTranscodedImage(float width, float height)
+            throws TranscoderException {
+        BufferedImageTranscoder trans
+                = new BufferedImageTranscoder(BufferedImage.TYPE_INT_ARGB);
+        trans.setImageSize(width, height);
+        trans.transcode(new TranscoderInput(input), null);
 
-		return trans.getBufferedImage();
-	}
+        return trans.getBufferedImage();
+    }
 
-	private int getStride(BufferedImage bufferedImage) {
-		return bufferedImage.getWidth() * BYTES_PER_PIXEL;
-	}
+    private int getStride(BufferedImage bufferedImage) {
+        return bufferedImage.getWidth() * BYTES_PER_PIXEL;
+    }
 
-	private ByteBuffer getImageData(BufferedImage bufferedImage) {
-		int[] rgb = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0,
-				bufferedImage.getWidth());
+    private ByteBuffer getImageData(BufferedImage bufferedImage) {
+        int[] rgb = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(),
+                bufferedImage.getHeight(), null, 0, bufferedImage.getWidth());
 
-		byte[] imageData = new byte[getStride(bufferedImage) * bufferedImage.getHeight()];
+        byte[] imageData = new byte[getStride(bufferedImage)
+                * bufferedImage.getHeight()];
 
-		copyColorToBytes(rgb, imageData);
-		return ByteBuffer.wrap(imageData);
-	}
+        copyColorToBytes(rgb, imageData);
+        return ByteBuffer.wrap(imageData);
+    }
 
-	private void copyColorToBytes(int[] rgb, byte[] imageData) {
-		if (rgb.length * BYTES_PER_PIXEL != imageData.length) {
-			throw new ArrayIndexOutOfBoundsException();
-		}
+    private void copyColorToBytes(int[] rgb, byte[] imageData) {
+        if (rgb.length * BYTES_PER_PIXEL != imageData.length) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
 
-		ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);
 
-		for (int i = 0; i < rgb.length; i++) {
-			byte[] bytes = byteBuffer.putInt(rgb[i]).array();
+        for (int i = 0; i < rgb.length; i++) {
+            byte[] bytes = byteBuffer.putInt(rgb[i]).array();
 
-			int dataOffset = BYTES_PER_PIXEL * i;
-			imageData[dataOffset] = bytes[1];
-			imageData[dataOffset + 1] = bytes[2];
-			imageData[dataOffset + 2] = bytes[3];
-			imageData[dataOffset + 3] = bytes[0];
+            int dataOffset = BYTES_PER_PIXEL * i;
+            imageData[dataOffset] = bytes[1];
+            imageData[dataOffset + 1] = bytes[2];
+            imageData[dataOffset + 2] = bytes[3];
+            imageData[dataOffset + 3] = bytes[0];
 
-			byteBuffer.clear();
-		}
-	}
+            byteBuffer.clear();
+        }
+    }
 
-	@Override
-	public void dispose() {
-		// Nothing to do
-	}
+    @Override
+    public void dispose() {
+        // Nothing to do
+    }
 }
