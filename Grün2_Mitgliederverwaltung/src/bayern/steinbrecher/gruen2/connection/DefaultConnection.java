@@ -2,6 +2,8 @@ package bayern.steinbrecher.gruen2.connection;
 
 import bayern.steinbrecher.gruen2.exception.AuthException;
 import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+import java.net.UnknownHostException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,9 +41,11 @@ public final class DefaultConnection extends DBConnection {
      * @param databaseName The name of the database to connect to.
      * @throws AuthException Is thrown if some username, password or address is
      * wrong.
+     * @throws UnknownHostException Is thrown if the host is not reachable.
      */
     public DefaultConnection(String databaseHost, String databaseUsername,
-            String databasePasswd, String databaseName) throws AuthException {
+            String databasePasswd, String databaseName)
+            throws AuthException, UnknownHostException {
         try {
             Class.forName(DRIVER);
             if (!databaseHost.endsWith("/")) {
@@ -58,7 +62,11 @@ public final class DefaultConnection extends DBConnection {
         } catch (SQLException ex) {
             Logger.getLogger(DefaultConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
-            throw new AuthException();
+            if (ex instanceof CommunicationsException) {
+                throw new UnknownHostException(ex.getMessage());
+            } else {
+                throw new AuthException();
+            }
         }
     }
 

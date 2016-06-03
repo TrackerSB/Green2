@@ -157,16 +157,20 @@ public class Main extends Application {
         exserv.shutdownNow();
     }
 
-    private void checkAuthException(Login login, WaitScreen waitScreen,
+    private void handleAuthException(Login login, WaitScreen waitScreen,
             Exception cause) {
         Platform.runLater(() -> {
             waitScreen.close();
             Stage s = new Stage();
             ConfirmDialog confirm;
 
-            if (cause instanceof ConnectException
-                    || cause instanceof UnknownHostException) {
+            if (cause instanceof ConnectException) {
                 confirm = ConfirmDialog.createCheckConnectionDialog(s, null);
+            } else if (cause instanceof UnknownHostException) {
+                String message = cause.getMessage();
+                confirm = ConfirmDialog.createCheckConnectionDialog(
+                        message.substring(message.lastIndexOf(":") + 1).trim(),
+                        s, null);
             } else if (cause instanceof AuthException) {
                 confirm = ConfirmDialog.createCheckInputDialog(s, null);
             } else {
@@ -226,11 +230,11 @@ public class Main extends Application {
                             DataProvider.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
-            } catch (AuthException ex) {
+            } catch (UnknownHostException | AuthException ex) {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
 
-                checkAuthException(login, waitScreen, ex);
+                handleAuthException(login, waitScreen, ex);
 
                 ThreadUtility.waitWhile(this, login.wouldShowBinding().not());
 

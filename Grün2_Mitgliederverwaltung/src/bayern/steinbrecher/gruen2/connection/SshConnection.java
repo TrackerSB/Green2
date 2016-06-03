@@ -9,6 +9,7 @@ import com.jcraft.jsch.Session;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
@@ -67,11 +68,12 @@ public final class SshConnection extends DBConnection {
      * @param databaseName The name of the database to connect to.
      * @throws AuthException Thrown if some of username, password or host is
      * wrong or not reachable.
+     * @throws UnknownHostException Is thrown if the host is not reachable.
      */
     public SshConnection(String sshHost, String sshUsername,
             String sshPassword, String databaseHost, String databaseUsername,
             String databasePasswd, String databaseName)
-            throws AuthException {
+            throws AuthException, UnknownHostException {
         this.databaseHost = databaseHost;
         this.databaseUsername = databaseUsername;
         this.databasePasswd = databasePasswd;
@@ -85,7 +87,12 @@ public final class SshConnection extends DBConnection {
             execQuery("SELECT 1");
         } catch (SQLException | JSchException ex) {
             close();
-            throw new AuthException();
+            if (ex instanceof JSchException
+                    && !ex.getMessage().contains("Auth")) {
+                throw new UnknownHostException(ex.getMessage());
+            } else {
+                throw new AuthException();
+            }
         }
     }
 

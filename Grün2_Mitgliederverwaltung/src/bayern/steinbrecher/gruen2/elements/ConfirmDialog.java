@@ -151,15 +151,32 @@ public class ConfirmDialog extends View {
     }
 
     /**
+     * Creates a dialog telling the user to check whether the given address is
+     * reachable and configs are valid.
+     *
+     * @param address The address of the connection which was not found.
+     * @param owner The owner of the dialog.
+     * @param s The stage to use.
+     * @return The created dialog.
+     */
+    public static ConfirmDialog createCheckConnectionDialog(String address,
+            Stage s, Window owner) {
+        ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION + "\n"
+                + address + " konnte nicht erreicht werden.", owner);
+        dialog.initDialog(s);
+        return dialog;
+    }
+
+    /**
      * Creates a dialog telling the user to check whether the database is
-     * reachable.
+     * reachable and configs are valid.
      *
      * @param owner The owner of the dialog.
      * @param s The stage to use.
      * @return The created dialog.
      */
-    public static ConfirmDialog createCheckConnectionDialog(Stage s,
-            Window owner) {
+    public static ConfirmDialog createCheckConnectionDialog(
+            Stage s, Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION, owner);
         dialog.initDialog(s);
         return dialog;
