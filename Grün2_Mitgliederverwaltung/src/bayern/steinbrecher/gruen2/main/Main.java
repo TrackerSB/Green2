@@ -120,9 +120,8 @@ public class Main extends Application {
                     = connectionService.getValue();
             if (optDBConnection.isPresent()) {
                 dbConnection = optDBConnection.get();
-                if (!dbConnection.tablesExist()) {
-                    dbConnection.createTablesIfNeeded();
-                }
+                dbConnection.createTablesIfNeeded();
+
                 executeQueries();
 
                 menuStage.showingProperty().addListener(
@@ -161,9 +160,9 @@ public class Main extends Application {
             Exception cause) {
         Platform.runLater(() -> {
             waitScreen.close();
+
             Stage s = new Stage();
             ConfirmDialog confirm;
-
             if (cause instanceof ConnectException) {
                 confirm = ConfirmDialog.createCheckConnectionDialog(s, null);
             } else if (cause instanceof UnknownHostException) {
@@ -193,7 +192,9 @@ public class Main extends Application {
 
     /**
      * Asks the user for the needed logindata as long as the inserted data is
-     * not correct or the user abborts.
+     * not correct or the user abborts. This method should NOT be called by
+     * JavaFX Application Thread. E.g. use
+     * {@code ServiceFactory.createService(...)}.
      *
      * @param login The loginframe used to ask the user.
      * @return {@code Optional.empty()} only if the connection could not be
