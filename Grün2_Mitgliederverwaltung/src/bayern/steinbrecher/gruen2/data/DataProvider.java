@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.IntFunction;
@@ -18,6 +19,12 @@ import javafx.scene.image.Image;
  */
 public final class DataProvider {
 
+    /**
+     * Containing translations for the system default language.
+     */
+    public static final ResourceBundle RESOURCE_BUNDLE
+            = ResourceBundle.getBundle(
+                    "bayern.steinbrecher.gruen2.data.language.language");
     /**
      * The symbol used to separate the config key on the left side and the value
      * on the right side in gruen2.conf.

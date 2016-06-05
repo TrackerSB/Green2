@@ -5,12 +5,12 @@
 <?import bayern.steinbrecher.gruen2.elements.*?>
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.login.standard.DefaultLoginController">
-    <Label text="Datenbank-Nutzername:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-    <CheckedTextField fx:id="databaseUsernameField" promptText="Datenbank-Nutzername" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Label text="Datenbank-Passwort:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-    <CheckedPasswordField fx:id="databasePasswordField" promptText="Datenbank-Passwort" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <Label text="%databaseUsername" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <CheckedTextField fx:id="databaseUsernameField" promptText="%databaseUsername" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label text="%databasePassword" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <CheckedPasswordField fx:id="databasePasswordField" promptText="%databasePassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
     
-    <Label text="Ungültige oder fehlende Angaben" fx:id="invalidInput" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-    <CheckBox text="Leere Felder zulassen" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" />
+    <Label text="%invalidOrMissingInput" fx:id="invalidInput" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <CheckBox text="%allowEmptyFields" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" />
     <Button fx:id="loginButton" defaultButton="true" disable="true" text="Login" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
 </GridPane>

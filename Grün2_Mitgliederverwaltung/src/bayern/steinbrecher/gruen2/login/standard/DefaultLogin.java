@@ -23,6 +23,7 @@ public class DefaultLogin extends Login {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("DefaultLogin.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
@@ -30,7 +31,7 @@ public class DefaultLogin extends Login {
         loginContoller.setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle("Login");
+        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("loginTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

@@ -20,17 +20,18 @@ public class SshLogin extends Login {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-
+        
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("SshLogin.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
-
+        
         loginContoller = fxmlLoader.getController();
         loginContoller.setStage(stage);
-
+        
         stage.setScene(new Scene(root));
-        stage.setTitle("Login");
+        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("loginTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }
