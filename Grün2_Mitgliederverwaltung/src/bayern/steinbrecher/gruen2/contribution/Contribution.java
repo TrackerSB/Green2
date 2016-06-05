@@ -26,6 +26,7 @@ public class Contribution extends View {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Contribution.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
@@ -33,7 +34,8 @@ public class Contribution extends View {
         ccontroller.setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle("Beitrag angeben");
+        stage.setTitle(
+                DataProvider.RESOURCE_BUNDLE.getString("contributionTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

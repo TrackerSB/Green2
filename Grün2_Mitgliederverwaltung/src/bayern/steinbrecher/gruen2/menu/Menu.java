@@ -31,6 +31,7 @@ public class Menu extends View {
 
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource("Menu.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
@@ -39,7 +40,7 @@ public class Menu extends View {
         mcontroller.setCaller(caller);
 
         stage.setScene(new Scene(root));
-        stage.setTitle("Programm wählen");
+        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("chooseProgram"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
         stage.show();

@@ -40,6 +40,7 @@ public class Selection<T extends Comparable> extends View {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Selection.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
@@ -48,7 +49,7 @@ public class Selection<T extends Comparable> extends View {
         scontroller.setOptions(options);
 
         stage.setScene(new Scene(root));
-        stage.setTitle("Auswählen");
+        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("select"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

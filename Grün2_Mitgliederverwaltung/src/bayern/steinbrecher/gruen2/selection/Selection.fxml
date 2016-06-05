@@ -7,9 +7,9 @@
 <VBox spacing="10" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.selection.SelectionController">
     <ListView fx:id="optionsListView" maxHeight="300" focusTraversable="false" />
     <HBox>
-        <Label fx:id="selectedCount" text="0" />
+        <Label text="${controller.selectedCount}" />
         <Label text=" von " />
-        <Label fx:id="itemCount" text="0" />
+        <Label text="${controller.totalCount}" />
         <Label text=" ausgewählt" />
     </HBox>
     <HBox spacing="10">
@@ -17,7 +17,7 @@
         <Button fx:id="selectNoneButton" text="Nichts auswählen" disable="true" onAction="#selectNoOption" />
     </HBox>
     <HBox spacing="10">
-        <Button text="Fertig" defaultButton="true" fx:id="selectButton" disable="true" onAction="#select" />
+        <Button text="Fertig" defaultButton="true" fx:id="selectButton" disable="${controller.selectedCount <= 0}" onAction="#select" />
         <Label fx:id="missingInput" text="Ungültige oder fehlende Angaben" styleClass="warningLabel" />
     </HBox>
 </VBox>

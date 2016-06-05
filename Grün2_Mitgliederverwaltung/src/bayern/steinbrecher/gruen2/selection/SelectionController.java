@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ListPropertyBase;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,20 +30,13 @@ import javafx.scene.control.ListView;
  */
 public class SelectionController<T extends Comparable> extends Controller {
 
+    private ListProperty<T> optionsProperty
+            = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private IntegerProperty selectedCount
+            = new SimpleIntegerProperty(this, "selectedCount");
+    private ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
     @FXML
     private ListView<CheckBox> optionsListView;
-    private ListProperty<T> optionsProperty
-            = new ListPropertyBase<T>(FXCollections.observableArrayList()) {
-        @Override
-        public SelectionController getBean() {
-            return SelectionController.this;
-        }
-
-        @Override
-        public String getName() {
-            return "options";
-        }
-    };
     @FXML
     private Button selectAllButton;
     @FXML
@@ -50,33 +45,12 @@ public class SelectionController<T extends Comparable> extends Controller {
     private Button selectButton;
     @FXML
     private Label missingInput;
-    @FXML
-    private Label selectedCount;
-    private IntegerProperty currentSelectedCount = new IntegerPropertyBase() {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Object getBean() {
-            return SelectionController.this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String getName() {
-            return "currentSelectedCount";
-        }
-    };
-    @FXML
-    private Label itemCount;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
         if (newVal) {
-            currentSelectedCount.set(currentSelectedCount.get() + 1);
+            selectedCount.set(selectedCount.get() + 1);
         } else {
-            currentSelectedCount.set(currentSelectedCount.get() - 1);
+            selectedCount.set(selectedCount.get() - 1);
         }
     };
 
@@ -85,15 +59,12 @@ public class SelectionController<T extends Comparable> extends Controller {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        currentSelectedCount.lessThanOrEqualTo(0)
+        /*selectedCount.lessThanOrEqualTo(0)
                 .addListener((obs, oldVal, newVal) -> {
                     missingInput.setVisible(newVal);
                     selectButton.setDisable(newVal);
                     selectNoneButton.setDisable(newVal);
-                });
-        currentSelectedCount.addListener((obs, oldVal, newVal) -> {
-            selectedCount.setText(newVal.toString());
-        });
+                });*/
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
             newVal.stream().forEach(op -> {
@@ -101,8 +72,7 @@ public class SelectionController<T extends Comparable> extends Controller {
                 newItem.selectedProperty().addListener(selectionChange);
                 optionsListView.getItems().add(newItem);
             });
-            itemCount.setText(String.valueOf(newVal.size()));
-            currentSelectedCount.greaterThanOrEqualTo(newVal.size())
+            selectedCount.greaterThanOrEqualTo(newVal.size())
                     .addListener((obss, oldVall, newVall) -> {
                         selectAllButton.setDisable(newVall);
                     });
@@ -157,5 +127,21 @@ public class SelectionController<T extends Comparable> extends Controller {
             return Optional.of(selection);
         }
         return Optional.empty();
+    }
+
+    public ReadOnlyIntegerProperty selectedCountProperty() {
+        return selectedCount;
+    }
+
+    public int getSelectedCount() {
+        return selectedCount.get();
+    }
+
+    public ReadOnlyIntegerProperty totalCountProperty() {
+        return totalCount;
+    }
+
+    public int getTotalCount() {
+        return totalCount.get();
     }
 }

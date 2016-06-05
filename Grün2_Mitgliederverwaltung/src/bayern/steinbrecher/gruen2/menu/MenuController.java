@@ -1,8 +1,10 @@
 package bayern.steinbrecher.gruen2.menu;
 
 import bayern.steinbrecher.gruen2.Controller;
+import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.main.Main;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -43,18 +45,23 @@ public class MenuController extends Controller {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        String resourceValue = DataProvider.RESOURCE_BUNDLE
+                .getString("ofBirthdayMember");
         generateAddressesBirthdayLastYear.setText(
-                "Von Geburtstagsmitgliedern " + (CURRENT_YEAR - 1));
+                MessageFormat.format(resourceValue, CURRENT_YEAR - 1));
         generateAddressesBirthdayThisYear.setText(
-                "Von Geburtstagsmitgliedern " + CURRENT_YEAR);
+                MessageFormat.format(resourceValue, CURRENT_YEAR));
         generateAddressesBirthdayNextYear.setText(
-                "Von Geburtstagsmitgliedern " + (CURRENT_YEAR + 1));
+                MessageFormat.format(resourceValue, CURRENT_YEAR + 1));
+
+        resourceValue = DataProvider.RESOURCE_BUNDLE
+                .getString("groupedBirthdayMember");
         generateBirthdayLastYearInfos.setText(
-                "Geburtstagsmitglieder " + (CURRENT_YEAR - 1) + " gruppiert");
+                MessageFormat.format(resourceValue, CURRENT_YEAR - 1));
         generateBirthdayThisYearInfos.setText(
-                "Geburtstagsmitglieder " + CURRENT_YEAR + " gruppiert");
+                MessageFormat.format(resourceValue, CURRENT_YEAR));
         generateBirthdayNextYearInfos.setText(
-                "Geburtstagsmitglieder " + (CURRENT_YEAR + 1) + " gruppiert");
+                MessageFormat.format(resourceValue, CURRENT_YEAR + 1));
     }
 
     /**
