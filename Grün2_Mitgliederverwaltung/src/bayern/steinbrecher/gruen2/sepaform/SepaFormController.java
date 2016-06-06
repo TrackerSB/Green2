@@ -66,21 +66,35 @@ public class SepaFormController extends Controller {
     private Label pmtInfIdLabel;
     @FXML
     private Button readyButton;
-    private ReadOnlyIntegerProperty maxCharMessageId = new SimpleIntegerProperty(this, "maxCharMessageId", 35);
-    private ReadOnlyIntegerProperty maxCharPmtInfId = new SimpleIntegerProperty(this, "maxCharPmtInfId", 35);
+    private ReadOnlyIntegerProperty maxCharMessageId
+            = new SimpleIntegerProperty(this, "maxCharMessageId", 35);
+    private ReadOnlyIntegerProperty maxCharPmtInfId
+            = new SimpleIntegerProperty(this, "maxCharPmtInfId", 35);
+    private ReadOnlyIntegerProperty maxCharNamePresenter
+            = new SimpleIntegerProperty(this, "maxCharNamePresenter", 70);
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        String maxCharCount = DataProvider.RESOURCE_BUNDLE.getString("maxCharCount");
-        presenterLabel.setText(DataProvider.RESOURCE_BUNDLE.getString("nameOfPresenter") + "\n" + MessageFormat.format(maxCharCount, 70));
-        pmtInfIdLabel.setText(DataProvider.RESOURCE_BUNDLE.getString("pmtInfId") + "\n" + MessageFormat.format(maxCharCount, getMaxCharPmtInfId()));
-        
-        String uniqueForDays = DataProvider.RESOURCE_BUNDLE.getString("uniqueForDays");
-        messageIdLabel.setText(DataProvider.RESOURCE_BUNDLE.getString("messageId") + "\n" + MessageFormat.format(maxCharCount, getMaxCharMessageId()) + "\n" + MessageFormat.format(uniqueForDays, 15));
-        
+        String maxCharCount
+                = DataProvider.RESOURCE_BUNDLE.getString("maxCharCount");
+        presenterLabel.setText(
+                DataProvider.RESOURCE_BUNDLE.getString("nameOfPresenter") + "\n"
+                + MessageFormat.format(
+                        maxCharCount, getMaxCharNamePresenter()));
+        pmtInfIdLabel.setText(
+                DataProvider.RESOURCE_BUNDLE.getString("pmtInfId") + "\n"
+                + MessageFormat.format(maxCharCount, getMaxCharPmtInfId()));
+
+        String uniqueForDays
+                = DataProvider.RESOURCE_BUNDLE.getString("uniqueForDays");
+        messageIdLabel.setText(
+                DataProvider.RESOURCE_BUNDLE.getString("messageId") + "\n"
+                + MessageFormat.format(maxCharCount, getMaxCharMessageId())
+                + "\n" + MessageFormat.format(uniqueForDays, 15));
+
         checkedTextFields = Arrays.asList(creatorTextField, creditorTextField,
                 ibanTextField, bicTextField, trusterIdTextField,
                 purposeTextField, messageIdTextField, pmtInfIdTextField);
@@ -128,8 +142,8 @@ public class SepaFormController extends Controller {
 
     @FXML
     private void generateMessageId() {
-        messageIdTextField.setText(YEAR_MONTH_DAY.format(new Date())
-                + " Mitgliedsbeitrag "
+        messageIdTextField.setText(YEAR_MONTH_DAY.format(new Date()) + " "
+                + DataProvider.RESOURCE_BUNDLE.getString("contributions") + " "
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
 
@@ -164,20 +178,28 @@ public class SepaFormController extends Controller {
         }
         return Optional.empty();
     }
-    
-    public ReadOnlyIntegerProperty maxCharMessageIdProperty(){
+
+    public ReadOnlyIntegerProperty maxCharMessageIdProperty() {
         return maxCharMessageId;
     }
 
     public int getMaxCharMessageId() {
         return maxCharMessageId.get();
     }
-    
-    public ReadOnlyIntegerProperty maxCharPmtInfIdProperty(){
+
+    public ReadOnlyIntegerProperty maxCharPmtInfIdProperty() {
         return maxCharPmtInfId;
     }
 
     public int getMaxCharPmtInfId() {
         return maxCharPmtInfId.get();
+    }
+
+    public ReadOnlyIntegerProperty maxCharNamePresenterProperty() {
+        return maxCharNamePresenter;
+    }
+
+    public ReadOnlyIntegerProperty getMaxCharNamePresenter() {
+        return maxCharNamePresenter;
     }
 }
