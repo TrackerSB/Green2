@@ -66,12 +66,13 @@ public class SepaFormController extends Controller {
     private Label pmtInfIdLabel;
     @FXML
     private Button readyButton;
-    private ReadOnlyIntegerProperty maxCharMessageId
+    private final ReadOnlyIntegerProperty maxCharMessageId
             = new SimpleIntegerProperty(this, "maxCharMessageId", 35);
-    private ReadOnlyIntegerProperty maxCharPmtInfId
+    private final ReadOnlyIntegerProperty maxCharPmtInfId
             = new SimpleIntegerProperty(this, "maxCharPmtInfId", 35);
-    private ReadOnlyIntegerProperty maxCharNamePresenter
+    private final ReadOnlyIntegerProperty maxCharNamePresenter
             = new SimpleIntegerProperty(this, "maxCharNamePresenter", 70);
+    private static final int UNIQUE_DAYS_PMTINFID = 15;
 
     /**
      * {@inheritDoc}
@@ -93,7 +94,8 @@ public class SepaFormController extends Controller {
         messageIdLabel.setText(
                 DataProvider.RESOURCE_BUNDLE.getString("messageId") + "\n"
                 + MessageFormat.format(maxCharCount, getMaxCharMessageId())
-                + "\n" + MessageFormat.format(uniqueForDays, 15));
+                + "\n"
+                + MessageFormat.format(uniqueForDays, UNIQUE_DAYS_PMTINFID));
 
         checkedTextFields = Arrays.asList(creatorTextField, creditorTextField,
                 ibanTextField, bicTextField, trusterIdTextField,

@@ -113,8 +113,7 @@ public class CheckedTextField extends TextField {
             tooLongContent.setValue(
                     textProperty().get().length() > newVal.intValue());
         });
-        valid.bind(tooLongContent.or(emptyContent)
-                .and(checked).not());
+        valid.bind(tooLongContent.or(emptyContent).and(checked).not());
         valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 getStyleClass().removeAll(
@@ -167,7 +166,7 @@ public class CheckedTextField extends TextField {
      * @return The property representing whether this text field is checked or
      * not.
      */
-    public ReadOnlyBooleanProperty checkedProperty() {
+    public BooleanProperty checkedProperty() {
         return checked;
     }
 
@@ -230,9 +229,9 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Returns the binding representing the validity of the inserted content.
+     * Returns the property representing the validity of the inserted content.
      *
-     * @return The binding representing the validity of the inserted content.
+     * @return The property representing the validity of the inserted content.
      */
     public ReadOnlyBooleanProperty validProperty() {
         return valid;

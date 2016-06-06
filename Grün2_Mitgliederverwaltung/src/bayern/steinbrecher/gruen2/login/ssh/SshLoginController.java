@@ -5,17 +5,11 @@ import bayern.steinbrecher.gruen2.elements.CheckedPasswordField;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.login.LoginController;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 
 /**
  * The controller for SshLogin.fxml.
@@ -25,10 +19,6 @@ import javafx.scene.control.Label;
 public class SshLoginController extends LoginController {
 
     @FXML
-    private Button loginButton;
-    @FXML
-    private Label invalidInput;
-    @FXML
     private CheckedTextField sshUsernameField;
     @FXML
     private CheckedPasswordField sshPasswordField;
@@ -36,29 +26,14 @@ public class SshLoginController extends LoginController {
     private CheckedTextField databaseUsernameField;
     @FXML
     private CheckedPasswordField databasePasswordField;
-    @FXML
-    private CheckBox allowEmptyFieldsCheckbox;
-    private List<CheckedTextField> textInputFields;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        textInputFields = Arrays.asList(sshUsernameField, sshPasswordField,
+        initAllValidProperty(sshUsernameField, sshPasswordField,
                 databaseUsernameField, databasePasswordField);
-
-        /*allowEmptyFieldsCheckbox.selectedProperty()
-                .addListener((obs, oldVal, newVal) -> {
-                    textInputFields.forEach(f -> f.setChecked(!newVal));
-                });*/
-        ChangeListener<Boolean> cl = (obs, oldVal, newVal) -> {
-            boolean isAllInputValid = textInputFields.parallelStream()
-                    .allMatch(CheckedTextField::isValid);
-            loginButton.setDisable(!isAllInputValid);
-            invalidInput.setVisible(!isAllInputValid);
-        };
-        textInputFields.forEach(f -> f.validProperty().addListener(cl));
     }
 
     /**
@@ -78,17 +53,5 @@ public class SshLoginController extends LoginController {
             return Optional.of(loginInfo);
         }
         return Optional.empty();
-    }
-
-    /**
-     * Closes the stage only if the inserted information is valid.
-     */
-    @FXML
-    private void login() {
-        checkStage();
-        if (!loginButton.isDisabled()) {
-            userConfirmed = true;
-            stage.close();
-        }
     }
 }

@@ -4,6 +4,7 @@ import javafx.beans.NamedArg;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
@@ -23,17 +24,8 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
     /**
      * {@code BooleanProperty} indicating whether the current value is valid.
      */
-    private BooleanProperty validProperty = new BooleanPropertyBase(true) {
-        @Override
-        public Object getBean() {
-            return CheckedDoubleSpinner.this;
-        }
-
-        @Override
-        public String getName() {
-            return "valid";
-        }
-    };
+    private BooleanProperty validProperty
+            = new SimpleBooleanProperty(this, "valid", true);
 
     /**
      * Constructes a new {@code CheckedDoubleSpinner}.
@@ -86,8 +78,8 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
     public ReadOnlyBooleanProperty validProperty() {
         return validProperty;
     }
-    
-    public boolean isValid(){
+
+    public boolean isValid() {
         return validProperty.get();
     }
 }

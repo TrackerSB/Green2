@@ -5,12 +5,14 @@
 <?import bayern.steinbrecher.gruen2.elements.*?>
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.login.standard.DefaultLoginController">
-    <Label text="%databaseUsername" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-    <CheckedTextField fx:id="databaseUsernameField" promptText="%databaseUsername" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Label text="%databasePassword" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-    <CheckedPasswordField fx:id="databasePasswordField" promptText="%databasePassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-    
-    <Label text="%invalidOrMissingInput" fx:id="invalidInput" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <!-- This checkbox needs to be out of order because of referencing its id -->
     <CheckBox text="%allowEmptyFields" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" />
-    <Button fx:id="loginButton" defaultButton="true" disable="true" text="Login" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+
+    <Label text="%databaseUsername" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <CheckedTextField fx:id="databaseUsernameField" promptText="%databaseUsername" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label text="%databasePassword" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <CheckedPasswordField fx:id="databasePasswordField" promptText="%databasePassword" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    
+    <Label text="%invalidOrMissingInput" styleClass="warningLabel" visible="${!controller.allInputValid}" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <Button defaultButton="true" text="Login" onAction="#login" disable="${!controller.allInputValid}" GridPane.columnIndex="0" GridPane.rowIndex="6" />
 </GridPane>
