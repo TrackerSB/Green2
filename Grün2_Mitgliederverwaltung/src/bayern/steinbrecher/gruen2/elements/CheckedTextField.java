@@ -6,6 +6,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 
@@ -34,18 +35,8 @@ public class CheckedTextField extends TextField {
     /**
      * Represents the maximum column count.
      */
-    private IntegerProperty maxColumnCountProperty
-            = new IntegerPropertyBase() {
-        @Override
-        public CheckedTextField getBean() {
-            return CheckedTextField.this;
-        }
-
-        @Override
-        public String getName() {
-            return "maxColumnCount";
-        }
-    };
+    private IntegerProperty maxColumnCount
+            = new SimpleIntegerProperty(this, "maxColumnCount");
     /**
      * Holds {@code true} only if the content has to be checked.
      */
@@ -154,9 +145,9 @@ public class CheckedTextField extends TextField {
         emptyProperty.bind(textProperty().isEmpty());
         textProperty().addListener((obs, oldVal, newVal) -> {
             tooLongProperty.set(newVal != null
-                    && newVal.length() > maxColumnCountProperty.get());
+                    && newVal.length() > maxColumnCount.get());
         });
-        maxColumnCountProperty.addListener((obs, oldVal, newVal) -> {
+        maxColumnCount.addListener((obs, oldVal, newVal) -> {
             tooLongProperty.setValue(
                     textProperty().get().length() > newVal.intValue());
         });
@@ -182,8 +173,8 @@ public class CheckedTextField extends TextField {
      *
      * @return The property representing the maximum column count.
      */
-    public ReadOnlyIntegerProperty maxColumnCount() {
-        return maxColumnCountProperty;
+    public IntegerProperty maxColumnCount() {
+        return maxColumnCount;
     }
 
     /**
@@ -192,7 +183,7 @@ public class CheckedTextField extends TextField {
      * @return The current set maximum column count.
      */
     public int getMaxColumnCount() {
-        return maxColumnCountProperty.get();
+        return maxColumnCount.get();
     }
 
     /**
@@ -205,7 +196,7 @@ public class CheckedTextField extends TextField {
             throw new IllegalArgumentException(
                     "maxColumnCount must be at least 1");
         }
-        maxColumnCountProperty.set(maxColumnCount);
+        this.maxColumnCount.set(maxColumnCount);
     }
 
     /**

@@ -8,16 +8,16 @@
     <ListView fx:id="optionsListView" maxHeight="300" focusTraversable="false" />
     <HBox>
         <Label text="${controller.selectedCount}" />
-        <Label text=" von " />
+        <Label text="%outOf" />
         <Label text="${controller.totalCount}" />
-        <Label text=" ausgewählt" />
+        <Label text="%chosen" />
     </HBox>
     <HBox spacing="10">
-        <Button fx:id="selectAllButton" text="Alles auswählen" onAction="#selectAllOptions" />
-        <Button fx:id="selectNoneButton" text="Nichts auswählen" disable="true" onAction="#selectNoOption" />
+        <Button fx:id="selectAllButton" text="%selectAll" onAction="#selectAllOptions" />
+        <Button fx:id="selectNoneButton" text="%selectNothing" disable="true" onAction="#selectNoOption" />
     </HBox>
     <HBox spacing="10">
-        <Button text="Fertig" defaultButton="true" fx:id="selectButton" disable="${controller.selectedCount <= 0}" onAction="#select" />
-        <Label fx:id="missingInput" text="Ungültige oder fehlende Angaben" styleClass="warningLabel" />
+        <Button text="%ready" defaultButton="true" fx:id="selectButton" disable="true" onAction="#select" />
+        <Label fx:id="missingInput" text="%invalidOrMissingInput" styleClass="warningLabel" />
     </HBox>
 </VBox>

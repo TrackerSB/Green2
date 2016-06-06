@@ -27,6 +27,7 @@ public class SepaForm extends View {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("SepaForm.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
@@ -34,7 +35,7 @@ public class SepaForm extends View {
         sfcontroller.setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle("Lastschrift Infos eintragen");
+        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("sepaFormTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

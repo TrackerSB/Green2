@@ -59,12 +59,12 @@ public class SelectionController<T extends Comparable> extends Controller {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        /*selectedCount.lessThanOrEqualTo(0)
+        selectedCount.lessThanOrEqualTo(0)
                 .addListener((obs, oldVal, newVal) -> {
                     missingInput.setVisible(newVal);
                     selectButton.setDisable(newVal);
                     selectNoneButton.setDisable(newVal);
-                });*/
+                });
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
             newVal.stream().forEach(op -> {

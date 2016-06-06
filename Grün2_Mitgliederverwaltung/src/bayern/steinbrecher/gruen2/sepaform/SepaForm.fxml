@@ -5,30 +5,30 @@
 <?import bayern.steinbrecher.gruen2.elements.*?>
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.sepaform.SepaFormController">
-    <Label text="Name des Einreichers:&#10;(Max. 70 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-    <CheckedTextField maxColumnCount="70" promptText="Name des Einreichers" fx:id="creatorTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-    <Label text="Kontoinhaber:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <CheckedTextField promptText="Kontoinhaber" fx:id="creditorTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-    <Label text="IBAN:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-    <CheckedTextField promptText="IBAN" fx:id="ibanTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Label text="BIC:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-    <CheckedTextField promptText="BIC" fx:id="bicTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-    <Label text="Gläubiger-ID:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-    <CheckedTextField promptText="Gläubiger-ID" fx:id="trusterIdTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-    <Label text="Verwendungszweck:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-    <CheckedTextField promptText="Verwendungszweck" fx:id="purposeTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-    <Label text="Ausführungsdatum:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-    <CheckedDatePicker promptText="Ausführungsdatum" fx:id="executionDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-    <Label text="Message-ID:&#10;(Max. 35 Zeichen)&#10;(Muss für 15 Tage eindeutig sein)" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+    <Label fx:id="presenterLabel" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <CheckedTextField maxColumnCount="70" promptText="%nameOfPresenter" fx:id="creatorTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <Label text="%accountHolder" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <CheckedTextField promptText="%accountHolder" fx:id="creditorTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Label text="%iban" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <CheckedTextField promptText="%iban" fx:id="ibanTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label text="%bic" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <CheckedTextField promptText="%bic" fx:id="bicTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <Label text="%trusterId" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+    <CheckedTextField promptText="%trusterId" fx:id="trusterIdTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    <Label text="%purpose" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+    <CheckedTextField promptText="%purpose" fx:id="purposeTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <Label text="%executionDate" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+    <CheckedDatePicker promptText="%executionDate" fx:id="executionDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+    <Label fx:id="messageIdLabel" GridPane.columnIndex="0" GridPane.rowIndex="7" />
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="7" spacing="5" >
-        <CheckedTextField maxColumnCount="35" promptText="Message-ID" fx:id="messageIdTextField" onAction="#ready" />
-        <Button text="Erstellen" onAction="#generateMessageId" />
+        <CheckedTextField maxColumnCount="35" promptText="%messageId" fx:id="messageIdTextField" onAction="#ready" />
+        <Button text="%generate" onAction="#generateMessageId" />
     </HBox>
-    <Label text="Payment Information Identification:&#10;(Max. 35 Zeichen)" GridPane.columnIndex="0" GridPane.rowIndex="8" />
-    <CheckedTextField maxColumnCount="35" promptText="Payment Information Identification" fx:id="pmtInfIdTextField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+    <Label fx:id="pmtInfIdLabel" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+    <CheckedTextField maxColumnCount="35" promptText="%pmtInfId" fx:id="pmtInfIdTextField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
     
-    <Label text="Eingabe zu lang" styleClass="warningLabel" visible="false" fx:id="inputTooLongLabel" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-    <Label text="Fehlende Angaben" styleClass="warningLabel" fx:id="missingInputLabel" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+    <Label text="%inputTooLong" styleClass="warningLabel" visible="false" fx:id="inputTooLongLabel" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+    <Label text="%missingInput" styleClass="warningLabel" fx:id="missingInputLabel" GridPane.columnIndex="1" GridPane.rowIndex="10" />
     
-    <Button text="Fertig" defaultButton="true" fx:id="readyButton" onAction="#ready" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+    <Button text="%ready" defaultButton="true" fx:id="readyButton" onAction="#ready" GridPane.columnIndex="0" GridPane.rowIndex="10" />
 </GridPane>
