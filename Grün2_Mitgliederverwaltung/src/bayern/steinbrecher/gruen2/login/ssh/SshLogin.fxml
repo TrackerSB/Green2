@@ -7,13 +7,13 @@
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.login.ssh.SshLoginController">
     <Label text="%sshUsername" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-    <CheckedTextField fx:id="sshUsernameField" promptText="%sshUsername" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <CheckedTextField fx:id="sshUsernameField" promptText="%sshUsername" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="0" />
     <Label text="%sshPassword" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <CheckedPasswordField fx:id="sshPasswordField" promptText="%sshPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <CheckedPasswordField fx:id="sshPasswordField" promptText="%sshPassword" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     <Label text="%databaseUsername" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-    <CheckedTextField fx:id="databaseUsernameField" promptText="%databaseUsername" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <CheckedTextField fx:id="databaseUsernameField" promptText="%databaseUsername" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="2" />
     <Label text="%databasePassword" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-    <CheckedPasswordField fx:id="databasePasswordField" promptText="%databasePassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <CheckedPasswordField fx:id="databasePasswordField" promptText="%databasePassword" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="3" />
     
     <Label text="%invalidOrMissingInput" fx:id="invalidInput" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
     <CheckBox GridPane.rowIndex="5" GridPane.columnIndex="0" text="%allowEmptyFields" fx:id="allowEmptyFieldsCheckbox" />

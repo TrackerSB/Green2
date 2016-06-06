@@ -6,6 +6,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.IntegerPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
@@ -40,48 +41,18 @@ public class CheckedTextField extends TextField {
     /**
      * Holds {@code true} only if the content has to be checked.
      */
-    private final BooleanProperty checkedProperty
-            = new BooleanPropertyBase(true) {
-        @Override
-        public CheckedTextField getBean() {
-            return CheckedTextField.this;
-        }
-
-        @Override
-        public String getName() {
-            return "checked";
-        }
-    };
+    private final BooleanProperty checked
+            = new SimpleBooleanProperty(this, "checked", true);
     /**
      * Holds {@code true} only if the text field is empty.
      */
-    private final BooleanProperty emptyProperty
-            = new BooleanPropertyBase() {
-        @Override
-        public CheckedTextField getBean() {
-            return CheckedTextField.this;
-        }
-
-        @Override
-        public String getName() {
-            return "emptyContent";
-        }
-    };
+    private final BooleanProperty emptyContent
+            = new SimpleBooleanProperty(this, "emptyContent");
     /**
      * Holds {@code true} only if the text of the text field is too long.
      */
-    private final BooleanProperty tooLongProperty
-            = new BooleanPropertyBase() {
-        @Override
-        public CheckedTextField getBean() {
-            return CheckedTextField.this;
-        }
-
-        @Override
-        public String getName() {
-            return "tooLongContent";
-        }
-    };
+    private final BooleanProperty tooLongContent
+            = new SimpleBooleanProperty(this, "tooLongContent");
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of
      * the following is true:
@@ -90,17 +61,8 @@ public class CheckedTextField extends TextField {
      * <li>It is not empty and the content is not too long</li>
      * </ol>
      */
-    private final BooleanProperty validProperty = new BooleanPropertyBase() {
-        @Override
-        public CheckedTextField getBean() {
-            return CheckedTextField.this;
-        }
-
-        @Override
-        public String getName() {
-            return "valid";
-        }
-    };
+    private final BooleanProperty valid
+            = new SimpleBooleanProperty(this, "valid");
 
     /**
      * Creates a new {@code CheckedTextField} with no initial content and a
@@ -142,26 +104,26 @@ public class CheckedTextField extends TextField {
      * Sets up all properties and bindings.
      */
     private void initProperties() {
-        emptyProperty.bind(textProperty().isEmpty());
+        emptyContent.bind(textProperty().isEmpty());
         textProperty().addListener((obs, oldVal, newVal) -> {
-            tooLongProperty.set(newVal != null
+            tooLongContent.set(newVal != null
                     && newVal.length() > maxColumnCount.get());
         });
         maxColumnCount.addListener((obs, oldVal, newVal) -> {
-            tooLongProperty.setValue(
+            tooLongContent.setValue(
                     textProperty().get().length() > newVal.intValue());
         });
-        validProperty.bind(tooLongProperty.or(emptyProperty)
-                .and(checkedProperty).not());
-        validProperty.addListener((obs, oldVal, newVal) -> {
+        valid.bind(tooLongContent.or(emptyContent)
+                .and(checked).not());
+        valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 getStyleClass().removeAll(
                         CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT);
             } else {
-                if (emptyProperty.get()) {
+                if (emptyContent.get()) {
                     getStyleClass().add(CSS_CLASS_NO_CONTENT);
                 }
-                if (tooLongProperty.get()) {
+                if (tooLongContent.get()) {
                     getStyleClass().add(CSS_CLASS_TOO_LONG_CONTENT);
                 }
             }
@@ -206,7 +168,7 @@ public class CheckedTextField extends TextField {
      * not.
      */
     public ReadOnlyBooleanProperty checkedProperty() {
-        return checkedProperty;
+        return checked;
     }
 
     /**
@@ -215,7 +177,7 @@ public class CheckedTextField extends TextField {
      * @return {@code true} only if the text field is checked.
      */
     public boolean isChecked() {
-        return checkedProperty.get();
+        return checked.get();
     }
 
     /**
@@ -225,7 +187,7 @@ public class CheckedTextField extends TextField {
      * checked.
      */
     public void setChecked(boolean checked) {
-        checkedProperty.set(checked);
+        this.checked.set(checked);
     }
 
     /**
@@ -234,7 +196,7 @@ public class CheckedTextField extends TextField {
      * @return The property representing whether there´s no text inserted.
      */
     public ReadOnlyBooleanProperty emptyProperty() {
-        return emptyProperty;
+        return emptyContent;
     }
 
     /**
@@ -243,7 +205,7 @@ public class CheckedTextField extends TextField {
      * @return {@code true} only if the text field is empty.
      */
     public boolean isEmpty() {
-        return emptyProperty.get();
+        return emptyContent.get();
     }
 
     /**
@@ -254,7 +216,7 @@ public class CheckedTextField extends TextField {
      * field is too long.
      */
     public ReadOnlyBooleanProperty tooLongProperty() {
-        return tooLongProperty;
+        return tooLongContent;
     }
 
     /**
@@ -264,7 +226,7 @@ public class CheckedTextField extends TextField {
      * @return {@code true} only if the current content is too long.
      */
     public boolean isTooLong() {
-        return tooLongProperty.get();
+        return tooLongContent.get();
     }
 
     /**
@@ -273,16 +235,16 @@ public class CheckedTextField extends TextField {
      * @return The binding representing the validity of the inserted content.
      */
     public ReadOnlyBooleanProperty validProperty() {
-        return validProperty;
+        return valid;
     }
 
     /**
      * Checks whether the current content is valid.
      *
      * @return {@code true } only if the current content is valid.
-     * @see #validProperty
+     * @see #valid
      */
     public boolean isValid() {
-        return validProperty.get();
+        return valid.get();
     }
 }

@@ -199,7 +199,7 @@ public class SepaFormController extends Controller {
         return maxCharNamePresenter;
     }
 
-    public ReadOnlyIntegerProperty getMaxCharNamePresenter() {
-        return maxCharNamePresenter;
+    public int getMaxCharNamePresenter() {
+        return maxCharNamePresenter.get();
     }
 }

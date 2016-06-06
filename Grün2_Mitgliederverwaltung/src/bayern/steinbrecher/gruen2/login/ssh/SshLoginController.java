@@ -48,10 +48,10 @@ public class SshLoginController extends LoginController {
         textInputFields = Arrays.asList(sshUsernameField, sshPasswordField,
                 databaseUsernameField, databasePasswordField);
 
-        allowEmptyFieldsCheckbox.selectedProperty()
+        /*allowEmptyFieldsCheckbox.selectedProperty()
                 .addListener((obs, oldVal, newVal) -> {
                     textInputFields.forEach(f -> f.setChecked(!newVal));
-                });
+                });*/
         ChangeListener<Boolean> cl = (obs, oldVal, newVal) -> {
             boolean isAllInputValid = textInputFields.parallelStream()
                     .allMatch(CheckedTextField::isValid);
