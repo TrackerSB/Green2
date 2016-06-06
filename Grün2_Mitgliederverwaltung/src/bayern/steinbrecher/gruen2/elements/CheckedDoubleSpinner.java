@@ -86,4 +86,8 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
     public ReadOnlyBooleanProperty validProperty() {
         return validProperty;
     }
+    
+    public boolean isValid(){
+        return validProperty.get();
+    }
 }

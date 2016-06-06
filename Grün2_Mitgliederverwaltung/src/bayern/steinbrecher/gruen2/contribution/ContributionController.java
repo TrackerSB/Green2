@@ -17,11 +17,7 @@ import javafx.scene.control.Label;
 public class ContributionController extends Controller {
 
     @FXML
-    private Button selectButton;
-    @FXML
     private CheckedDoubleSpinner contributionSpinner;
-    @FXML
-    private Label missingInput;
 
     /**
      * {@inheritDoc}
@@ -29,17 +25,12 @@ public class ContributionController extends Controller {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contributionSpinner.getEditor().setOnAction(aevt -> select());
-        contributionSpinner.validProperty().addListener(
-                (obs, oldVal, newVal) -> {
-            missingInput.setVisible(!newVal);
-            selectButton.setDisable(!newVal);
-        });
     }
 
     @FXML
     private void select() {
         checkStage();
-        if (!selectButton.isDisabled()) {
+        if (contributionSpinner.isValid()) {
             userConfirmed = true;
             stage.close();
         }
