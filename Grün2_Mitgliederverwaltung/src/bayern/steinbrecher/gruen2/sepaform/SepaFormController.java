@@ -117,29 +117,9 @@ public class SepaFormController extends Controller {
                 .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
                         BooleanBinding::or)
                 .or(executionDatePicker.emptyProperty()));
-        valid.bind(((anyInputToLong.or(anyInputToLong)).not())
+        valid.bind(((anyInputToLong.or(anyInputMissing)).not())
                 .and(executionDatePicker.validProperty()));
 
-        /*
-         * Rawtype needed for adding as ChangeListener<String> and
-         * ChangeListener<Boolean>
-         */
- /*ChangeListener cl = (obs, oldVal, newVal) -> {
-            boolean anyInputToLong = checkedTextFields.parallelStream()
-                    .anyMatch(ctf -> !ctf.isValid() && ctf.isToLong());
-            inputToLongLabel.setVisible(anyInputToLong);
-            boolean anyInputMissing = checkedTextFields.parallelStream()
-                    .anyMatch(ctf -> {
-                        return !ctf.isValid() && ctf.isEmpty();
-                    }) || !executionDatePicker.isValid();
-            missingInputLabel.setVisible(anyInputMissing);
-            readyButton.setDisable(anyInputToLong || anyInputMissing
-                    || !executionDatePicker.isValid());
-        };
-        checkedTextFields.parallelStream()
-                .map(CheckedTextField::textProperty)
-                .forEach(tp -> tp.addListener(cl));
-        executionDatePicker.validProperty().addListener(cl);*/
         String originatorInfoPath = DataProvider.getAppDataPath()
                 + "/originator.properties";
         try {

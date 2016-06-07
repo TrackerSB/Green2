@@ -134,7 +134,7 @@ public class CheckedTextField extends TextField {
      *
      * @return The property representing the maximum column count.
      */
-    public IntegerProperty maxColumnCount() {
+    public IntegerProperty maxColumnCountProperty() {
         return maxColumnCount;
     }
 

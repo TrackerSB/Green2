@@ -6,7 +6,7 @@
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.sepaform.SepaFormController">
     <Label fx:id="presenterLabel" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-    <CheckedTextField maxColumnCount="70" promptText="%nameOfPresenter" fx:id="creatorTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <CheckedTextField maxColumnCount="${controller.maxCharNamePresenter}" promptText="%nameOfPresenter" fx:id="creatorTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
     <Label text="%accountHolder" GridPane.columnIndex="0" GridPane.rowIndex="1" />
     <CheckedTextField promptText="%accountHolder" fx:id="creditorTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     <Label text="%iban" GridPane.columnIndex="0" GridPane.rowIndex="2" />
@@ -25,7 +25,7 @@
         <Button text="%generate" onAction="#generateMessageId" />
     </HBox>
     <Label fx:id="pmtInfIdLabel" GridPane.columnIndex="0" GridPane.rowIndex="8" />
-    <CheckedTextField maxColumnCount="35" promptText="%pmtInfId" fx:id="pmtInfIdTextField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+    <CheckedTextField maxColumnCount="${controller.maxCharPmtInfId}" promptText="%pmtInfId" fx:id="pmtInfIdTextField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
     
     <Label text="%inputToLong" styleClass="warningLabel" visible="${controller.anyInputToLong}" GridPane.columnIndex="1" GridPane.rowIndex="9" />
     <Label text="%missingInput" styleClass="warningLabel" visible="${controller.anyInputMissing}" GridPane.columnIndex="1" GridPane.rowIndex="10" />
