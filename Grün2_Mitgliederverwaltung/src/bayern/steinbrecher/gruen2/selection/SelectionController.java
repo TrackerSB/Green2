@@ -37,7 +37,6 @@ public class SelectionController<T extends Comparable> extends Controller {
     private ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
     private BooleanProperty nothingSelected = new SimpleBooleanProperty();
     private BooleanProperty allSelected = new SimpleBooleanProperty();
-    private BooleanProperty valid = new SimpleBooleanProperty();
     @FXML
     private ListView<CheckBox> optionsListView;
     private final ChangeListener<Boolean> selectionChange
@@ -56,7 +55,6 @@ public class SelectionController<T extends Comparable> extends Controller {
     public void initialize(URL location, ResourceBundle resources) {
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
-        valid.bind(nothingSelected.not());
 
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
@@ -81,7 +79,7 @@ public class SelectionController<T extends Comparable> extends Controller {
     @FXML
     private void select() {
         checkStage();
-        if (isValid()) {
+        if (!isNothingSelected()) {
             userConfirmed = true;
             stage.close();
         }
@@ -118,43 +116,81 @@ public class SelectionController<T extends Comparable> extends Controller {
         return Optional.empty();
     }
 
+    /**
+     * Returns the property representing the number of currently selected
+     * fields.
+     *
+     * @return The property representing the number of currently selected
+     * fields.
+     */
     public ReadOnlyIntegerProperty selectedCountProperty() {
         return selectedCount;
     }
 
+    /**
+     * Returns the number of currently selected fields.
+     *
+     * @return The number of currently selected fields.
+     */
     public int getSelectedCount() {
         return selectedCount.get();
     }
 
+    /**
+     * Returns the property representing the total number of entries to select.
+     *
+     * @return The property representing the total number of entries to select.
+     */
     public ReadOnlyIntegerProperty totalCountProperty() {
         return totalCount;
     }
 
+    /**
+     * The total number of entries to select.
+     *
+     * @return The total number of entries to select.
+     */
     public int getTotalCount() {
         return totalCount.get();
     }
 
+    /**
+     * Returns the property representing a boolean indicating whether no entry
+     * is currently selected.
+     *
+     * @return The property representing a boolean indicating whether no entry
+     * is currently selected.
+     */
     public ReadOnlyBooleanProperty nothingSelectedProperty() {
         return nothingSelected;
     }
 
+    /**
+     * Checks whether currently no entry is selected.
+     *
+     * @return {@code true} only if no entry is selected.
+     */
     public boolean isNothingSelected() {
         return nothingSelected.get();
     }
 
+    /**
+     * Returns the property representing a boolean indicating whether every
+     * entry is currently selected.
+     *
+     * @return The property representing a boolean indicating whether every
+     * entry is currently selected.
+     */
     public ReadOnlyBooleanProperty allSelectedProperty() {
         return allSelected;
     }
 
+    /**
+     * Checks whether currently every entry is selected.
+     *
+     * @return {@code true} only if every entry is selected.
+     */
     public boolean isAllSelected() {
         return allSelected.get();
-    }
-
-    public ReadOnlyBooleanProperty validProperty() {
-        return valid;
-    }
-
-    public boolean isValid() {
-        return valid.get();
     }
 }

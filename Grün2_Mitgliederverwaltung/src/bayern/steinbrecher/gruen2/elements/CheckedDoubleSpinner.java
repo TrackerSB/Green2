@@ -78,6 +78,12 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
         return validProperty;
     }
 
+    /**
+     * Checks whether the currently inserted value is valid.
+     *
+     * @return {
+     * @true} only if the current value is valid.
+     */
     public boolean isValid() {
         return validProperty.get();
     }

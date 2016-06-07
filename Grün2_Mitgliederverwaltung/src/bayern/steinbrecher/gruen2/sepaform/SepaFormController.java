@@ -36,6 +36,7 @@ public class SepaFormController extends Controller {
     private static final SimpleDateFormat YEAR_MONTH_DAY
             = new SimpleDateFormat("yyyy-MM-dd");
     private static final int UNIQUE_DAYS_PMTINFID = 15;
+    private static final int bla = 20;
     /**
      * Used as identity for sequence of or bindings.
      */

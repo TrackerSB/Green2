@@ -17,6 +17,12 @@ public class Menu extends View<MenuController> {
 
     private Main caller;
 
+    /**
+     * Constructes a menu.
+     *
+     * @param caller The object for calling the functions represented by the
+     * menu.
+     */
     public Menu(Main caller) {
         this.caller = caller;
     }

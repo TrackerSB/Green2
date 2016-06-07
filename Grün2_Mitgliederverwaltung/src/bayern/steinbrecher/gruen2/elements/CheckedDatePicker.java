@@ -89,10 +89,22 @@ public class CheckedDatePicker extends DatePicker {
         return valid.get();
     }
 
+    /**
+     * Represents a boolean value indicating whether the textfield is empty or
+     * not.
+     *
+     * @return The property represents a boolean value indicating whether the
+     * textfield is empty or not.
+     */
     public ReadOnlyBooleanProperty emptyProperty() {
         return empty;
     }
 
+    /**
+     * Checks whether the textfield is empty.
+     *
+     * @return {@code true} only if the textfield is empty.
+     */
     public boolean isEmpty() {
         return empty.get();
     }
