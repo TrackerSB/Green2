@@ -7,6 +7,7 @@ import java.util.Locale;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.DatePicker;
 
 /**
@@ -24,23 +25,10 @@ public class CheckedDatePicker extends DatePicker {
     /**
      * BooleanProperty indicating whether the currently inserted date is valid.
      */
-    private final BooleanProperty validProperty = new BooleanPropertyBase() {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Object getBean() {
-            return CheckedDatePicker.this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String getName() {
-            return "valid";
-        }
-    };
+    private final BooleanProperty valid
+            = new SimpleBooleanProperty(this, "valid");
+    private final BooleanProperty empty
+            = new SimpleBooleanProperty(this, "empty");
 
     /**
      * Constructes a {@code CheckedDatePicker} with no initial date inserted.
@@ -57,18 +45,21 @@ public class CheckedDatePicker extends DatePicker {
      */
     public CheckedDatePicker(LocalDate locale) {
         super(locale);
+
+        empty.bind(getEditor().textProperty().isEmpty());
+
         getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
             DateTimeFormatter dtf
                     = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY);
             try {
                 LocalDate.parse(newVal, dtf);
                 getStyleClass().remove(CSS_CLASS_INVALID_DATE);
-                validProperty.set(true);
+                valid.set(true);
             } catch (DateTimeParseException ex) {
                 if (!getStyleClass().contains(CSS_CLASS_INVALID_DATE)) {
                     getStyleClass().add(CSS_CLASS_INVALID_DATE);
                 }
-                validProperty.set(false);
+                valid.set(false);
             }
         });
 
@@ -79,15 +70,6 @@ public class CheckedDatePicker extends DatePicker {
     }
 
     /**
-     * Checks whether the current value is a valid date.
-     *
-     * @return {@code true} only if the current value is a valid date.
-     */
-    public boolean isValid() {
-        return validProperty.get();
-    }
-
-    /**
      * Returns the {@code BooleanProperty} representing whether the current
      * value is valid or not.
      *
@@ -95,6 +77,23 @@ public class CheckedDatePicker extends DatePicker {
      * value is valid or not.
      */
     public ReadOnlyBooleanProperty validProperty() {
-        return validProperty;
+        return valid;
+    }
+
+    /**
+     * Checks whether the current value is a valid date.
+     *
+     * @return {@code true} only if the current value is a valid date.
+     */
+    public boolean isValid() {
+        return valid.get();
+    }
+
+    public ReadOnlyBooleanProperty emptyProperty() {
+        return empty;
+    }
+
+    public boolean isEmpty() {
+        return empty.get();
     }
 }

@@ -2,7 +2,6 @@ package bayern.steinbrecher.gruen2.elements;
 
 import javafx.beans.NamedArg;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Spinner;

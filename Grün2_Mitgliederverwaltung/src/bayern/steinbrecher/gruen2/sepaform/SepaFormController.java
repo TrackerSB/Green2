@@ -46,14 +46,14 @@ public class SepaFormController extends Controller {
         }
     };
     private final ReadOnlyIntegerProperty maxCharMessageId
-            = new SimpleIntegerProperty(this, "maxCharMessageId", 35);
+            = new SimpleIntegerProperty(35);
     private final ReadOnlyIntegerProperty maxCharPmtInfId
-            = new SimpleIntegerProperty(this, "maxCharPmtInfId", 35);
+            = new SimpleIntegerProperty(35);
     private final ReadOnlyIntegerProperty maxCharNamePresenter
-            = new SimpleIntegerProperty(this, "maxCharNamePresenter", 70);
-    private BooleanProperty anyInputToLong = new SimpleBooleanProperty();
-    private BooleanProperty anyInputMissing = new SimpleBooleanProperty();
-    private BooleanProperty valid = new SimpleBooleanProperty();
+            = new SimpleIntegerProperty(70);
+    private final BooleanProperty anyInputToLong = new SimpleBooleanProperty();
+    private final BooleanProperty anyInputMissing = new SimpleBooleanProperty();
+    private final BooleanProperty valid = new SimpleBooleanProperty();
     private Originator originator;
     @FXML
     private CheckedTextField creatorTextField;
@@ -116,8 +116,9 @@ public class SepaFormController extends Controller {
                 .map(ctf -> ctf.emptyProperty())
                 .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
                         BooleanBinding::or)
-                .or(executionDatePicker.validProperty()));
-        valid.bind((anyInputToLong.or(anyInputToLong)).not());
+                .or(executionDatePicker.emptyProperty()));
+        valid.bind(((anyInputToLong.or(anyInputToLong)).not())
+                .and(executionDatePicker.validProperty()));
 
         /*
          * Rawtype needed for adding as ChangeListener<String> and
