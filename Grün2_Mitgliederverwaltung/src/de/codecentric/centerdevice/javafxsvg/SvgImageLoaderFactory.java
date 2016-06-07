@@ -9,24 +9,25 @@ import com.sun.javafx.iio.ImageLoaderFactory;
 import com.sun.javafx.iio.ImageStorage;
 
 public class SvgImageLoaderFactory implements ImageLoaderFactory {
-	private static final ImageLoaderFactory instance = new SvgImageLoaderFactory();
 
-	public static final void install() {
-		ImageStorage.addImageLoaderFactory(instance);
-	}
+    private static final ImageLoaderFactory instance = new SvgImageLoaderFactory();
 
-	public static final ImageLoaderFactory getInstance() {
-		return instance;
-	}
+    public static final void install() {
+        ImageStorage.addImageLoaderFactory(instance);
+    }
 
-	@Override
-	public ImageFormatDescription getFormatDescription() {
-		return SvgDescriptor.getInstance();
-	}
+    public static final ImageLoaderFactory getInstance() {
+        return instance;
+    }
 
-	@Override
-	public ImageLoader createImageLoader(InputStream input) throws IOException {
-		return new SvgImageLoader(input);
-	}
+    @Override
+    public ImageFormatDescription getFormatDescription() {
+        return SvgDescriptor.getInstance();
+    }
+
+    @Override
+    public ImageLoader createImageLoader(InputStream input) throws IOException {
+        return new SvgImageLoader(input);
+    }
 
 }

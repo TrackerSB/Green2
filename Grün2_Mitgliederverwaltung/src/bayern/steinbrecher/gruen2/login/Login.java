@@ -10,9 +10,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public abstract class Login extends View {
-
-    protected LoginController loginContoller;
+public abstract class Login extends View<LoginController> {
 
     /**
      * Returns the information that was entered in the login. This method blocks
@@ -24,14 +22,6 @@ public abstract class Login extends View {
      */
     public Optional<Map<LoginKey, String>> getLoginInformation() {
         showOnceAndWait();
-        return loginContoller.getLoginInformation();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean userConfirmed() {
-        return loginContoller.userConfirmed();
+        return controller.getLoginInformation();
     }
 }

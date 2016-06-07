@@ -6,48 +6,33 @@ import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.stage.Stage;
 
 /**
  * Represents the base implementation of all other windows.
  *
  * @author Stefan Huber
+ * @param <T> The class used as controller for this view.
  */
-public abstract class View extends Application {
+public abstract class View<T extends Controller> extends Application {
 
     /**
      * The stage which has to be set in every start-Method of implementing
      * classes.
      */
     protected Stage stage = null;
-    private BooleanProperty gotShownProperty = new BooleanPropertyBase(false) {
-        @Override
-        public Object getBean() {
-            return View.this;
-        }
-
-        @Override
-        public String getName() {
-            return "gotShown";
-        }
-    };
-    private BooleanProperty gotClosedProperty = new BooleanPropertyBase(false) {
-        @Override
-        public Object getBean() {
-            return View.this;
-        }
-
-        @Override
-        public String getName() {
-            return "gotClosed";
-        }
-    };
+    private BooleanProperty gotShownProperty
+            = new SimpleBooleanProperty(this, "gotShown", false);
+    private BooleanProperty gotClosedProperty
+            = new SimpleBooleanProperty(this, "gotClosed", false);
     private BooleanBinding wouldShowProperty = gotShownProperty.not();
+    protected T controller;
 
     /**
      * Throws a {@code IllegalStateException} only if stage is {@code null}.
      */
-    public void checkStage() {
+    protected void checkStage() {
         if (stage == null) {
             throw new IllegalStateException("You have to call start(...)first");
         }
@@ -138,7 +123,6 @@ public abstract class View extends Application {
      * data.
      */
     public boolean userConfirmed() {
-        throw new UnsupportedOperationException(
-                "Contains no data to be confirmed");
+        return controller.userConfirmed();
     }
 }

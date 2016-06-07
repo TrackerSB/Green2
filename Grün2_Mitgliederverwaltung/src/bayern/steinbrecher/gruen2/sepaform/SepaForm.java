@@ -14,9 +14,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class SepaForm extends View {
-
-    private SepaFormController sfcontroller;
+public class SepaForm extends View<SepaFormController> {
 
     /**
      * {@inheritDoc}
@@ -31,8 +29,8 @@ public class SepaForm extends View {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        sfcontroller = fxmlLoader.getController();
-        sfcontroller.setStage(stage);
+        controller = fxmlLoader.getController();
+        controller.setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("sepaFormTitle"));
@@ -51,14 +49,6 @@ public class SepaForm extends View {
      */
     public Optional<Originator> getOriginator() {
         showOnceAndWait();
-        return sfcontroller.getOriginator();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean userConfirmed() {
-        return sfcontroller.userConfirmed();
+        return controller.getOriginator();
     }
 }

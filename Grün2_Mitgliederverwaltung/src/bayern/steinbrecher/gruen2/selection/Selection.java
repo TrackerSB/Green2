@@ -15,9 +15,9 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  * @param <T> The type of the attributes being able to selct.
  */
-public class Selection<T extends Comparable> extends View {
+public class Selection<T extends Comparable>
+        extends View<SelectionController<T>> {
 
-    private SelectionController<T> scontroller;
     private final List<T> options;
 
     /**
@@ -44,9 +44,9 @@ public class Selection<T extends Comparable> extends View {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        scontroller = fxmlLoader.getController();
-        scontroller.setStage(stage);
-        scontroller.setOptions(options);
+        controller = fxmlLoader.getController();
+        controller.setStage(stage);
+        controller.setOptions(options);
 
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("select"));
@@ -66,14 +66,6 @@ public class Selection<T extends Comparable> extends View {
      */
     public Optional<List<T>> getSelection() {
         showOnceAndWait();
-        return scontroller.getSelection();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean userConfirmed() {
-        return scontroller.userConfirmed();
+        return controller.getSelection();
     }
 }

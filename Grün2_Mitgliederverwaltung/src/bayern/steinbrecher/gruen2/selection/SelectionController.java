@@ -19,9 +19,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 /**
@@ -60,12 +58,6 @@ public class SelectionController<T extends Comparable> extends Controller {
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
         valid.bind(nothingSelected.not());
 
-        /*selectedCount.lessThanOrEqualTo(0)
-                .addListener((obs, oldVal, newVal) -> {
-                    missingInput.setVisible(newVal);
-                    selectButton.setDisable(newVal);
-                    selectNoneButton.setDisable(newVal);
-                });*/
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
             newVal.stream().forEach(op -> {
@@ -73,10 +65,6 @@ public class SelectionController<T extends Comparable> extends Controller {
                 newItem.selectedProperty().addListener(selectionChange);
                 optionsListView.getItems().add(newItem);
             });
-            /*selectedCount.greaterThanOrEqualTo(newVal.size())
-                    .addListener((obss, oldVall, newVall) -> {
-                        selectAllButton.setDisable(newVall);
-                    });*/
         });
     }
 
@@ -152,6 +140,14 @@ public class SelectionController<T extends Comparable> extends Controller {
 
     public boolean isNothingSelected() {
         return nothingSelected.get();
+    }
+
+    public ReadOnlyBooleanProperty allSelectedProperty() {
+        return allSelected;
+    }
+
+    public boolean isAllSelected() {
+        return allSelected.get();
     }
 
     public ReadOnlyBooleanProperty validProperty() {

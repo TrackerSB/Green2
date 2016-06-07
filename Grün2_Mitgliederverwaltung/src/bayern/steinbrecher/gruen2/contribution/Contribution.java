@@ -13,9 +13,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Contribution extends View {
-
-    private ContributionController ccontroller;
+public class Contribution extends View<ContributionController> {
 
     /**
      * {@inheritDoc}
@@ -30,8 +28,8 @@ public class Contribution extends View {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        ccontroller = fxmlLoader.getController();
-        ccontroller.setStage(stage);
+        controller = fxmlLoader.getController();
+        controller.setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(
@@ -53,14 +51,6 @@ public class Contribution extends View {
      */
     public Optional<Double> getContribution() {
         showOnceAndWait();
-        return ccontroller.getContribution();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean userConfirmed() {
-        return ccontroller.userConfirmed();
+        return controller.getContribution();
     }
 }

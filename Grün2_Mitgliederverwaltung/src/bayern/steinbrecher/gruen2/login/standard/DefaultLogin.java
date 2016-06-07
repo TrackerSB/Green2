@@ -27,8 +27,8 @@ public class DefaultLogin extends Login {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        loginContoller = fxmlLoader.getController();
-        loginContoller.setStage(stage);
+        controller = fxmlLoader.getController();
+        controller.setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("loginTitle"));

@@ -13,9 +13,8 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Menu extends View {
+public class Menu extends View<MenuController> {
 
-    private MenuController mcontroller;
     private Main caller;
 
     public Menu(Main caller) {
@@ -35,14 +34,25 @@ public class Menu extends View {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
 
-        mcontroller = fxmlLoader.getController();
-        mcontroller.setStage(stage);
-        mcontroller.setCaller(caller);
+        controller = fxmlLoader.getController();
+        controller.setStage(stage);
+        controller.setCaller(caller);
 
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("chooseProgram"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
         stage.show();
+    }
+
+    /**
+     * Not implemented. There´s no data to be confirmed by the user.
+     *
+     * @return Nothing.
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public boolean userConfirmed() {
+        throw new UnsupportedOperationException("No data to confirm");
     }
 }
