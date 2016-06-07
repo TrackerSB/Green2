@@ -20,9 +20,7 @@ import java.util.logging.Logger;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -36,7 +34,7 @@ public class SepaFormController extends Controller {
     private static final SimpleDateFormat YEAR_MONTH_DAY
             = new SimpleDateFormat("yyyy-MM-dd");
     private static final int UNIQUE_DAYS_PMTINFID = 15;
-    private static final int bla = 20;
+    public static final int bla = 20;
     /**
      * Used as identity for sequence of or bindings.
      */
@@ -46,12 +44,9 @@ public class SepaFormController extends Controller {
             return false;
         }
     };
-    private final ReadOnlyIntegerProperty maxCharMessageId
-            = new SimpleIntegerProperty(35);
-    private final ReadOnlyIntegerProperty maxCharPmtInfId
-            = new SimpleIntegerProperty(35);
-    private final ReadOnlyIntegerProperty maxCharNamePresenter
-            = new SimpleIntegerProperty(70);
+    public static final int MAX_CHAR_MESSAGE_ID = 35;
+    public static final int MAX_CHAR_PMTINFID = 35;
+    public static final int MAX_CHAR_NAME_OF_PRESENTER = 70;
     private final BooleanProperty anyInputToLong = new SimpleBooleanProperty();
     private final BooleanProperty anyInputMissing = new SimpleBooleanProperty();
     private final BooleanProperty valid = new SimpleBooleanProperty();
@@ -180,28 +175,16 @@ public class SepaFormController extends Controller {
         return Optional.empty();
     }
 
-    public ReadOnlyIntegerProperty maxCharMessageIdProperty() {
-        return maxCharMessageId;
-    }
-
     public int getMaxCharMessageId() {
-        return maxCharMessageId.get();
-    }
-
-    public ReadOnlyIntegerProperty maxCharPmtInfIdProperty() {
-        return maxCharPmtInfId;
+        return MAX_CHAR_MESSAGE_ID;
     }
 
     public int getMaxCharPmtInfId() {
-        return maxCharPmtInfId.get();
-    }
-
-    public ReadOnlyIntegerProperty maxCharNamePresenterProperty() {
-        return maxCharNamePresenter;
+        return MAX_CHAR_PMTINFID;
     }
 
     public int getMaxCharNamePresenter() {
-        return maxCharNamePresenter.get();
+        return MAX_CHAR_NAME_OF_PRESENTER;
     }
 
     public ReadOnlyBooleanProperty anyInputToLongProperty() {
