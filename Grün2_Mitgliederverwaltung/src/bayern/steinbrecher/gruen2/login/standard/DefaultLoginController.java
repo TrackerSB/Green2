@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
  * @author Stefan Huber
  */
 public class DefaultLoginController extends LoginController {
+//TODO don´t use focusTraversable
 
     @FXML
     private CheckedTextField databaseUsernameField;

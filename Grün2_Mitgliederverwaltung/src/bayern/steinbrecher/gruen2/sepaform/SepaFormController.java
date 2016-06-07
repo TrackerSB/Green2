@@ -19,12 +19,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 /**
@@ -54,6 +53,7 @@ public class SepaFormController extends Controller {
             = new SimpleIntegerProperty(this, "maxCharNamePresenter", 70);
     private BooleanProperty anyInputToLong = new SimpleBooleanProperty();
     private BooleanProperty anyInputMissing = new SimpleBooleanProperty();
+    private BooleanProperty valid = new SimpleBooleanProperty();
     private Originator originator;
     @FXML
     private CheckedTextField creatorTextField;
@@ -75,17 +75,11 @@ public class SepaFormController extends Controller {
     @FXML
     private CheckedDatePicker executionDatePicker;
     @FXML
-    private Label inputToLongLabel;
-    @FXML
-    private Label missingInputLabel;
-    @FXML
     private Label presenterLabel;
     @FXML
     private Label messageIdLabel;
     @FXML
     private Label pmtInfIdLabel;
-    @FXML
-    private Button readyButton;
 
     /**
      * {@inheritDoc}
@@ -121,13 +115,15 @@ public class SepaFormController extends Controller {
         anyInputMissing.bind(checkedTextFields.stream()
                 .map(ctf -> ctf.emptyProperty())
                 .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
-                        BooleanBinding::or));
+                        BooleanBinding::or)
+                .or(executionDatePicker.validProperty()));
+        valid.bind((anyInputToLong.or(anyInputToLong)).not());
 
         /*
          * Rawtype needed for adding as ChangeListener<String> and
          * ChangeListener<Boolean>
          */
-        /*ChangeListener cl = (obs, oldVal, newVal) -> {
+ /*ChangeListener cl = (obs, oldVal, newVal) -> {
             boolean anyInputToLong = checkedTextFields.parallelStream()
                     .anyMatch(ctf -> !ctf.isValid() && ctf.isToLong());
             inputToLongLabel.setVisible(anyInputToLong);
@@ -143,7 +139,6 @@ public class SepaFormController extends Controller {
                 .map(CheckedTextField::textProperty)
                 .forEach(tp -> tp.addListener(cl));
         executionDatePicker.validProperty().addListener(cl);*/
-
         String originatorInfoPath = DataProvider.getAppDataPath()
                 + "/originator.properties";
         try {
@@ -174,7 +169,7 @@ public class SepaFormController extends Controller {
     @FXML
     private void ready() {
         checkStage();
-        if (!readyButton.isDisabled()) {
+        if (isValid()) {
             originator.setCreator(creatorTextField.getText());
             originator.setCreditor(creditorTextField.getText());
             originator.setIban(ibanTextField.getText());
@@ -225,5 +220,29 @@ public class SepaFormController extends Controller {
 
     public int getMaxCharNamePresenter() {
         return maxCharNamePresenter.get();
+    }
+
+    public ReadOnlyBooleanProperty anyInputToLongProperty() {
+        return anyInputToLong;
+    }
+
+    public boolean isAnyInputToLong() {
+        return anyInputToLong.get();
+    }
+
+    public ReadOnlyBooleanProperty anyInputMissingProperty() {
+        return anyInputMissing;
+    }
+
+    public boolean isAnyInputMissing() {
+        return anyInputMissing.get();
+    }
+
+    public ReadOnlyBooleanProperty validProperty() {
+        return valid;
+    }
+
+    public boolean isValid() {
+        return valid.get();
     }
 }

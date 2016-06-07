@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
  * @author Stefan Huber
  */
 public class SshLoginController extends LoginController {
+//TODO don´t use focusTraversable
 
     @FXML
     private CheckedTextField sshUsernameField;

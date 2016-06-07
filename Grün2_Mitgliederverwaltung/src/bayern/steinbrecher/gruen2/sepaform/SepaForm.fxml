@@ -27,8 +27,8 @@
     <Label fx:id="pmtInfIdLabel" GridPane.columnIndex="0" GridPane.rowIndex="8" />
     <CheckedTextField maxColumnCount="35" promptText="%pmtInfId" fx:id="pmtInfIdTextField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
     
-    <Label text="%inputToLong" styleClass="warningLabel" visible="false" fx:id="inputToLongLabel" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-    <Label text="%missingInput" styleClass="warningLabel" fx:id="missingInputLabel" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+    <Label text="%inputToLong" styleClass="warningLabel" visible="${controller.anyInputToLong}" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+    <Label text="%missingInput" styleClass="warningLabel" visible="${controller.anyInputMissing}" GridPane.columnIndex="1" GridPane.rowIndex="10" />
     
-    <Button text="%ready" defaultButton="true" fx:id="readyButton" onAction="#ready" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+    <Button text="%ready" defaultButton="true" onAction="#ready" disable="${!controller.valid}" GridPane.columnIndex="0" GridPane.rowIndex="10" />
 </GridPane>
