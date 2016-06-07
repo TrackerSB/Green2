@@ -25,13 +25,13 @@
     -fx-min-width: 200px;
 }
 
-.emptyTextField, .tooLongContent, .invalidDate, .invalidSpinnerValue{
+.emptyTextField, .toLongContent, .invalidDate, .invalidSpinnerValue{
     -fx-border-color: -fx-main-error-color;
     -fx-highlight-fill: -fx-main-error-color;
     -fx-focus-color: -fx-main-error-color;
 }
 
-.emptyTextField:focused, .tooLongContent:focused, .invalidDate:focused,
+.emptyTextField:focused, .toLongContent:focused, .invalidDate:focused,
 .invalidSpinnerValue:focused{
     -fx-border-color: transparent;
 }

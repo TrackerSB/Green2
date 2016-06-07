@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-import javafx.beans.binding.IntegerBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
@@ -35,16 +37,11 @@ public class SelectionController<T extends Comparable> extends Controller {
     private IntegerProperty selectedCount
             = new SimpleIntegerProperty(this, "selectedCount");
     private ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
+    private BooleanProperty nothingSelected = new SimpleBooleanProperty();
+    private BooleanProperty allSelected = new SimpleBooleanProperty();
+    private BooleanProperty valid = new SimpleBooleanProperty();
     @FXML
     private ListView<CheckBox> optionsListView;
-    @FXML
-    private Button selectAllButton;
-    @FXML
-    private Button selectNoneButton;
-    @FXML
-    private Button selectButton;
-    @FXML
-    private Label missingInput;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
         if (newVal) {
@@ -59,12 +56,16 @@ public class SelectionController<T extends Comparable> extends Controller {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        selectedCount.lessThanOrEqualTo(0)
+        nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
+        allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
+        valid.bind(nothingSelected.not());
+
+        /*selectedCount.lessThanOrEqualTo(0)
                 .addListener((obs, oldVal, newVal) -> {
                     missingInput.setVisible(newVal);
                     selectButton.setDisable(newVal);
                     selectNoneButton.setDisable(newVal);
-                });
+                });*/
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
             newVal.stream().forEach(op -> {
@@ -72,10 +73,10 @@ public class SelectionController<T extends Comparable> extends Controller {
                 newItem.selectedProperty().addListener(selectionChange);
                 optionsListView.getItems().add(newItem);
             });
-            selectedCount.greaterThanOrEqualTo(newVal.size())
+            /*selectedCount.greaterThanOrEqualTo(newVal.size())
                     .addListener((obss, oldVall, newVall) -> {
                         selectAllButton.setDisable(newVall);
-                    });
+                    });*/
         });
     }
 
@@ -92,7 +93,7 @@ public class SelectionController<T extends Comparable> extends Controller {
     @FXML
     private void select() {
         checkStage();
-        if (!selectButton.isDisabled()) {
+        if (isValid()) {
             userConfirmed = true;
             stage.close();
         }
@@ -143,5 +144,21 @@ public class SelectionController<T extends Comparable> extends Controller {
 
     public int getTotalCount() {
         return totalCount.get();
+    }
+
+    public ReadOnlyBooleanProperty nothingSelectedProperty() {
+        return nothingSelected;
+    }
+
+    public boolean isNothingSelected() {
+        return nothingSelected.get();
+    }
+
+    public ReadOnlyBooleanProperty validProperty() {
+        return valid;
+    }
+
+    public boolean isValid() {
+        return valid.get();
     }
 }

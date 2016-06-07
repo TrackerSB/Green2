@@ -13,11 +13,11 @@
         <Label text="%chosen" />
     </HBox>
     <HBox spacing="10">
-        <Button fx:id="selectAllButton" text="%selectAll" onAction="#selectAllOptions" />
-        <Button fx:id="selectNoneButton" text="%selectNothing" disable="true" onAction="#selectNoOption" />
+        <Button disable="${controller.allSelected}" text="%selectAll" onAction="#selectAllOptions" />
+        <Button disable="${controller.nothingSelected}" text="%selectNothing" onAction="#selectNoOption" />
     </HBox>
     <HBox spacing="10">
-        <Button text="%ready" defaultButton="true" fx:id="selectButton" disable="true" onAction="#select" />
-        <Label fx:id="missingInput" text="%invalidOrMissingInput" styleClass="warningLabel" />
+        <Button text="%ready" defaultButton="true" disable="${!controller.valid}" onAction="#select" />
+        <Label text="%invalidOrMissingInput" visible="${!controller.valid}" styleClass="warningLabel" />
     </HBox>
 </VBox>

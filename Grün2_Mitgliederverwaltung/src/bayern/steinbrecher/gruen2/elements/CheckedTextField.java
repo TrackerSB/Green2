@@ -27,7 +27,7 @@ public class CheckedTextField extends TextField {
      * Holds the string representation of the css class attribute added when the
      * content of this text field is too long.
      */
-    public static final String CSS_CLASS_TOO_LONG_CONTENT = "tooLongContent";
+    public static final String CSS_CLASS_TOO_LONG_CONTENT = "toLongContent";
     /**
      * Holds the string representation of the css class attribute added when
      * there´s no content in this field.
@@ -51,8 +51,8 @@ public class CheckedTextField extends TextField {
     /**
      * Holds {@code true} only if the text of the text field is too long.
      */
-    private final BooleanProperty tooLongContent
-            = new SimpleBooleanProperty(this, "tooLongContent");
+    private final BooleanProperty toLongContent
+            = new SimpleBooleanProperty(this, "toLongContent");
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of
      * the following is true:
@@ -106,14 +106,14 @@ public class CheckedTextField extends TextField {
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         textProperty().addListener((obs, oldVal, newVal) -> {
-            tooLongContent.set(newVal != null
+            toLongContent.set(newVal != null
                     && newVal.length() > maxColumnCount.get());
         });
         maxColumnCount.addListener((obs, oldVal, newVal) -> {
-            tooLongContent.setValue(
+            toLongContent.setValue(
                     textProperty().get().length() > newVal.intValue());
         });
-        valid.bind(tooLongContent.or(emptyContent).and(checked).not());
+        valid.bind(toLongContent.or(emptyContent).and(checked).not());
         valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 getStyleClass().removeAll(
@@ -122,7 +122,7 @@ public class CheckedTextField extends TextField {
                 if (emptyContent.get()) {
                     getStyleClass().add(CSS_CLASS_NO_CONTENT);
                 }
-                if (tooLongContent.get()) {
+                if (toLongContent.get()) {
                     getStyleClass().add(CSS_CLASS_TOO_LONG_CONTENT);
                 }
             }
@@ -214,8 +214,8 @@ public class CheckedTextField extends TextField {
      * @return The property representing whether the current content of the text
      * field is too long.
      */
-    public ReadOnlyBooleanProperty tooLongProperty() {
-        return tooLongContent;
+    public ReadOnlyBooleanProperty toLongProperty() {
+        return toLongContent;
     }
 
     /**
@@ -224,8 +224,8 @@ public class CheckedTextField extends TextField {
      *
      * @return {@code true} only if the current content is too long.
      */
-    public boolean isTooLong() {
-        return tooLongContent.get();
+    public boolean isToLong() {
+        return toLongContent.get();
     }
 
     /**

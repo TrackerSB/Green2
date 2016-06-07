@@ -53,7 +53,7 @@ public abstract class LoginController extends Controller {
     @FXML
     private void login() {
         checkStage();
-        if (allInputValid.get()) {
+        if (isAllInputValid()) {
             userConfirmed = true;
             stage.close();
         }
