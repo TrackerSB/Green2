@@ -359,7 +359,7 @@ public class Main extends Application {
 
     private void generateSepa(List<Member> memberToSelect,
             Map<Integer, Double> contribution) {
-        SepaForm sepaForm = new SepaForm();
+        SepaForm sepaForm = new SepaForm(menuStage);
         Optional<Originator> originator;
         try {
             sepaForm.start(new Stage());
@@ -373,7 +373,7 @@ public class Main extends Application {
         if (originator.isPresent()) {
             try {
                 Selection<Member> selection
-                        = new Selection<>(memberToSelect);
+                        = new Selection<>(memberToSelect, menuStage);
                 selection.start(new Stage());
                 Optional<List<Member>> selectedMember
                         = selection.getSelection();
@@ -411,7 +411,7 @@ public class Main extends Application {
      */
     public void generateUniversalSepa() {
         checkNull(member);
-        Contribution contribution = new Contribution();
+        Contribution contribution = new Contribution(menuStage);
         try {
             contribution.start(new Stage());
         } catch (Exception ex) {
