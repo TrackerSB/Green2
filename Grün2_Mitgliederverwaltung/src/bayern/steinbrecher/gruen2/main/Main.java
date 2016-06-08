@@ -126,12 +126,12 @@ public class Main extends Application {
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        waitScreen.close();
-                    } else {
-                        Platform.exit();
-                    }
-                });
+                            if (newVal) {
+                                waitScreen.close();
+                            } else {
+                                Platform.exit();
+                            }
+                        });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -455,7 +455,7 @@ public class Main extends Application {
                 generateSepa(memberNonContributionfree.get(),
                         optContributions.get());
             } else {
-                Contribution contribution = new Contribution();
+                Contribution contribution = new Contribution(menuStage);
                 try {
                     contribution.start(new Stage());
                 } catch (Exception ex) {

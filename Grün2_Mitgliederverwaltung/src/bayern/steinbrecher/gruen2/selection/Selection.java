@@ -17,8 +17,9 @@ import javafx.stage.Stage;
  */
 public class Selection<T extends Comparable>
         extends View<SelectionController<T>> {
-
+    
     private final List<T> options;
+    private Stage owner;
 
     /**
      * Greates a new Frame representing the given options as selectable
@@ -26,9 +27,24 @@ public class Selection<T extends Comparable>
      * number.
      *
      * @param options The options the user is allowed to select.
+     *
      */
     public Selection(List<T> options) {
+        this(options, null);
+    }
+
+    /**
+     * Greates a new Frame representing the given options as selectable
+     * {@code CheckBox}es and representing a {@code TextField} for entering a
+     * number.
+     *
+     * @param options The options the user is allowed to select.
+     * @param owner The owner which causes this window to close if the owner is
+     * closed. The owner is not blocked.
+     */
+    public Selection(List<T> options, Stage owner) {
         this.options = options;
+        this.owner = owner;
     }
 
     /**
@@ -37,17 +53,18 @@ public class Selection<T extends Comparable>
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-
+        
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Selection.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
-
+        
         controller = fxmlLoader.getController();
         controller.setStage(stage);
         controller.setOptions(options);
-
+        
+        stage.initOwner(owner);
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("select"));
         stage.setResizable(false);

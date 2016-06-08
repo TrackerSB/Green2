@@ -16,6 +16,25 @@ import javafx.stage.Stage;
  */
 public class SepaForm extends View<SepaFormController> {
 
+    private Stage owner;
+
+    /**
+     * Default constructor. Owner set to {@code null}.
+     */
+    public SepaForm() {
+        this(null);
+    }
+
+    /**
+     * Creates a sepa form.
+     *
+     * @param owner The owner which causes this window to close if the owner is
+     * closed. The owner is not blocked.
+     */
+    public SepaForm(Stage owner) {
+        this.owner = owner;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -32,6 +51,7 @@ public class SepaForm extends View<SepaFormController> {
         controller = fxmlLoader.getController();
         controller.setStage(stage);
 
+        stage.initOwner(owner);
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("sepaFormTitle"));
         stage.setResizable(false);

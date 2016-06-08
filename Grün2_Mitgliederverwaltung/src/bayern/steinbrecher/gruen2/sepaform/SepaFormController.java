@@ -181,7 +181,7 @@ public class SepaFormController extends Controller {
      *
      * @return The constant {@code MAX_CHAR_MESSAGE_ID}.
      */
-    public static int getMaxCharMessageId() {
+    public int getMaxCharMessageId() {
         return MAX_CHAR_MESSAGE_ID;
     }
 

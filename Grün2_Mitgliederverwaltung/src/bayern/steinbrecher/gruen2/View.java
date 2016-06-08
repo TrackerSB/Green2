@@ -21,11 +21,11 @@ public abstract class View<T extends Controller> extends Application {
      * classes.
      */
     protected Stage stage = null;
-    private BooleanProperty gotShownProperty
+    private final BooleanProperty gotShownProperty
             = new SimpleBooleanProperty(this, "gotShown", false);
-    private BooleanProperty gotClosedProperty
+    private final BooleanProperty gotClosedProperty
             = new SimpleBooleanProperty(this, "gotClosed", false);
-    private BooleanBinding wouldShowProperty = gotShownProperty.not();
+    private final BooleanBinding wouldShowProperty = gotShownProperty.not();
     protected T controller;
 
     /**

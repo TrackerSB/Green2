@@ -14,6 +14,25 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  */
 public class Contribution extends View<ContributionController> {
+    
+    private Stage owner;
+
+    /**
+     * Default constructor. Owner set to {@code null}.
+     */
+    public Contribution() {
+        this(null);
+    }
+
+    /**
+     * Creates a contribution dialog.
+     *
+     * @param owner The owner which causes this window to close if the owner is
+     * closed. The owner is not blocked.
+     */
+    public Contribution(Stage owner) {
+        this.owner = owner;
+    }
 
     /**
      * {@inheritDoc}
@@ -21,16 +40,17 @@ public class Contribution extends View<ContributionController> {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-
+        
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Contribution.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
-
+        
         controller = fxmlLoader.getController();
         controller.setStage(stage);
-
+        
+        stage.initOwner(owner);
         stage.setScene(new Scene(root));
         stage.setTitle(
                 DataProvider.RESOURCE_BUNDLE.getString("contributionTitle"));
