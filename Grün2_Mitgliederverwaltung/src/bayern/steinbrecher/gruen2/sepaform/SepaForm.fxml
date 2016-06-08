@@ -5,8 +5,8 @@
 <?import bayern.steinbrecher.gruen2.elements.*?>
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.sepaform.SepaFormController">
-    <Label fx:id="presenterLabel" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-    <CheckedTextField maxColumnCount="${controller.maxCharNamePresenter}" promptText="%nameOfPresenter" fx:id="creatorTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <Label fx:id="initiatingPartyLabel" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <CheckedTextField maxColumnCount="${controller.maxCharNameInitiatingParty}" promptText="%nameOfInitiatingParty" fx:id="creatorTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
     <Label text="%accountHolder" GridPane.columnIndex="0" GridPane.rowIndex="1" />
     <CheckedTextField promptText="%accountHolder" fx:id="creditorTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     <Label text="%iban" GridPane.columnIndex="0" GridPane.rowIndex="2" />

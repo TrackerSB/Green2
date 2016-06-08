@@ -46,7 +46,7 @@ public class SepaFormController extends Controller {
     };
     public static final int MAX_CHAR_MESSAGE_ID = 35;
     public static final int MAX_CHAR_PMTINFID = 35;
-    public static final int MAX_CHAR_NAME_OF_PRESENTER = 70;
+    public static final int MAX_CHAR_NAME_OF_INITIATING_PARTY = 70;
     private final BooleanProperty anyInputToLong = new SimpleBooleanProperty();
     private final BooleanProperty anyInputMissing = new SimpleBooleanProperty();
     private final BooleanProperty valid = new SimpleBooleanProperty();
@@ -71,7 +71,7 @@ public class SepaFormController extends Controller {
     @FXML
     private CheckedDatePicker executionDatePicker;
     @FXML
-    private Label presenterLabel;
+    private Label initiatingPartyLabel;
     @FXML
     private Label messageIdLabel;
     @FXML
@@ -84,10 +84,10 @@ public class SepaFormController extends Controller {
     public void initialize(URL location, ResourceBundle resources) {
         String maxCharCount
                 = DataProvider.RESOURCE_BUNDLE.getString("maxCharCount");
-        presenterLabel.setText(
-                DataProvider.RESOURCE_BUNDLE.getString("nameOfPresenter") + "\n"
-                + MessageFormat.format(
-                        maxCharCount, getMaxCharNamePresenter()));
+        initiatingPartyLabel.setText(
+                DataProvider.RESOURCE_BUNDLE.getString("nameOfInitiatingParty")
+                + "\n" + MessageFormat.format(
+                        maxCharCount, getMaxCharNameInitiatingParty()));
         pmtInfIdLabel.setText(
                 DataProvider.RESOURCE_BUNDLE.getString("pmtInfId") + "\n"
                 + MessageFormat.format(maxCharCount, getMaxCharPmtInfId()));
@@ -196,13 +196,13 @@ public class SepaFormController extends Controller {
     }
 
     /**
-     * Returns the constant {@code MAX_CHAR_NAME_OF_PRESENTER}. Only needed for
+     * Returns the constant {@code MAX_CHAR_NAME_OF_INITATING_PARTY}. Only needed for
      * use in FXML.
      *
-     * @return The constant {@code MAX_CHAR_NAME_OF_PRESENTER}.
+     * @return The constant {@code MAX_CHAR_NAME_OF_INITATING_PARTY}.
      */
-    public int getMaxCharNamePresenter() {
-        return MAX_CHAR_NAME_OF_PRESENTER;
+    public int getMaxCharNameInitiatingParty() {
+        return MAX_CHAR_NAME_OF_INITIATING_PARTY;
     }
 
     /**
