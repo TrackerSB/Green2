@@ -166,7 +166,7 @@ public class SepaFormController extends Controller {
      * Returns the currently set originator. Returns {@code Optional.empty} if
      * the user did not confirm input.
      *
-     * @return
+     * @return The currently set originator or {@code Optional.empty()}.
      */
     public Optional<Originator> getOriginator() {
         if (userConfirmed) {

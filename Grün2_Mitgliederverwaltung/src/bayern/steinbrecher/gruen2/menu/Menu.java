@@ -55,7 +55,7 @@ public class Menu extends View<MenuController> {
      * Not implemented. There´s no data to be confirmed by the user.
      *
      * @return Nothing.
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException Always thrown.
      */
     @Override
     public boolean userConfirmed() {
