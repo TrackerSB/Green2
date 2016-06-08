@@ -12,40 +12,39 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 public class DigitalSignature {
-	
-	private int headerSignature;
-	
-	private int sizeOfData;
-	
-	private String signatureData;
 
-	public int getHeaderSignature() {
-		return headerSignature;
-	}
+    private int headerSignature;
 
-	public void setHeaderSignature(int headerSignature) {
-		this.headerSignature = headerSignature;
-	}
+    private int sizeOfData;
 
-	public int getSizeOfData() {
-		return sizeOfData;
-	}
+    private String signatureData;
 
-	public void setSizeOfData(int sizeOfData) {
-		this.sizeOfData = sizeOfData;
-	}
+    public int getHeaderSignature() {
+        return headerSignature;
+    }
 
-	public String getSignatureData() {
-		return signatureData;
-	}
+    public void setHeaderSignature(int headerSignature) {
+        this.headerSignature = headerSignature;
+    }
 
-	public void setSignatureData(String signatureData) {
-		this.signatureData = signatureData;
-	}
-	
+    public int getSizeOfData() {
+        return sizeOfData;
+    }
+
+    public void setSizeOfData(int sizeOfData) {
+        this.sizeOfData = sizeOfData;
+    }
+
+    public String getSignatureData() {
+        return signatureData;
+    }
+
+    public void setSignatureData(String signatureData) {
+        this.signatureData = signatureData;
+    }
+
 }

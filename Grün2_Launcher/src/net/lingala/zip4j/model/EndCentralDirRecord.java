@@ -12,111 +12,110 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 public class EndCentralDirRecord {
-	
-	private long signature;
-	
-	private int noOfThisDisk;
-	
-	private int noOfThisDiskStartOfCentralDir;
-	
-	private int totNoOfEntriesInCentralDirOnThisDisk;
-	
-	private int totNoOfEntriesInCentralDir;
-	
-	private int sizeOfCentralDir;
-	
-	private long offsetOfStartOfCentralDir;
-	
-	private int commentLength;
-	
-	private String comment;
-	
-	private byte[] commentBytes;
 
-	public long getSignature() {
-		return signature;
-	}
+    private long signature;
 
-	public void setSignature(long signature) {
-		this.signature = signature;
-	}
+    private int noOfThisDisk;
 
-	public int getNoOfThisDisk() {
-		return noOfThisDisk;
-	}
+    private int noOfThisDiskStartOfCentralDir;
 
-	public void setNoOfThisDisk(int noOfThisDisk) {
-		this.noOfThisDisk = noOfThisDisk;
-	}
+    private int totNoOfEntriesInCentralDirOnThisDisk;
 
-	public int getNoOfThisDiskStartOfCentralDir() {
-		return noOfThisDiskStartOfCentralDir;
-	}
+    private int totNoOfEntriesInCentralDir;
 
-	public void setNoOfThisDiskStartOfCentralDir(int noOfThisDiskStartOfCentralDir) {
-		this.noOfThisDiskStartOfCentralDir = noOfThisDiskStartOfCentralDir;
-	}
+    private int sizeOfCentralDir;
 
-	public int getTotNoOfEntriesInCentralDirOnThisDisk() {
-		return totNoOfEntriesInCentralDirOnThisDisk;
-	}
+    private long offsetOfStartOfCentralDir;
 
-	public void setTotNoOfEntriesInCentralDirOnThisDisk(
-			int totNoOfEntriesInCentralDirOnThisDisk) {
-		this.totNoOfEntriesInCentralDirOnThisDisk = totNoOfEntriesInCentralDirOnThisDisk;
-	}
+    private int commentLength;
 
-	public int getTotNoOfEntriesInCentralDir() {
-		return totNoOfEntriesInCentralDir;
-	}
+    private String comment;
 
-	public void setTotNoOfEntriesInCentralDir(int totNoOfEntrisInCentralDir) {
-		this.totNoOfEntriesInCentralDir = totNoOfEntrisInCentralDir;
-	}
+    private byte[] commentBytes;
 
-	public int getSizeOfCentralDir() {
-		return sizeOfCentralDir;
-	}
+    public long getSignature() {
+        return signature;
+    }
 
-	public void setSizeOfCentralDir(int sizeOfCentralDir) {
-		this.sizeOfCentralDir = sizeOfCentralDir;
-	}
+    public void setSignature(long signature) {
+        this.signature = signature;
+    }
 
-	public long getOffsetOfStartOfCentralDir() {
-		return offsetOfStartOfCentralDir;
-	}
+    public int getNoOfThisDisk() {
+        return noOfThisDisk;
+    }
 
-	public void setOffsetOfStartOfCentralDir(long offSetOfStartOfCentralDir) {
-		this.offsetOfStartOfCentralDir = offSetOfStartOfCentralDir;
-	}
+    public void setNoOfThisDisk(int noOfThisDisk) {
+        this.noOfThisDisk = noOfThisDisk;
+    }
 
-	public int getCommentLength() {
-		return commentLength;
-	}
+    public int getNoOfThisDiskStartOfCentralDir() {
+        return noOfThisDiskStartOfCentralDir;
+    }
 
-	public void setCommentLength(int commentLength) {
-		this.commentLength = commentLength;
-	}
+    public void setNoOfThisDiskStartOfCentralDir(int noOfThisDiskStartOfCentralDir) {
+        this.noOfThisDiskStartOfCentralDir = noOfThisDiskStartOfCentralDir;
+    }
 
-	public String getComment() {
-		return comment;
-	}
+    public int getTotNoOfEntriesInCentralDirOnThisDisk() {
+        return totNoOfEntriesInCentralDirOnThisDisk;
+    }
 
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
+    public void setTotNoOfEntriesInCentralDirOnThisDisk(
+            int totNoOfEntriesInCentralDirOnThisDisk) {
+        this.totNoOfEntriesInCentralDirOnThisDisk = totNoOfEntriesInCentralDirOnThisDisk;
+    }
 
-	public byte[] getCommentBytes() {
-		return commentBytes;
-	}
+    public int getTotNoOfEntriesInCentralDir() {
+        return totNoOfEntriesInCentralDir;
+    }
 
-	public void setCommentBytes(byte[] commentBytes) {
-		this.commentBytes = commentBytes;
-	}
-	
+    public void setTotNoOfEntriesInCentralDir(int totNoOfEntrisInCentralDir) {
+        this.totNoOfEntriesInCentralDir = totNoOfEntrisInCentralDir;
+    }
+
+    public int getSizeOfCentralDir() {
+        return sizeOfCentralDir;
+    }
+
+    public void setSizeOfCentralDir(int sizeOfCentralDir) {
+        this.sizeOfCentralDir = sizeOfCentralDir;
+    }
+
+    public long getOffsetOfStartOfCentralDir() {
+        return offsetOfStartOfCentralDir;
+    }
+
+    public void setOffsetOfStartOfCentralDir(long offSetOfStartOfCentralDir) {
+        this.offsetOfStartOfCentralDir = offSetOfStartOfCentralDir;
+    }
+
+    public int getCommentLength() {
+        return commentLength;
+    }
+
+    public void setCommentLength(int commentLength) {
+        this.commentLength = commentLength;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public byte[] getCommentBytes() {
+        return commentBytes;
+    }
+
+    public void setCommentBytes(byte[] commentBytes) {
+        this.commentBytes = commentBytes;
+    }
+
 }

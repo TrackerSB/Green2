@@ -12,124 +12,121 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 public class Zip64EndCentralDirRecord {
-	
-	private long signature;
-	
-	private long sizeOfZip64EndCentralDirRec;
-	
-	private int versionMadeBy;
-	
-	private int versionNeededToExtract;
-	
-	private int noOfThisDisk;
-	
-	private int noOfThisDiskStartOfCentralDir;
-	
-	private long totNoOfEntriesInCentralDirOnThisDisk;
-	
-	private long totNoOfEntriesInCentralDir;
-	
-	private long sizeOfCentralDir;
-	
-	private long offsetStartCenDirWRTStartDiskNo;
-	
-	private byte[] extensibleDataSector;
 
-	public long getSignature() {
-		return signature;
-	}
+    private long signature;
 
-	public void setSignature(long signature) {
-		this.signature = signature;
-	}
+    private long sizeOfZip64EndCentralDirRec;
 
-	public long getSizeOfZip64EndCentralDirRec() {
-		return sizeOfZip64EndCentralDirRec;
-	}
+    private int versionMadeBy;
 
-	public void setSizeOfZip64EndCentralDirRec(long sizeOfZip64EndCentralDirRec) {
-		this.sizeOfZip64EndCentralDirRec = sizeOfZip64EndCentralDirRec;
-	}
+    private int versionNeededToExtract;
 
-	public int getVersionMadeBy() {
-		return versionMadeBy;
-	}
+    private int noOfThisDisk;
 
-	public void setVersionMadeBy(int versionMadeBy) {
-		this.versionMadeBy = versionMadeBy;
-	}
+    private int noOfThisDiskStartOfCentralDir;
 
-	public int getVersionNeededToExtract() {
-		return versionNeededToExtract;
-	}
+    private long totNoOfEntriesInCentralDirOnThisDisk;
 
-	public void setVersionNeededToExtract(int versionNeededToExtract) {
-		this.versionNeededToExtract = versionNeededToExtract;
-	}
+    private long totNoOfEntriesInCentralDir;
 
-	public int getNoOfThisDisk() {
-		return noOfThisDisk;
-	}
+    private long sizeOfCentralDir;
 
-	public void setNoOfThisDisk(int noOfThisDisk) {
-		this.noOfThisDisk = noOfThisDisk;
-	}
+    private long offsetStartCenDirWRTStartDiskNo;
 
-	public int getNoOfThisDiskStartOfCentralDir() {
-		return noOfThisDiskStartOfCentralDir;
-	}
+    private byte[] extensibleDataSector;
 
-	public void setNoOfThisDiskStartOfCentralDir(int noOfThisDiskStartOfCentralDir) {
-		this.noOfThisDiskStartOfCentralDir = noOfThisDiskStartOfCentralDir;
-	}
+    public long getSignature() {
+        return signature;
+    }
 
-	public long getTotNoOfEntriesInCentralDirOnThisDisk() {
-		return totNoOfEntriesInCentralDirOnThisDisk;
-	}
+    public void setSignature(long signature) {
+        this.signature = signature;
+    }
 
-	public void setTotNoOfEntriesInCentralDirOnThisDisk(
-			long totNoOfEntriesInCentralDirOnThisDisk) {
-		this.totNoOfEntriesInCentralDirOnThisDisk = totNoOfEntriesInCentralDirOnThisDisk;
-	}
+    public long getSizeOfZip64EndCentralDirRec() {
+        return sizeOfZip64EndCentralDirRec;
+    }
 
-	public long getTotNoOfEntriesInCentralDir() {
-		return totNoOfEntriesInCentralDir;
-	}
+    public void setSizeOfZip64EndCentralDirRec(long sizeOfZip64EndCentralDirRec) {
+        this.sizeOfZip64EndCentralDirRec = sizeOfZip64EndCentralDirRec;
+    }
 
-	public void setTotNoOfEntriesInCentralDir(long totNoOfEntriesInCentralDir) {
-		this.totNoOfEntriesInCentralDir = totNoOfEntriesInCentralDir;
-	}
+    public int getVersionMadeBy() {
+        return versionMadeBy;
+    }
 
-	public long getSizeOfCentralDir() {
-		return sizeOfCentralDir;
-	}
+    public void setVersionMadeBy(int versionMadeBy) {
+        this.versionMadeBy = versionMadeBy;
+    }
 
-	public void setSizeOfCentralDir(long sizeOfCentralDir) {
-		this.sizeOfCentralDir = sizeOfCentralDir;
-	}
+    public int getVersionNeededToExtract() {
+        return versionNeededToExtract;
+    }
 
-	public long getOffsetStartCenDirWRTStartDiskNo() {
-		return offsetStartCenDirWRTStartDiskNo;
-	}
+    public void setVersionNeededToExtract(int versionNeededToExtract) {
+        this.versionNeededToExtract = versionNeededToExtract;
+    }
 
-	public void setOffsetStartCenDirWRTStartDiskNo(
-			long offsetStartCenDirWRTStartDiskNo) {
-		this.offsetStartCenDirWRTStartDiskNo = offsetStartCenDirWRTStartDiskNo;
-	}
+    public int getNoOfThisDisk() {
+        return noOfThisDisk;
+    }
 
-	public byte[] getExtensibleDataSector() {
-		return extensibleDataSector;
-	}
+    public void setNoOfThisDisk(int noOfThisDisk) {
+        this.noOfThisDisk = noOfThisDisk;
+    }
 
-	public void setExtensibleDataSector(byte[] extensibleDataSector) {
-		this.extensibleDataSector = extensibleDataSector;
-	}
-	
-	
-	
+    public int getNoOfThisDiskStartOfCentralDir() {
+        return noOfThisDiskStartOfCentralDir;
+    }
+
+    public void setNoOfThisDiskStartOfCentralDir(int noOfThisDiskStartOfCentralDir) {
+        this.noOfThisDiskStartOfCentralDir = noOfThisDiskStartOfCentralDir;
+    }
+
+    public long getTotNoOfEntriesInCentralDirOnThisDisk() {
+        return totNoOfEntriesInCentralDirOnThisDisk;
+    }
+
+    public void setTotNoOfEntriesInCentralDirOnThisDisk(
+            long totNoOfEntriesInCentralDirOnThisDisk) {
+        this.totNoOfEntriesInCentralDirOnThisDisk = totNoOfEntriesInCentralDirOnThisDisk;
+    }
+
+    public long getTotNoOfEntriesInCentralDir() {
+        return totNoOfEntriesInCentralDir;
+    }
+
+    public void setTotNoOfEntriesInCentralDir(long totNoOfEntriesInCentralDir) {
+        this.totNoOfEntriesInCentralDir = totNoOfEntriesInCentralDir;
+    }
+
+    public long getSizeOfCentralDir() {
+        return sizeOfCentralDir;
+    }
+
+    public void setSizeOfCentralDir(long sizeOfCentralDir) {
+        this.sizeOfCentralDir = sizeOfCentralDir;
+    }
+
+    public long getOffsetStartCenDirWRTStartDiskNo() {
+        return offsetStartCenDirWRTStartDiskNo;
+    }
+
+    public void setOffsetStartCenDirWRTStartDiskNo(
+            long offsetStartCenDirWRTStartDiskNo) {
+        this.offsetStartCenDirWRTStartDiskNo = offsetStartCenDirWRTStartDiskNo;
+    }
+
+    public byte[] getExtensibleDataSector() {
+        return extensibleDataSector;
+    }
+
+    public void setExtensibleDataSector(byte[] extensibleDataSector) {
+        this.extensibleDataSector = extensibleDataSector;
+    }
+
 }

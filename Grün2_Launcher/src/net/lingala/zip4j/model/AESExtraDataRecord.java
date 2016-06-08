@@ -12,86 +12,73 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 public class AESExtraDataRecord {
-	
-	private long signature;
-	private int dataSize;
-	private int versionNumber;
-	private String vendorID;
-	private int aesStrength;
-	private int compressionMethod;
-	
-	public AESExtraDataRecord() {
-		signature = -1;
-		dataSize = -1;
-		versionNumber = -1;
-		vendorID = null;
-		aesStrength = -1;
-		compressionMethod = -1;
-	}
 
+    private long signature;
+    private int dataSize;
+    private int versionNumber;
+    private String vendorID;
+    private int aesStrength;
+    private int compressionMethod;
 
-	public long getSignature() {
-		return signature;
-	}
+    public AESExtraDataRecord() {
+        signature = -1;
+        dataSize = -1;
+        versionNumber = -1;
+        vendorID = null;
+        aesStrength = -1;
+        compressionMethod = -1;
+    }
 
+    public long getSignature() {
+        return signature;
+    }
 
-	public void setSignature(long signature) {
-		this.signature = signature;
-	}
+    public void setSignature(long signature) {
+        this.signature = signature;
+    }
 
+    public int getDataSize() {
+        return dataSize;
+    }
 
-	public int getDataSize() {
-		return dataSize;
-	}
+    public void setDataSize(int dataSize) {
+        this.dataSize = dataSize;
+    }
 
+    public int getVersionNumber() {
+        return versionNumber;
+    }
 
-	public void setDataSize(int dataSize) {
-		this.dataSize = dataSize;
-	}
+    public void setVersionNumber(int versionNumber) {
+        this.versionNumber = versionNumber;
+    }
 
+    public String getVendorID() {
+        return vendorID;
+    }
 
-	public int getVersionNumber() {
-		return versionNumber;
-	}
+    public void setVendorID(String vendorID) {
+        this.vendorID = vendorID;
+    }
 
+    public int getAesStrength() {
+        return aesStrength;
+    }
 
-	public void setVersionNumber(int versionNumber) {
-		this.versionNumber = versionNumber;
-	}
+    public void setAesStrength(int aesStrength) {
+        this.aesStrength = aesStrength;
+    }
 
+    public int getCompressionMethod() {
+        return compressionMethod;
+    }
 
-	public String getVendorID() {
-		return vendorID;
-	}
+    public void setCompressionMethod(int compressionMethod) {
+        this.compressionMethod = compressionMethod;
+    }
 
-
-	public void setVendorID(String vendorID) {
-		this.vendorID = vendorID;
-	}
-
-
-	public int getAesStrength() {
-		return aesStrength;
-	}
-
-
-	public void setAesStrength(int aesStrength) {
-		this.aesStrength = aesStrength;
-	}
-
-
-	public int getCompressionMethod() {
-		return compressionMethod;
-	}
-
-
-	public void setCompressionMethod(int compressionMethod) {
-		this.compressionMethod = compressionMethod;
-	}
-	
 }

@@ -12,250 +12,249 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 import java.util.ArrayList;
 
 public class LocalFileHeader {
-	
-	private int signature;
-	
-	private int versionNeededToExtract;
-	
-	private byte[] generalPurposeFlag;
-	
-	private int compressionMethod;
-	
-	private int lastModFileTime;
-	
-	private long crc32;
-	
-	private byte[] crcBuff;
-	
-	private long compressedSize;
-	
-	private long uncompressedSize;
-	
-	private int fileNameLength;
-	
-	private int extraFieldLength;
-	
-	private String fileName;
-	
-	private byte[] extraField;
-	
-	private long offsetStartOfData;
-	
-	private boolean isEncrypted;
-	
-	private int encryptionMethod;
-	
-	private char[] password;
-	
-	private ArrayList extraDataRecords;
-	
-	private Zip64ExtendedInfo zip64ExtendedInfo;
-	
-	private AESExtraDataRecord aesExtraDataRecord;
-	
-	private boolean dataDescriptorExists;
-	
-	private boolean writeComprSizeInZip64ExtraRecord;
-	
-	private boolean fileNameUTF8Encoded;
-	
-	public LocalFileHeader() {
-		encryptionMethod = -1;
-		writeComprSizeInZip64ExtraRecord = false;
-		crc32 = 0;
-		uncompressedSize = 0;
-	}
-	
-	public int getSignature() {
-		return signature;
-	}
 
-	public void setSignature(int signature) {
-		this.signature = signature;
-	}
+    private int signature;
 
-	public int getVersionNeededToExtract() {
-		return versionNeededToExtract;
-	}
+    private int versionNeededToExtract;
 
-	public void setVersionNeededToExtract(int versionNeededToExtract) {
-		this.versionNeededToExtract = versionNeededToExtract;
-	}
+    private byte[] generalPurposeFlag;
 
-	public byte[] getGeneralPurposeFlag() {
-		return generalPurposeFlag;
-	}
+    private int compressionMethod;
 
-	public void setGeneralPurposeFlag(byte[] generalPurposeFlag) {
-		this.generalPurposeFlag = generalPurposeFlag;
-	}
+    private int lastModFileTime;
 
-	public int getCompressionMethod() {
-		return compressionMethod;
-	}
+    private long crc32;
 
-	public void setCompressionMethod(int compressionMethod) {
-		this.compressionMethod = compressionMethod;
-	}
+    private byte[] crcBuff;
 
-	public int getLastModFileTime() {
-		return lastModFileTime;
-	}
+    private long compressedSize;
 
-	public void setLastModFileTime(int lastModFileTime) {
-		this.lastModFileTime = lastModFileTime;
-	}
+    private long uncompressedSize;
 
-	public long getCrc32() {
-		return crc32;
-	}
+    private int fileNameLength;
 
-	public void setCrc32(long crc32) {
-		this.crc32 = crc32;
-	}
+    private int extraFieldLength;
 
-	public long getCompressedSize() {
-		return compressedSize;
-	}
+    private String fileName;
 
-	public void setCompressedSize(long compressedSize) {
-		this.compressedSize = compressedSize;
-	}
+    private byte[] extraField;
 
-	public long getUncompressedSize() {
-		return uncompressedSize;
-	}
+    private long offsetStartOfData;
 
-	public void setUncompressedSize(long uncompressedSize) {
-		this.uncompressedSize = uncompressedSize;
-	}
+    private boolean isEncrypted;
 
-	public int getFileNameLength() {
-		return fileNameLength;
-	}
+    private int encryptionMethod;
 
-	public void setFileNameLength(int fileNameLength) {
-		this.fileNameLength = fileNameLength;
-	}
+    private char[] password;
 
-	public int getExtraFieldLength() {
-		return extraFieldLength;
-	}
+    private ArrayList extraDataRecords;
 
-	public void setExtraFieldLength(int extraFieldLength) {
-		this.extraFieldLength = extraFieldLength;
-	}
+    private Zip64ExtendedInfo zip64ExtendedInfo;
 
-	public String getFileName() {
-		return fileName;
-	}
+    private AESExtraDataRecord aesExtraDataRecord;
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    private boolean dataDescriptorExists;
 
-	public byte[] getExtraField() {
-		return extraField;
-	}
+    private boolean writeComprSizeInZip64ExtraRecord;
 
-	public void setExtraField(byte[] extraField) {
-		this.extraField = extraField;
-	}
+    private boolean fileNameUTF8Encoded;
 
-	public long getOffsetStartOfData() {
-		return offsetStartOfData;
-	}
+    public LocalFileHeader() {
+        encryptionMethod = -1;
+        writeComprSizeInZip64ExtraRecord = false;
+        crc32 = 0;
+        uncompressedSize = 0;
+    }
 
-	public void setOffsetStartOfData(long offsetStartOfData) {
-		this.offsetStartOfData = offsetStartOfData;
-	}
+    public int getSignature() {
+        return signature;
+    }
 
-	public boolean isEncrypted() {
-		return isEncrypted;
-	}
+    public void setSignature(int signature) {
+        this.signature = signature;
+    }
 
-	public void setEncrypted(boolean isEncrypted) {
-		this.isEncrypted = isEncrypted;
-	}
+    public int getVersionNeededToExtract() {
+        return versionNeededToExtract;
+    }
 
-	public int getEncryptionMethod() {
-		return encryptionMethod;
-	}
+    public void setVersionNeededToExtract(int versionNeededToExtract) {
+        this.versionNeededToExtract = versionNeededToExtract;
+    }
 
-	public void setEncryptionMethod(int encryptionMethod) {
-		this.encryptionMethod = encryptionMethod;
-	}
+    public byte[] getGeneralPurposeFlag() {
+        return generalPurposeFlag;
+    }
 
-	public byte[] getCrcBuff() {
-		return crcBuff;
-	}
+    public void setGeneralPurposeFlag(byte[] generalPurposeFlag) {
+        this.generalPurposeFlag = generalPurposeFlag;
+    }
 
-	public void setCrcBuff(byte[] crcBuff) {
-		this.crcBuff = crcBuff;
-	}
-	
-	public char[] getPassword() {
-		return password;
-	}
+    public int getCompressionMethod() {
+        return compressionMethod;
+    }
 
-	public void setPassword(char[] password) {
-		this.password = password;
-	}
+    public void setCompressionMethod(int compressionMethod) {
+        this.compressionMethod = compressionMethod;
+    }
 
-	public ArrayList getExtraDataRecords() {
-		return extraDataRecords;
-	}
+    public int getLastModFileTime() {
+        return lastModFileTime;
+    }
 
-	public void setExtraDataRecords(ArrayList extraDataRecords) {
-		this.extraDataRecords = extraDataRecords;
-	}
+    public void setLastModFileTime(int lastModFileTime) {
+        this.lastModFileTime = lastModFileTime;
+    }
 
-	public boolean isDataDescriptorExists() {
-		return dataDescriptorExists;
-	}
+    public long getCrc32() {
+        return crc32;
+    }
 
-	public void setDataDescriptorExists(boolean dataDescriptorExists) {
-		this.dataDescriptorExists = dataDescriptorExists;
-	}
+    public void setCrc32(long crc32) {
+        this.crc32 = crc32;
+    }
 
-	public Zip64ExtendedInfo getZip64ExtendedInfo() {
-		return zip64ExtendedInfo;
-	}
+    public long getCompressedSize() {
+        return compressedSize;
+    }
 
-	public void setZip64ExtendedInfo(Zip64ExtendedInfo zip64ExtendedInfo) {
-		this.zip64ExtendedInfo = zip64ExtendedInfo;
-	}
+    public void setCompressedSize(long compressedSize) {
+        this.compressedSize = compressedSize;
+    }
 
-	public AESExtraDataRecord getAesExtraDataRecord() {
-		return aesExtraDataRecord;
-	}
+    public long getUncompressedSize() {
+        return uncompressedSize;
+    }
 
-	public void setAesExtraDataRecord(AESExtraDataRecord aesExtraDataRecord) {
-		this.aesExtraDataRecord = aesExtraDataRecord;
-	}
+    public void setUncompressedSize(long uncompressedSize) {
+        this.uncompressedSize = uncompressedSize;
+    }
 
-	public boolean isWriteComprSizeInZip64ExtraRecord() {
-		return writeComprSizeInZip64ExtraRecord;
-	}
+    public int getFileNameLength() {
+        return fileNameLength;
+    }
 
-	public void setWriteComprSizeInZip64ExtraRecord(
-			boolean writeComprSizeInZip64ExtraRecord) {
-		this.writeComprSizeInZip64ExtraRecord = writeComprSizeInZip64ExtraRecord;
-	}
+    public void setFileNameLength(int fileNameLength) {
+        this.fileNameLength = fileNameLength;
+    }
 
-	public boolean isFileNameUTF8Encoded() {
-		return fileNameUTF8Encoded;
-	}
+    public int getExtraFieldLength() {
+        return extraFieldLength;
+    }
 
-	public void setFileNameUTF8Encoded(boolean fileNameUTF8Encoded) {
-		this.fileNameUTF8Encoded = fileNameUTF8Encoded;
-	}
-	
+    public void setExtraFieldLength(int extraFieldLength) {
+        this.extraFieldLength = extraFieldLength;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public byte[] getExtraField() {
+        return extraField;
+    }
+
+    public void setExtraField(byte[] extraField) {
+        this.extraField = extraField;
+    }
+
+    public long getOffsetStartOfData() {
+        return offsetStartOfData;
+    }
+
+    public void setOffsetStartOfData(long offsetStartOfData) {
+        this.offsetStartOfData = offsetStartOfData;
+    }
+
+    public boolean isEncrypted() {
+        return isEncrypted;
+    }
+
+    public void setEncrypted(boolean isEncrypted) {
+        this.isEncrypted = isEncrypted;
+    }
+
+    public int getEncryptionMethod() {
+        return encryptionMethod;
+    }
+
+    public void setEncryptionMethod(int encryptionMethod) {
+        this.encryptionMethod = encryptionMethod;
+    }
+
+    public byte[] getCrcBuff() {
+        return crcBuff;
+    }
+
+    public void setCrcBuff(byte[] crcBuff) {
+        this.crcBuff = crcBuff;
+    }
+
+    public char[] getPassword() {
+        return password;
+    }
+
+    public void setPassword(char[] password) {
+        this.password = password;
+    }
+
+    public ArrayList getExtraDataRecords() {
+        return extraDataRecords;
+    }
+
+    public void setExtraDataRecords(ArrayList extraDataRecords) {
+        this.extraDataRecords = extraDataRecords;
+    }
+
+    public boolean isDataDescriptorExists() {
+        return dataDescriptorExists;
+    }
+
+    public void setDataDescriptorExists(boolean dataDescriptorExists) {
+        this.dataDescriptorExists = dataDescriptorExists;
+    }
+
+    public Zip64ExtendedInfo getZip64ExtendedInfo() {
+        return zip64ExtendedInfo;
+    }
+
+    public void setZip64ExtendedInfo(Zip64ExtendedInfo zip64ExtendedInfo) {
+        this.zip64ExtendedInfo = zip64ExtendedInfo;
+    }
+
+    public AESExtraDataRecord getAesExtraDataRecord() {
+        return aesExtraDataRecord;
+    }
+
+    public void setAesExtraDataRecord(AESExtraDataRecord aesExtraDataRecord) {
+        this.aesExtraDataRecord = aesExtraDataRecord;
+    }
+
+    public boolean isWriteComprSizeInZip64ExtraRecord() {
+        return writeComprSizeInZip64ExtraRecord;
+    }
+
+    public void setWriteComprSizeInZip64ExtraRecord(
+            boolean writeComprSizeInZip64ExtraRecord) {
+        this.writeComprSizeInZip64ExtraRecord = writeComprSizeInZip64ExtraRecord;
+    }
+
+    public boolean isFileNameUTF8Encoded() {
+        return fileNameUTF8Encoded;
+    }
+
+    public void setFileNameUTF8Encoded(boolean fileNameUTF8Encoded) {
+        this.fileNameUTF8Encoded = fileNameUTF8Encoded;
+    }
+
 }

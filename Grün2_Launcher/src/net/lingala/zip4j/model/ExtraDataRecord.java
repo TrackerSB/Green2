@@ -12,40 +12,39 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 public class ExtraDataRecord {
-	
-	private long header;
-	
-	private int sizeOfData;
-	
-	private byte[] data;
 
-	public long getHeader() {
-		return header;
-	}
+    private long header;
 
-	public void setHeader(long header) {
-		this.header = header;
-	}
+    private int sizeOfData;
 
-	public int getSizeOfData() {
-		return sizeOfData;
-	}
+    private byte[] data;
 
-	public void setSizeOfData(int sizeOfData) {
-		this.sizeOfData = sizeOfData;
-	}
+    public long getHeader() {
+        return header;
+    }
 
-	public byte[] getData() {
-		return data;
-	}
+    public void setHeader(long header) {
+        this.header = header;
+    }
 
-	public void setData(byte[] data) {
-		this.data = data;
-	}	
-	
+    public int getSizeOfData() {
+        return sizeOfData;
+    }
+
+    public void setSizeOfData(int sizeOfData) {
+        this.sizeOfData = sizeOfData;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
 }

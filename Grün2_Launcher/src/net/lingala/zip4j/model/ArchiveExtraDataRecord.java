@@ -12,40 +12,39 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 public class ArchiveExtraDataRecord {
-	
-	private int signature;
-	
-	private int extraFieldLength;
-	
-	private String extraFieldData;
 
-	public int getSignature() {
-		return signature;
-	}
+    private int signature;
 
-	public void setSignature(int signature) {
-		this.signature = signature;
-	}
+    private int extraFieldLength;
 
-	public int getExtraFieldLength() {
-		return extraFieldLength;
-	}
+    private String extraFieldData;
 
-	public void setExtraFieldLength(int extraFieldLength) {
-		this.extraFieldLength = extraFieldLength;
-	}
+    public int getSignature() {
+        return signature;
+    }
 
-	public String getExtraFieldData() {
-		return extraFieldData;
-	}
+    public void setSignature(int signature) {
+        this.signature = signature;
+    }
 
-	public void setExtraFieldData(String extraFieldData) {
-		this.extraFieldData = extraFieldData;
-	}
-	
+    public int getExtraFieldLength() {
+        return extraFieldLength;
+    }
+
+    public void setExtraFieldLength(int extraFieldLength) {
+        this.extraFieldLength = extraFieldLength;
+    }
+
+    public String getExtraFieldData() {
+        return extraFieldData;
+    }
+
+    public void setExtraFieldData(String extraFieldData) {
+        this.extraFieldData = extraFieldData;
+    }
+
 }

@@ -12,15 +12,15 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.crypto.PBKDF2;
+
 /*
  * Source referred from Matthias Gartner's PKCS#5 implementation - 
  * see http://rtner.de/software/PBKDF2.html 
  */
-public class PBKDF2Parameters
-{
+public class PBKDF2Parameters {
+
     protected byte[] salt;
 
     protected int iterationCount;
@@ -31,8 +31,7 @@ public class PBKDF2Parameters
 
     protected byte[] derivedKey;
 
-    public PBKDF2Parameters()
-    {
+    public PBKDF2Parameters() {
         this.hashAlgorithm = null;
         this.hashCharset = "UTF-8";
         this.salt = null;
@@ -41,8 +40,7 @@ public class PBKDF2Parameters
     }
 
     public PBKDF2Parameters(String hashAlgorithm, String hashCharset,
-            byte[] salt, int iterationCount)
-    {
+            byte[] salt, int iterationCount) {
         this.hashAlgorithm = hashAlgorithm;
         this.hashCharset = hashCharset;
         this.salt = salt;
@@ -51,8 +49,7 @@ public class PBKDF2Parameters
     }
 
     public PBKDF2Parameters(String hashAlgorithm, String hashCharset,
-            byte[] salt, int iterationCount, byte[] derivedKey)
-    {
+            byte[] salt, int iterationCount, byte[] derivedKey) {
         this.hashAlgorithm = hashAlgorithm;
         this.hashCharset = hashCharset;
         this.salt = salt;
@@ -60,53 +57,43 @@ public class PBKDF2Parameters
         this.derivedKey = derivedKey;
     }
 
-    public int getIterationCount()
-    {
+    public int getIterationCount() {
         return iterationCount;
     }
 
-    public void setIterationCount(int iterationCount)
-    {
+    public void setIterationCount(int iterationCount) {
         this.iterationCount = iterationCount;
     }
 
-    public byte[] getSalt()
-    {
+    public byte[] getSalt() {
         return salt;
     }
 
-    public void setSalt(byte[] salt)
-    {
+    public void setSalt(byte[] salt) {
         this.salt = salt;
     }
 
-    public byte[] getDerivedKey()
-    {
+    public byte[] getDerivedKey() {
         return derivedKey;
     }
 
-    public void setDerivedKey(byte[] derivedKey)
-    {
+    public void setDerivedKey(byte[] derivedKey) {
         this.derivedKey = derivedKey;
     }
 
-    public String getHashAlgorithm()
-    {
+    public String getHashAlgorithm() {
         return hashAlgorithm;
     }
 
-    public void setHashAlgorithm(String hashAlgorithm)
-    {
+    public void setHashAlgorithm(String hashAlgorithm) {
         this.hashAlgorithm = hashAlgorithm;
     }
 
-    public String getHashCharset()
-    {
+    public String getHashCharset() {
         return hashCharset;
     }
 
-    public void setHashCharset(String hashCharset)
-    {
+    public void setHashCharset(String hashCharset) {
         this.hashCharset = hashCharset;
     }
 }

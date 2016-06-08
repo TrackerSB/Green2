@@ -12,33 +12,31 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 * See the License for the specific language governing permissions and 
 * limitations under the License. 
-*/
-
+ */
 package net.lingala.zip4j.model;
 
 import java.util.ArrayList;
 
 public class CentralDirectory {
-	
-	private ArrayList fileHeaders;
-	
-	private DigitalSignature digitalSignature;
 
-	public ArrayList getFileHeaders() {
-		return fileHeaders;
-	}
+    private ArrayList fileHeaders;
 
-	public void setFileHeaders(ArrayList fileHeaders) {
-		this.fileHeaders = fileHeaders;
-	}
+    private DigitalSignature digitalSignature;
 
-	public DigitalSignature getDigitalSignature() {
-		return digitalSignature;
-	}
+    public ArrayList getFileHeaders() {
+        return fileHeaders;
+    }
 
-	public void setDigitalSignature(DigitalSignature digitalSignature) {
-		this.digitalSignature = digitalSignature;
-	}
-	
-	
+    public void setFileHeaders(ArrayList fileHeaders) {
+        this.fileHeaders = fileHeaders;
+    }
+
+    public DigitalSignature getDigitalSignature() {
+        return digitalSignature;
+    }
+
+    public void setDigitalSignature(DigitalSignature digitalSignature) {
+        this.digitalSignature = digitalSignature;
+    }
+
 }
