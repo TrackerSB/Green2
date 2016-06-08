@@ -175,38 +175,92 @@ public class SepaFormController extends Controller {
         return Optional.empty();
     }
 
-    public int getMaxCharMessageId() {
+    /**
+     * Returns the constant {@code MAX_CHAR_MESSAGE_ID}. Only needed for use in
+     * FXML.
+     *
+     * @return The constant {@code MAX_CHAR_MESSAGE_ID}.
+     */
+    public static int getMaxCharMessageId() {
         return MAX_CHAR_MESSAGE_ID;
     }
 
+    /**
+     * Returns the constant {@code MAX_CHAR_PMTINFID}. Only needed for use in
+     * FXML.
+     *
+     * @return The constant {@code MAX_CHAR_PMTINFID}.
+     */
     public int getMaxCharPmtInfId() {
         return MAX_CHAR_PMTINFID;
     }
 
+    /**
+     * Returns the constant {@code MAX_CHAR_NAME_OF_PRESENTER}. Only needed for
+     * use in FXML.
+     *
+     * @return The constant {@code MAX_CHAR_NAME_OF_PRESENTER}.
+     */
     public int getMaxCharNamePresenter() {
         return MAX_CHAR_NAME_OF_PRESENTER;
     }
 
+    /**
+     * Returns the property reprsenting a boolean value indicating whether any
+     * input is to long.
+     *
+     * @return The property reprsenting a boolean value indicating whether any
+     * input is to long.
+     */
     public ReadOnlyBooleanProperty anyInputToLongProperty() {
         return anyInputToLong;
     }
 
+    /**
+     * Checks whether any input is to long.
+     *
+     * @return {@code true} only if any input is to long.
+     */
     public boolean isAnyInputToLong() {
         return anyInputToLong.get();
     }
 
+    /**
+     * Returns the property reprsenting a boolean value indicating whether any
+     * input is missing.
+     *
+     * @return The property reprsenting a boolean value indicating whether any
+     * input is missing.
+     */
     public ReadOnlyBooleanProperty anyInputMissingProperty() {
         return anyInputMissing;
     }
 
+    /**
+     * Checks whether any input is missing.
+     *
+     * @return {@code true} only if any input is missing.
+     */
     public boolean isAnyInputMissing() {
         return anyInputMissing.get();
     }
 
+    /**
+     * Returns the property reprsenting a boolean value indicating whether all
+     * input is valid.
+     *
+     * @return The property reprsenting a boolean value indicating whether all
+     * input is valid.
+     */
     public ReadOnlyBooleanProperty validProperty() {
         return valid;
     }
 
+    /**
+     * Checks whether all inserted data is valid.
+     *
+     * @return {@code true} only if all inserted data is valid.
+     */
     public boolean isValid() {
         return valid.get();
     }
