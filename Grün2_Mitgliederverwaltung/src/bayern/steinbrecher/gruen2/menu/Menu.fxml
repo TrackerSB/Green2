@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" fx:controller="bayern.steinbrecher.gruen2.menu.MenuController">
+    <VBox spacing="10">
+        <Label text="%allAboutSepa" />
+        <Button fx:id="generateContribution" onAction="#generateContributionSepa" text="%contributions" />
+        <Button fx:id="generateUniversalSepa" onAction="#generateUniversalSepa" text="%arbitrarySepaDirectDebit" />
+        <Button fx:id="checkIban" onAction="#checkIban" text="%checkIban" />
+    </VBox>
+    <VBox spacing="10">
+        <Label text="%getAddressesForWord" />
+        <Button fx:id="generateAllAddresses" onAction="#generateAddressesAll" text="Von allen Mitgliedern" />
+        <Button fx:id="generateAddressesBirthdayLastYear" onAction="#generateAddressesBirthdayLastYear" />
+        <Button fx:id="generateAddressesBirthdayThisYear" onAction="#generateAddressesBirthdayThisYear" />
+        <Button fx:id="generateAddressesBirthdayNextYear" onAction="#generateAddressesBirthdayNextYear" />
+    </VBox>
+    <VBox spacing="10">
+        <Label text="Informationen holen:" />
+        <Button fx:id="generateBirthdayLastYearInfos" onAction="#generateBirthdayLastYearInfos" />
+        <Button fx:id="generateBirthdayThisYearInfos" onAction="#generateBirthdayThisYearInfos" />
+        <Button fx:id="generateBirthdayNextYearInfos" onAction="#generateBirthdayNextYearInfos" />
+    </VBox>
+</HBox>
