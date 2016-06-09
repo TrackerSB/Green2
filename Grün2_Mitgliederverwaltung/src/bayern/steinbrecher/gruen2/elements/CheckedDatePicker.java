@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.DatePicker;
@@ -29,12 +28,14 @@ public class CheckedDatePicker extends DatePicker {
             = new SimpleBooleanProperty(this, "valid");
     private final BooleanProperty empty
             = new SimpleBooleanProperty(this, "empty");
+    private final BooleanProperty forceFuture
+            = new SimpleBooleanProperty(this, "forceFuture", false);
 
     /**
      * Constructes a {@code CheckedDatePicker} with no initial date inserted.
      */
-    public CheckedDatePicker() {
-        this(null);
+    public CheckedDatePicker(boolean forceFuture) {
+        this(null, forceFuture);
     }
 
     /**
@@ -43,8 +44,9 @@ public class CheckedDatePicker extends DatePicker {
      *
      * @param locale The initial date.
      */
-    public CheckedDatePicker(LocalDate locale) {
+    public CheckedDatePicker(LocalDate locale, boolean forceFuture) {
         super(locale);
+        this.forceFuture.set(forceFuture);
 
         empty.bind(getEditor().textProperty().isEmpty());
 
@@ -52,9 +54,10 @@ public class CheckedDatePicker extends DatePicker {
             DateTimeFormatter dtf
                     = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY);
             try {
-                LocalDate.parse(newVal, dtf);
+                LocalDate newDate = LocalDate.parse(newVal, dtf);
                 getStyleClass().remove(CSS_CLASS_INVALID_DATE);
-                valid.set(true);
+                valid.set(!this.forceFuture.get() || (this.forceFuture.get()
+                        && newDate.isAfter(LocalDate.now())));
             } catch (DateTimeParseException ex) {
                 if (!getStyleClass().contains(CSS_CLASS_INVALID_DATE)) {
                     getStyleClass().add(CSS_CLASS_INVALID_DATE);
