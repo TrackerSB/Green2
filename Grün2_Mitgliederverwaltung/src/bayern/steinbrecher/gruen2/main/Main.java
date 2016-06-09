@@ -81,7 +81,8 @@ public class Main extends Application {
         Platform.setImplicitExit(false);
 
         if (!DataProvider.hasAllConfigs()) {
-            ConfirmDialog.createBadConfigsDialog(new Stage(), null)
+            ConfirmDialog.createDialog(
+                    new Stage(), null, ConfirmDialog.BAD_CONFIGS)
                     .showOnceAndWait();
             Platform.exit();
         }
@@ -164,17 +165,20 @@ public class Main extends Application {
             Stage s = new Stage();
             ConfirmDialog confirm;
             if (cause instanceof ConnectException) {
-                confirm = ConfirmDialog.createCheckConnectionDialog(s, null);
+                confirm = ConfirmDialog.createDialog(
+                        s, null, ConfirmDialog.CHECK_CONNECTION);
             } else if (cause instanceof UnknownHostException) {
                 String message = cause.getMessage();
                 confirm = ConfirmDialog.createCheckConnectionDialog(
                         message.substring(message.lastIndexOf(":") + 1).trim(),
                         s, null);
             } else if (cause instanceof AuthException) {
-                confirm = ConfirmDialog.createCheckInputDialog(s, null);
+                confirm = ConfirmDialog.createDialog(
+                        s, null, ConfirmDialog.CHECK_INPUT);
             } else {
                 System.err.println("Not action specified for: " + cause);
-                confirm = ConfirmDialog.createUnexpectedAbbortDialog(s, null);
+                confirm = ConfirmDialog.createDialog(
+                        s, null, ConfirmDialog.UNEXPECTED_ABBORT);
             }
 
             confirm.showOnce(() -> {
@@ -389,9 +393,9 @@ public class Main extends Application {
                             .reduce(StringBuilder::append);
                     if (message.isPresent()) {
                         Stage badAccountDataStage = new Stage();
-                        new ConfirmDialog(message.get()
-                                + "\nhaben keine bzw. eine ungültige IBAN "
-                                + "und/oder keine BIC.",
+                        new ConfirmDialog(message.get() + "\n"
+                                + DataProvider.RESOURCE_BUNDLE
+                                .getString("haveNoOrInvalidIban"),
                                 menuStage).start(badAccountDataStage);
                         badAccountDataStage.showAndWait();
                     }
@@ -431,8 +435,8 @@ public class Main extends Application {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
                 try {
-                    ConfirmDialog.createNoSepaDebitDialog(
-                            new Stage(), menuStage)
+                    ConfirmDialog.createDialog(
+                            new Stage(), menuStage, ConfirmDialog.NO_SEPA_DEBIT)
                             .showOnceAndWait();
                 } catch (Exception ex1) {
                     Logger.getLogger(Main.class.getName())
@@ -478,7 +482,8 @@ public class Main extends Application {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
             try {
-                ConfirmDialog.createNoSepaDebitDialog(new Stage(), menuStage)
+                ConfirmDialog.createDialog(new Stage(), menuStage,
+                        ConfirmDialog.NO_SEPA_DEBIT)
                         .showOnceAndWait();
             } catch (Exception ex1) {
                 Logger.getLogger(Main.class.getName())
@@ -505,27 +510,28 @@ public class Main extends Application {
         }
         if (badIban.isEmpty()) {
             try {
-                ConfirmDialog.createCorrectIbansDialog(new Stage(), menuStage)
+                ConfirmDialog.createDialog(new Stage(), menuStage,
+                        ConfirmDialog.CORRECT_IBANS)
                         .showOnceAndWait();
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
         } else {
-            String message = "Folgende Mitglieder haben keine IBAN oder eine "
-                    + "IBAN mit falscher Prüfsumme:\n";
-            message = badIban.stream()
+            String message = DataProvider.RESOURCE_BUNDLE
+                    .getString("memberBadIban") + "\n";
+            String noIban = DataProvider.RESOURCE_BUNDLE.getString("noIban");
+            message += badIban.stream()
                     .map(m -> {
                         String iban = m.getAccountHolder().getIban();
                         return m + ": \""
-                                + (iban.isEmpty() ? "Keine IBAN" : iban)
+                                + (iban.isEmpty() ? noIban : iban)
                                 + "\"\n";
                     })
                     .reduce(message, String::concat);
             try {
-                ConfirmDialog dialog = new ConfirmDialog(message, menuStage);
-                dialog.start(new Stage());
-                dialog.showOnceAndWait();
+                ConfirmDialog.createDialog(new Stage(), menuStage, message)
+                        .showOnceAndWait();
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, null, ex);

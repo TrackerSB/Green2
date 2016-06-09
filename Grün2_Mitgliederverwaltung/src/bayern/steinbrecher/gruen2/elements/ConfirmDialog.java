@@ -125,27 +125,16 @@ public class ConfirmDialog extends View {
     }
 
     /**
-     * Creates a dialog indicating that the configurations are bad.
+     * Creates a dialog with given message.
      *
      * @param owner The owner of the dialog.
      * @param s The stage to use.
+     * @param message The messge to show to the user.
      * @return The created dialog.
      */
-    public static ConfirmDialog createBadConfigsDialog(Stage s, Window owner) {
-        ConfirmDialog dialog = new ConfirmDialog(BAD_CONFIGS, owner);
-        dialog.initDialog(s);
-        return dialog;
-    }
-
-    /**
-     * Creates a dialog telling the user to check his input.
-     *
-     * @param owner The owner of the dialog.
-     * @param s The stage to use.
-     * @return The created dialog.
-     */
-    public static ConfirmDialog createCheckInputDialog(Stage s, Window owner) {
-        ConfirmDialog dialog = new ConfirmDialog(CHECK_INPUT, owner);
+    public static ConfirmDialog createDialog(Stage s, Window owner,
+            String message) {
+        ConfirmDialog dialog = new ConfirmDialog(message, owner);
         dialog.initDialog(s);
         return dialog;
     }
@@ -162,64 +151,9 @@ public class ConfirmDialog extends View {
     public static ConfirmDialog createCheckConnectionDialog(String address,
             Stage s, Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION + "\n"
-                + address + " konnte nicht erreicht werden.", owner);
-        dialog.initDialog(s);
-        return dialog;
-    }
-
-    /**
-     * Creates a dialog telling the user to check whether the database is
-     * reachable and configs are valid.
-     *
-     * @param owner The owner of the dialog.
-     * @param s The stage to use.
-     * @return The created dialog.
-     */
-    public static ConfirmDialog createCheckConnectionDialog(
-            Stage s, Window owner) {
-        ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION, owner);
-        dialog.initDialog(s);
-        return dialog;
-    }
-
-    /**
-     * Creates a dialog indicating that the connection broke or was not able to
-     * establish.
-     *
-     * @param owner The owner of the dialog.
-     * @param s The stage to use.
-     * @return The created dialog.
-     */
-    public static ConfirmDialog createUnexpectedAbbortDialog(Stage s,
-            Window owner) {
-        ConfirmDialog dialog = new ConfirmDialog(UNEXPECTED_ABBORT, owner);
-        dialog.initDialog(s);
-        return dialog;
-    }
-
-    /**
-     * Creates a dialog indicating that a SEPA debit could not be created.
-     *
-     * @param owner The owner of the dialog.
-     * @param s The stage to use.
-     * @return The created dialog.
-     */
-    public static ConfirmDialog createNoSepaDebitDialog(Stage s, Window owner) {
-        ConfirmDialog dialog = new ConfirmDialog(NO_SEPA_DEBIT, owner);
-        dialog.initDialog(s);
-        return dialog;
-    }
-
-    /**
-     * Creates a dialog telling the user that every IBAN has a correct checksum.
-     *
-     * @param owner The owner of the dialog.
-     * @param s The stage to use.
-     * @return The created dialog.
-     */
-    public static ConfirmDialog createCorrectIbansDialog(Stage s,
-            Window owner) {
-        ConfirmDialog dialog = new ConfirmDialog(CORRECT_IBANS, owner);
+                + address
+                + DataProvider.RESOURCE_BUNDLE.getString("notReachable"),
+                owner);
         dialog.initDialog(s);
         return dialog;
     }
