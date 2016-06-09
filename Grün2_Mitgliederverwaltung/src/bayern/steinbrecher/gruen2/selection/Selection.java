@@ -17,7 +17,7 @@ import javafx.stage.Stage;
  */
 public class Selection<T extends Comparable>
         extends View<SelectionController<T>> {
-    
+
     private final List<T> options;
     private Stage owner;
 
@@ -53,17 +53,17 @@ public class Selection<T extends Comparable>
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Selection.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
-        
+
         controller = fxmlLoader.getController();
         controller.setStage(stage);
         controller.setOptions(options);
-        
+
         stage.initOwner(owner);
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.getResourceValue("selectionTitle"));

@@ -41,12 +41,12 @@ public class SelectionController<T extends Comparable> extends Controller {
     private ListView<CheckBox> optionsListView;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
-        if (newVal) {
-            selectedCount.set(selectedCount.get() + 1);
-        } else {
-            selectedCount.set(selectedCount.get() - 1);
-        }
-    };
+                if (newVal) {
+                    selectedCount.set(selectedCount.get() + 1);
+                } else {
+                    selectedCount.set(selectedCount.get() - 1);
+                }
+            };
 
     /**
      * {@inheritDoc}

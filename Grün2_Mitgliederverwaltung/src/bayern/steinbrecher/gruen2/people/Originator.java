@@ -118,8 +118,9 @@ public class Originator {
         Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
         Arrays.stream(getClass().getDeclaredFields())
                 .parallel()
-                .filter(f ->
-                        !f.getName().equalsIgnoreCase("default_properties"))
+                .filter(f -> {
+                    return !f.getName().equalsIgnoreCase("default_properties");
+                })
                 .filter(f -> !f.getName().equalsIgnoreCase("filename"))
                 .forEach(f -> {
                     try {
