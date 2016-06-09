@@ -66,7 +66,7 @@ public class Selection<T extends Comparable>
         
         stage.initOwner(owner);
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("select"));
+        stage.setTitle(DataProvider.getResourceValue("selectionTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

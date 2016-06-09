@@ -82,20 +82,17 @@ public class SepaFormController extends Controller {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        String maxCharCount
-                = DataProvider.RESOURCE_BUNDLE.getString("maxCharCount");
+        String maxCharCount = DataProvider.getResourceValue("maxCharCount");
         initiatingPartyLabel.setText(
-                DataProvider.RESOURCE_BUNDLE.getString("nameOfInitiatingParty")
-                + "\n" + MessageFormat.format(
+                DataProvider.getResourceValue("nameOfInitiatingParty") + "\n"
+                + MessageFormat.format(
                         maxCharCount, getMaxCharNameInitiatingParty()));
         pmtInfIdLabel.setText(
-                DataProvider.RESOURCE_BUNDLE.getString("pmtInfId") + "\n"
+                DataProvider.getResourceValue("pmtInfId") + "\n"
                 + MessageFormat.format(maxCharCount, getMaxCharPmtInfId()));
 
-        String uniqueForDays
-                = DataProvider.RESOURCE_BUNDLE.getString("uniqueForDays");
-        messageIdLabel.setText(
-                DataProvider.RESOURCE_BUNDLE.getString("messageId") + "\n"
+        String uniqueForDays = DataProvider.getResourceValue("uniqueForDays");
+        messageIdLabel.setText(DataProvider.getResourceValue("messageId") + "\n"
                 + MessageFormat.format(maxCharCount, getMaxCharMessageId())
                 + "\n"
                 + MessageFormat.format(uniqueForDays, UNIQUE_DAYS_PMTINFID));
@@ -139,7 +136,7 @@ public class SepaFormController extends Controller {
     @FXML
     private void generateMessageId() {
         messageIdTextField.setText(YEAR_MONTH_DAY.format(new Date()) + " "
-                + DataProvider.RESOURCE_BUNDLE.getString("contributions") + " "
+                + DataProvider.getResourceValue("contributions") + " "
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
 
@@ -196,8 +193,8 @@ public class SepaFormController extends Controller {
     }
 
     /**
-     * Returns the constant {@code MAX_CHAR_NAME_OF_INITATING_PARTY}. Only needed for
-     * use in FXML.
+     * Returns the constant {@code MAX_CHAR_NAME_OF_INITATING_PARTY}. Only
+     * needed for use in FXML.
      *
      * @return The constant {@code MAX_CHAR_NAME_OF_INITATING_PARTY}.
      */

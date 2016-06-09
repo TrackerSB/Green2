@@ -394,8 +394,8 @@ public class Main extends Application {
                     if (message.isPresent()) {
                         Stage badAccountDataStage = new Stage();
                         new ConfirmDialog(message.get() + "\n"
-                                + DataProvider.RESOURCE_BUNDLE
-                                .getString("haveNoOrInvalidIban"),
+                                + DataProvider.getResourceValue(
+                                        "haveNoOrInvalidIban"),
                                 menuStage).start(badAccountDataStage);
                         badAccountDataStage.showAndWait();
                     }
@@ -518,9 +518,9 @@ public class Main extends Application {
                         .log(Level.SEVERE, null, ex);
             }
         } else {
-            String message = DataProvider.RESOURCE_BUNDLE
-                    .getString("memberBadIban") + "\n";
-            String noIban = DataProvider.RESOURCE_BUNDLE.getString("noIban");
+            String message = DataProvider.getResourceValue("memberBadIban")
+                    + "\n";
+            String noIban = DataProvider.getResourceValue("noIban");
             message += badIban.stream()
                     .map(m -> {
                         String iban = m.getAccountHolder().getIban();

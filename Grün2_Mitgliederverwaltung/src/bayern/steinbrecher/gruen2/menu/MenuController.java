@@ -6,7 +6,12 @@ import bayern.steinbrecher.gruen2.main.Main;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -45,23 +50,22 @@ public class MenuController extends Controller {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        String resourceValue = DataProvider.RESOURCE_BUNDLE
-                .getString("ofBirthdayMember");
-        generateAddressesBirthdayLastYear.setText(
-                MessageFormat.format(resourceValue, CURRENT_YEAR - 1));
-        generateAddressesBirthdayThisYear.setText(
-                MessageFormat.format(resourceValue, CURRENT_YEAR));
-        generateAddressesBirthdayNextYear.setText(
-                MessageFormat.format(resourceValue, CURRENT_YEAR + 1));
+        List<Object[]> params = IntStream.rangeClosed(CURRENT_YEAR - 1, CURRENT_YEAR + 1)
+                .boxed()
+                .map(i -> new Object[]{i})
+                .collect(Collectors.toList());
 
-        resourceValue = DataProvider.RESOURCE_BUNDLE
-                .getString("groupedBirthdayMember");
-        generateBirthdayLastYearInfos.setText(
-                MessageFormat.format(resourceValue, CURRENT_YEAR - 1));
-        generateBirthdayThisYearInfos.setText(
-                MessageFormat.format(resourceValue, CURRENT_YEAR));
-        generateBirthdayNextYearInfos.setText(
-                MessageFormat.format(resourceValue, CURRENT_YEAR + 1));
+        List<String> values
+                = DataProvider.getResourceValues("ofBirthdayMember", params);
+        values.addAll(DataProvider.getResourceValues(
+                "groupedBirthdayMember", params));
+        Button[] buttons = new Button[]{generateAddressesBirthdayLastYear,
+            generateAddressesBirthdayThisYear,
+            generateAddressesBirthdayNextYear, generateBirthdayLastYearInfos,
+            generateBirthdayThisYearInfos, generateBirthdayNextYearInfos};
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].setText(values.get(i));
+        }
     }
 
     /**

@@ -45,7 +45,7 @@ public class Menu extends View<MenuController> {
         controller.setCaller(caller);
 
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("chooseProgram"));
+        stage.setTitle(DataProvider.getResourceValue("chooseProgram"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
         stage.show();

@@ -53,7 +53,7 @@ public class SepaForm extends View<SepaFormController> {
 
         stage.initOwner(owner);
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("sepaFormTitle"));
+        stage.setTitle(DataProvider.getResourceValue("sepaFormTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

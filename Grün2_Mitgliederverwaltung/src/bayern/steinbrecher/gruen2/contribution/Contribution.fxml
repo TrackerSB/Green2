@@ -6,7 +6,7 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.contribution.ContributionController">
     <HBox spacing="10">
-        <Label text="%contributionIn" />
+        <Label text="%contributionInEuro" />
         <CheckedDoubleSpinner min="0" max="200" initialValue="10" amountToStepBy="1" fx:id="contributionSpinner" editable="true" />
     </HBox>
     <HBox spacing="10">

@@ -31,7 +31,7 @@ public class DefaultLogin extends Login {
         controller.setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.RESOURCE_BUNDLE.getString("loginTitle"));
+        stage.setTitle(DataProvider.getResourceValue("loginTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

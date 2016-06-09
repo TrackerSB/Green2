@@ -152,8 +152,7 @@ public class ConfirmDialog extends View {
             Stage s, Window owner) {
         ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION + "\n"
                 + address
-                + DataProvider.RESOURCE_BUNDLE.getString("notReachable"),
-                owner);
+                + DataProvider.getResourceValue("notReachable"), owner);
         dialog.initDialog(s);
         return dialog;
     }

@@ -14,7 +14,7 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  */
 public class Contribution extends View<ContributionController> {
-    
+
     private Stage owner;
 
     /**
@@ -40,20 +40,19 @@ public class Contribution extends View<ContributionController> {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("Contribution.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.getStylesheetPath());
-        
+
         controller = fxmlLoader.getController();
         controller.setStage(stage);
-        
+
         stage.initOwner(owner);
         stage.setScene(new Scene(root));
-        stage.setTitle(
-                DataProvider.RESOURCE_BUNDLE.getString("contributionTitle"));
+        stage.setTitle(DataProvider.getResourceValue("contributionTitle"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.getIcon());
     }

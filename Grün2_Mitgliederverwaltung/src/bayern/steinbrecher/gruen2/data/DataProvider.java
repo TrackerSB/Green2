@@ -2,9 +2,12 @@ package bayern.steinbrecher.gruen2.data;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -221,5 +224,35 @@ public final class DataProvider {
             readConfigs();
         }
         return configs.size() == ConfigKey.values().length;
+    }
+
+    /**
+     * Returns the value behind {@code key} of the resource bundle inserted
+     * params.
+     *
+     * @param key The key to serach for.
+     * @param params The params to insert.
+     * @return The value with inserted params.
+     */
+    public static String getResourceValue(String key, Object... params) {
+        return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
+    }
+
+    /**
+     * Returns a list of values behind {@code key} of the resource bundle and
+     * with inserted params.
+     *
+     * @param key The key to serach for.
+     * @param params The list of params to insert each in the value behind
+     * {@code key}.
+     * @return The list of values with inserted params.
+     */
+    public static List<String> getResourceValues(
+            String key, List<Object[]> params) {
+        List<String> values = new ArrayList<>(params.size());
+        params.stream().forEachOrdered(p -> {
+            values.add(getResourceValue(key, p));
+        });
+        return values;
     }
 }
