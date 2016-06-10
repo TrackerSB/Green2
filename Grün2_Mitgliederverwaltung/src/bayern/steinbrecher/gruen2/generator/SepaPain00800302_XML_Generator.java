@@ -21,7 +21,21 @@ public class SepaPain00800302_XML_Generator {
 
     private static final SimpleDateFormat SDF
             = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    private static final int SHIFT_ASCII_ALPHABET = 55;
+    /**
+     * Length of coutrycoude (CC);
+     */
+    private static final int SEPA_CC_LENGTH = 2;
+    /**
+     * Length of coutrycoude (CC) and checksum together.
+     */
+    private static final int SEPA_CC_CHECKSUM_LENGTH = SEPA_CC_LENGTH + 2;
+    private static final int SEPA_MIN_LENGT = SEPA_CC_CHECKSUM_LENGTH + 1;
+    private static final int SEPA_SHIFT_ASCII_ALPHABET = 55;
+    /**
+     * A=10, B=11, C=12 etc.
+     */
+    private static final int SEPA_SHIFT_COUTRYCODE = 10;
+    private static final int SEPA_CHECKSUM_MODULO = 97;
 
     /**
      * Prohibit construction of an object.
@@ -44,17 +58,20 @@ public class SepaPain00800302_XML_Generator {
 
         String iban = ah.getIban();
         int posAlphabetFirstChar
-                = ((int) iban.charAt(0)) - SHIFT_ASCII_ALPHABET;
+                = ((int) iban.charAt(0)) - SEPA_SHIFT_ASCII_ALPHABET;
         int posAlphabetSecondChar
-                = ((int) iban.charAt(1)) - SHIFT_ASCII_ALPHABET;
-        if (iban.length() < 5
-                || posAlphabetFirstChar < 10 || posAlphabetSecondChar < 10) {
+                = ((int) iban.charAt(1)) - SEPA_SHIFT_ASCII_ALPHABET;
+        if (iban.length() < SEPA_MIN_LENGT
+                || posAlphabetFirstChar < SEPA_SHIFT_COUTRYCODE
+                || posAlphabetSecondChar < SEPA_SHIFT_COUTRYCODE) {
             return false;
         }
 
-        iban = iban.substring(4) + posAlphabetFirstChar + posAlphabetSecondChar
-                + iban.substring(2, 4);
-        return new BigInteger(iban).mod(BigInteger.valueOf(97))
+        iban = iban.substring(SEPA_CC_CHECKSUM_LENGTH) + posAlphabetFirstChar
+                + posAlphabetSecondChar
+                + iban.substring(2, SEPA_CC_CHECKSUM_LENGTH);
+        return new BigInteger(iban).mod(
+                BigInteger.valueOf(SEPA_CHECKSUM_MODULO))
                 .equals(BigInteger.ONE);
     }
 

@@ -10,14 +10,15 @@ import com.sun.javafx.iio.ImageStorage;
 
 public class SvgImageLoaderFactory implements ImageLoaderFactory {
 
-    private static final ImageLoaderFactory instance = new SvgImageLoaderFactory();
+    private static final ImageLoaderFactory INSTANCE
+            = new SvgImageLoaderFactory();
 
     public static final void install() {
-        ImageStorage.addImageLoaderFactory(instance);
+        ImageStorage.addImageLoaderFactory(INSTANCE);
     }
 
     public static final ImageLoaderFactory getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override

@@ -8,9 +8,11 @@ import com.sun.javafx.iio.ImageStorage.ImageType;
 
 public class FixedPixelDensityImageFrame extends ImageFrame {
 
-    public FixedPixelDensityImageFrame(ImageType imageType, ByteBuffer imageData, int width, int height, int stride,
+    public FixedPixelDensityImageFrame(ImageType imageType,
+            ByteBuffer imageData, int width, int height, int stride,
             byte[][] palette, float pixelScale, ImageMetadata metadata) {
-        super(imageType, imageData, width, height, stride, palette, pixelScale, metadata);
+        super(imageType, imageData, width, height, stride, palette, pixelScale,
+                metadata);
     }
 
     @Override
