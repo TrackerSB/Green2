@@ -18,7 +18,7 @@
     <Label text="%purpose" GridPane.columnIndex="0" GridPane.rowIndex="5" />
     <CheckedTextField promptText="%purpose" fx:id="purposeTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
     <Label text="%executionDate" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-    <CheckedDatePicker promptText="%executionDate" fx:id="executionDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+    <CheckedDatePicker promptText="%executionDate" fx:id="executionDatePicker" forceFuture="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
     <Label fx:id="messageIdLabel" GridPane.columnIndex="0" GridPane.rowIndex="7" />
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="7" spacing="5" >
         <CheckedTextField maxColumnCount="${controller.maxCharMessageId}" promptText="%messageId" fx:id="messageIdTextField" onAction="#ready" />
@@ -29,6 +29,7 @@
     
     <Label text="%inputToLong" styleClass="warningLabel" visible="${controller.anyInputToLong}" GridPane.columnIndex="1" GridPane.rowIndex="9" />
     <Label text="%missingInput" styleClass="warningLabel" visible="${controller.anyInputMissing}" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+    <Label text="%pastExecutionDate" styleClass="warningLabel" visible="${!executionDatePicker.invalidPastDate}" GridPane.columnIndex="1" GridPane.rowIndex="11" />
     
-    <Button text="%ready" defaultButton="true" onAction="#ready" disable="${!controller.valid}" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+    <Button text="%ready" defaultButton="true" onAction="#ready" disable="${!controller.valid}" GridPane.columnIndex="0" GridPane.rowIndex="11" />
 </GridPane>

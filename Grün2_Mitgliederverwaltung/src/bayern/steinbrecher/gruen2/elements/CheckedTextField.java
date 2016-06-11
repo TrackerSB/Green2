@@ -93,7 +93,7 @@ public class CheckedTextField extends TextField {
 
         //Validate properties
         setMaxColumnCount(maxColumnCount);
-        setText(text + " ");
+        setText(text + " extended"); //FIXME Find a workaround
         setText(text);
     }
 
