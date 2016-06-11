@@ -80,24 +80,43 @@ public class Main extends Application {
 
         Platform.setImplicitExit(false);
 
+        checkConfigs();
+        showSplashscreen();
+        Login login = createLogin();
+        WaitScreen waitScreen = createWaitScreen(login);
+        createConnectionService(login, waitScreen).start();
+    }
+
+    private void checkConfigs() {
         if (!DataProvider.hasAllConfigs()) {
             ConfirmDialog.createDialog(
                     new Stage(), null, ConfirmDialog.BAD_CONFIGS)
                     .showOnceAndWait();
             Platform.exit();
         }
+    }
 
+    private void showSplashscreen() throws Exception {
         Splashscreen splashScreen = new Splashscreen();
         splashScreen.start(new Stage());
         splashScreen.showSplashscreen(SPLASHSCREEN_MILLIS);
+    }
 
+    private Login createLogin() {
         Login login;
         if (DataProvider.useSsh()) {
             login = new SshLogin();
         } else {
             login = new DefaultLogin();
         }
+        return login;
+    }
 
+    /*
+     * This methode creates a {@code WaitScreen}, connects {@code login} to it
+     * AND calls {@code start(...)} of login.
+     */
+    private WaitScreen createWaitScreen(Login login) throws Exception {
         WaitScreen waitScreen = new WaitScreen();
         waitScreen.start(new Stage());
         Stage loginStage = new Stage();
@@ -111,11 +130,16 @@ public class Main extends Application {
             }
         });
         login.start(loginStage);
+        return waitScreen;
+    }
 
+    private Service<Optional<DBConnection>> createConnectionService(
+            Login login, WaitScreen waitScreen) {
         Service<Optional<DBConnection>> connectionService
                 = ServiceFactory.createService(() -> {
                     return getConnection(login, waitScreen);
                 });
+
         connectionService.setOnSucceeded(wse -> {
             Optional<DBConnection> optDBConnection
                     = connectionService.getValue();
@@ -127,12 +151,12 @@ public class Main extends Application {
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                            if (newVal) {
-                                waitScreen.close();
-                            } else {
-                                Platform.exit();
-                            }
-                        });
+                    if (newVal) {
+                        waitScreen.close();
+                    } else {
+                        Platform.exit();
+                    }
+                });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -142,7 +166,7 @@ public class Main extends Application {
                 }
             }
         });
-        connectionService.start();
+        return connectionService;
     }
 
     /**
