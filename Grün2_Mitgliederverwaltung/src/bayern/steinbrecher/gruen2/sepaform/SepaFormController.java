@@ -47,9 +47,12 @@ public class SepaFormController extends Controller {
     public static final int MAX_CHAR_MESSAGE_ID = 35;
     public static final int MAX_CHAR_PMTINFID = 35;
     public static final int MAX_CHAR_NAME_OF_INITIATING_PARTY = 70;
-    private final BooleanProperty anyInputToLong = new SimpleBooleanProperty();
-    private final BooleanProperty anyInputMissing = new SimpleBooleanProperty();
-    private final BooleanProperty valid = new SimpleBooleanProperty();
+    private final BooleanProperty anyInputToLong
+            = new SimpleBooleanProperty(this, "anyInputToLong");
+    private final BooleanProperty anyInputMissing
+            = new SimpleBooleanProperty(this, "anyInputMissing");
+    private final BooleanProperty valid
+            = new SimpleBooleanProperty(this, "valid");
     private Originator originator;
     @FXML
     private CheckedTextField creatorTextField;

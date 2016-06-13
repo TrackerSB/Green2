@@ -30,13 +30,16 @@ import javafx.scene.control.ListView;
  */
 public class SelectionController<T extends Comparable> extends Controller {
 
-    private ListProperty<T> optionsProperty
+    private final ListProperty<T> optionsProperty
             = new SimpleListProperty<>(FXCollections.observableArrayList());
     private IntegerProperty selectedCount
             = new SimpleIntegerProperty(this, "selectedCount");
-    private ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
-    private BooleanProperty nothingSelected = new SimpleBooleanProperty();
-    private BooleanProperty allSelected = new SimpleBooleanProperty();
+    private final ReadOnlyIntegerProperty totalCount
+            = optionsProperty.sizeProperty();
+    private final BooleanProperty nothingSelected
+            = new SimpleBooleanProperty(this, "nothingSelected");
+    private final BooleanProperty allSelected
+            = new SimpleBooleanProperty(this, "allSelected");
     @FXML
     private ListView<CheckBox> optionsListView;
     private final ChangeListener<Boolean> selectionChange
