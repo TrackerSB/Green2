@@ -61,11 +61,20 @@ public class MemberGenerator {
         return queryResult.parallelStream().skip(1).map(row -> {
             //Read attributes
             LocalDate birthday = null;
-            LocalDate mandatsigned = null;
             try {
                 birthday = LocalDate.parse(row.get(birthdayIndex));
+            } catch (DateTimeParseException ex) {
+                System.err.println(row.get(birthdayIndex)
+                        + " is invalid birthdaydate");
+                Logger.getLogger(MemberGenerator.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+            LocalDate mandatsigned = null;
+            try {
                 mandatsigned = LocalDate.parse(row.get(mandatCreatedIndex));
             } catch (DateTimeParseException ex) {
+                System.err.println(row.get(birthdayIndex)
+                        + " is invalid mandatSignedDate");
                 Logger.getLogger(MemberGenerator.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
