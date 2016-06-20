@@ -542,17 +542,16 @@ public class Main extends Application {
                         .log(Level.SEVERE, null, ex);
             }
         } else {
-            String message = DataProvider.getResourceValue("memberBadIban")
-                    + "\n";
             String noIban = DataProvider.getResourceValue("noIban");
-            message += badIban.stream()
+            String message = badIban.stream()
                     .map(m -> {
                         String iban = m.getAccountHolder().getIban();
                         return m + ": \""
                                 + (iban.isEmpty() ? noIban : iban)
                                 + "\"\n";
                     })
-                    .reduce(message, String::concat);
+                    .reduce(DataProvider.getResourceValue("memberBadIban")
+                            + "\n", String::concat);
             try {
                 ConfirmDialog.createDialog(new Stage(), menuStage, message)
                         .showOnceAndWait();
