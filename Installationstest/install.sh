@@ -36,4 +36,7 @@ $SudoCommand -c "cp -r $TempDir/* $ProgramFolder/"
 $SudoCommand rm $ProgramFolder/*.xml
 $SudoCommand rm $ProgramFolder/*.bat
 
+# Add menu entries
+# Not yet implemented
+
 echo "Grün2 wurde installiert/aktualisiert"
