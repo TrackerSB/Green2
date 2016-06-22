@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -38,6 +39,14 @@ public final class Gruen2Launcher {
     private Gruen2Launcher() {
         throw new UnsupportedOperationException(
                 "Construction of an object is not allowed.");
+    }
+
+    private static String getProgramFolderPath() {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            return "C:/Program Files (x86)/Grün2_Mitgliederverwaltung";
+        } else {
+            return "/opt/Grün2_Mitgliederverwaltung";
+        }
     }
 
     /**
@@ -83,9 +92,23 @@ public final class Gruen2Launcher {
             }
 
             //Install
-            Runtime.getRuntime()
-                    .exec("cmd /C \"" + tempDir.toString() + "/install.bat\"")
-                    .waitFor();
+            String command;
+            if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                command = "cmd /C \"" + tempDir.toString() + "/install.bat\"";
+            } else {
+                command = "sudo chmod u+x \"" + tempDir.toString()
+                        + "/install.sh\" \"" + tempDir.toString()
+                        + "/uninstall.sh\";"
+                        + "sh \"" + tempDir.toString() + "/install.sh\"";
+            }
+            Process installer = Runtime.getRuntime().exec(command);
+            InputStream outputStream = installer.getErrorStream();
+            int b = outputStream.read();
+            while(b > -1){
+                System.err.print((char)b);
+                b = outputStream.read();
+            }
+            installer.waitFor();
 
             //Update version.txt
             try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
@@ -124,9 +147,9 @@ public final class Gruen2Launcher {
     private static void executeGruen2() {
         try {
             Runtime.getRuntime()
-                    .exec("cmd /C java -jar Grün2_Mitgliederverwaltung.jar")
-                    .waitFor();
-        } catch (InterruptedException | IOException ex) {
+                    .exec("java -jar " + getProgramFolderPath()
+                            + "/Grün2_Mitgliederverwaltung.jar");
+        } catch (IOException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
