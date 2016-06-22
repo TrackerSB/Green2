@@ -96,10 +96,11 @@ public final class Gruen2Launcher {
             if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
                 command = "cmd /C \"" + tempDir.toString() + "/install.bat\"";
             } else {
-                command = "sudo chmod u+x \"" + tempDir.toString()
-                        + "/install.sh\" \"" + tempDir.toString()
-                        + "/uninstall.sh\";"
-                        + "sh \"" + tempDir.toString() + "/install.sh\"";
+                command = "chmod u+x " + tempDir.toString()
+                        + "/install.sh " + tempDir.toString()
+                        + "/uninstall.sh";
+                Runtime.getRuntime().exec(command).waitFor();
+                command = "sh " + tempDir.toString() + "/install.sh";
             }
             Process installer = Runtime.getRuntime().exec(command);
             InputStream outputStream = installer.getErrorStream();
