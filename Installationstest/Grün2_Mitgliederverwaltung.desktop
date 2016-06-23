@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Path=/opt/Grün2_Mitgliederverwaltung
+Exec=Grün2_Mitgliederverwaltung.jar
+Comment=Kümmere dich um deine Mitglieder
+Name=Grün2 Mitgliederverwaltung
+Icon=icon.png
+Categories=Office;Java;
