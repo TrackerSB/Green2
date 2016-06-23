@@ -20,15 +20,17 @@ fi
 TempDir=$(dirname $0)
 ConfigDir="$HOME/.Grün2_Mitgliederverwaltung"
 ProgramFolder="/opt/Grün2_Mitgliederverwaltung"
+MenuEntryFolder="/usr/share/applications"
 
 # Move user settings
 mkdir "$ConfigDir"
-mv $TempDir/Grün2.conf $ConfigDir/
+cp "$TempDir/Grün2.conf" $ConfigDir/ # Replace with mv
 
-# Create program folder
+# Create program folder # Replace first cp with mv
 $SudoCommand -c "mkdir $ProgramFolder;
+cp $TempDir/*.desktop $MenuEntryFolder/;
 cp -r $TempDir/* $ProgramFolder/;
-$SudoCommand rm $ProgramFolder/*.xml;
-$SudoCommand rm $ProgramFolder/*.bat;"
+rm $ProgramFolder/*.xml;
+rm $ProgramFolder/*.bat;"
 
 echo "Grün2 wurde installiert/aktualisiert"

@@ -1,11 +1,11 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
 Type=Application
 Terminal=false
-Path=/opt/Grün2_Mitgliederverwaltung
-Exec=uninstall.sh
-Comment=Willst du Grün2 nicht mehr?
+Exec=/bin/sh /opt/Grün2_Mitgliederverwaltung/uninstall.sh
+Comment=Grün2 deinstallieren
 Name=Grün2 deinstallieren
-Icon=icon.png
+Icon=/opt/Grün2_Mitgliederverwaltung/icon.png
 Categories=Office;Java;
