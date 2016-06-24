@@ -15,8 +15,8 @@ if not exist "%ProgramFiles%\Grün2_Mitgliederverwaltung" (
     mkdir "%ProgramFiles%\Grün2_Mitgliederverwaltung"
     xcopy /s /y "%~dp0*" "%ProgramFiles%\Grün2_Mitgliederverwaltung\"
     del "%ProgramFiles%\Grün2_Mitgliederverwaltung\Grün2.VisualElementsManifest.xml"
-    del "%ProgramFiles%\Grün2_Mitgliederverwaltung\install.sh"
-    del "%ProgramFiles%\Grün2_Mitgliederverwaltung\uninstall.sh"
+    del "%ProgramFiles%\Grün2_Mitgliederverwaltung\*.sh"
+    del "%ProgramFiles%\Grün2_Mitgliederverwaltung\*.desktop"
 
     ::create startmenuentries
     mkdir "%AppData%\Microsoft\Windows\Start Menu\Programs\Grün2 Mitgliederverwaltung"
