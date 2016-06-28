@@ -15,12 +15,11 @@ if not exist "%ProgramFiles%\Grün2_Mitgliederverwaltung" (
     mkdir "%ProgramFiles%\Grün2_Mitgliederverwaltung"
     xcopy /s /y "%~dp0*" "%ProgramFiles%\Grün2_Mitgliederverwaltung\"
     del "%ProgramFiles%\Grün2_Mitgliederverwaltung\Grün2.VisualElementsManifest.xml"
-    del "%ProgramFiles%\Grün2_Mitgliederverwaltung\install.sh"
-    del "%ProgramFiles%\Grün2_Mitgliederverwaltung\uninstall.sh"
+    del "%ProgramFiles%\Grün2_Mitgliederverwaltung\*.sh"
 
     ::create startmenuentries
     mkdir "%AppData%\Microsoft\Windows\Start Menu\Programs\Grün2 Mitgliederverwaltung"
-    call :createLink "Grün2 starten" "%ProgramFiles%\Grün2_Mitgliederverwaltung" "Gr_n2_Launcher.jar"
+    call :createLink "Grün2 starten" "%ProgramFiles%\Grün2_Mitgliederverwaltung" "Grün2_Launcher.jar"
     call :createLink "Grün2 deinstallieren" "%ProgramFiles%\Grün2_Mitgliederverwaltung" "uninstall.bat"
     call :createLink "Grün2 konfigurieren" "%AppData%\Grün2_Mitgliederverwaltung" "Grün2.conf"
 
