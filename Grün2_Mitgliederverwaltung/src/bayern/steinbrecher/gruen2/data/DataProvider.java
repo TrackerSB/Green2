@@ -92,8 +92,7 @@ public final class DataProvider {
     /**
      * {@code true} only if all allowed configurations are specified.
      */
-    public static final boolean ALL_CONFIGURATIONS_SET
-            = CONFIGURATIONS.size() == ConfigKey.values().length;
+    public static final boolean ALL_CONFIGURATIONS_SET;
 
     static {
         String[] parts = null;
@@ -114,6 +113,9 @@ public final class DataProvider {
         } catch (IllegalArgumentException ex) {
             System.err.println(parts[0] + " is no valid config attribute.");
         }
+
+        ALL_CONFIGURATIONS_SET
+                = CONFIGURATIONS.size() == ConfigKey.values().length;
     }
 
     static {
