@@ -80,20 +80,28 @@ public class Main extends Application {
 
         Platform.setImplicitExit(false);
 
-        checkConfigs();
-        showSplashscreen();
-        Login login = createLogin();
-        WaitScreen waitScreen = createWaitScreen(login);
-        createConnectionService(login, waitScreen).start();
+        /**
+         * boolean value needed to make sure no other windows shows up because
+         * {@code Platform.exit()} is async.
+         */
+        boolean valid = checkConfigs();
+        if (valid) {
+            showSplashscreen();
+            Login login = createLogin();
+            WaitScreen waitScreen = createWaitScreen(login);
+            createConnectionService(login, waitScreen).start();
+        }
     }
 
-    private void checkConfigs() {
-        if (!DataProvider.ALL_CONFIGURATIONS_SET) {
+    private boolean checkConfigs() {
+        boolean valid = DataProvider.ALL_CONFIGURATIONS_SET;
+        if (!valid) {
             ConfirmDialog.createDialog(
                     new Stage(), null, ConfirmDialog.BAD_CONFIGS)
                     .showOnceAndWait();
             Platform.exit();
         }
+        return valid;
     }
 
     private void showSplashscreen() throws Exception {
