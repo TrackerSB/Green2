@@ -130,6 +130,6 @@ public class BirthdayGenerator {
      */
     public static boolean getsNotified(Member m, int year) {
         int age = year - m.getPerson().getBirthday().getYear();
-        return DataProvider.getAgeFunction().apply(age);
+        return DataProvider.AGE_FUNCTION.apply(age);
     }
 }

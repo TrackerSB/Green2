@@ -133,7 +133,7 @@ public class WaitScreen extends View {
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setTitle("Einen Moment bitte");
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.getIcon());
+        stage.getIcons().add(DataProvider.DEFAULT_ICON);
     }
 
     /**

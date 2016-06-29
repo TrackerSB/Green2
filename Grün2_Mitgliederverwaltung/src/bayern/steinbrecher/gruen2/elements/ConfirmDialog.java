@@ -95,7 +95,7 @@ public class ConfirmDialog extends View {
         dialogContent.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(dialogContent);
-        scene.getStylesheets().add(DataProvider.getStylesheetPath());
+        scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         stage.setScene(scene);
         stage.setMinWidth(MIN_WIDTH);
         stage.setMinHeight(MIN_HEIGHT);
@@ -104,7 +104,7 @@ public class ConfirmDialog extends View {
         stage.initOwner(owner);
         stage.setTitle("Info");
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.getIcon());
+        stage.getIcons().add(DataProvider.DEFAULT_ICON);
     }
 
     private void initDialog(Stage s) {

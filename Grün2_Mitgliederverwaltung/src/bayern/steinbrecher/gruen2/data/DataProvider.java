@@ -34,83 +34,70 @@ public final class DataProvider {
      */
     public static final String VALUE_SEPARATOR = ":";
     /**
-     * The file to the configurations for Grün2.
+     * The default icon for stages.
      */
-    private static File configFile = new File(getAppDataPath() + "/Grün2.conf");
+    public static final Image DEFAULT_ICON
+            = new Image("bayern/steinbrecher/gruen2/data/icon.png");
     /**
-     * The configurations found in gruen2.conf.
+     * The path of the file containing all stylings.
      */
-    private static Map<ConfigKey, String> configs = null;
+    public static final String STYLESHEET_PATH
+            = "bayern/steinbrecher/gruen2/data/styles.css";
+    /**
+     * The os currently operating on. (Only supported os can be set)
+     */
+    public static final OS CURRENT_OS
+            = System.getProperty("os.name").toLowerCase().contains("win")
+            ? OS.WINDOWS : OS.LINUX;
+    /**
+     * The path to the home directory of the user.
+     */
+    private static final String HOME_DIR
+            = System.getProperty("user.home").replaceAll("\\\\", "/");
+    /**
+     * The path where to save files the user wants.
+     */
+    public static final String SAVE_PATH
+            = CURRENT_OS == OS.WINDOWS ? HOME_DIR + "/Desktop" : HOME_DIR;
     /**
      * Representing a function for calculating whether a person with a specific
      * age gets notified.
      */
-    private static IntFunction<Boolean> ageFunction = null;
+    public static final IntFunction<Boolean> AGE_FUNCTION;
     /**
-     * Containing all parts of the configfile which are relevant to calculate
-     * the ageFunction.
+     * The path of the folder where to put user specific data of the
+     * application.
      */
-    private static Set<IntFunction<Boolean>> ageFunctionParts = new HashSet<>();
-
+    private static final String APP_DATA_PATH
+            = HOME_DIR + (CURRENT_OS == OS.WINDOWS
+                    ? "/AppData/Roaming/Grün2_Mitgliederverwaltung"
+                    : "/.Grün2_Mitgliederverwaltung");
     /**
-     * Prohibit construction of a new object.
+     * The path where the file containing information about the last valid
+     * inserted data about an originator of a SEPA direct debit. (There does
+     * need to be a file yet)
      */
-    private DataProvider() {
-        throw new UnsupportedOperationException("Constructing an "
-                + DataProvider.class.getSimpleName() + "is not allowed");
-    }
-
+    public static final String ORIGINATOR_INFO_PATH
+            = APP_DATA_PATH + "/originator.properties";
     /**
-     * Returns the default icon.
-     *
-     * @return The default icon.
+     * The file to the configurations for Grün2.
      */
-    public static Image getIcon() {
-        return new Image("bayern/steinbrecher/gruen2/data/icon.png");
-    }
-
+    private static final File CONFIGURATION_FILE
+            = new File(APP_DATA_PATH + "/Grün2.conf");
     /**
-     * Returns the css file containing application wide styles.
-     *
-     * @return The css file containing application wide styles.
+     * The configurations found in gruen2.conf.
      */
-    public static String getStylesheetPath() {
-        return "bayern/steinbrecher/gruen2/data/styles.css";
-    }
-
+    private static final Map<ConfigKey, String> CONFIGURATIONS
+            = new HashMap<>();
     /**
-     * Returns the path of the directory to save results.
-     *
-     * @return The path of the directory to save results.
+     * {@code true} only if all allowed configurations are specified.
      */
-    public static String getSavepath() {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return System.getProperty("user.home").replaceAll("\\\\", "/")
-                    + "/Desktop";
-        } else {
-            return System.getProperty("user.home");
-        }
-    }
+    public static final boolean ALL_CONFIGURATIONS_SET
+            = CONFIGURATIONS.size() == ConfigKey.values().length;
 
-    /**
-     * Returns the path of the directory for saving user data.
-     *
-     * @return The path of the directory for saving user data.
-     */
-    public static String getAppDataPath() {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return System.getProperty("user.home").replaceAll("\\\\", "/")
-                    + "/AppData/Roaming/Grün2_Mitgliederverwaltung";
-        } else {
-            return System.getProperty("user.home")
-                    + "/.Grün2_Mitgliederverwaltung";
-        }
-    }
-
-    private static void readConfigs() {
+    static {
         String[] parts = null;
-        configs = new HashMap<>();
-        try (Scanner sc = new Scanner(configFile)) {
+        try (Scanner sc = new Scanner(CONFIGURATION_FILE)) {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
                 parts = line.split(VALUE_SEPARATOR);
@@ -118,15 +105,77 @@ public final class DataProvider {
                     System.err.println("\"" + line + "\" has not exactly "
                             + "two elements. It remains ignored.");
                 } else {
-                    configs.put(ConfigKey.valueOf(parts[0].toUpperCase()),
-                            parts[1]);
+                    CONFIGURATIONS.put(ConfigKey.valueOf(
+                            parts[0].toUpperCase()), parts[1]);
                 }
             }
         } catch (FileNotFoundException ex) {
             System.err.println("Configfile \"Grün2.conf\" not found.");
         } catch (IllegalArgumentException ex) {
-            System.err.println(parts[0] + " is no valid configattribute.");
+            System.err.println(parts[0] + " is no valid config attribute.");
         }
+    }
+
+    static {
+        Set<IntFunction<Boolean>> ageFunctionParts = new HashSet<>();
+        String birthdayExpression
+                = getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, "");
+        for (String part : Arrays.asList(birthdayExpression.split(","))) {
+            try {
+                switch (part.charAt(0)) {
+                case '>':
+                    switch (part.charAt(1)) {
+                    case '=':
+                        ageFunctionParts.add(age -> {
+                            return age >= new Integer(part.substring(2));
+                        });
+                        break;
+                    default:
+                        ageFunctionParts.add(age -> {
+                            return age > new Integer(part.substring(1));
+                        });
+                    }
+                    break;
+                case '<':
+                    switch (part.charAt(1)) {
+                    case '=':
+                        ageFunctionParts.add(age -> {
+                            return age <= new Integer(part.substring(2));
+                        });
+                        break;
+                    default:
+                        ageFunctionParts.add(age -> {
+                            return age < new Integer(part.substring(1));
+                        });
+                    }
+                    break;
+                case '=':
+                    ageFunctionParts.add(age -> {
+                        return age == new Integer(part.substring(1));
+                    });
+                    break;
+                default:
+                    System.err.println(part + " gets skipped");
+                }
+            } catch (NumberFormatException ex) {
+                System.err.println(part + " gets skipped");
+            }
+        }
+
+        if (ageFunctionParts.isEmpty()) {
+            AGE_FUNCTION = age -> false;
+        } else {
+            AGE_FUNCTION = age -> ageFunctionParts.parallelStream()
+                    .anyMatch(intFunc -> intFunc.apply(age));
+        }
+    }
+
+    /**
+     * Prohibit construction of a new object.
+     */
+    private DataProvider() {
+        throw new UnsupportedOperationException("Constructing an "
+                + DataProvider.class.getSimpleName() + "is not allowed");
     }
 
     /**
@@ -139,69 +188,7 @@ public final class DataProvider {
      * {@code key} could not be found or is not specified.
      */
     public static String getOrDefault(ConfigKey key, String defaultValue) {
-        if (configs == null) {
-            readConfigs();
-        }
-        return configs.getOrDefault(key, defaultValue);
-    }
-
-    /**
-     * Returns the function that checks whether a person with a certain age has
-     * to be notified on birthday according to the configured criteria.
-     *
-     * @return The function for calculating whether a person has to be notified
-     * on birthday.
-     */
-    public static synchronized IntFunction<Boolean> getAgeFunction() {
-        if (ageFunction == null) {
-            String birthdayExpression
-                    = getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, "");
-            ageFunction = age -> false;
-            for (String part : Arrays.asList(birthdayExpression.split(","))) {
-                try {
-                    switch (part.charAt(0)) {
-                    case '>':
-                        switch (part.charAt(1)) {
-                        case '=':
-                            ageFunctionParts.add(age -> {
-                                return age >= new Integer(part.substring(2));
-                            });
-                            break;
-                        default:
-                            ageFunctionParts.add(age -> {
-                                return age > new Integer(part.substring(1));
-                            });
-                        }
-                        break;
-                    case '<':
-                        switch (part.charAt(1)) {
-                        case '=':
-                            ageFunctionParts.add(age -> {
-                                return age <= new Integer(part.substring(2));
-                            });
-                            break;
-                        default:
-                            ageFunctionParts.add(age -> {
-                                return age < new Integer(part.substring(1));
-                            });
-                        }
-                        break;
-                    case '=':
-                        ageFunctionParts.add(age -> {
-                            return age == new Integer(part.substring(1));
-                        });
-                        break;
-                    default:
-                        System.err.println(part + " gets skipped");
-                    }
-                } catch (NumberFormatException ex) {
-                    System.err.println(part + " gets skipped");
-                }
-            }
-            ageFunction = age -> ageFunctionParts.parallelStream()
-                    .anyMatch(intFunc -> intFunc.apply(age));
-        }
-        return ageFunction;
+        return CONFIGURATIONS.getOrDefault(key, defaultValue);
     }
 
     /**
@@ -211,19 +198,6 @@ public final class DataProvider {
      */
     public static boolean useSsh() {
         return getOrDefault(ConfigKey.USE_SSH, "ja").equalsIgnoreCase("ja");
-    }
-
-    /**
-     * Checks whether all allowed configurations are specified.
-     *
-     * @return {@code true} only if all allowed configurations are specified.
-     * @see ConfigKey
-     */
-    public static boolean hasAllConfigs() {
-        if (configs == null) {
-            readConfigs();
-        }
-        return configs.size() == ConfigKey.values().length;
     }
 
     /**
@@ -254,5 +228,12 @@ public final class DataProvider {
             values.add(getResourceValue(key, p));
         });
         return values;
+    }
+
+    /**
+     * Contains enums representing supported operation systems.
+     */
+    public enum OS {
+        WINDOWS, LINUX;
     }
 }

@@ -88,7 +88,7 @@ public class Main extends Application {
     }
 
     private void checkConfigs() {
-        if (!DataProvider.hasAllConfigs()) {
+        if (!DataProvider.ALL_CONFIGURATIONS_SET) {
             ConfirmDialog.createDialog(
                     new Stage(), null, ConfirmDialog.BAD_CONFIGS)
                     .showOnceAndWait();
@@ -151,12 +151,12 @@ public class Main extends Application {
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        waitScreen.close();
-                    } else {
-                        Platform.exit();
-                    }
-                });
+                            if (newVal) {
+                                waitScreen.close();
+                            } else {
+                                Platform.exit();
+                            }
+                        });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -332,7 +332,7 @@ public class Main extends Application {
         checkNull(member);
         try {
             generateAddresses(member.get(),
-                    DataProvider.getSavepath() + "/Serienbrief_alle.csv");
+                    DataProvider.SAVE_PATH + "/Serienbrief_alle.csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -352,7 +352,7 @@ public class Main extends Application {
                 year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             generateAddresses(memberBirthday.get(year).get(),
-                    DataProvider.getSavepath()
+                    DataProvider.SAVE_PATH
                     + "/Serienbrief_Geburtstag_" + year + ".csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -376,7 +376,7 @@ public class Main extends Application {
                 Output.printContent(
                         BirthdayGenerator.createGroupedOutput(
                                 birthdayList, year),
-                        DataProvider.getSavepath()
+                        DataProvider.SAVE_PATH
                         + "/Geburtstag_" + year + ".csv");
             }
         } catch (InterruptedException | ExecutionException ex) {
@@ -411,7 +411,7 @@ public class Main extends Application {
                             = SepaPain00800302_XML_Generator.createXMLFile(
                                     selectedMember.get(), contribution,
                                     originator.get(),
-                                    DataProvider.getSavepath() + "/Sepa.xml");
+                                    DataProvider.SAVE_PATH + "/Sepa.xml");
                     Optional<StringBuilder> message = invalidMember.stream()
                             .map(m -> new StringBuilder(m + "\n"))
                             .reduce(StringBuilder::append);

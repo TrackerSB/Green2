@@ -41,7 +41,7 @@ public class Splashscreen extends View {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
-        stage.getIcons().add(DataProvider.getIcon());
+        stage.getIcons().add(DataProvider.DEFAULT_ICON);
     }
 
     public void showSplashscreen(long millis) {

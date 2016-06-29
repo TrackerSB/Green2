@@ -58,7 +58,7 @@ public class Selection<T extends Comparable>
                 .getResource("Selection.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.getStylesheetPath());
+        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
         controller = fxmlLoader.getController();
         controller.setStage(stage);
@@ -68,7 +68,7 @@ public class Selection<T extends Comparable>
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.getResourceValue("selectionTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.getIcon());
+        stage.getIcons().add(DataProvider.DEFAULT_ICON);
     }
 
     /**

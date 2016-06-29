@@ -46,7 +46,7 @@ public class SepaForm extends View<SepaFormController> {
                 .getResource("SepaForm.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.getStylesheetPath());
+        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
         controller = fxmlLoader.getController();
         controller.setStage(stage);
@@ -55,7 +55,7 @@ public class SepaForm extends View<SepaFormController> {
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.getResourceValue("sepaFormTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.getIcon());
+        stage.getIcons().add(DataProvider.DEFAULT_ICON);
     }
 
     /**

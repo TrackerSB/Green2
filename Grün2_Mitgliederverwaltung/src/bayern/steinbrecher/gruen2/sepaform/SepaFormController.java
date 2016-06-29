@@ -116,14 +116,13 @@ public class SepaFormController extends Controller {
         valid.bind(((anyInputToLong.or(anyInputMissing)).not())
                 .and(executionDatePicker.validProperty()));
 
-        String originatorInfoPath = DataProvider.getAppDataPath()
-                + "/originator.properties";
         try {
-            originator = Originator.readOriginatorInfo(originatorInfoPath);
+            originator = Originator.readOriginatorInfo(
+                    DataProvider.ORIGINATOR_INFO_PATH);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SepaFormController.class.getName())
                     .log(Level.SEVERE, null, ex);
-            originator = new Originator(originatorInfoPath);
+            originator = new Originator(DataProvider.ORIGINATOR_INFO_PATH);
         }
         creatorTextField.setText(originator.getCreator());
         creditorTextField.setText(originator.getCreditor());
