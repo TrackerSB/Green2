@@ -142,7 +142,7 @@ public final class SshConnection extends DBConnection {
 
             String result = readResult(in);
             if (result == null || errStream.size() > 0) {
-                throw new SQLException("Invalid SQL-Code");
+                throw new SQLException("Invalid SQL-Code"); //FIXME Show error gotten form error stream instead.
             }
             String[] rows = result.split("\n");
             List<List<String>> resultTable = Arrays.stream(rows)

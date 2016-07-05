@@ -44,6 +44,12 @@ public class Splashscreen extends View {
         stage.getIcons().add(DataProvider.DEFAULT_ICON);
     }
 
+    /**
+     * Shows this splashscreen for {@code millis} milliseconds and blocks until
+     * the splashscreen closes.
+     *
+     * @param millis The time in milliseconds the screen has to be shown.
+     */
     public void showSplashscreen(long millis) {
         ServiceFactory.createService(() -> {
             try {
@@ -56,5 +62,24 @@ public class Splashscreen extends View {
             return null;
         }).start();
         showOnceAndWait();
+    }
+
+    /**
+     * Creates, shows a splashscreen for {@code millis} milliseconds and blocks
+     * until the splashscreen closes.
+     *
+     * @param millis The time in milliseconds the screen has to be shown.
+     * @param stage The stage to use for the window. (Used as param for
+     * {@code start(...)}).
+     */
+    public static void showSplashscreen(long millis, Stage stage) {
+        try {
+            Splashscreen s = new Splashscreen();
+            s.start(stage);
+            s.showSplashscreen(millis);
+        } catch (Exception ex) {
+            Logger.getLogger(Splashscreen.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
     }
 }

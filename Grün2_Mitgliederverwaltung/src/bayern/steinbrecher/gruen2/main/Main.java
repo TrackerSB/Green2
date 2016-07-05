@@ -86,7 +86,7 @@ public class Main extends Application {
          */
         boolean valid = checkConfigs();
         if (valid) {
-            showSplashscreen();
+            Splashscreen.showSplashscreen(SPLASHSCREEN_MILLIS, new Stage());
             Login login = createLogin();
             WaitScreen waitScreen = createWaitScreen(login);
             createConnectionService(login, waitScreen).start();
@@ -102,12 +102,6 @@ public class Main extends Application {
             Platform.exit();
         }
         return valid;
-    }
-
-    private void showSplashscreen() throws Exception {
-        Splashscreen splashScreen = new Splashscreen();
-        splashScreen.start(new Stage());
-        splashScreen.showSplashscreen(SPLASHSCREEN_MILLIS);
     }
 
     private Login createLogin() {
@@ -159,12 +153,12 @@ public class Main extends Application {
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                            if (newVal) {
-                                waitScreen.close();
-                            } else {
-                                Platform.exit();
-                            }
-                        });
+                    if (newVal) {
+                        waitScreen.close();
+                    } else {
+                        Platform.exit();
+                    }
+                });
 
                 try {
                     new Menu(this).start(menuStage);
