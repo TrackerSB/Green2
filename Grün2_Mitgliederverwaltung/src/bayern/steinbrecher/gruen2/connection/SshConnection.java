@@ -56,6 +56,14 @@ public final class SshConnection extends DBConnection {
      */
     private final Session sshSession;
 
+    static {
+        //Configurations which are applieid to all sessions.
+        JSch.setConfig("StrictHostKeyChecking", "no");
+        JSch.setConfig("lang.s2c", "");
+        JSch.setConfig("cipher.s2c", "3des-cbc,blowfish-cbc");
+        JSch.setConfig("cipher.c2s", "3des-cbc,blowfish-cbc");
+    }
+
     /**
      * Constructes a new database connection over SSH.
      *
@@ -113,7 +121,6 @@ public final class SshConnection extends DBConnection {
             Session session = new JSch()
                     .getSession(sshUsername, sshHost, DEFAULT_SSH_PORT);
             session.setPassword(sshPassword);
-            session.setConfig("StrictHostKeyChecking", "no");
             session.setDaemonThread(true);
             return session;
         } catch (JSchException ex) {
@@ -141,8 +148,9 @@ public final class SshConnection extends DBConnection {
             channel.connect();
 
             String result = readResult(in);
-            if (result == null || errStream.size() > 0) {
-                throw new SQLException("Invalid SQL-Code"); //FIXME Show error gotten form error stream instead.
+            String message = errStream.toString();
+            if (result == null || message.toLowerCase().contains("error")) {
+                throw new SQLException(message);
             }
             String[] rows = result.split("\n");
             List<List<String>> resultTable = Arrays.stream(rows)
