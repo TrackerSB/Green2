@@ -58,10 +58,17 @@ public final class SshConnection extends DBConnection {
 
     static {
         //Configurations which are applieid to all sessions.
+        JSch.setConfig("kex", "diffie-hellman-group1-sha1,"
+                + "diffie-hellman-group-exchange-sha1");
+        JSch.setConfig("server_host_key", "ssh-rsa,ssh-dss");
         JSch.setConfig("StrictHostKeyChecking", "no");
         JSch.setConfig("lang.s2c", "");
         JSch.setConfig("cipher.s2c", "3des-cbc,blowfish-cbc");
         JSch.setConfig("cipher.c2s", "3des-cbc,blowfish-cbc");
+        JSch.setConfig("mac.s2c",
+                "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
+        JSch.setConfig("mac.c2s",
+                "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
     }
 
     /**
