@@ -66,9 +66,9 @@ public final class SshConnection extends DBConnection {
         JSch.setConfig("cipher.s2c", "3des-cbc,blowfish-cbc");
         JSch.setConfig("cipher.c2s", "3des-cbc,blowfish-cbc");
         JSch.setConfig("mac.s2c",
-                "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
+                "hmac-sha1,hmac-sha1-96,hmac-md5,hmac-md5-96");
         JSch.setConfig("mac.c2s",
-                "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
+                "hmac-sha1,hmac-sha1-96,hmac-md5,hmac-md5-96");
     }
 
     /**
