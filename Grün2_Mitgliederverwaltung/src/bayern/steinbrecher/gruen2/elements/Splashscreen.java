@@ -22,6 +22,8 @@ import javafx.stage.StageStyle;
  */
 public class Splashscreen extends View {
 
+    private static final int PREFFERED_WIDTH = 500;
+
     /**
      * {@inheritDoc}
      */
@@ -32,8 +34,9 @@ public class Splashscreen extends View {
 
         Pane root = new Pane();
         ImageView imageView = new ImageView();
-        imageView.setImage(
-                new Image("bayern/steinbrecher/gruen2/data/splashscreen.svg"));
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(PREFFERED_WIDTH);
+        imageView.setImage(DataProvider.getSplashscreenImage());
         root.getChildren().add(imageView);
 
         Scene scene = new Scene(root);

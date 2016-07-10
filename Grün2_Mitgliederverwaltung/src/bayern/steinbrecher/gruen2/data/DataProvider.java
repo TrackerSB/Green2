@@ -233,6 +233,15 @@ public final class DataProvider {
     }
 
     /**
+     * Returns a copy of the splashscreen image to use.
+     *
+     * @return A copy of the splashscreen image to use.
+     */
+    public static Image getSplashscreenImage() {
+        return new Image("bayern/steinbrecher/gruen2/data/splashscreen.svg");
+    }
+
+    /**
      * Contains enums representing supported operation systems.
      */
     public enum OS {
