@@ -3,7 +3,6 @@ package bayern.steinbrecher.gruen2.elements;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
-import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -21,21 +20,16 @@ import javafx.stage.StageStyle;
  */
 public class Splashscreen extends View {
 
-    private static final int PREFFERED_WIDTH = 500;
-
     /**
      * {@inheritDoc}
      */
     @Override
     public void start(Stage stage) throws Exception {
-        SvgImageLoaderFactory.install();
         this.stage = stage;
 
         Pane root = new Pane();
         ImageView imageView = new ImageView();
-        imageView.setPreserveRatio(true);
-        imageView.setFitWidth(PREFFERED_WIDTH);
-        imageView.setImage(DataProvider.getSplashscreenImage());
+        imageView.setImage(DataProvider.SPLASHSCREEN);
         root.getChildren().add(imageView);
 
         Scene scene = new Scene(root);

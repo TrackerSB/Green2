@@ -54,7 +54,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private static final long SPLASHSCREEN_MILLIS = 1500;
+    private static final long SPLASHSCREEN_MILLIS = 2500;
     private Stage menuStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;

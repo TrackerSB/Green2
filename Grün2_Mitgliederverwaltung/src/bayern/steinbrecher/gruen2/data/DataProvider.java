@@ -38,6 +38,10 @@ public final class DataProvider {
      */
     public static final Image DEFAULT_ICON
             = new Image("bayern/steinbrecher/gruen2/data/icon.png");
+    private static final int SPLASHSCREEN_PREFFERED_WIDTH = 800;
+    public static final Image SPLASHSCREEN
+            = new Image("bayern/steinbrecher/gruen2/data/splashscreen.png",
+                    SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true);
     /**
      * The path of the file containing all stylings.
      */
@@ -230,15 +234,6 @@ public final class DataProvider {
             values.add(getResourceValue(key, p));
         });
         return values;
-    }
-
-    /**
-     * Returns a copy of the splashscreen image to use.
-     *
-     * @return A copy of the splashscreen image to use.
-     */
-    public static Image getSplashscreenImage() {
-        return new Image("bayern/steinbrecher/gruen2/data/splashscreen.svg");
     }
 
     /**
