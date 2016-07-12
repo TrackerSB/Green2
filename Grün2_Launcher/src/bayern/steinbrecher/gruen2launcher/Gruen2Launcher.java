@@ -96,7 +96,7 @@ public final class Gruen2Launcher {
             if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
                 command = "cmd /C \"" + tempDir.toString() + "/install.bat\"";
             } else {
-                command = "chmod u+x " + tempDir.toString()
+                command = "chmod a+x " + tempDir.toString()
                         + "/install.sh " + tempDir.toString()
                         + "/uninstall.sh";
                 Runtime.getRuntime().exec(command).waitFor();
