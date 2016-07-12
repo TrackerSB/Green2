@@ -43,7 +43,7 @@ public final class Gruen2Launcher {
 
     private static String getProgramFolderPath() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return "C:/Program Files (x86)/Grün2_Mitgliederverwaltung";
+            return "C:/Program Files/Grün2_Mitgliederverwaltung";
         } else {
             return "/opt/Grün2_Mitgliederverwaltung";
         }
@@ -105,8 +105,8 @@ public final class Gruen2Launcher {
             Process installer = Runtime.getRuntime().exec(command);
             InputStream outputStream = installer.getErrorStream();
             int b = outputStream.read();
-            while(b > -1){
-                System.err.print((char)b);
+            while (b > -1) {
+                System.err.print((char) b);
                 b = outputStream.read();
             }
             installer.waitFor();
@@ -148,8 +148,8 @@ public final class Gruen2Launcher {
     private static void executeGruen2() {
         try {
             Runtime.getRuntime()
-                    .exec("java -jar " + getProgramFolderPath()
-                            + "/Grün2_Mitgliederverwaltung.jar");
+                    .exec("java -jar \"" + getProgramFolderPath()
+                            + "/Grün2_Mitgliederverwaltung.jar\"");
         } catch (IOException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
