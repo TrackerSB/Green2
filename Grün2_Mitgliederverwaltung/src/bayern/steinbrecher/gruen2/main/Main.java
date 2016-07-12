@@ -328,7 +328,7 @@ public class Main extends Application {
     /**
      * Generates a file Serienbrief_alle.csv containing addresses of all member.
      *
-     * @see DataProvider#getSavepath()
+     * @see DataProvider#SAVE_PATH
      */
     public void generateAddressesAll() {
         checkNull(member);
@@ -346,7 +346,7 @@ public class Main extends Application {
      * {@code year}.
      *
      * @param year The year to look for member.
-     * @see DataProvider#getSavepath()
+     * @see DataProvider#SAVE_PATH
      */
     public void generateAddressesBirthday(int year) {
         checkNull(memberBirthday);
@@ -366,7 +366,7 @@ public class Main extends Application {
      * get a birthday notification in year {@code year}.
      *
      * @param year The year to look for member.
-     * @see DataProvider#getSavepath()
+     * @see DataProvider#SAVE_PATH
      */
     public void generateBirthdayInfos(int year) {
         checkNull(memberBirthday);
