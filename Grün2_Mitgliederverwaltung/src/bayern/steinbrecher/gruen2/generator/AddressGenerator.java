@@ -87,6 +87,7 @@ public class AddressGenerator {
                     .append(currentAddress.getPlace()).append(';')
                     .append(addresses.get(i)).append('\n');
         }
+        output.deleteCharAt(output.length() - 1);
 
         return output.toString();
     }
