@@ -2,5 +2,5 @@
     <VisualElements
         BackgroundColor="#0000FF"
         ShowNameOnSquare150x150Logo="on"
-        ForegroundText="dark"/>
+        ForegroundText="light"/>
 </Application>
