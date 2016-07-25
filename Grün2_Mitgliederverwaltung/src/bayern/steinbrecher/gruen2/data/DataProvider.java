@@ -110,6 +110,7 @@ public final class DataProvider {
                 } else {
                     CONFIGURATIONS.put(ConfigKey.valueOf(
                             parts[0].toUpperCase()), parts[1]);
+                    //FIXME Linux can't find ConfigKey
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -129,39 +130,39 @@ public final class DataProvider {
         for (String part : Arrays.asList(birthdayExpression.split(","))) {
             try {
                 switch (part.charAt(0)) {
-                case '>':
-                    switch (part.charAt(1)) {
+                    case '>':
+                        switch (part.charAt(1)) {
+                            case '=':
+                                ageFunctionParts.add(age -> {
+                                    return age >= new Integer(part.substring(2));
+                                });
+                                break;
+                            default:
+                                ageFunctionParts.add(age -> {
+                                    return age > new Integer(part.substring(1));
+                                });
+                        }
+                        break;
+                    case '<':
+                        switch (part.charAt(1)) {
+                            case '=':
+                                ageFunctionParts.add(age -> {
+                                    return age <= new Integer(part.substring(2));
+                                });
+                                break;
+                            default:
+                                ageFunctionParts.add(age -> {
+                                    return age < new Integer(part.substring(1));
+                                });
+                        }
+                        break;
                     case '=':
                         ageFunctionParts.add(age -> {
-                            return age >= new Integer(part.substring(2));
+                            return age == new Integer(part.substring(1));
                         });
                         break;
                     default:
-                        ageFunctionParts.add(age -> {
-                            return age > new Integer(part.substring(1));
-                        });
-                    }
-                    break;
-                case '<':
-                    switch (part.charAt(1)) {
-                    case '=':
-                        ageFunctionParts.add(age -> {
-                            return age <= new Integer(part.substring(2));
-                        });
-                        break;
-                    default:
-                        ageFunctionParts.add(age -> {
-                            return age < new Integer(part.substring(1));
-                        });
-                    }
-                    break;
-                case '=':
-                    ageFunctionParts.add(age -> {
-                        return age == new Integer(part.substring(1));
-                    });
-                    break;
-                default:
-                    System.err.println(part + " gets skipped");
+                        System.err.println(part + " gets skipped");
                 }
             } catch (NumberFormatException ex) {
                 System.err.println(part + " gets skipped");
