@@ -2,6 +2,6 @@
 Type=Application
 Version=1.0
 Name=Grün2 Mitgliederverwaltung
-Exec=/usr/bin/xdg-open /opt/Grün2_Mitgliederverwaltung/Grün2_Mitgliederverwaltung.jar
+Exec=/usr/bin/xdg-open /opt/Grün2_Mitgliederverwaltung/Grün2_Launcher.jar
 Icon=/opt/Grün2_Mitgliederverwaltung/icon.png
 Categories=Office;Java;
