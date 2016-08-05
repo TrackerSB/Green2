@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * Represents a generator for generating a table of member with their names,
- * addresses and their saluttaion. The salutation uses given nicknames instead
+ * addresses and their salutation. The salutation uses given nicknames instead
  * of the real name.
  *
  * @author Stefan Huber
@@ -68,12 +68,12 @@ public class AddressGenerator {
      * But the first row will contain column labels (german).
      *
      * @param member The list of member to create output for.
-     * @param addresses The list containing the apropriate salutations for the
+     * @param salutations The list containing the apropriate salutations for the
      * member.
      * @return A String representing the output.
      */
     private static String createOutput(List<Member> member,
-            List<String> addresses) {
+            List<String> salutations) {
         StringBuilder output = new StringBuilder(
                 "Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Anrede\n");
         for (int i = 0; i < member.size(); i++) {
@@ -85,7 +85,7 @@ public class AddressGenerator {
                     .append(currentAddress.getHousenumber()).append(';')
                     .append(currentAddress.getPostcode()).append(';')
                     .append(currentAddress.getPlace()).append(';')
-                    .append(addresses.get(i)).append('\n');
+                    .append(salutations.get(i)).append('\n');
         }
         output.deleteCharAt(output.length() - 1);
 
