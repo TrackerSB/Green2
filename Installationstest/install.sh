@@ -24,11 +24,11 @@ MenuEntryFolder="/usr/share/applications"
 
 # Move user settings
 mkdir "$ConfigDir"
-cp "$TempDir/Grün2.conf" $ConfigDir/
+mv "$TempDir/Grün2.conf" $ConfigDir/
 
 # Create program folder
 $SudoCommand -c "mkdir $ProgramFolder;
-cp $TempDir/*.desktop $MenuEntryFolder/;
+mv $TempDir/*.desktop $MenuEntryFolder/;
 cp -r $TempDir/* $ProgramFolder/;
 rm $ProgramFolder/*.xml;
 rm $ProgramFolder/*.bat;"
