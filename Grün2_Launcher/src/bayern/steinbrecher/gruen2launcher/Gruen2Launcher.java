@@ -92,17 +92,19 @@ public final class Gruen2Launcher {
             }
 
             //Install
-            String command;
+            String[] command;
             if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
-                command = "cmd /C \"" + tempDir.toString() + "/install.bat\"";
+                command = new String[]{"cmd", "/C",
+                    tempDir.toString() + "/install.bat"};
             } else {
-                command = "chmod a+x " + tempDir.toString()
-                        + "/install.sh " + tempDir.toString()
-                        + "/uninstall.sh";
-                Runtime.getRuntime().exec(command).waitFor();
-                command = "sh " + tempDir.toString() + "/install.sh";
+                command = new String[]{"chmod", "a+x", tempDir.toString()
+                    + "/install.sh", tempDir.toString() + "/uninstall.sh"};
+                new ProcessBuilder(command).start().waitFor();
+
+                command = new String[]{"sh",
+                    tempDir.toString() + "/install.sh"};
             }
-            Process installer = Runtime.getRuntime().exec(command);
+            Process installer = new ProcessBuilder(command).start();
             InputStream outputStream = installer.getErrorStream();
             int b = outputStream.read();
             while (b > -1) {
@@ -147,9 +149,8 @@ public final class Gruen2Launcher {
 
     private static void executeGruen2() {
         try {
-            Runtime.getRuntime()
-                    .exec("java -jar \"" + getProgramFolderPath()
-                            + "/Grün2_Mitgliederverwaltung.jar\"");
+            new ProcessBuilder("java", "-jar", getProgramFolderPath()
+                    + "/Grün2_Mitgliederverwaltung.jar").start();
         } catch (IOException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
