@@ -145,6 +145,8 @@ public class SepaPain00800302_XML_Generator {
         double controlSum = member.parallelStream()
                 .mapToDouble(m -> contributions.get(m.getMembershipnumber()))
                 .sum();
+        //Eliminate double precision inaccuracy arose from IntStream
+        controlSum = Math.rint(controlSum * 100) / 100;
         StringBuilder output = new StringBuilder();
 
         //The beginning containing originators data.
