@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2launcher.Grün2LauncherController">
+    <ProgressBar minWidth="200" progress="${controller.percentage}" />
+    <HBox alignment="CENTER">
+        <Label text="${controller.percentageString}" />
+        <Label text="\% heruntergeladen" />
+    </HBox>
+</VBox>

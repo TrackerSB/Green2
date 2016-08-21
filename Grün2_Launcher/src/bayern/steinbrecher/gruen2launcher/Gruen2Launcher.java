@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -18,8 +19,17 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -28,17 +38,66 @@ import net.lingala.zip4j.exception.ZipException;
  *
  * @author Stefan Huber
  */
-public final class Gruen2Launcher {
+public final class Gruen2Launcher extends Application {
 
     private static final String GRUEN2_HOST_URL
             = "http://www.traunviertler-traunwalchen.de/programme";
+    private Stage stage;
 
     /**
-     * Prohibit construction of an object.
+     * Default constructor.
      */
-    private Gruen2Launcher() {
-        throw new UnsupportedOperationException(
-                "Construction of an object is not allowed.");
+    public Gruen2Launcher() {
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        this.stage = primaryStage;
+
+        File localVersionfile = new File(getConfigDirPath() + "/version.txt");
+        Optional<String> optOnlineVersion = readOnlineVersion();
+
+        Service serv = null;
+        if (optOnlineVersion.isPresent()) {
+            String onlineVersion = optOnlineVersion.get();
+            if (localVersionfile.exists()) {
+                try (Scanner sc = new Scanner(localVersionfile)) {
+                    String localVersion = sc.nextLine();
+                    if (!localVersion.equalsIgnoreCase(onlineVersion)) {
+                        serv = downloadAndInstallGruen2(onlineVersion);
+                        serv.setOnSucceeded(evt -> {
+                            executeGruen2();
+                            Platform.exit();
+                        });
+                    } else {
+                        executeGruen2();
+                    }
+                }
+            } else {
+                serv = downloadAndInstallGruen2(onlineVersion);
+                serv.setOnSucceeded(evt -> {
+                    try {
+                        Desktop.getDesktop().open(
+                                new File(getConfigDirPath() + "/Grün2.conf"));
+                    } catch (IOException ex) {
+                        Logger.getLogger(Gruen2Launcher.class.getName())
+                                .log(Level.SEVERE, null, ex);
+                    }
+                    Platform.exit();
+                });
+            }
+        } else if (localVersionfile.exists()) {
+            executeGruen2();
+        } else {
+            throw new IllegalStateException("Grün2 is currently not installed "
+                    + "and there´s no connection to install it.");
+        }
+
+        if (serv == null) {
+            Platform.exit();
+        } else {
+            serv.start();
+        }
     }
 
     private static String getProgramFolderPath() {
@@ -65,68 +124,96 @@ public final class Gruen2Launcher {
     }
 
     /**
-     * Downloads and installs Grün2.
+     * Returns a service which downloads and installs Grün2.
      */
-    private static void downloadAndInstallGruen2(String newVersion)
+    private Service downloadAndInstallGruen2(String newVersion)
             throws IOException {
-        File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
-                .toFile();
-        Path tempDir = Files.createTempDirectory(null, new FileAttribute[0]);
 
-        try {
-            //Download
-            URL downloadUrl = new URL(GRUEN2_HOST_URL + "/Gruen2.zip");
-            ReadableByteChannel rbc
-                    = Channels.newChannel(downloadUrl.openStream());
-            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            }
+        FXMLLoader fxmlLoader
+                = new FXMLLoader(getClass().getResource("Grün2Launcher.fxml"));
+        Parent root = fxmlLoader.load();
+        Grün2LauncherController controller = fxmlLoader.getController();
 
+        stage.setScene(new Scene(root));
+        stage.setResizable(false);
+        stage.setTitle("Neue Version herunterladen");
+        stage.show();
+
+        Service service = createService(() -> {
             try {
-                //Unzip
-                ZipFile zipFile = new ZipFile(tempFile.getAbsolutePath());
-                zipFile.extractAll(tempDir.toString());
-            } catch (ZipException ex) {
+                File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
+                        .toFile();
+                Path tempDir = Files.createTempDirectory(null, new FileAttribute[0]);
+
+                //Download
+                URLConnection downloadConnection
+                        = new URL(GRUEN2_HOST_URL + "/Gruen2.zip").openConnection();
+                long fileSize = Long.parseLong(
+                        downloadConnection.getHeaderField("Content-Length"));
+                long bytesPerLoop = fileSize / 1000;
+                ReadableByteChannel rbc
+                        = Channels.newChannel(downloadConnection.getInputStream());
+                try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                    for (long offset = 0; offset < fileSize;
+                            offset += bytesPerLoop) {
+                        fos.getChannel()
+                                .transferFrom(rbc, offset, bytesPerLoop);
+                        Platform.runLater(() -> controller.incPercentage());
+                    }
+                }
+
+                try {
+                    //Unzip
+                    ZipFile zipFile = new ZipFile(tempFile.getAbsolutePath());
+                    zipFile.extractAll(tempDir.toString());
+                } catch (ZipException ex) {
+                    Logger.getLogger(Gruen2Launcher.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                }
+
+                //Install
+                String[] command;
+                if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                    command = new String[]{"cmd", "/C",
+                        tempDir.toString() + "/install.bat"};
+                } else {
+                    command = new String[]{"chmod", "a+x", tempDir.toString()
+                        + "/install.sh", tempDir.toString() + "/uninstall.sh"};
+                    new ProcessBuilder(command).start().waitFor();
+
+                    command = new String[]{"sh",
+                        tempDir.toString() + "/install.sh"};
+                }
+                Process installer = new ProcessBuilder(command).start();
+                InputStream outputStream = installer.getErrorStream();
+                int b = outputStream.read();
+                while (b > -1) {
+                    System.err.print((char) b);
+                    b = outputStream.read();
+                }
+                installer.waitFor();
+
+                //Update version.txt
+                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(getConfigDirPath() + "/version.txt"),
+                        "UTF-8"))) {
+                    bw.append(newVersion);
+                } catch (IOException ex) {
+                    Logger.getLogger(Gruen2Launcher.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                }
+            } catch (MalformedURLException | FileNotFoundException |
+                    InterruptedException ex) {
                 Logger.getLogger(Gruen2Launcher.class.getName())
                         .log(Level.SEVERE, null, ex);
-            }
-
-            //Install
-            String[] command;
-            if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
-                command = new String[]{"cmd", "/C",
-                    tempDir.toString() + "/install.bat"};
-            } else {
-                command = new String[]{"chmod", "a+x", tempDir.toString()
-                    + "/install.sh", tempDir.toString() + "/uninstall.sh"};
-                new ProcessBuilder(command).start().waitFor();
-
-                command = new String[]{"sh",
-                    tempDir.toString() + "/install.sh"};
-            }
-            Process installer = new ProcessBuilder(command).start();
-            InputStream outputStream = installer.getErrorStream();
-            int b = outputStream.read();
-            while (b > -1) {
-                System.err.print((char) b);
-                b = outputStream.read();
-            }
-            installer.waitFor();
-
-            //Update version.txt
-            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(getConfigDirPath() + "/version.txt"),
-                    "UTF-8"))) {
-                bw.append(newVersion);
             } catch (IOException ex) {
                 Logger.getLogger(Gruen2Launcher.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
-        } catch (MalformedURLException | FileNotFoundException |
-                InterruptedException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
+            return null;
+        });
+
+        return service;
     }
 
     private static Optional<String> readOnlineVersion() {
@@ -147,7 +234,7 @@ public final class Gruen2Launcher {
         return Optional.empty();
     }
 
-    private static void executeGruen2() {
+    private void executeGruen2() {
         try {
             new ProcessBuilder("java", "-jar", getProgramFolderPath()
                     + "/Grün2_Mitgliederverwaltung.jar").start();
@@ -158,35 +245,34 @@ public final class Gruen2Launcher {
     }
 
     /**
+     * Creates a service which executes {@code task} and returns a value of type
+     * {@code V}.
+     *
+     * @param <V> The type of the value to return.
+     * @param task The task to execute.
+     * @return The service which executes {@code task} and returns a value of
+     * type {@code V}.
+     */
+    private static <V> Service<V> createService(Callable<V> task) {
+        return new Service<V>() {
+            @Override
+            protected Task<V> createTask() {
+                return new Task<V>() {
+                    @Override
+                    protected V call() throws Exception {
+                        return task.call();
+                    }
+                };
+            }
+        };
+    }
+
+    /**
      * The starting point of the hole application.
      *
      * @param args the command line arguments
-     * @throws java.io.IOException
      */
-    public static void main(String[] args) throws IOException {
-        File localVersionfile = new File(getConfigDirPath() + "/version.txt");
-        Optional<String> optOnlineVersion = readOnlineVersion();
-
-        if (optOnlineVersion.isPresent()) {
-            String onlineVersion = optOnlineVersion.get();
-            if (localVersionfile.exists()) {
-                try (Scanner sc = new Scanner(localVersionfile)) {
-                    String localVersion = sc.nextLine();
-                    if (!localVersion.equalsIgnoreCase(onlineVersion)) {
-                        downloadAndInstallGruen2(onlineVersion);
-                    }
-                }
-                executeGruen2();
-            } else {
-                downloadAndInstallGruen2(onlineVersion);
-                Desktop.getDesktop()
-                        .open(new File(getConfigDirPath() + "/Grün2.conf"));
-            }
-        } else if (localVersionfile.exists()) {
-            executeGruen2();
-        } else {
-            throw new IllegalStateException("Grün2 is currently not installed "
-                    + "and there´s no connection to install it.");
-        }
+    public static void main(String[] args) {
+        launch(args);
     }
 }
