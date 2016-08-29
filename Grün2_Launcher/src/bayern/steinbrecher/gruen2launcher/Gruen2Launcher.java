@@ -195,10 +195,15 @@ public final class Gruen2Launcher extends Application {
                     System.err.print((char) b);
                     b = outputStream.read();
                 }
+                //FIXME Doesn´t really wait for everything is completed.
                 installer.waitFor();
 
+                //Make sure move commands finished
+                Thread.sleep(1000);
+                
                 //Update version.txt
-                if (tempDir.iterator().hasNext()) { //If tempDir is not empty
+                if (tempDir.toFile().list().length > 1) { //If dir is not empty
+                    System.out.println(tempDir.toFile().list().length);
                     throw new CompletionException(
                             "Installer got no admin rights", null);
                 } else {
