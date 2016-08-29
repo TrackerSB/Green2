@@ -20,6 +20,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -57,7 +58,7 @@ public final class Gruen2Launcher extends Application {
         File localVersionfile = new File(getConfigDirPath() + "/version.txt");
         Optional<String> optOnlineVersion = readOnlineVersion();
 
-        Service serv = null;
+        Service<Boolean> serv = null;
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
             if (localVersionfile.exists()) {
@@ -96,6 +97,9 @@ public final class Gruen2Launcher extends Application {
         if (serv == null) {
             Platform.exit();
         } else {
+            serv.setOnFailed(evt -> {
+                Platform.exit();
+            });
             serv.start();
         }
     }
@@ -126,7 +130,7 @@ public final class Gruen2Launcher extends Application {
     /**
      * Returns a service which downloads and installs Grün2.
      */
-    private Service downloadAndInstallGruen2(String newVersion)
+    private Service<Boolean> downloadAndInstallGruen2(String newVersion)
             throws IOException {
 
         FXMLLoader fxmlLoader
@@ -139,7 +143,7 @@ public final class Gruen2Launcher extends Application {
         stage.setTitle("Neue Version herunterladen");
         stage.show();
 
-        Service service = createService(() -> {
+        Service<Boolean> service = createService(() -> {
             try {
                 File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
                         .toFile();
@@ -194,13 +198,19 @@ public final class Gruen2Launcher extends Application {
                 installer.waitFor();
 
                 //Update version.txt
-                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream(getConfigDirPath() + "/version.txt"),
-                        "UTF-8"))) {
-                    bw.append(newVersion);
-                } catch (IOException ex) {
-                    Logger.getLogger(Gruen2Launcher.class.getName())
-                            .log(Level.SEVERE, null, ex);
+                if (tempDir.iterator().hasNext()) { //If tempDir is not empty
+                    throw new CompletionException(
+                            "Installer got no admin rights", null);
+                } else {
+                    try (BufferedWriter bw = new BufferedWriter(
+                            new OutputStreamWriter(new FileOutputStream(
+                                    getConfigDirPath() + "/version.txt"),
+                                    "UTF-8"))) {
+                        bw.append(newVersion);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Gruen2Launcher.class.getName())
+                                .log(Level.SEVERE, null, ex);
+                    }
                 }
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
