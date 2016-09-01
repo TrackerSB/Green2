@@ -31,6 +31,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -141,6 +142,7 @@ public final class Gruen2Launcher extends Application {
         stage.setScene(new Scene(root));
         stage.setResizable(false);
         stage.setTitle("Neue Version herunterladen");
+        stage.initStyle(StageStyle.UTILITY);
         stage.show();
 
         Service<Boolean> service = createService(() -> {
