@@ -14,15 +14,16 @@ del "%~dp0*.sh"
 del "%~dp0*.desktop"
 
 if not exist "%ProgramFilesPath%" (
-    echo HIER
     move /y "%~dp0Grün2.conf" "%AppDataPath%"
-    echo HIER
 
     call :getAdminrights
 
     ::"install"
     mkdir "%ProgramFilesPath%"
-    xcopy /s /y "%~dp0*" "%ProgramFilesPath%"
+    move /y "%~dp0*" "%ProgramFilesPath%"
+    ::moving directories between drives is not possible
+    xcopy /y "%~dp0lib" "%ProgramFilesPath%lib\"
+    rd /s /q "%~dp0lib"
 
     ::create startmenuentries
     mkdir "%MenuEntryFolderPath%"
@@ -30,6 +31,7 @@ if not exist "%ProgramFilesPath%" (
     call :createLink "Grün2 deinstallieren" "%ProgramFilesPath%" "uninstall.bat"
     call :createLink "Grün2 konfigurieren" "%AppDataPath%" "Grün2.conf"
 
+    echo.
     echo Programm wurde installiert
 ) else (
     del "%~dp0Grün2.conf"
@@ -37,7 +39,11 @@ if not exist "%ProgramFilesPath%" (
     call :getAdminrights
 
     ::"update"
-    xcopy /s /y "%~dp0*" "%ProgramFilesPath%"
+    move /y "%~dp0*" "%ProgramFilesPath%"
+    ::moving directories between drives is not possible
+    xcopy /y "%~dp0lib" "%ProgramFilesPath%lib\"
+    rd /s /q "%~dp0lib"
+    
     echo.
     echo Programm wurde aktualisiert
 )
