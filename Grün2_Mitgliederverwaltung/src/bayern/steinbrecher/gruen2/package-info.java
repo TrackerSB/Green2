@@ -40,6 +40,6 @@
  * </li>
  * </ol>
  *
- * @version 2u6
+ * @version 2u7
  */
 package bayern.steinbrecher.gruen2;
