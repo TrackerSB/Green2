@@ -18,5 +18,4 @@ Set oLink = oWS.CreateShortcut(sLinkFile)
 oLink.TargetPath = workingDir & args(2)
 oLink.WorkingDirectory = workingDir
 oLink.IconLocation = programFilesPath & "icon.ico"
-WScript.Echo "C:\Program Files\Grün2_Mitgliederverwaltung\icon.ico"
 oLink.Save
