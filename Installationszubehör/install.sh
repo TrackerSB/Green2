@@ -31,6 +31,7 @@ $SudoCommand -c "mkdir $ProgramFolder;
 mv $TempDir/*.desktop $MenuEntryFolder/;
 mv $TempDir/* $ProgramFolder/;
 rm $ProgramFolder/*.xml;
-rm $ProgramFolder/*.bat;"
+rm $ProgramFolder/*.bat;
+rm $ProgramFolder/*.vbs;"
 
 echo "Grün2 wurde installiert/aktualisiert"

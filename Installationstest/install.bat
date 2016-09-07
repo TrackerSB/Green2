@@ -18,18 +18,20 @@ if not exist "%ProgramFilesPath%" (
 
     call :getAdminrights
 
-    ::"install"
+    rem "install"
     mkdir "%ProgramFilesPath%"
     move /y "%~dp0*" "%ProgramFilesPath%"
-    ::moving directories between drives is not possible
+    rem moving directories between drives is not possible
     xcopy /y "%~dp0lib" "%ProgramFilesPath%lib\"
     rd /s /q "%~dp0lib"
 
-    ::create startmenuentries
-    mkdir "%MenuEntryFolderPath%"
-    call :createLink "Grün2 starten" "%ProgramFilesPath%" "Grün2_Launcher.jar"
-    call :createLink "Grün2 deinstallieren" "%ProgramFilesPath%" "uninstall.bat"
-    call :createLink "Grün2 konfigurieren" "%AppDataPath%" "Grün2.conf"
+    rem create startmenuentries
+    rem call :createLink "Grün2 starten" "%ProgramFilesPath%" "Grün2_Launcher.jar"
+    rem call :createLink "Grün2 deinstallieren" "%ProgramFilesPath%" "uninstall.bat"
+    rem call :createLink "Grün2 konfigurieren" "%AppDataPath%" "Grün2.conf"
+	cscript /nologo createLink.vbs "Grün2 starten" "%ProgramFilesPath%" "Grün2_Launcher.jar"
+	cscript /nologo createLink.vbs "Grün2 deinstallieren" "%ProgramFilesPath%" "uninstall.bat"
+    cscript /nologo createLink.vbs "Grün2 konfigurieren" "%AppDataPath%" "Grün2.conf"
 
     echo.
     echo Programm wurde installiert
@@ -38,9 +40,9 @@ if not exist "%ProgramFilesPath%" (
 
     call :getAdminrights
 
-    ::"update"
+    rem "update"
     move /y "%~dp0*" "%ProgramFilesPath%"
-    ::moving directories between drives is not possible
+    rem moving directories between drives is not possible
     xcopy /y "%~dp0lib" "%ProgramFilesPath%lib\"
     rd /s /q "%~dp0lib"
     
@@ -50,7 +52,7 @@ if not exist "%ProgramFilesPath%" (
 
 goto:ENDE
 
-::createLink <linkname> <workingdir> <file of workingdir>
+rem createLink <linkname> <workingdir> <file of workingdir>
 :createLink
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
 
