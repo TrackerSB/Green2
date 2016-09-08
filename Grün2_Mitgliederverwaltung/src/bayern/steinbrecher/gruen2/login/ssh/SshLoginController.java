@@ -33,7 +33,7 @@ public class SshLoginController extends LoginController {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        initAllValidProperty(sshUsernameField, sshPasswordField,
+        initProperties(sshUsernameField, sshPasswordField,
                 databaseUsernameField, databasePasswordField);
     }
 

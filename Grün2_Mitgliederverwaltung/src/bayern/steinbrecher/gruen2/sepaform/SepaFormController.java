@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.sepaform;
 
-import bayern.steinbrecher.gruen2.Controller;
+import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.elements.CheckedDatePicker;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
@@ -18,9 +18,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -29,30 +26,14 @@ import javafx.scene.control.Label;
  *
  * @author Stefan Huber
  */
-public class SepaFormController extends Controller {
+public class SepaFormController extends CheckedController {
 
     private static final SimpleDateFormat YEAR_MONTH_DAY
             = new SimpleDateFormat("yyyy-MM-dd");
     private static final int UNIQUE_DAYS_PMTINFID = 15;
-    public static final int bla = 20;
-    /**
-     * Used as identity for sequence of or bindings.
-     */
-    private static final BooleanBinding FALSE_BINDING = new BooleanBinding() {
-        @Override
-        protected boolean computeValue() {
-            return false;
-        }
-    };
     public static final int MAX_CHAR_MESSAGE_ID = 35;
     public static final int MAX_CHAR_PMTINFID = 35;
     public static final int MAX_CHAR_NAME_OF_INITIATING_PARTY = 70;
-    private final BooleanProperty anyInputToLong
-            = new SimpleBooleanProperty(this, "anyInputToLong");
-    private final BooleanProperty anyInputMissing
-            = new SimpleBooleanProperty(this, "anyInputMissing");
-    private final BooleanProperty valid
-            = new SimpleBooleanProperty(this, "valid");
     private Originator originator;
     @FXML
     private CheckedTextField creatorTextField;
@@ -202,65 +183,5 @@ public class SepaFormController extends Controller {
      */
     public int getMaxCharNameInitiatingParty() {
         return MAX_CHAR_NAME_OF_INITIATING_PARTY;
-    }
-
-    /**
-     * Returns the property reprsenting a boolean value indicating whether any
-     * input is to long.
-     *
-     * @return The property reprsenting a boolean value indicating whether any
-     * input is to long.
-     */
-    public ReadOnlyBooleanProperty anyInputToLongProperty() {
-        return anyInputToLong;
-    }
-
-    /**
-     * Checks whether any input is to long.
-     *
-     * @return {@code true} only if any input is to long.
-     */
-    public boolean isAnyInputToLong() {
-        return anyInputToLong.get();
-    }
-
-    /**
-     * Returns the property reprsenting a boolean value indicating whether any
-     * input is missing.
-     *
-     * @return The property reprsenting a boolean value indicating whether any
-     * input is missing.
-     */
-    public ReadOnlyBooleanProperty anyInputMissingProperty() {
-        return anyInputMissing;
-    }
-
-    /**
-     * Checks whether any input is missing.
-     *
-     * @return {@code true} only if any input is missing.
-     */
-    public boolean isAnyInputMissing() {
-        return anyInputMissing.get();
-    }
-
-    /**
-     * Returns the property reprsenting a boolean value indicating whether all
-     * input is valid.
-     *
-     * @return The property reprsenting a boolean value indicating whether all
-     * input is valid.
-     */
-    public ReadOnlyBooleanProperty validProperty() {
-        return valid;
-    }
-
-    /**
-     * Checks whether all inserted data is valid.
-     *
-     * @return {@code true} only if all inserted data is valid.
-     */
-    public boolean isValid() {
-        return valid.get();
     }
 }
