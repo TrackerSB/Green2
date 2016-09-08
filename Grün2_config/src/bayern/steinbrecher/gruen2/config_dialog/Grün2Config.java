@@ -18,10 +18,12 @@ public class Grün2Config extends Application {
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("Grün2Config.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
-        primaryStage.setTitle("Grün2 konfigurieren");
+        primaryStage.setTitle(
+                DataProvider.getResourceValue("configureApplication"));
         primaryStage.getIcons().add(DataProvider.DEFAULT_ICON);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

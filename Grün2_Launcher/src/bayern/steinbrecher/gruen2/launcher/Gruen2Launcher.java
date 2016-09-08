@@ -31,7 +31,6 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.lingala.zip4j.core.ZipFile;
@@ -138,13 +137,14 @@ public final class Gruen2Launcher extends Application {
 
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource("Grün2Launcher.fxml"));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         Grün2LauncherController controller = fxmlLoader.getController();
 
         stage.setScene(new Scene(root));
         stage.setResizable(false);
-        stage.setTitle("Neue Version herunterladen");
+        stage.setTitle(DataProvider.getResourceValue("downloadNewVersion"));
         stage.initStyle(StageStyle.UTILITY);
         stage.getIcons().add(DataProvider.DEFAULT_ICON);
         stage.show();
