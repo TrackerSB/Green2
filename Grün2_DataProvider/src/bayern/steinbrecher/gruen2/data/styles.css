@@ -108,3 +108,7 @@
 .date-picker-popup > * > .today {
     -fx-background-color: rgba(50,50,255,0.5);
 }
+
+.progress-bar{
+    -fx-accent: forestgreen;
+}

@@ -1,6 +1,5 @@
 package bayern.steinbrecher.gruen2.data;
 
-import bayern.steinbrecher.gruen2.generator.SepaPain00800302_XML_Generator;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class Output {
             //To make no UTF-8 without BOM but with BOM.
             bw.append('\uFEFF').append(content);
         } catch (IOException ex) {
-            Logger.getLogger(SepaPain00800302_XML_Generator.class.getName())
+            Logger.getLogger(Output.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }

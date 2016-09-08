@@ -128,41 +128,44 @@ public final class DataProvider {
         String birthdayExpression
                 = getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, "");
         for (String part : Arrays.asList(birthdayExpression.split(","))) {
+            if (part.isEmpty()) {
+                continue;
+            }
             try {
                 switch (part.charAt(0)) {
-                    case '>':
-                        switch (part.charAt(1)) {
-                            case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age >= new Integer(part.substring(2));
-                                });
-                                break;
-                            default:
-                                ageFunctionParts.add(age -> {
-                                    return age > new Integer(part.substring(1));
-                                });
-                        }
-                        break;
-                    case '<':
-                        switch (part.charAt(1)) {
-                            case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age <= new Integer(part.substring(2));
-                                });
-                                break;
-                            default:
-                                ageFunctionParts.add(age -> {
-                                    return age < new Integer(part.substring(1));
-                                });
-                        }
-                        break;
+                case '>':
+                    switch (part.charAt(1)) {
                     case '=':
                         ageFunctionParts.add(age -> {
-                            return age == new Integer(part.substring(1));
+                            return age >= new Integer(part.substring(2));
                         });
                         break;
                     default:
-                        System.err.println(part + " gets skipped");
+                        ageFunctionParts.add(age -> {
+                            return age > new Integer(part.substring(1));
+                        });
+                    }
+                    break;
+                case '<':
+                    switch (part.charAt(1)) {
+                    case '=':
+                        ageFunctionParts.add(age -> {
+                            return age <= new Integer(part.substring(2));
+                        });
+                        break;
+                    default:
+                        ageFunctionParts.add(age -> {
+                            return age < new Integer(part.substring(1));
+                        });
+                    }
+                    break;
+                case '=':
+                    ageFunctionParts.add(age -> {
+                        return age == new Integer(part.substring(1));
+                    });
+                    break;
+                default:
+                    System.err.println(part + " gets skipped");
                 }
             } catch (NumberFormatException ex) {
                 System.err.println(part + " gets skipped");

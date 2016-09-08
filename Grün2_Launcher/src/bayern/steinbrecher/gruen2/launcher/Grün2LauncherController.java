@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2launcher;
+package bayern.steinbrecher.gruen2.launcher;
 
 import java.net.URL;
 import java.text.DecimalFormat;

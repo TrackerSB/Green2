@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2launcher;
+package bayern.steinbrecher.gruen2.launcher;
 
 import java.awt.Desktop;
 import java.io.BufferedWriter;
@@ -30,6 +30,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.lingala.zip4j.core.ZipFile;
@@ -143,6 +144,7 @@ public final class Gruen2Launcher extends Application {
         stage.setResizable(false);
         stage.setTitle("Neue Version herunterladen");
         stage.initStyle(StageStyle.UTILITY);
+        stage.getIcons().add(new Image("bayern/steinbrecher/gruen2/data/icon.png"));
         stage.show();
 
         Service<Boolean> service = createService(() -> {
@@ -202,7 +204,7 @@ public final class Gruen2Launcher extends Application {
 
                 //Make sure move commands finished
                 Thread.sleep(1000);
-                
+
                 //Update version.txt
                 if (tempDir.toFile().list().length > 1) { //If dir is not empty
                     System.out.println(tempDir.toFile().list().length);
