@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.launcher;
 
+import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -138,13 +139,14 @@ public final class Gruen2Launcher extends Application {
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource("Grün2Launcher.fxml"));
         Parent root = fxmlLoader.load();
+        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         Grün2LauncherController controller = fxmlLoader.getController();
 
         stage.setScene(new Scene(root));
         stage.setResizable(false);
         stage.setTitle("Neue Version herunterladen");
         stage.initStyle(StageStyle.UTILITY);
-        stage.getIcons().add(new Image("bayern/steinbrecher/gruen2/data/icon.png"));
+        stage.getIcons().add(DataProvider.DEFAULT_ICON);
         stage.show();
 
         Service<Boolean> service = createService(() -> {

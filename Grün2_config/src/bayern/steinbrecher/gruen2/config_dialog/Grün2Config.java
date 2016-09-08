@@ -1,12 +1,11 @@
 package bayern.steinbrecher.gruen2.config_dialog;
 
-import java.io.File;
+import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -20,10 +19,10 @@ public class Grün2Config extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("Grün2Config.fxml"));
         Parent root = fxmlLoader.load();
+        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
         primaryStage.setTitle("Grün2 konfigurieren");
-        primaryStage.getIcons()
-                .add(new Image("file:///" + new File("icon.png").getAbsolutePath().replace("\\", "/")));
+        primaryStage.getIcons().add(DataProvider.DEFAULT_ICON);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

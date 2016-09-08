@@ -8,9 +8,6 @@
 <?import java.net.*?>
 
 <VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.launcher.Grün2LauncherController">
-    <stylesheets>
-        <URL value="@/bayern/steinbrecher/gruen2/data/styles.css"/>
-    </stylesheets>
     <ProgressBar minWidth="200" progress="${controller.percentage}" />
     <HBox alignment="CENTER">
         <Label text="${controller.percentageString}" />
