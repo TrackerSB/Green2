@@ -1,6 +1,6 @@
 'Request admin rights
 If Not WScript.Arguments.Named.Exists("elevate") Then
-  CreateObject("Shell.Application").ShellExecute WScript.FullName, WScript.ScriptFullName & " /elevate", "", "runas", 1
+  CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ /elevate", "", "runas", 1
   WScript.Quit
 End If
 
@@ -13,7 +13,6 @@ menuEntryFolderPath = oWS.SpecialFolders("AllUsersPrograms") & "\Grün2 Mitgliede
 If fso.FolderExists(programFilesPath) Then
     fso.DeleteFolder programFilesPath
 End If
-WScript.Echo menuEntryFolderPath
 If fso.FolderExists(menuEntryFolderPath) Then
     fso.DeleteFolder menuEntryFolderPath
 End If
