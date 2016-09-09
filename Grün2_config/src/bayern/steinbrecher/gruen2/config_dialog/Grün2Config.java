@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
+ * Represents a dialog for configuring Grün2.
  *
  * @author Stefan Huber
  */
@@ -33,10 +34,11 @@ public class Grün2Config extends Application {
     }
 
     /**
+     * main-method.
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         launch(args);
     }
-
 }

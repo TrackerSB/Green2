@@ -5,7 +5,6 @@ import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +15,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 
 /**
+ * Controller of the dialog for configuring Grün2.
+ *
  * @author Stefan Huber
  */
 public class Grün2ConfigController extends CheckedController {
