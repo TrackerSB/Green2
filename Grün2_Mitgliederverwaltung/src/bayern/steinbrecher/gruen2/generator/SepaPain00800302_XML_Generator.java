@@ -99,7 +99,7 @@ public class SepaPain00800302_XML_Generator {
         }
         List<Member> invalidMember = filterValidMember(member);
         Output.printContent(
-                createXML(member, originator, contributions), outputfile);
+                createXML(member, originator, contributions), outputfile, true);
         return invalidMember;
     }
 

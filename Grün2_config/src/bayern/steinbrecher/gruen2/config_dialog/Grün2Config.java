@@ -22,6 +22,9 @@ public class Grün2Config extends Application {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
+        Grün2ConfigController controller = fxmlLoader.getController();
+        controller.setStage(primaryStage);
+
         primaryStage.setTitle(
                 DataProvider.getResourceValue("configureApplication"));
         primaryStage.getIcons().add(DataProvider.DEFAULT_ICON);

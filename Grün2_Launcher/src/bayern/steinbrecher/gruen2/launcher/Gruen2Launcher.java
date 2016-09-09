@@ -1,6 +1,8 @@
 package bayern.steinbrecher.gruen2.launcher;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.Output;
+import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -45,6 +47,12 @@ public final class Gruen2Launcher extends Application {
 
     private static final String GRUEN2_HOST_URL
             = "http://www.traunviertler-traunwalchen.de/programme";
+    private static final String VERSIONFILE_PATH
+            = DataProvider.APP_DATA_PATH + "/version.txt";
+    private static final String PROGRAMFOLDER_PATH
+            = DataProvider.CURRENT_OS == DataProvider.OS.WINDOWS
+                    ? "C:/Program Files/Grün2_Mitgliederverwaltung"
+                    : "/opt/Grün2_Mitgliederverwaltung";
     private Stage stage;
 
     /**
@@ -57,7 +65,7 @@ public final class Gruen2Launcher extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.stage = primaryStage;
 
-        File localVersionfile = new File(getConfigDirPath() + "/version.txt");
+        File localVersionfile = new File(VERSIONFILE_PATH);
         Optional<String> optOnlineVersion = readOnlineVersion();
 
         Service<Boolean> serv = null;
@@ -78,16 +86,7 @@ public final class Gruen2Launcher extends Application {
                 }
             } else {
                 serv = downloadAndInstallGruen2(onlineVersion);
-                serv.setOnSucceeded(evt -> {
-                    try {
-                        Desktop.getDesktop().open(
-                                new File(getConfigDirPath() + "/Grün2.conf"));
-                    } catch (IOException ex) {
-                        Logger.getLogger(Gruen2Launcher.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    }
-                    Platform.exit();
-                });
+                serv.setOnSucceeded(evt -> executeGruen2Config());
             }
         } else if (localVersionfile.exists()) {
             executeGruen2();
@@ -103,29 +102,6 @@ public final class Gruen2Launcher extends Application {
                 Platform.exit();
             });
             serv.start();
-        }
-    }
-
-    private static String getProgramFolderPath() {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return "C:/Program Files/Grün2_Mitgliederverwaltung";
-        } else {
-            return "/opt/Grün2_Mitgliederverwaltung";
-        }
-    }
-
-    /**
-     * Returns the path of the version file.
-     *
-     * @return The path of the version file.
-     */
-    private static String getConfigDirPath() {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return System.getProperty("user.home").replaceAll("\\\\", "/")
-                    + "/AppData/Roaming/Grün2_Mitgliederverwaltung";
-        } else {
-            return System.getProperty("user.home")
-                    + "/.Grün2_Mitgliederverwaltung";
         }
     }
 
@@ -149,7 +125,7 @@ public final class Gruen2Launcher extends Application {
         stage.getIcons().add(DataProvider.DEFAULT_ICON);
         stage.show();
 
-        Service<Boolean> service = createService(() -> {
+        Service<Boolean> service = ServiceFactory.createService(() -> {
             try {
                 File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
                         .toFile();
@@ -185,7 +161,7 @@ public final class Gruen2Launcher extends Application {
                 String[] command;
                 if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
                     command = new String[]{"cmd", "/C",
-                        tempDir.toString() + "/install.bat"};
+                        tempDir.toString() + "/install.vbs"};
                 } else {
                     command = new String[]{"chmod", "a+x", tempDir.toString()
                         + "/install.sh", tempDir.toString() + "/uninstall.sh"};
@@ -213,15 +189,7 @@ public final class Gruen2Launcher extends Application {
                     throw new CompletionException(
                             "Installer got no admin rights", null);
                 } else {
-                    try (BufferedWriter bw = new BufferedWriter(
-                            new OutputStreamWriter(new FileOutputStream(
-                                    getConfigDirPath() + "/version.txt"),
-                                    "UTF-8"))) {
-                        bw.append(newVersion);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Gruen2Launcher.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    }
+                    Output.printContent(newVersion, VERSIONFILE_PATH, false);
                 }
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
@@ -257,35 +225,25 @@ public final class Gruen2Launcher extends Application {
 
     private void executeGruen2() {
         try {
-            new ProcessBuilder("java", "-jar", getProgramFolderPath()
-                    + "/Grün2_Mitgliederverwaltung.jar").start();
+            new ProcessBuilder("java", "-jar", PROGRAMFOLDER_PATH
+                    + "/Grün2_Mitgliederverwaltung.jar")
+                    .start();
         } catch (IOException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }
 
-    /**
-     * Creates a service which executes {@code task} and returns a value of type
-     * {@code V}.
-     *
-     * @param <V> The type of the value to return.
-     * @param task The task to execute.
-     * @return The service which executes {@code task} and returns a value of
-     * type {@code V}.
-     */
-    private static <V> Service<V> createService(Callable<V> task) {
-        return new Service<V>() {
-            @Override
-            protected Task<V> createTask() {
-                return new Task<V>() {
-                    @Override
-                    protected V call() throws Exception {
-                        return task.call();
-                    }
-                };
-            }
-        };
+    private void executeGruen2Config() {
+        try {
+            new ProcessBuilder("java", "-jar",
+                    PROGRAMFOLDER_PATH + "/Grün2_config.jar")
+                    .start();
+            Platform.exit();
+        } catch (IOException ex) {
+            Logger.getLogger(Gruen2Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
