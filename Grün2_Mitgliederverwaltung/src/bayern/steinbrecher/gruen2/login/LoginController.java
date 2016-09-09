@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.login;
 
-import bayern.steinbrecher.gruen2.Controller;
+import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import java.util.Arrays;
@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 
 /**
@@ -18,33 +15,24 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public abstract class LoginController extends Controller {
+public abstract class LoginController extends CheckedController {
 
-    private static final BooleanBinding BINDING_IDENTITY
-            = new BooleanBinding() {
-        @Override
-        protected boolean computeValue() {
-            return true;
-        }
-    };
-    protected BooleanProperty allInputValid
-            = new SimpleBooleanProperty(this, "allInputValid");
     protected List<CheckedTextField> textInputFields;
 
-    protected void initAllValidProperty(CheckedTextField... fields) {
+    protected void initProperties(CheckedTextField... fields) {
         textInputFields = Arrays.asList(fields);
-        allInputValid.bind(textInputFields.stream()
+        anyInputMissing.bind(textInputFields.stream()
+                .map(tif -> tif.emptyProperty())
+                .reduce(TRUE_BINDING, (bind, prop) -> bind.or(prop),
+                        BooleanBinding::or));
+        anyInputToLong.bind(textInputFields.stream()
+                .map(tif -> tif.toLongProperty())
+                .reduce(TRUE_BINDING, (bind, prop) -> bind.or(prop),
+                        BooleanBinding::or));
+        valid.bind(textInputFields.stream()
                 .map(tif -> tif.validProperty())
-                .reduce(BINDING_IDENTITY, (bind, prop) -> bind.and(prop),
+                .reduce(TRUE_BINDING, (bind, prop) -> bind.and(prop),
                         BooleanBinding::and));
-    }
-
-    public ReadOnlyBooleanProperty allInputValidProperty() {
-        return allInputValid;
-    }
-
-    public boolean isAllInputValid() {
-        return allInputValid.get();
     }
 
     /**
@@ -53,7 +41,7 @@ public abstract class LoginController extends Controller {
     @FXML
     private void login() {
         checkStage();
-        if (isAllInputValid()) {
+        if (isValid()) {
             userConfirmed = true;
             stage.close();
         }

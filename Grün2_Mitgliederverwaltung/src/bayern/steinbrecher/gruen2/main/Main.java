@@ -318,7 +318,7 @@ public class Main extends Application {
         checkNull(nicknames);
         try {
             Output.printContent(AddressGenerator.generateAddressData(
-                    member, nicknames.get()), filename);
+                    member, nicknames.get()), filename, true);
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -379,7 +379,7 @@ public class Main extends Application {
                         BirthdayGenerator.createGroupedOutput(
                                 birthdayList, year),
                         DataProvider.SAVE_PATH
-                        + "/Geburtstag_" + year + ".csv");
+                        + "/Geburtstag_" + year + ".csv", true);
             }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName())

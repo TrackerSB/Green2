@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import bayern.steinbrecher.gruen2.elements.*?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.config_dialog.Grün2ConfigController">
+    <CheckBox selected="true" fx:id="useSSHCheckBox" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2" text="%useSSH" />
+    <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="%sshHost" />
+    <CheckedTextField fx:id="sshHostTextField" disable="${!useSSHCheckBox.selected}" checked="${useSSHCheckBox.selected}" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="%sshHost" />
+    <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="%databaseHost" />
+    <CheckedTextField fx:id="databaseHostTextField" GridPane.rowIndex="2" GridPane.columnIndex="1" promptText="%databaseHost" />
+    <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="%databaseName" />
+    <CheckedTextField fx:id="databaseNameTextField" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="%databaseName" />
+    <Label GridPane.rowIndex="4" GridPane.columnIndex="0" text="%birthdayExpression" />
+    <CheckedTextField fx:id="birthdayExpressionTextField" GridPane.rowIndex="4" GridPane.columnIndex="1" promptText="%birthdayExpression" />
+    
+    <Label styleClass="warningLabel" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="5" text="%invalidOrMissingInput" visible="${!controller.valid}" />
+    <Button GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="6" text="%save" disable="${!controller.valid}" defaultButton="true" onAction="#saveSettings"  />
+</GridPane>

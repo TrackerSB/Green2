@@ -72,7 +72,7 @@ public final class DataProvider {
      * The path of the folder where to put user specific data of the
      * application.
      */
-    private static final String APP_DATA_PATH
+    public static final String APP_DATA_PATH
             = HOME_DIR + (CURRENT_OS == OS.WINDOWS
                     ? "/AppData/Roaming/Grün2_Mitgliederverwaltung"
                     : "/.Grün2_Mitgliederverwaltung");
@@ -83,11 +83,16 @@ public final class DataProvider {
      */
     public static final String ORIGINATOR_INFO_PATH
             = APP_DATA_PATH + "/originator.properties";
+    private static final String CONFIGFILE_NAME = "Grün2.conf";
+    /**
+     * The path to the configfile. (May not exist, yet)
+     */
+    public static final String CONFIGFILE_PATH
+            = APP_DATA_PATH + "/" + CONFIGFILE_NAME;
     /**
      * The file to the configurations for Grün2.
      */
-    private static final File CONFIGURATION_FILE
-            = new File(APP_DATA_PATH + "/Grün2.conf");
+    private static final File CONFIGFILE = new File(CONFIGFILE_PATH);
     /**
      * The configurations found in gruen2.conf.
      */
@@ -99,8 +104,11 @@ public final class DataProvider {
     public static final boolean ALL_CONFIGURATIONS_SET;
 
     static {
+        //Create configDir if not existing
+        new File(DataProvider.APP_DATA_PATH).mkdir();
+
         String[] parts = null;
-        try (Scanner sc = new Scanner(CONFIGURATION_FILE)) {
+        try (Scanner sc = new Scanner(CONFIGFILE)) {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
                 parts = line.split(VALUE_SEPARATOR);
@@ -114,7 +122,8 @@ public final class DataProvider {
                 }
             }
         } catch (FileNotFoundException ex) {
-            System.err.println("Configfile \"Grün2.conf\" not found.");
+            System.err.println(
+                    "Configfile \"" + CONFIGFILE_NAME + "\" not found.");
         } catch (IllegalArgumentException ex) {
             System.err.println(parts[0] + " is no valid config attribute.");
         }
@@ -128,41 +137,44 @@ public final class DataProvider {
         String birthdayExpression
                 = getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, "");
         for (String part : Arrays.asList(birthdayExpression.split(","))) {
+            if (part.isEmpty()) {
+                continue;
+            }
             try {
                 switch (part.charAt(0)) {
-                    case '>':
-                        switch (part.charAt(1)) {
-                            case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age >= new Integer(part.substring(2));
-                                });
-                                break;
-                            default:
-                                ageFunctionParts.add(age -> {
-                                    return age > new Integer(part.substring(1));
-                                });
-                        }
-                        break;
-                    case '<':
-                        switch (part.charAt(1)) {
-                            case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age <= new Integer(part.substring(2));
-                                });
-                                break;
-                            default:
-                                ageFunctionParts.add(age -> {
-                                    return age < new Integer(part.substring(1));
-                                });
-                        }
-                        break;
+                case '>':
+                    switch (part.charAt(1)) {
                     case '=':
                         ageFunctionParts.add(age -> {
-                            return age == new Integer(part.substring(1));
+                            return age >= new Integer(part.substring(2));
                         });
                         break;
                     default:
-                        System.err.println(part + " gets skipped");
+                        ageFunctionParts.add(age -> {
+                            return age > new Integer(part.substring(1));
+                        });
+                    }
+                    break;
+                case '<':
+                    switch (part.charAt(1)) {
+                    case '=':
+                        ageFunctionParts.add(age -> {
+                            return age <= new Integer(part.substring(2));
+                        });
+                        break;
+                    default:
+                        ageFunctionParts.add(age -> {
+                            return age < new Integer(part.substring(1));
+                        });
+                    }
+                    break;
+                case '=':
+                    ageFunctionParts.add(age -> {
+                        return age == new Integer(part.substring(1));
+                    });
+                    break;
+                default:
+                    System.err.println(part + " gets skipped");
                 }
             } catch (NumberFormatException ex) {
                 System.err.println(part + " gets skipped");

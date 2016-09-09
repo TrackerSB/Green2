@@ -29,7 +29,7 @@ public class DefaultLoginController extends LoginController {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        initAllValidProperty(databaseUsernameField, databasePasswordField);
+        initProperties(databaseUsernameField, databasePasswordField);
     }
 
     /**
