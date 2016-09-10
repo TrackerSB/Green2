@@ -28,8 +28,8 @@ mv "$TempDir/Grün2.conf" $ConfigDir/
 
 # Create program folder
 $SudoCommand -c "mkdir $ProgramFolder;
-mv $TempDir/*.desktop $MenuEntryFolder/;
-mv $TempDir/* $ProgramFolder/;
+mv -f $TempDir/*.desktop $MenuEntryFolder/;
+mv -f $TempDir/* $ProgramFolder/;
 rm $ProgramFolder/*.xml;
 rm $ProgramFolder/*.bat;
 rm $ProgramFolder/*.vbs;"
