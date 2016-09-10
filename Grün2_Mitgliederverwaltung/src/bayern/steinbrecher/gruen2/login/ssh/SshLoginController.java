@@ -1,6 +1,6 @@
 package bayern.steinbrecher.gruen2.login.ssh;
 
-import bayern.steinbrecher.gruen2.data.LoginKey;
+import bayern.steinbrecher.gruen2.login.LoginKey;
 import bayern.steinbrecher.gruen2.elements.CheckedPasswordField;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.login.LoginController;

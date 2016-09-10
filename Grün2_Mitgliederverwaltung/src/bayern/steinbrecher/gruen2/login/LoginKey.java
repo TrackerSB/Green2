@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2.data;
+package bayern.steinbrecher.gruen2.login;
 
 /**
  * Represents constants for description of login information such as ssh

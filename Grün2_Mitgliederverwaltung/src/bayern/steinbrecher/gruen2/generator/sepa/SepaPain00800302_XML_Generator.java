@@ -1,4 +1,4 @@
-package bayern.steinbrecher.gruen2.generator;
+package bayern.steinbrecher.gruen2.generator.sepa;
 
 import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.people.AccountHolder;
@@ -84,13 +84,14 @@ public class SepaPain00800302_XML_Generator {
      * @param member The member to collect money via direct debit from.
      * @param contributions The mapping of membershipnumbers to contributions.
      * @param originator The originator of the direct debit.
+     * @param sequenceType The sequence type of the direct debit.
      * @param outputfile The path to the file to print the xml to.
      * @return A list containing member which are not included in the
      * outputfile. These are member which have no iban or no bic.
      */
     public static List<Member> createXMLFile(List<Member> member,
             Map<Integer, Double> contributions, Originator originator,
-            String outputfile) {
+            SequenceType sequenceType, String outputfile) {
         for (Member m : member) {
             if (!contributions.containsKey(m.getMembershipnumber())) {
                 throw new IllegalArgumentException(
@@ -99,7 +100,8 @@ public class SepaPain00800302_XML_Generator {
         }
         List<Member> invalidMember = filterValidMember(member);
         Output.printContent(
-                createXML(member, originator, contributions), outputfile, true);
+                createXML(member, originator, contributions, sequenceType),
+                outputfile, true);
         return invalidMember;
     }
 
@@ -140,7 +142,7 @@ public class SepaPain00800302_XML_Generator {
      * @return The {@code String} representing the xml file content.
      */
     private static String createXML(List<Member> member, Originator originator,
-            Map<Integer, Double> contributions) {
+            Map<Integer, Double> contributions, SequenceType sequenceType) {
         int numberOfTransactions = member.size();
         double controlSum = member.parallelStream()
                 .mapToDouble(m -> contributions.get(m.getMembershipnumber()))
@@ -192,7 +194,9 @@ public class SepaPain00800302_XML_Generator {
                 .append("       <LclInstrm>\n")
                 .append("         <Cd>CORE</Cd>\n")
                 .append("       </LclInstrm>\n")
-                .append("       <SeqTp>RCUR</SeqTp>\n")
+                .append("       <SeqTp>")
+                .append(sequenceType)
+                .append("</SeqTp>\n")
                 .append("     </PmtTpInf>\n")
                 .append("     <ReqdColltnDt>")
                 .append(originator.getExecutiondate())

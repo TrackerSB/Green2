@@ -1,7 +1,6 @@
 package bayern.steinbrecher.gruen2.login;
 
 import bayern.steinbrecher.gruen2.View;
-import bayern.steinbrecher.gruen2.data.LoginKey;
 import java.util.Map;
 import java.util.Optional;
 
