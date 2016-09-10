@@ -6,7 +6,7 @@ import bayern.steinbrecher.gruen2.connection.SshConnection;
 import bayern.steinbrecher.gruen2.contribution.Contribution;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.data.LoginKey;
+import bayern.steinbrecher.gruen2.login.LoginKey;
 import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
@@ -14,7 +14,8 @@ import bayern.steinbrecher.gruen2.elements.WaitScreen;
 import bayern.steinbrecher.gruen2.exception.AuthException;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
-import bayern.steinbrecher.gruen2.generator.SepaPain00800302_XML_Generator;
+import bayern.steinbrecher.gruen2.generator.sepa.SepaPain00800302_XML_Generator;
+import bayern.steinbrecher.gruen2.generator.sepa.SequenceType;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
@@ -388,7 +389,7 @@ public class Main extends Application {
     }
 
     private void generateSepa(List<Member> memberToSelect,
-            Map<Integer, Double> contribution) {
+            Map<Integer, Double> contribution, SequenceType sequenceType) {
         SepaForm sepaForm = new SepaForm(menuStage);
         Optional<Originator> originator;
         try {
@@ -412,7 +413,7 @@ public class Main extends Application {
                     List<Member> invalidMember
                             = SepaPain00800302_XML_Generator.createXMLFile(
                                     selectedMember.get(), contribution,
-                                    originator.get(),
+                                    originator.get(), sequenceType,
                                     DataProvider.SAVE_PATH + "/Sepa.xml");
                     Optional<StringBuilder> message = invalidMember.stream()
                             .map(m -> new StringBuilder(m + "\n"))
@@ -456,7 +457,7 @@ public class Main extends Application {
                     contributions.put(
                             m.getMembershipnumber(), optContribution.get());
                 });
-                generateSepa(member.get(), contributions);
+                generateSepa(member.get(), contributions, SequenceType.OOFF);
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -483,7 +484,7 @@ public class Main extends Application {
                     = individualContributions.get();
             if (optContributions.isPresent()) {
                 generateSepa(memberNonContributionfree.get(),
-                        optContributions.get());
+                        optContributions.get(), SequenceType.RCUR);
             } else {
                 Contribution contribution = new Contribution(menuStage);
                 try {
@@ -501,7 +502,7 @@ public class Main extends Application {
                                 optContribution.get());
                     }
                     generateSepa(memberNonContributionfree.get(),
-                            contributions);
+                            contributions, SequenceType.RCUR);
                 }
             }
         } catch (InterruptedException | ExecutionException ex) {

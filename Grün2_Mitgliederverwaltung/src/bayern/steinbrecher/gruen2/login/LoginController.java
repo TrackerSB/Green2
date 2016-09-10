@@ -1,7 +1,6 @@
 package bayern.steinbrecher.gruen2.login;
 
 import bayern.steinbrecher.gruen2.CheckedController;
-import bayern.steinbrecher.gruen2.data.LoginKey;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import java.util.Arrays;
 import java.util.List;
