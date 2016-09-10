@@ -22,10 +22,6 @@ ConfigDir="$HOME/.Grün2_Mitgliederverwaltung"
 ProgramFolder="/opt/Grün2_Mitgliederverwaltung"
 MenuEntryFolder="/usr/share/applications"
 
-# Move user settings
-mkdir "$ConfigDir"
-mv "$TempDir/Grün2.conf" $ConfigDir/
-
 # Create program folder
 $SudoCommand -c "mkdir $ProgramFolder;
 mv -f $TempDir/*.desktop $MenuEntryFolder/;
