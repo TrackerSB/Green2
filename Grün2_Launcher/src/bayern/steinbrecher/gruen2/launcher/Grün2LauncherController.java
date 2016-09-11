@@ -28,7 +28,8 @@ public class Grün2LauncherController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         percentage.addListener((obs, oldVal, newVal) -> {
-            percentageString.set(FORMAT.format(newVal.doubleValue() * 100));
+            percentageString.set(FORMAT.format(newVal.doubleValue() * 100)
+                    + '%');
         });
     }
 
