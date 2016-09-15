@@ -25,7 +25,7 @@
     -fx-min-width: 200px;
 }
 
-.emptyTextField, .toLongContent, .invalidDate, .invalidSpinnerValue{
+.emptyTextField, .toLongContent, .invalidDate, .invalidSpinnerValue, .unmatchRegex{
     -fx-border-color: -fx-main-error-color;
     -fx-highlight-fill: -fx-main-error-color;
     -fx-focus-color: -fx-main-error-color;

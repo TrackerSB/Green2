@@ -52,13 +52,13 @@ public class CheckedTextField extends TextField {
             = new SimpleBooleanProperty(this, "toLongContent");
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of
-     * the following is true:
+     * the following is true (as implemented by this class):
      * <ol>
      * <li>This field is not checked</li>
      * <li>It is not empty and the content is not too long</li>
      * </ol>
      */
-    private final BooleanProperty valid
+    protected final BooleanProperty valid
             = new SimpleBooleanProperty(this, "valid");
 
     /**
