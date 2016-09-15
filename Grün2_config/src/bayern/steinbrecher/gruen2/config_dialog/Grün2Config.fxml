@@ -17,7 +17,7 @@
     <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="%databaseName" />
     <CheckedTextField fx:id="databaseNameTextField" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="%databaseName" />
     <Label GridPane.rowIndex="4" GridPane.columnIndex="0" text="%birthdayExpression" />
-    <CheckedTextField fx:id="birthdayExpressionTextField" GridPane.rowIndex="4" GridPane.columnIndex="1" promptText="%birthdayExpression" />
+    <CheckedRegexTextField fx:id="birthdayExpressionTextField" GridPane.rowIndex="4" GridPane.columnIndex="1" promptText="%birthdayExpression" regex="((&gt;=?)|(&lt;=?)|=)[1-9]\d*(,((&gt;=?)|(&lt;=?)|=)[1-9]\d*)*" />
     
     <Label styleClass="warningLabel" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="5" text="%invalidOrMissingInput" visible="${!controller.valid}" />
     <Button GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="6" text="%save" disable="${!controller.valid}" defaultButton="true" onAction="#saveSettings"  />
