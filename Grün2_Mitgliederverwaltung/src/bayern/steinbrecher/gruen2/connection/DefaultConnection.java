@@ -54,7 +54,8 @@ public final class DefaultConnection extends DBConnection {
             connection = (Connection) DriverManager.getConnection(
                     DRIVER_PROTOCOL + databaseHost
                     + databaseName + "?verifyServerCertificate=false"
-                    + "&useSSL=true", databaseUsername,
+                    + "&useSSL=true&zeroDateTimeBehavior=convertToNull",
+                    databaseUsername,
                     databasePasswd);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Connection.class.getName())

@@ -7,7 +7,7 @@
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.login.ssh.SshLoginController">
     <!-- This checkbox needs to be out of order because of referencing its id -->
-    <CheckBox text="%allowEmptyFields" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+    <CheckBox focusTraversable="false" text="%allowEmptyFields" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" GridPane.columnIndex="0" />
     
     <Label text="%sshUsername" GridPane.columnIndex="0" GridPane.rowIndex="0" />
     <CheckedTextField fx:id="sshUsernameField" promptText="%sshUsername" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="0" />

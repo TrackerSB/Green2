@@ -14,7 +14,7 @@ import bayern.steinbrecher.gruen2.elements.WaitScreen;
 import bayern.steinbrecher.gruen2.exception.AuthException;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
-import bayern.steinbrecher.gruen2.generator.sepa.SepaPain00800302_XML_Generator;
+import bayern.steinbrecher.gruen2.generator.sepa.SepaPain00800302XMLGenerator;
 import bayern.steinbrecher.gruen2.generator.sepa.SequenceType;
 import bayern.steinbrecher.gruen2.login.Login;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
@@ -31,6 +31,7 @@ import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -97,8 +99,8 @@ public class Main extends Application {
     private boolean checkConfigs() {
         boolean valid = DataProvider.ALL_CONFIGURATIONS_SET;
         if (!valid) {
-            ConfirmDialog.createDialog(
-                    new Stage(), null, ConfirmDialog.BAD_CONFIGS)
+            ConfirmDialog.createDialog(new Stage(), null,
+                    DataProvider.getResourceValue("badConfigs"))
                     .showOnceAndWait();
             Platform.exit();
         }
@@ -192,8 +194,8 @@ public class Main extends Application {
             Stage s = new Stage();
             ConfirmDialog confirm;
             if (cause instanceof ConnectException) {
-                confirm = ConfirmDialog.createDialog(
-                        s, null, ConfirmDialog.CHECK_CONNECTION);
+                confirm = ConfirmDialog.createDialog(s, null,
+                        DataProvider.getResourceValue("checkConnection"));
             } else if (cause instanceof UnknownHostException) {
                 String message = cause.getMessage();
                 confirm = ConfirmDialog.createCheckConnectionDialog(
@@ -201,11 +203,11 @@ public class Main extends Application {
                         s, null);
             } else if (cause instanceof AuthException) {
                 confirm = ConfirmDialog.createDialog(
-                        s, null, ConfirmDialog.CHECK_INPUT);
+                        s, null, DataProvider.getResourceValue("checkInput"));
             } else {
                 System.err.println("Not action specified for: " + cause);
-                confirm = ConfirmDialog.createDialog(
-                        s, null, ConfirmDialog.UNEXPECTED_ABBORT);
+                confirm = ConfirmDialog.createDialog(s, null,
+                        DataProvider.getResourceValue("unexpectedAbbort"));
             }
 
             confirm.showOnce(() -> {
@@ -318,8 +320,14 @@ public class Main extends Application {
             String filename) {
         checkNull(nicknames);
         try {
-            Output.printContent(AddressGenerator.generateAddressData(
-                    member, nicknames.get()), filename, true);
+            if (member.isEmpty()) {
+                ConfirmDialog.createDialog(new Stage(), menuStage,
+                        DataProvider.getResourceValue("noMemberForOutput"))
+                        .showOnceAndWait();
+            } else {
+                Output.printContent(AddressGenerator.generateAddressData(
+                        member, nicknames.get()), filename, true);
+            }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -375,7 +383,11 @@ public class Main extends Application {
                 year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             List<Member> birthdayList = memberBirthday.get(year).get();
-            if (!birthdayList.isEmpty()) {
+            if (birthdayList.isEmpty()) {
+                ConfirmDialog.createDialog(new Stage(), menuStage,
+                        DataProvider.getResourceValue("noMemberForOutput"))
+                        .showOnceAndWait();
+            } else {
                 Output.printContent(
                         BirthdayGenerator.createGroupedOutput(
                                 birthdayList, year),
@@ -411,20 +423,19 @@ public class Main extends Application {
 
                 if (selectedMember.isPresent()) {
                     List<Member> invalidMember
-                            = SepaPain00800302_XML_Generator.createXMLFile(
+                            = SepaPain00800302XMLGenerator.createXMLFile(
                                     selectedMember.get(), contribution,
                                     originator.get(), sequenceType,
                                     DataProvider.SAVE_PATH + "/Sepa.xml");
-                    Optional<StringBuilder> message = invalidMember.stream()
-                            .map(m -> new StringBuilder(m + "\n"))
-                            .reduce(StringBuilder::append);
-                    if (message.isPresent()) {
-                        Stage badAccountDataStage = new Stage();
-                        new ConfirmDialog(message.get() + "\n"
+                    String message = invalidMember.stream()
+                            .map(m -> m.toString())
+                            .collect(Collectors.joining("\n"));
+                    if (!message.isEmpty()) {
+                        ConfirmDialog.createDialog(new Stage(), menuStage,
+                                message + "\n"
                                 + DataProvider.getResourceValue(
-                                        "haveNoOrInvalidIban"),
-                                menuStage).start(badAccountDataStage);
-                        badAccountDataStage.showAndWait();
+                                        "haveBadAccountInformation"))
+                                .showOnceAndWait();
                     }
                 }
             } catch (InterruptedException | ExecutionException ex) {
@@ -462,8 +473,8 @@ public class Main extends Application {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
                 try {
-                    ConfirmDialog.createDialog(
-                            new Stage(), menuStage, ConfirmDialog.NO_SEPA_DEBIT)
+                    ConfirmDialog.createDialog(new Stage(), menuStage,
+                            DataProvider.getResourceValue("noSepaDebit"))
                             .showOnceAndWait();
                 } catch (Exception ex1) {
                     Logger.getLogger(Main.class.getName())
@@ -510,7 +521,7 @@ public class Main extends Application {
                     .log(Level.SEVERE, null, ex);
             try {
                 ConfirmDialog.createDialog(new Stage(), menuStage,
-                        ConfirmDialog.NO_SEPA_DEBIT)
+                        DataProvider.getResourceValue("noSepaDebit"))
                         .showOnceAndWait();
             } catch (Exception ex1) {
                 Logger.getLogger(Main.class.getName())
@@ -519,16 +530,11 @@ public class Main extends Application {
         }
     }
 
-    /**
-     * Checks the correctness of all IBANs and shows a dialog showing invalid
-     * IBANs.
-     */
-    public void checkIban() {
-        checkNull(member);
+    private String checkIbans() {
         List<Member> badIban = new ArrayList<>();
         try {
             badIban = member.get().parallelStream()
-                    .filter(m -> !SepaPain00800302_XML_Generator
+                    .filter(m -> !SepaPain00800302XMLGenerator
                             .hasValidIban(m.getAccountHolder()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
@@ -536,14 +542,7 @@ public class Main extends Application {
                     .log(Level.SEVERE, null, ex);
         }
         if (badIban.isEmpty()) {
-            try {
-                ConfirmDialog.createDialog(new Stage(), menuStage,
-                        ConfirmDialog.CORRECT_IBANS)
-                        .showOnceAndWait();
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
+            return DataProvider.getResourceValue("correctIbans");
         } else {
             String noIban = DataProvider.getResourceValue("noIban");
             String message = badIban.stream()
@@ -551,18 +550,47 @@ public class Main extends Application {
                         String iban = m.getAccountHolder().getIban();
                         return m + ": \""
                                 + (iban.isEmpty() ? noIban : iban)
-                                + "\"\n";
+                                + "\"";
                     })
-                    .reduce(DataProvider.getResourceValue("memberBadIban")
-                            + "\n", String::concat);
-            try {
-                ConfirmDialog.createDialog(new Stage(), menuStage, message)
-                        .showOnceAndWait();
-            } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
+                    .collect(Collectors.joining("\n"));
+            return DataProvider.getResourceValue("memberBadIban") + "\n"
+                    + message;
         }
+    }
+
+    private String checkDates(Function<Member, LocalDate> dateFunction,
+            String invalidDatesIntro, String allCorrectMessage) {
+        try {
+            String message = member.get().parallelStream()
+                    .filter(m -> dateFunction.apply(m) == null)
+                    .map(m -> m.toString()
+                            + ": \"" + dateFunction.apply(m) + "\"")
+                    .collect(Collectors.joining("\n"));
+            return message.isEmpty() ? allCorrectMessage
+                    : invalidDatesIntro + "\n" + message;
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
+    }
+
+    /**
+     * Checks the correctness of all data and shows a dialog showing invalid
+     * data entries.
+     */
+    public void checkData() {
+        checkNull(member);
+        String message = checkIbans() + "\n\n"
+                + checkDates(m -> m.getPerson().getBirthday(),
+                        DataProvider.getResourceValue("memberBadBirthday"),
+                        DataProvider.getResourceValue("allBirthdaysCorrect"))
+                + "\n\n"
+                + checkDates(m -> m.getAccountHolder().getMandatSigned(),
+                        DataProvider.getResourceValue("memberBadMandatSigned"),
+                        DataProvider.getResourceValue(
+                                "allMandatSignedCorrect"));
+        ConfirmDialog.createDialog(new Stage(), menuStage, message)
+                .showOnceAndWait();
     }
 
     /**

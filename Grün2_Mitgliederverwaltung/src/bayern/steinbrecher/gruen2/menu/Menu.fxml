@@ -11,7 +11,7 @@
         <Label text="%allAboutSepa" />
         <Button fx:id="generateContribution" onAction="#generateContributionSepa" text="%contributions" />
         <Button fx:id="generateUniversalSepa" onAction="#generateUniversalSepa" text="%arbitrarySepaDirectDebit" />
-        <Button fx:id="checkIban" onAction="#checkIban" text="%checkIban" />
+        <Button fx:id="checkData" onAction="#checkData" text="%checkData" />
     </VBox>
     <VBox spacing="10">
         <Label text="%getAddressesForWord" />

@@ -4,14 +4,11 @@ import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.main.Main;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -31,7 +28,7 @@ public class MenuController extends Controller {
     @FXML
     private Button generateUniversalSepa;
     @FXML
-    private Button checkIban;
+    private Button checkData;
     @FXML
     private Button generateAddressesBirthdayLastYear;
     @FXML
@@ -101,11 +98,11 @@ public class MenuController extends Controller {
     }
 
     @FXML
-    private void checkIban() {
+    private void checkData() {
         checkCaller();
-        checkIban.setDisable(true);
-        caller.checkIban();
-        checkIban.setDisable(false);
+        checkData.setDisable(true);
+        caller.checkData();
+        checkData.setDisable(false);
     }
 
     @FXML

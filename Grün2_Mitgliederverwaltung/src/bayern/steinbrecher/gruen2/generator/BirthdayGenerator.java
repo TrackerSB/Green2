@@ -3,6 +3,7 @@ package bayern.steinbrecher.gruen2.generator;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Person;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -33,9 +34,8 @@ public class BirthdayGenerator {
      */
     private static final Function<Member, String> PRINT_LINE = m -> {
         Person p = m.getPerson();
-        return new StringBuilder().append(p.getPrename()).append(';')
-                .append(p.getLastname()).append(';')
-                .append(p.getBirthday()).append('\n').toString();
+        return p.getPrename() + ';' + p.getLastname() + ';'
+                + p.getBirthday() + '\n';
     };
 
     /**
@@ -129,7 +129,12 @@ public class BirthdayGenerator {
      * @see DataProvider#AGE_FUNCTION
      */
     public static boolean getsNotified(Member m, int year) {
-        int age = year - m.getPerson().getBirthday().getYear();
-        return DataProvider.AGE_FUNCTION.apply(age);
+        LocalDate birthday = m.getPerson().getBirthday();
+        if (birthday == null) {
+            return false;
+        } else {
+            int age = year - birthday.getYear();
+            return DataProvider.AGE_FUNCTION.apply(age);
+        }
     }
 }

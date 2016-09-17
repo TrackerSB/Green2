@@ -35,6 +35,10 @@ public class AddressGenerator {
      */
     public static String generateAddressData(List<Member> member,
             Map<String, String> nicknames) {
+        if (member.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Can't create output when member is empty.");
+        }
         List<String> salutations = createSalutations(member, nicknames);
         return createOutput(member, salutations);
     }

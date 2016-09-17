@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author Stefan Huber
  */
-public class SepaPain00800302_XML_Generator {
+public final class SepaPain00800302XMLGenerator {
 
     private static final SimpleDateFormat SDF
             = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -40,7 +40,7 @@ public class SepaPain00800302_XML_Generator {
     /**
      * Prohibit construction of an object.
      */
-    private SepaPain00800302_XML_Generator() {
+    private SepaPain00800302XMLGenerator() {
         throw new UnsupportedOperationException(
                 "Construction of an object not supported.");
     }
@@ -92,13 +92,13 @@ public class SepaPain00800302_XML_Generator {
     public static List<Member> createXMLFile(List<Member> member,
             Map<Integer, Double> contributions, Originator originator,
             SequenceType sequenceType, String outputfile) {
+        List<Member> invalidMember = filterValidMember(member);
         for (Member m : member) {
             if (!contributions.containsKey(m.getMembershipnumber())) {
                 throw new IllegalArgumentException(
                         "No contribution specified at least for: " + m);
             }
         }
-        List<Member> invalidMember = filterValidMember(member);
         Output.printContent(
                 createXML(member, originator, contributions, sequenceType),
                 outputfile, true);
@@ -124,6 +124,10 @@ public class SepaPain00800302_XML_Generator {
             if (!ah.hasBic()) {
                 valid = false;
                 System.err.println(m + " has no BIC");
+            }
+            if (ah.getMandatSigned() == null) {
+                valid = false;
+                System.err.println(m + " has a bad \"MandatErstellt\"");
             }
             if (!valid) {
                 invalidMember.add(m);

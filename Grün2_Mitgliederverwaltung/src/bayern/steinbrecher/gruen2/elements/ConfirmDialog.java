@@ -21,37 +21,6 @@ import javafx.stage.Window;
  */
 public class ConfirmDialog extends View {
 
-    /**
-     * Message indicating that the configurations of the user are invalid.
-     */
-    public static final String BAD_CONFIGS = "Es fehlen Konfigurations"
-            + "einstellungen oder die Konfigurationsdatei konnte nicht "
-            + "gefunden werden.\n"
-            + "Frage bei stefan.huber.niedling@outlook.com nach.";
-    /**
-     * Telling the user to check whether the database is reachable.
-     */
-    public static final String CHECK_CONNECTION = "Prüfe, ob die Datenbank "
-            + "erreichbar ist, und ob du Grün2 richtig konfiguriert hast.";
-    /**
-     * Telling the user to check his input.
-     */
-    public static final String CHECK_INPUT = "Prüfe deine Eingaben.";
-    /**
-     * Indicating that a SEPA debit could not be created.
-     */
-    public static final String NO_SEPA_DEBIT = "Sepalastschrift konnte nicht "
-            + "erstellt werden";
-    /**
-     * Telling the user that every IBAN has a correct checksum.
-     */
-    public static final String CORRECT_IBANS = "Alle IBANs haben eine korrekte "
-            + "Prüfsumme";
-    /**
-     * Indicating that the connection broke or was not able to establish.
-     */
-    public static final String UNEXPECTED_ABBORT = "Die Verbindung wurde "
-            + "zurückgewiesen oder unterbrochen. Starten Sie das Programm neu.";
     private static final int MIN_WIDTH = 250;
     private static final int MIN_HEIGHT = 100;
     private String message;
@@ -150,7 +119,8 @@ public class ConfirmDialog extends View {
      */
     public static ConfirmDialog createCheckConnectionDialog(String address,
             Stage s, Window owner) {
-        ConfirmDialog dialog = new ConfirmDialog(CHECK_CONNECTION + "\n"
+        ConfirmDialog dialog = new ConfirmDialog(
+                DataProvider.getResourceValue("checkConnection") + "\n"
                 + address
                 + DataProvider.getResourceValue("notReachable"), owner);
         dialog.initDialog(s);

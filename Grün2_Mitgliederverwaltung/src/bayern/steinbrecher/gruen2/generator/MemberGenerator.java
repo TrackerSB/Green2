@@ -62,7 +62,13 @@ public class MemberGenerator {
             //Read attributes
             LocalDate birthday = null;
             try {
-                birthday = LocalDate.parse(row.get(birthdayIndex));
+                String birthdayString = row.get(birthdayIndex);
+                if (birthdayString == null) {
+                    throw new DateTimeParseException(
+                            "Can´t parse null", "null", 0);
+                } else {
+                    birthday = LocalDate.parse(birthdayString);
+                }
             } catch (DateTimeParseException ex) {
                 System.err.println(row.get(birthdayIndex)
                         + " is invalid birthdaydate");
@@ -71,7 +77,13 @@ public class MemberGenerator {
             }
             LocalDate mandatsigned = null;
             try {
-                mandatsigned = LocalDate.parse(row.get(mandatCreatedIndex));
+                String mandatSignedString = row.get(mandatCreatedIndex);
+                if (mandatSignedString == null) {
+                    throw new DateTimeParseException(
+                            "Can´t parse null", "null", 0);
+                } else {
+                    mandatsigned = LocalDate.parse(mandatSignedString);
+                }
             } catch (DateTimeParseException ex) {
                 System.err.println(row.get(birthdayIndex)
                         + " is invalid mandatSignedDate");
