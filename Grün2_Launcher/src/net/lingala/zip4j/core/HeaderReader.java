@@ -839,13 +839,14 @@ public class HeaderReader {
     }
 
     /**
-     * Reads local file header for the given file header
+     * Reads local file header for the given file header.
      *
      * @param fileHeader
      * @return {@link LocalFileHeader}
      * @throws ZipException
      */
-    public LocalFileHeader readLocalFileHeader(FileHeader fileHeader) throws ZipException {
+    public LocalFileHeader readLocalFileHeader(FileHeader fileHeader)
+            throws ZipException {
         if (fileHeader == null || zip4jRaf == null) {
             throw new ZipException("invalid read parameters for local header");
         }
@@ -853,7 +854,8 @@ public class HeaderReader {
         long locHdrOffset = fileHeader.getOffsetLocalHeader();
 
         if (fileHeader.getZip64ExtendedInfo() != null) {
-            Zip64ExtendedInfo zip64ExtendedInfo = fileHeader.getZip64ExtendedInfo();
+            Zip64ExtendedInfo zip64ExtendedInfo
+                    = fileHeader.getZip64ExtendedInfo();
             if (zip64ExtendedInfo.getOffsetLocalHeader() > 0) {
                 locHdrOffset = fileHeader.getOffsetLocalHeader();
             }
@@ -877,19 +879,24 @@ public class HeaderReader {
             readIntoBuff(zip4jRaf, intBuff);
             int sig = Raw.readIntLittleEndian(intBuff, 0);
             if (sig != InternalZipConstants.LOCSIG) {
-                throw new ZipException("invalid local header signature for file: " + fileHeader.getFileName());
+                throw new ZipException(
+                        "invalid local header signature for file: "
+                        + fileHeader.getFileName());
             }
             localFileHeader.setSignature(sig);
             length += 4;
 
             //version needed to extract
             readIntoBuff(zip4jRaf, shortBuff);
-            localFileHeader.setVersionNeededToExtract(Raw.readShortLittleEndian(shortBuff, 0));
+            localFileHeader.setVersionNeededToExtract(
+                    Raw.readShortLittleEndian(shortBuff, 0));
             length += 2;
 
             //general purpose bit flag
             readIntoBuff(zip4jRaf, shortBuff);
-            localFileHeader.setFileNameUTF8Encoded((Raw.readShortLittleEndian(shortBuff, 0) & InternalZipConstants.UFT8_NAMES_FLAG) != 0);
+            localFileHeader.setFileNameUTF8Encoded(
+                    (Raw.readShortLittleEndian(shortBuff, 0)
+                    & InternalZipConstants.UFT8_NAMES_FLAG) != 0);
             int firstByte = shortBuff[0];
             int result = firstByte & 1;
             if (result != 0) {
@@ -901,17 +908,20 @@ public class HeaderReader {
             //Check if data descriptor exists for local file header
             String binary = Integer.toBinaryString(firstByte);
             if (binary.length() >= 4) {
-                localFileHeader.setDataDescriptorExists(binary.charAt(3) == '1');
+                localFileHeader
+                        .setDataDescriptorExists(binary.charAt(3) == '1');
             }
 
             //compression method
             readIntoBuff(zip4jRaf, shortBuff);
-            localFileHeader.setCompressionMethod(Raw.readShortLittleEndian(shortBuff, 0));
+            localFileHeader.setCompressionMethod(
+                    Raw.readShortLittleEndian(shortBuff, 0));
             length += 2;
 
             //last mod file time
             readIntoBuff(zip4jRaf, intBuff);
-            localFileHeader.setLastModFileTime(Raw.readIntLittleEndian(intBuff, 0));
+            localFileHeader.setLastModFileTime(
+                    Raw.readIntLittleEndian(intBuff, 0));
             length += 4;
 
             //crc-32
@@ -923,13 +933,15 @@ public class HeaderReader {
             //compressed size
             readIntoBuff(zip4jRaf, intBuff);
             longBuff = getLongByteFromIntByte(intBuff);
-            localFileHeader.setCompressedSize(Raw.readLongLittleEndian(longBuff, 0));
+            localFileHeader.setCompressedSize(
+                    Raw.readLongLittleEndian(longBuff, 0));
             length += 4;
 
             //uncompressed size
             readIntoBuff(zip4jRaf, intBuff);
             longBuff = getLongByteFromIntByte(intBuff);
-            localFileHeader.setUncompressedSize(Raw.readLongLittleEndian(longBuff, 0));
+            localFileHeader.setUncompressedSize(
+                    Raw.readLongLittleEndian(longBuff, 0));
             length += 4;
 
             //file name length
