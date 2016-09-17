@@ -118,7 +118,6 @@ public final class DataProvider {
                 } else {
                     CONFIGURATIONS.put(ConfigKey.valueOf(
                             parts[0].toUpperCase()), parts[1]);
-                    //FIXME Linux can't find ConfigKey
                 }
             }
         } catch (FileNotFoundException ex) {
