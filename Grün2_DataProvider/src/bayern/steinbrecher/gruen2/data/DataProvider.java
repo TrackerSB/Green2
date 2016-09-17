@@ -228,7 +228,12 @@ public final class DataProvider {
      * @return The value with inserted params.
      */
     public static String getResourceValue(String key, Object... params) {
-        return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
+        if (RESOURCE_BUNDLE.containsKey(key)) {
+            return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
+        } else {
+            System.err.println("No resource for \"" + key + "\" found.");
+            return key;
+        }
     }
 
     /**
