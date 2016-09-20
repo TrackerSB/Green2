@@ -69,7 +69,8 @@ public final class Gruen2Launcher extends Application {
             = APP_DATA_PATH + "/version.txt";
     private static final String PROGRAMFOLDER_PATH
             = System.getProperty("os.name").toLowerCase().contains("win")
-            ? "C:/Program Files/Grün2_Mitgliederverwaltung"
+            ? System.getenv("ProgramFiles").replaceAll("\\\\", "/")
+            + "/Grün2_Mitgliederverwaltung"
             : "/opt/Grün2_Mitgliederverwaltung";
     private Stage stage;
 
@@ -203,9 +204,13 @@ public final class Gruen2Launcher extends Application {
 
         Service<Boolean> service = createService(() -> {
             try {
-                File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
+                File tempFile = Files.createTempFile(
+                        null, ".zip", new FileAttribute[0])
                         .toFile();
-                Path tempDir = Files.createTempDirectory(null, new FileAttribute[0]);
+                tempFile.deleteOnExit();
+                Path tempDir = Files.createTempDirectory(
+                        null, new FileAttribute[0]);
+                tempDir.toFile().deleteOnExit();
 
                 //Download
                 URLConnection downloadConnection
@@ -265,6 +270,7 @@ public final class Gruen2Launcher extends Application {
                     throw new CompletionException(
                             "Installer got no admin rights", null);
                 } else {
+                    new File(APP_DATA_PATH).mkdir();
                     printContent(newVersion, VERSIONFILE_PATH, false);
                 }
             } catch (MalformedURLException | FileNotFoundException |
