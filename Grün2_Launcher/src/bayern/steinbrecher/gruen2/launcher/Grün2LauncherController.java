@@ -20,7 +20,8 @@ public class Grün2LauncherController implements Initializable {
 
     private static final DecimalFormat FORMAT = new DecimalFormat("#.0");
     private final DoubleProperty percentage = new SimpleDoubleProperty();
-    private final StringProperty percentageString = new SimpleStringProperty();
+    private final StringProperty percentageString
+            = new SimpleStringProperty("0%");
 
     /**
      * {@inheritDoc}
@@ -29,7 +30,7 @@ public class Grün2LauncherController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         percentage.addListener((obs, oldVal, newVal) -> {
             percentageString.set(FORMAT.format(newVal.doubleValue() * 100)
-                    + '%');
+                    + "% ");
         });
     }
 

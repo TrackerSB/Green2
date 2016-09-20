@@ -1,5 +1,6 @@
 package bayern.steinbrecher.gruen2.launcher;
 
+import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,14 +48,19 @@ public final class Gruen2Launcher extends Application {
     /**
      * Containing translations for the system default language.
      */
-    public static final ResourceBundle RESOURCE_BUNDLE
+    private static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle(
-                    "bayern.steinbrecher.gruen2.launcher.language");
+                    "bayern.steinbrecher.gruen2.data.language");
     /**
      * The path to the home directory of the user.
      */
     private static final String HOME_DIR
             = System.getProperty("user.home").replaceAll("\\\\", "/");
+    /**
+     * The path of the stylesheet.
+     */
+    public static final String STYLESHEET_PATH
+            = "/bayern/steinbrecher/gruen2/data/styles.css";
     /**
      * The path of the folder where to put user specific data of the
      * application.
@@ -93,7 +99,8 @@ public final class Gruen2Launcher extends Application {
             if (localVersionfile.exists()) {
                 try (Scanner sc = new Scanner(localVersionfile)) {
                     String localVersion = sc.nextLine();
-                    if (!localVersion.equalsIgnoreCase(onlineVersion)) {
+                    if (!localVersion.equalsIgnoreCase(onlineVersion)
+                            && ChoiceDialog.askForUpdate()) {
                         serv = downloadAndInstallGruen2(onlineVersion);
                         serv.setOnSucceeded(evt -> {
                             executeGruen2();
@@ -193,7 +200,7 @@ public final class Gruen2Launcher extends Application {
                 = new FXMLLoader(getClass().getResource("Grün2Launcher.fxml"));
         fxmlLoader.setResources(RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().add("styles.css");
+        root.getStylesheets().add(STYLESHEET_PATH);
         Grün2LauncherController controller = fxmlLoader.getController();
 
         stage.setScene(new Scene(root));
