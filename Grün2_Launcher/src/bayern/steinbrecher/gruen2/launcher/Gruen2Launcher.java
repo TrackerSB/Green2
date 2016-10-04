@@ -70,7 +70,7 @@ public final class Gruen2Launcher extends Application {
             ? "/AppData/Roaming/Grün2_Mitgliederverwaltung"
             : "/.Grün2_Mitgliederverwaltung");
     private static final String GRUEN2_HOST_URL
-            = "http://www.traunviertler-traunwalchen.de/programme";
+            = "https://www.traunviertler-traunwalchen.de/programme";
     private static final String VERSIONFILE_PATH
             = APP_DATA_PATH + "/version.txt";
     private static final String PROGRAMFOLDER_PATH
