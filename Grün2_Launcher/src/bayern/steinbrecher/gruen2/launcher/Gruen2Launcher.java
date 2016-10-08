@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -70,8 +71,12 @@ public final class Gruen2Launcher extends Application {
             ? "/AppData/Roaming/Grün2_Mitgliederverwaltung"
             : "/.Grün2_Mitgliederverwaltung");
     private static final String GRUEN2_HOST_URL
-            = "https://www.traunviertler-traunwalchen.de/programme";
-    private static final String VERSIONFILE_PATH
+            = resolveURL("http://www.traunviertler-traunwalchen.de/programme");
+    private static final String GRUEN2_ZIP_LOCATION
+            = resolveURL(GRUEN2_HOST_URL + "/Gruen2.zip");
+    private static final String VERSIONFILE_PATH_ONLINE
+            = resolveURL(GRUEN2_HOST_URL + "/version.txt");
+    private static final String VERSIONFILE_PATH_LOCAL
             = APP_DATA_PATH + "/version.txt";
     private static final String PROGRAMFOLDER_PATH
             = System.getProperty("os.name").toLowerCase().contains("win")
@@ -90,7 +95,7 @@ public final class Gruen2Launcher extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.stage = primaryStage;
 
-        File localVersionfile = new File(VERSIONFILE_PATH);
+        File localVersionfile = new File(VERSIONFILE_PATH_LOCAL);
         Optional<String> optOnlineVersion = readOnlineVersion();
 
         Service<Boolean> serv = null;
@@ -129,6 +134,50 @@ public final class Gruen2Launcher extends Application {
             });
             serv.start();
         }
+    }
+
+    /**
+     * Resolves the real HTTP(S)-URL of the given HTTP(S)-URL. (E.g. it follows
+     * redirects)
+     *
+     * @param url The HTTP(S)-URL to resolve.
+     * @return The resolved HTTP(S)-URL. Returns {@code null} only if the given
+     * URL is invalid, not reachable or an unrecognized status code is thrown
+     * like 401 or 500.
+     */
+    private static String resolveURL(String url) {
+        try {
+            boolean redirected;
+            do {
+                redirected = false;
+                HttpURLConnection connection
+                        = (HttpURLConnection) new URL(url).openConnection();
+                int responseCode = connection.getResponseCode();
+                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                            || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                            || responseCode
+                            == HttpURLConnection.HTTP_SEE_OTHER) {
+                        redirected = true;
+                        url = connection.getHeaderField("Location");
+                    } else {
+                        System.err.println("\"" + url + "\" returned code "
+                                + responseCode
+                                + ". No action defined for handling.");
+                        url = null;
+                    }
+                }
+            } while (redirected);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Gruen2Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            url = null;
+        } catch (IOException ex) {
+            Logger.getLogger(Gruen2Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            url = null;
+        }
+        return url;
     }
 
     /**
@@ -221,7 +270,7 @@ public final class Gruen2Launcher extends Application {
 
                 //Download
                 URLConnection downloadConnection
-                        = new URL(GRUEN2_HOST_URL + "/Gruen2.zip").openConnection();
+                        = new URL(GRUEN2_ZIP_LOCATION).openConnection();
                 long fileSize = Long.parseLong(
                         downloadConnection.getHeaderField("Content-Length"));
                 long bytesPerLoop = fileSize / 1000;
@@ -278,7 +327,7 @@ public final class Gruen2Launcher extends Application {
                             "Installer got no admin rights", null);
                 } else {
                     new File(APP_DATA_PATH).mkdir();
-                    printContent(newVersion, VERSIONFILE_PATH, false);
+                    printContent(newVersion, VERSIONFILE_PATH_LOCAL, false);
                 }
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
@@ -296,7 +345,7 @@ public final class Gruen2Launcher extends Application {
 
     private static Optional<String> readOnlineVersion() {
         try {
-            URL onlineVersionUrl = new URL(GRUEN2_HOST_URL + "/version.txt");
+            URL onlineVersionUrl = new URL(VERSIONFILE_PATH_ONLINE);
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
             return Optional.of(sc.nextLine());
         } catch (UnknownHostException ex) {
