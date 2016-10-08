@@ -18,7 +18,7 @@ import javafx.fxml.Initializable;
  */
 public class Grün2LauncherController implements Initializable {
 
-    private static final DecimalFormat FORMAT = new DecimalFormat("#.0");
+    private static final DecimalFormat FORMAT = new DecimalFormat("#0.0");
     private final DoubleProperty percentage = new SimpleDoubleProperty();
     private final StringProperty percentageString
             = new SimpleStringProperty("0%");
