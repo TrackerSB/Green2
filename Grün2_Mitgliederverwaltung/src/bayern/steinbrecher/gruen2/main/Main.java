@@ -441,7 +441,8 @@ public class Main extends Application {
                             = SepaPain00800302XMLGenerator.createXMLFile(
                                     selectedMember.get(), contribution,
                                     originator.get(), sequenceType,
-                                    DataProvider.SAVE_PATH + "/Sepa.xml");
+                                    DataProvider.SAVE_PATH + "/Sepa.xml",
+                                    DataProvider.isSepaWithBom());
                     String message = invalidMember.stream()
                             .map(m -> m.toString())
                             .collect(Collectors.joining("\n"));

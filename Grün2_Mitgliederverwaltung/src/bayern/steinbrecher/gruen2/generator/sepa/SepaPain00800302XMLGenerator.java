@@ -102,12 +102,13 @@ public final class SepaPain00800302XMLGenerator {
      * @param originator The originator of the direct debit.
      * @param sequenceType The sequence type of the direct debit.
      * @param outputfile The path to the file to print the xml to.
+     * @param sepaWithBom Indicates whether to use UTF-8 with or without BOM.
      * @return A list containing member which are not included in the
      * outputfile. These are member which have no iban or no bic.
      */
     public static List<Member> createXMLFile(List<Member> member,
             Map<Integer, Double> contributions, Originator originator,
-            SequenceType sequenceType, String outputfile) {
+            SequenceType sequenceType, String outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
         for (Member m : member) {
             if (!contributions.containsKey(m.getMembershipnumber())) {
@@ -117,7 +118,7 @@ public final class SepaPain00800302XMLGenerator {
         }
         Output.printContent(
                 createXML(member, originator, contributions, sequenceType),
-                outputfile, true);
+                outputfile, sepaWithBom);
         return invalidMember;
     }
 
