@@ -25,6 +25,8 @@ public enum ConfigKey {
 
     /**
      * Indicating whether to use SSH or not. Write "Ja" to use SSH.
+     *//**
+     * Indicating whether to use SSH or not. Write "Ja" to use SSH.
      */
     USE_SSH,
     /**
@@ -39,6 +41,10 @@ public enum ConfigKey {
      * The name of the database to connect to.
      */
     DATABASE_NAME,
+    /**
+     * Indicates whether the generated SEPA is UTF-8 or "UTF-8 with BOM".
+     */
+    SEPA_USE_BOM,
     /**
      * The expression to indicate which people get birthday notifications. Like
      * =50,=60,=70,=75,&gt;=80

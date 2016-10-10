@@ -40,6 +40,8 @@ public class Grün2ConfigController extends CheckedController {
     @FXML
     private CheckBox useSSHCheckBox;
     @FXML
+    private CheckBox sepaWithBomCheckBox;
+    @FXML
     private CheckedTextField sshHostTextField;
     @FXML
     private CheckedTextField databaseHostTextField;
@@ -80,6 +82,8 @@ public class Grün2ConfigController extends CheckedController {
                 DataProvider.getOrDefault(ConfigKey.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(
                 DataProvider.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
+        sepaWithBomCheckBox.setSelected(DataProvider.isSepaWithBom());
+
     }
 
     @FXML
@@ -87,7 +91,7 @@ public class Grün2ConfigController extends CheckedController {
         checkStage();
         if (isValid()) {
             String out = ConfigKey.USE_SSH + ":"
-                    + (useSSHCheckBox.isSelected() ? "ja" : "nein") + '\n'
+                    + (useSSHCheckBox.isSelected() ? "true" : "false") + '\n'
                     + ConfigKey.SSH_HOST + ":" + (useSSHCheckBox.isSelected()
                             ? sshHostTextField.getText() : "noHost") + '\n'
                     + ConfigKey.DATABASE_HOST + ":"
@@ -95,7 +99,9 @@ public class Grün2ConfigController extends CheckedController {
                     + ConfigKey.DATABASE_NAME + ":"
                     + databaseNameTextField.getText() + '\n'
                     + ConfigKey.BIRTHDAY_EXPRESSION + ":"
-                    + birthdayExpressionTextField.getText();
+                    + birthdayExpressionTextField.getText() + '\n'
+                    + ConfigKey.SEPA_USE_BOM + ":"
+                    + (sepaWithBomCheckBox.isSelected() ? "true" : "false");
             Output.printContent(out, DataProvider.CONFIGFILE_PATH, false);
             stage.close();
         }

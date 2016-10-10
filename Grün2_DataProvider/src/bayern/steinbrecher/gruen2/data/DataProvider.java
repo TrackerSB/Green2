@@ -231,7 +231,20 @@ public final class DataProvider {
      * @return {@code true} only if the connections have to use SSH.
      */
     public static boolean useSsh() {
-        return getOrDefault(ConfigKey.USE_SSH, "ja").equalsIgnoreCase("ja");
+        String key = getOrDefault(ConfigKey.USE_SSH, "true");
+        //Legacy checking for old config files containing "ja" instead of "yes".
+        return key.equalsIgnoreCase("ja") || key.equalsIgnoreCase("true");
+    }
+
+    /**
+     * Checks whether the generated SEPA has to be UTF-8 or "UTF-8 with BOM".
+     *
+     * @return {@code true} only if the generated SEPA has to be encoding with
+     * UTF-8 with BOM.
+     */
+    public static boolean isSepaWithBom() {
+        return getOrDefault(ConfigKey.SEPA_USE_BOM, "true")
+                .equalsIgnoreCase("true");
     }
 
     /**
