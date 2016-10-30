@@ -16,6 +16,8 @@
  */
 package bayern.steinbrecher.gruen2.launcher;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -32,7 +34,7 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-class VersionConnection {
+public class VersionHandler {
 
     private static final String GRUEN2_HOST_URL
             = resolveURL("http://www.traunviertler-traunwalchen.de/programme");
@@ -40,6 +42,8 @@ class VersionConnection {
             = resolveURL(GRUEN2_HOST_URL + "/Gruen2.zip");
     static final String VERSIONFILE_PATH_ONLINE
             = resolveURL(GRUEN2_HOST_URL + "/version.txt");
+    static final String VERSIONFILE_PATH_LOCAL
+            = Gruen2Launcher.APP_DATA_PATH + "/version.txt";
 
     /**
      * Resolves the real HTTP(S)-URL of the given HTTP(S)-URL. (E.g. it follows
@@ -85,7 +89,7 @@ class VersionConnection {
         return url;
     }
 
-    static Optional<String> readOnlineVersion() {
+    public static Optional<String> readOnlineVersion() {
         try {
             URL onlineVersionUrl = new URL(VERSIONFILE_PATH_ONLINE);
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
@@ -99,6 +103,19 @@ class VersionConnection {
         } catch (IOException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<String> readLocalVersion() {
+        File localVersionfile = new File(VERSIONFILE_PATH_LOCAL);
+        if (localVersionfile.exists()) {
+            try (Scanner sc = new Scanner(localVersionfile)) {
+                return Optional.of(sc.nextLine());
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(VersionHandler.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
         }
         return Optional.empty();
     }

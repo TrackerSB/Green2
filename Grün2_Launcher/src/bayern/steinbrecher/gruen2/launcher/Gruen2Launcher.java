@@ -80,12 +80,10 @@ public final class Gruen2Launcher extends Application {
      * The path of the folder where to put user specific data of the
      * application.
      */
-    public static final String APP_DATA_PATH = HOME_DIR
+    static final String APP_DATA_PATH = HOME_DIR
             + (System.getProperty("os.name").toLowerCase().contains("win")
             ? "/AppData/Roaming/Grün2_Mitgliederverwaltung"
             : "/.Grün2_Mitgliederverwaltung");
-    private static final String VERSIONFILE_PATH_LOCAL
-            = APP_DATA_PATH + "/version.txt";
     private static final String PROGRAMFOLDER_PATH
             = System.getProperty("os.name").toLowerCase().contains("win")
             ? System.getenv("ProgramFiles").replaceAll("\\\\", "/")
@@ -103,41 +101,33 @@ public final class Gruen2Launcher extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.stage = primaryStage;
 
-        File localVersionfile = new File(VERSIONFILE_PATH_LOCAL);
-        Optional<String> optOnlineVersion
-                = VersionConnection.readOnlineVersion();
+        Optional<String> optOnlineVersion = VersionHandler.readOnlineVersion();
+        Optional<String> optLocalVersion = VersionHandler.readLocalVersion();
 
         Service<Boolean> serv = null;
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
-            if (localVersionfile.exists()) {
-                try (Scanner sc = new Scanner(localVersionfile)) {
-                    String localVersion = sc.nextLine();
-                    if (!localVersion.equalsIgnoreCase(onlineVersion)
-                            && ChoiceDialog.askForUpdate()) {
-                        serv = downloadAndInstallGruen2(onlineVersion);
-                        serv.setOnSucceeded(evt -> {
-                            executeGruen2();
-                            Platform.exit();
-                        });
-                    } else {
-                        executeGruen2();
-                    }
+            if (optLocalVersion.isPresent()) {
+                String localVersion = optLocalVersion.get();
+                if (!localVersion.equalsIgnoreCase(onlineVersion)
+                        && ChoiceDialog.askForUpdate()) {
+                    serv = downloadAndInstallGruen2(onlineVersion);
+                    serv.setOnSucceeded(evt -> executeGruen2());
+                } else {
+                    executeGruen2();
                 }
             } else {
                 serv = downloadAndInstallGruen2(onlineVersion);
                 serv.setOnSucceeded(evt -> executeGruen2Config());
             }
-        } else if (localVersionfile.exists()) {
+        } else if (optLocalVersion.isPresent()) {
             executeGruen2();
         } else {
             throw new IllegalStateException("Grün2 is currently not installed "
                     + "and there´s no connection to install it.");
         }
 
-        if (serv == null) {
-            Platform.exit();
-        } else {
+        if (serv != null) {
             serv.setOnFailed(evt -> {
                 Platform.exit();
             });
@@ -235,7 +225,7 @@ public final class Gruen2Launcher extends Application {
 
                 //Download
                 URLConnection downloadConnection
-                        = new URL(VersionConnection.GRUEN2_ZIP_LOCATION)
+                        = new URL(VersionHandler.GRUEN2_ZIP_LOCATION)
                         .openConnection();
                 long fileSize = Long.parseLong(
                         downloadConnection.getHeaderField("Content-Length"));
@@ -262,7 +252,8 @@ public final class Gruen2Launcher extends Application {
 
                 //Install
                 String[] command;
-                if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                if (System.getProperty("os.name")
+                        .toLowerCase().startsWith("win")) {
                     command = new String[]{"cmd", "/C",
                         tempDir.toString() + "/install.vbs"};
                 } else {
@@ -293,7 +284,8 @@ public final class Gruen2Launcher extends Application {
                             "Installer got no admin rights", null);
                 } else {
                     new File(APP_DATA_PATH).mkdir();
-                    printContent(newVersion, VERSIONFILE_PATH_LOCAL, false);
+                    printContent(newVersion,
+                            VersionHandler.VERSIONFILE_PATH_LOCAL, false);
                 }
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
@@ -314,6 +306,7 @@ public final class Gruen2Launcher extends Application {
             new ProcessBuilder("java", "-jar", PROGRAMFOLDER_PATH
                     + "/Grün2_Mitgliederverwaltung.jar")
                     .start();
+            Platform.exit();
         } catch (IOException ex) {
             Logger.getLogger(Gruen2Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
