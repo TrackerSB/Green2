@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.gruen2.config_dialog;
+package bayern.steinbrecher.gruen2.configDialog;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Grün2Config extends Application {
+public class ConfigDialog extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -39,7 +39,7 @@ public class Grün2Config extends Application {
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
-        Grün2ConfigController controller = fxmlLoader.getController();
+        ConfigDialogController controller = fxmlLoader.getController();
         controller.setStage(primaryStage);
 
         primaryStage.setResizable(false);

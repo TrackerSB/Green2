@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.gruen2.config_dialog;
+package bayern.steinbrecher.gruen2.configDialog;
 
 import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
@@ -35,7 +35,7 @@ import javafx.scene.control.CheckBox;
  *
  * @author Stefan Huber
  */
-public class Grün2ConfigController extends CheckedController {
+public class ConfigDialogController extends CheckedController {
 
     @FXML
     private CheckBox useSSHCheckBox;
