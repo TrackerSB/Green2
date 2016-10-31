@@ -16,8 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.elements;
 
-import bayern.steinbrecher.gruen2.launcher.Gruen2Launcher;
-import java.util.Optional;
+import bayern.steinbrecher.gruen2.data.DataProvider;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -42,16 +41,16 @@ public class ChoiceDialog extends Application {
     @Override
     public void start(Stage stage) {
         Label message
-                = new Label(Gruen2Launcher.getResourceValue("installUpdates"));
+                = new Label(DataProvider.getResourceValue("installUpdates"));
 
-        Button yesButton = new Button(Gruen2Launcher.getResourceValue("yes"));
+        Button yesButton = new Button(DataProvider.getResourceValue("yes"));
         yesButton.setDefaultButton(true);
         yesButton.setOnAction(evt -> {
             installUpdates = true;
             stage.close();
         });
 
-        Button noButton = new Button(Gruen2Launcher.getResourceValue("no"));
+        Button noButton = new Button(DataProvider.getResourceValue("no"));
         noButton.setOnAction(evt -> stage.close());
 
         HBox hbox = new HBox(yesButton, noButton);
@@ -59,12 +58,12 @@ public class ChoiceDialog extends Application {
 
         VBox vbox = new VBox(message, hbox);
         vbox.setSpacing(10);
-        vbox.getStylesheets().add(Gruen2Launcher.STYLESHEET_PATH);
+        vbox.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
         stage.setScene(new Scene(vbox));
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
-        stage.setTitle(Gruen2Launcher.getResourceValue("installUpdates"));
+        stage.setTitle(DataProvider.getResourceValue("installUpdates"));
         stage.showAndWait();
     }
 

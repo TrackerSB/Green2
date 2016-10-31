@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.data;
 
-import bayern.steinbrecher.gruen2.launcher.VersionHandler;
+import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;

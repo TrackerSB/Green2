@@ -160,7 +160,7 @@ public abstract class DBConnection implements AutoCloseable {
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
-            throw new Error("Hardcoded SQL-Code invalid");
+            throw new Error("Hardcoded SQL-Code invalid", ex);
         }
     }
 
@@ -182,7 +182,7 @@ public abstract class DBConnection implements AutoCloseable {
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
-            throw new Error("Hardcoded SQL-Code invalid");
+            throw new Error("Hardcoded SQL-Code invalid", ex);
         }
     }
 

@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.data;
 
+import bayern.steinbrecher.gruen2.utility.URLUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.MessageFormat;
@@ -80,11 +81,6 @@ public final class DataProvider {
     public static final String SAVE_PATH
             = CURRENT_OS == OS.WINDOWS ? HOME_DIR + "/Desktop" : HOME_DIR;
     /**
-     * Representing a function for calculating whether a person with a specific
-     * age gets notified.
-     */
-    public static final IntFunction<Boolean> AGE_FUNCTION;
-    /**
      * The path of the folder where to put user specific data of the
      * application.
      */
@@ -110,6 +106,36 @@ public final class DataProvider {
      */
     private static final File CONFIGFILE = new File(CONFIGFILE_PATH);
     /**
+     * The path of the local folder where to save the application itself.
+     */
+    public static final String PROGRAMFOLDER_PATH_LOCAL
+            = CURRENT_OS == OS.WINDOWS
+                    ? System.getenv("ProgramFiles").replaceAll("\\\\", "/")
+                    + "/Grün2_Mitgliederverwaltung"
+                    : "/opt/Grün2_Mitgliederverwaltung";
+    /**
+     * The path of the local version file.
+     */
+    public static final String VERSIONFILE_PATH_LOCAL
+            = DataProvider.APP_DATA_PATH + "/version.txt";
+    /**
+     * The URL of the online repository containing the installation files.
+     */
+    public static final String PROGRAMFOLDER_PATH_ONLINE
+            = URLUtility.resolveURL(
+                    "https://traunviertler-traunwalchen.de/programme");
+    /**
+     * The URL of the version file describing the version of the files at
+     * {@code PROGRAMFOLDER_PATH_ONLINE}.
+     */
+    public static final String VERSIONFILE_PATH_ONLINE
+            = PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
+    /**
+     * The URL of the zip containing the installation files of the application.
+     */
+    public static final String GRUEN2_ZIP_URL
+            = PROGRAMFOLDER_PATH_ONLINE + "/Gruen2.zip";
+    /**
      * The configurations found in gruen2.conf.
      */
     private static final Map<ConfigKey, String> CONFIGURATIONS
@@ -118,6 +144,11 @@ public final class DataProvider {
      * {@code true} only if all allowed configurations are specified.
      */
     public static final boolean ALL_CONFIGURATIONS_SET;
+    /**
+     * Representing a function for calculating whether a person with a specific
+     * age gets notified.
+     */
+    public static final IntFunction<Boolean> AGE_FUNCTION;
 
     static {
         //Create configDir if not existing

@@ -14,36 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.gruen2.launcher;
+package bayern.steinbrecher.gruen2.utility;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.Optional;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represents a class handling HTTP-connections and handling the version
- * database.
+ * A class providing utility functions according to URLs.
  *
  * @author Stefan Huber
  */
-public class VersionHandler {
+public final class URLUtility {
 
-    private static final String GRUEN2_HOST_URL
-            = resolveURL("http://www.traunviertler-traunwalchen.de/programme");
-    static final String GRUEN2_ZIP_LOCATION
-            = resolveURL(GRUEN2_HOST_URL + "/Gruen2.zip");
-    static final String VERSIONFILE_PATH_ONLINE
-            = resolveURL(GRUEN2_HOST_URL + "/version.txt");
-    static final String VERSIONFILE_PATH_LOCAL
-            = Gruen2Launcher.APP_DATA_PATH + "/version.txt";
+    private URLUtility() {
+        throw new UnsupportedOperationException(
+                "Construction of an object is not allowed.");
+    }
 
     /**
      * Resolves the real HTTP(S)-URL of the given HTTP(S)-URL. (E.g. it follows
@@ -54,7 +44,7 @@ public class VersionHandler {
      * URL is invalid, not reachable or an unrecognized status code is thrown
      * like 401 or 500.
      */
-    private static String resolveURL(String url) {
+    public static String resolveURL(String url) {
         try {
             boolean redirected;
             do {
@@ -78,45 +68,14 @@ public class VersionHandler {
                 }
             } while (redirected);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
+            Logger.getLogger(URLUtility.class.getName())
                     .log(Level.SEVERE, null, ex);
             url = null;
         } catch (IOException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
+            Logger.getLogger(URLUtility.class.getName())
                     .log(Level.SEVERE, null, ex);
             url = null;
         }
         return url;
-    }
-
-    public static Optional<String> readOnlineVersion() {
-        try {
-            URL onlineVersionUrl = new URL(VERSIONFILE_PATH_ONLINE);
-            Scanner sc = new Scanner(onlineVersionUrl.openStream());
-            return Optional.of(sc.nextLine());
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        return Optional.empty();
-    }
-
-    public static Optional<String> readLocalVersion() {
-        File localVersionfile = new File(VERSIONFILE_PATH_LOCAL);
-        if (localVersionfile.exists()) {
-            try (Scanner sc = new Scanner(localVersionfile)) {
-                return Optional.of(sc.nextLine());
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(VersionHandler.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
-        }
-        return Optional.empty();
     }
 }

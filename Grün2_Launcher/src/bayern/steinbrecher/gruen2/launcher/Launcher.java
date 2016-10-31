@@ -16,14 +16,15 @@
  */
 package bayern.steinbrecher.gruen2.launcher;
 
+import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
-import java.io.BufferedWriter;
+import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,18 +33,12 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
-import java.text.MessageFormat;
 import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -58,43 +53,14 @@ import net.lingala.zip4j.exception.ZipException;
  *
  * @author Stefan Huber
  */
-public final class Gruen2Launcher extends Application {
+public final class Launcher extends Application {
 
-    /**
-     * Containing translations for the system default language.
-     */
-    private static final ResourceBundle RESOURCE_BUNDLE
-            = ResourceBundle.getBundle(
-                    "bayern.steinbrecher.gruen2.data.language");
-    /**
-     * The path to the home directory of the user.
-     */
-    private static final String HOME_DIR
-            = System.getProperty("user.home").replaceAll("\\\\", "/");
-    /**
-     * The path of the stylesheet.
-     */
-    public static final String STYLESHEET_PATH
-            = "/bayern/steinbrecher/gruen2/data/styles.css";
-    /**
-     * The path of the folder where to put user specific data of the
-     * application.
-     */
-    static final String APP_DATA_PATH = HOME_DIR
-            + (System.getProperty("os.name").toLowerCase().contains("win")
-            ? "/AppData/Roaming/Grün2_Mitgliederverwaltung"
-            : "/.Grün2_Mitgliederverwaltung");
-    private static final String PROGRAMFOLDER_PATH
-            = System.getProperty("os.name").toLowerCase().contains("win")
-            ? System.getenv("ProgramFiles").replaceAll("\\\\", "/")
-            + "/Grün2_Mitgliederverwaltung"
-            : "/opt/Grün2_Mitgliederverwaltung";
     private Stage stage;
 
     /**
      * Default constructor.
      */
-    public Gruen2Launcher() {
+    public Launcher() {
     }
 
     @Override
@@ -136,65 +102,6 @@ public final class Gruen2Launcher extends Application {
     }
 
     /**
-     * Returns the value behind {@code key} of the resource bundle inserted
-     * params.
-     *
-     * @param key The key to serach for.
-     * @param params The params to insert.
-     * @return The value with inserted params.
-     */
-    public static String getResourceValue(String key, Object... params) {
-        return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
-    }
-
-    /**
-     * Creates a service which executes {@code task} and returns a value of type
-     * {@code V}.
-     *
-     * @param <V> The type of the value to return.
-     * @param task The task to execute.
-     * @return The service which executes {@code task} and returns a value of
-     * type {@code V}.
-     */
-    public static <V> Service<V> createService(Callable<V> task) {
-        return new Service<V>() {
-            @Override
-            protected Task<V> createTask() {
-                return new Task<V>() {
-                    @Override
-                    protected V call() throws Exception {
-                        return task.call();
-                    }
-                };
-            }
-        };
-    }
-
-    /**
-     * Overrides the hole content of {@code pathToFile} with {@code content}. If
-     * {@code pathToFile} doesn´t exist it creates one.
-     *
-     * @param content The content to be written into the file.
-     * @param pathToFile The file to write in.
-     * @param withBom Only if {@code true} it adds '\uFEFF' to the beginning of
-     * the file.
-     */
-    public static void printContent(String content, String pathToFile,
-            boolean withBom) {
-        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(pathToFile), "UTF-8"))) {
-            //To make no UTF-8 without BOM but with BOM.
-            if (withBom) {
-                bw.append('\uFEFF');
-            }
-            bw.append(content);
-        } catch (IOException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
      * Returns a service which downloads and installs Grün2.
      */
     private Service<Boolean> downloadAndInstallGruen2(String newVersion)
@@ -202,18 +109,18 @@ public final class Gruen2Launcher extends Application {
 
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource("Grün2Launcher.fxml"));
-        fxmlLoader.setResources(RESOURCE_BUNDLE);
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().add(STYLESHEET_PATH);
-        Grün2LauncherController controller = fxmlLoader.getController();
+        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        LauncherController controller = fxmlLoader.getController();
 
         stage.setScene(new Scene(root));
         stage.setResizable(false);
-        stage.setTitle(getResourceValue("downloadNewVersion"));
+        stage.setTitle(DataProvider.getResourceValue("downloadNewVersion"));
         stage.initStyle(StageStyle.UTILITY);
         stage.show();
 
-        Service<Boolean> service = createService(() -> {
+        Service<Boolean> service = ServiceFactory.createService(() -> {
             try {
                 File tempFile = Files.createTempFile(
                         null, ".zip", new FileAttribute[0])
@@ -225,7 +132,7 @@ public final class Gruen2Launcher extends Application {
 
                 //Download
                 URLConnection downloadConnection
-                        = new URL(VersionHandler.GRUEN2_ZIP_LOCATION)
+                        = new URL(DataProvider.GRUEN2_ZIP_URL)
                         .openConnection();
                 long fileSize = Long.parseLong(
                         downloadConnection.getHeaderField("Content-Length"));
@@ -241,12 +148,12 @@ public final class Gruen2Launcher extends Application {
                     }
                 }
 
+                //Unzip
                 try {
-                    //Unzip
                     ZipFile zipFile = new ZipFile(tempFile.getAbsolutePath());
                     zipFile.extractAll(tempDir.toString());
                 } catch (ZipException ex) {
-                    Logger.getLogger(Gruen2Launcher.class.getName())
+                    Logger.getLogger(Launcher.class.getName())
                             .log(Level.SEVERE, null, ex);
                 }
 
@@ -277,22 +184,13 @@ public final class Gruen2Launcher extends Application {
                 //Make sure move commands finished
                 Thread.sleep(1000);
 
-                //Update version.txt
-                if (tempDir.toFile().list().length > 1) { //If dir is not empty
-                    System.out.println(tempDir.toFile().list().length);
-                    throw new CompletionException(
-                            "Installer got no admin rights", null);
-                } else {
-                    new File(APP_DATA_PATH).mkdir();
-                    printContent(newVersion,
-                            VersionHandler.VERSIONFILE_PATH_LOCAL, false);
-                }
+                VersionHandler.updateLocalVersion(tempDir, newVersion);
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
-                Logger.getLogger(Gruen2Launcher.class.getName())
+                Logger.getLogger(Launcher.class.getName())
                         .log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(Gruen2Launcher.class.getName())
+                Logger.getLogger(Launcher.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
             return null;
@@ -303,12 +201,13 @@ public final class Gruen2Launcher extends Application {
 
     private void executeGruen2() {
         try {
-            new ProcessBuilder("java", "-jar", PROGRAMFOLDER_PATH
+            new ProcessBuilder("java", "-jar",
+                    DataProvider.PROGRAMFOLDER_PATH_LOCAL
                     + "/Grün2_Mitgliederverwaltung.jar")
                     .start();
             Platform.exit();
         } catch (IOException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
+            Logger.getLogger(Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }
@@ -316,11 +215,11 @@ public final class Gruen2Launcher extends Application {
     private void executeGruen2Config() {
         try {
             new ProcessBuilder("java", "-jar",
-                    PROGRAMFOLDER_PATH + "/Grün2_config.jar")
+                    DataProvider.PROGRAMFOLDER_PATH_LOCAL + "/Grün2_config.jar")
                     .start();
             Platform.exit();
         } catch (IOException ex) {
-            Logger.getLogger(Gruen2Launcher.class.getName())
+            Logger.getLogger(Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }
