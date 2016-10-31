@@ -102,6 +102,9 @@ public final class Collector {
 
     private enum DataParams {
         MAC_ADDRESS {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public String getValue() {
                 try {
@@ -122,18 +125,29 @@ public final class Collector {
             }
         },
         MESSAGE_CREATION_TIMESTAMP {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public String getValue() {
                 return new Timestamp(System.currentTimeMillis()).toString();
             }
         },
         VERSION {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public String getValue() {
                 return VersionHandler.readLocalVersion().orElse("");
             }
         };
 
+        /**
+         * Returns the value represented by the enum.
+         *
+         * @return The value represented by the enum.
+         */
         public abstract String getValue();
     }
 }
