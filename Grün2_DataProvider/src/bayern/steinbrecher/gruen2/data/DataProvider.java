@@ -56,6 +56,10 @@ public final class DataProvider {
     public static final Image DEFAULT_ICON
             = new Image("bayern/steinbrecher/gruen2/data/icon.png");
     private static final int SPLASHSCREEN_PREFFERED_WIDTH = 800;
+    /**
+     * The image containing the splash screen used when the application is
+     * started.
+     */
     public static final Image SPLASHSCREEN
             = new Image("bayern/steinbrecher/gruen2/data/splashscreen.png",
                     SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true);
@@ -317,6 +321,13 @@ public final class DataProvider {
      * Contains enums representing supported operation systems.
      */
     public enum OS {
-        WINDOWS, LINUX;
+        /**
+         * Representing Windows operating system.
+         */
+        WINDOWS,
+        /**
+         * Representing any Linux operating system.
+         */
+        LINUX;
     }
 }

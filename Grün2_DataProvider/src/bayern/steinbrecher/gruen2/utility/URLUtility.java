@@ -30,6 +30,9 @@ import java.util.logging.Logger;
  */
 public final class URLUtility {
 
+    /**
+     * Prohibit construction of an object.
+     */
     private URLUtility() {
         throw new UnsupportedOperationException(
                 "Construction of an object is not allowed.");
