@@ -127,7 +127,8 @@ public final class DataProvider {
      */
     public static final String PROGRAMFOLDER_PATH_ONLINE
             = URLUtility.resolveURL(
-                    "https://traunviertler-traunwalchen.de/programme");
+                    "https://traunviertler-traunwalchen.de/programme")
+            .orElse("");
     /**
      * The URL of the version file describing the version of the files at
      * {@code PROGRAMFOLDER_PATH_ONLINE}.

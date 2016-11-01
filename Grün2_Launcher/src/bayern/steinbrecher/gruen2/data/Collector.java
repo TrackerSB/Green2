@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.data;
 
+import bayern.steinbrecher.gruen2.utility.URLUtility;
 import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -30,6 +31,7 @@ import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -43,15 +45,20 @@ import javax.net.ssl.HttpsURLConnection;
 public final class Collector {
 
     private static URL POST_URL; //FIXME Should be final
+    private static boolean preparedToSend = false;
 
     static {
-        try {
-            POST_URL = new URL(
-                    "https://traunviertler-traunwalchen.de/php/collector.php");
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Collector.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
+        Optional<String> resolvedURL = URLUtility.resolveURL(
+                "https://traunviertler-traunwalchen.de/php/collector.php");
+        resolvedURL.ifPresent(url -> {
+            try {
+                POST_URL = new URL(url);
+                preparedToSend = true;
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(Collector.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
     private Collector() {
@@ -63,41 +70,47 @@ public final class Collector {
         List<String> parameters = new ArrayList<>(DataParams.values().length);
         for (DataParams dp : DataParams.values()) {
             try {
-                parameters.add(dp.toString()
+                parameters.add(dp.toString() + "="
                         + URLEncoder.encode(dp.getValue(), "UTF-8"));
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(Collector.class.getName())
                         .log(Level.SEVERE, null, ex);
+                System.err.println(dp + " skipped on sending.");
             }
         }
         return parameters.stream().collect(Collectors.joining("&"));
     }
 
-    public static void sendData() {
-        try {
-            HttpsURLConnection connection
-                    = (HttpsURLConnection) POST_URL.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoInput(false);
-            connection.setDoOutput(true);
-            connection.setUseCaches(false);
+    public static boolean sendData() {
+        boolean wasSent = false;
+        if (preparedToSend) {
+            try {
+                HttpsURLConnection connection
+                        = (HttpsURLConnection) POST_URL.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoInput(false);
+                connection.setDoOutput(true);
+                connection.setUseCaches(false);
 
-            String values = generateDataString();
+                String values = generateDataString();
 
-            connection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length",
-                    String.valueOf(values.length()));
+                connection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+                connection.setRequestProperty("Content-Length",
+                        String.valueOf(values.length()));
 
-            try (OutputStreamWriter writer
-                    = new OutputStreamWriter(connection.getOutputStream())) {
-                writer.write(values);
+                try (OutputStreamWriter writer = new OutputStreamWriter(
+                        connection.getOutputStream())) {
+                    writer.write(values);
+                    wasSent = true;
+                }
+
+            } catch (IOException ex) {
+                Logger.getLogger(Collector.class.getName())
+                        .log(Level.SEVERE, null, ex);
             }
-
-        } catch (IOException ex) {
-            Logger.getLogger(Collector.class.getName())
-                    .log(Level.SEVERE, null, ex);
         }
+        return wasSent;
     }
 
     private enum DataParams {

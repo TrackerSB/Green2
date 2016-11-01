@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,11 +44,11 @@ public final class URLUtility {
      * redirects)
      *
      * @param url The HTTP(S)-URL to resolve.
-     * @return The resolved HTTP(S)-URL. Returns {@code null} only if the given
-     * URL is invalid, not reachable or an unrecognized status code is thrown
-     * like 401 or 500.
+     * @return The resolved HTTP(S)-URL. Returns {@code Optional.empty()} only
+     * if the given URL is invalid, not reachable or an unrecognized status code
+     * is thrown like 401 or 500.
      */
-    public static String resolveURL(String url) {
+    public static Optional<String> resolveURL(String url) {
         try {
             boolean redirected;
             do {
@@ -79,6 +80,6 @@ public final class URLUtility {
                     .log(Level.SEVERE, null, ex);
             url = null;
         }
-        return url;
+        return Optional.ofNullable(url);
     }
 }
