@@ -108,7 +108,7 @@ public final class Launcher extends Application {
             throws IOException {
 
         FXMLLoader fxmlLoader
-                = new FXMLLoader(getClass().getResource("Grün2Launcher.fxml"));
+                = new FXMLLoader(getClass().getResource("Launcher.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
