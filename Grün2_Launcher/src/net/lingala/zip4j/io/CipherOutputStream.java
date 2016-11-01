@@ -167,11 +167,7 @@ public class CipherOutputStream extends BaseOutputStream {
             }
 
             crc.reset();
-        } catch (CloneNotSupportedException e) {
-            throw new ZipException(e);
-        } catch (ZipException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (CloneNotSupportedException | IOException e) {
             throw new ZipException(e);
         }
     }
@@ -184,7 +180,10 @@ public class CipherOutputStream extends BaseOutputStream {
 
         switch (zipParameters.getEncryptionMethod()) {
         case Zip4jConstants.ENC_METHOD_STANDARD:
-            // Since we do not know the crc here, we use the modification time for encrypting.
+            /*
+             * Since we do not know the crc here, we use the modification time
+             * for encrypting.
+             */
             encrypter = new StandardEncrypter(zipParameters.getPassword(),
                     (localFileHeader.getLastModFileTime() & 0x0000ffff) << 16);
             break;
@@ -535,10 +534,12 @@ public class CipherOutputStream extends BaseOutputStream {
         localFileHeader.setFileName(fileHeader.getFileName());
         localFileHeader.setEncrypted(fileHeader.isEncrypted());
         localFileHeader.setEncryptionMethod(fileHeader.getEncryptionMethod());
-        localFileHeader.setAesExtraDataRecord(fileHeader.getAesExtraDataRecord());
+        localFileHeader.setAesExtraDataRecord(
+                fileHeader.getAesExtraDataRecord());
         localFileHeader.setCrc32(fileHeader.getCrc32());
         localFileHeader.setCompressedSize(fileHeader.getCompressedSize());
-        localFileHeader.setGeneralPurposeFlag((byte[]) fileHeader.getGeneralPurposeFlag().clone());
+        localFileHeader.setGeneralPurposeFlag(
+                (byte[]) fileHeader.getGeneralPurposeFlag().clone());
     }
 
     /**
