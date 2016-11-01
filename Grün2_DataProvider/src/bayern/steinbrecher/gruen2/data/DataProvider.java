@@ -30,6 +30,8 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.IntFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.image.Image;
 
 /**
@@ -159,24 +161,27 @@ public final class DataProvider {
         //Create configDir if not existing
         new File(DataProvider.APP_DATA_PATH).mkdir();
 
-        String[] parts = null;
+        String[] parts;
         try (Scanner sc = new Scanner(CONFIGFILE)) {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
                 parts = line.split(VALUE_SEPARATOR);
                 if (parts.length != 2) {
-                    System.err.println("\"" + line + "\" has not exactly "
-                            + "two elements. It remains ignored.");
+                    Logger.getLogger(DataProvider.class.getName())
+                            .log(Level.WARNING, "\"{0}" + "\" has not exactly "
+                                    + "two elements. It remains ignored.",
+                                    line);
                 } else {
                     CONFIGURATIONS.put(ConfigKey.valueOf(
                             parts[0].toUpperCase()), parts[1]);
                 }
             }
         } catch (FileNotFoundException ex) {
-            System.err.println(
-                    "Configfile \"" + CONFIGFILE_NAME + "\" not found.");
+            Logger.getLogger(DataProvider.class.getName())
+                    .log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
-            System.err.println(parts[0] + " is no valid config attribute.");
+            Logger.getLogger(DataProvider.class.getName())
+                    .log(Level.WARNING, null, ex);
         }
 
         ALL_CONFIGURATIONS_SET
@@ -225,10 +230,12 @@ public final class DataProvider {
                     });
                     break;
                 default:
-                    System.err.println(part + " gets skipped");
+                    Logger.getLogger(DataProvider.class.getName())
+                            .log(Level.WARNING, "{0} gets skipped", part);
                 }
             } catch (NumberFormatException ex) {
-                System.err.println(part + " gets skipped");
+                Logger.getLogger(DataProvider.class.getName())
+                        .log(Level.WARNING, "{0} gets skipped", part);
             }
         }
 
@@ -295,7 +302,8 @@ public final class DataProvider {
         if (RESOURCE_BUNDLE.containsKey(key)) {
             return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
         } else {
-            System.err.println("No resource for \"" + key + "\" found.");
+            Logger.getLogger(DataProvider.class.getName())
+                    .log(Level.INFO, "No resource for \"{0}\" found.", key);
             return key;
         }
     }

@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Generates a Sepa.Pain.008.003.02.
@@ -136,15 +138,19 @@ public final class SepaPain00800302XMLGenerator {
             AccountHolder ah = m.getAccountHolder();
             if (!hasValidIban(ah)) {
                 valid = false;
-                System.err.println(m + " has an invalid IBAN");
+                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
+                        .log(Level.WARNING, "{0} has an invalid IBAN", m);
             }
             if (!ah.hasBic()) {
                 valid = false;
-                System.err.println(m + " has no BIC");
+                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
+                        .log(Level.WARNING, "{0} has no BIC", m);
             }
             if (ah.getMandatSigned() == null) {
                 valid = false;
-                System.err.println(m + " has a bad \"MandatErstellt\"");
+                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
+                        .log(Level.WARNING, "{0} has a bad \"MandatErstellt\"",
+                                m);
             }
             if (!valid) {
                 invalidMember.add(m);

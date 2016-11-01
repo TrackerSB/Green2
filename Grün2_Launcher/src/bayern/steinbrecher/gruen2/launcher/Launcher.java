@@ -48,8 +48,8 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 /**
- * Installs Grün2 and checks for updates. Contains parts of DataProvider, Output
- * and ServiceFactory (This application needs to be independent).
+ * Installs Grün2 and checks for updates. (This application needs to be
+ * independent, so it contains DataProvider project.).
  *
  * @author Stefan Huber
  */
@@ -159,11 +159,13 @@ public final class Launcher extends Application {
 
                 //Install
                 String[] command;
-                if (System.getProperty("os.name")
-                        .toLowerCase().startsWith("win")) {
+                switch (DataProvider.CURRENT_OS) {
+                case WINDOWS:
                     command = new String[]{"cmd", "/C",
                         tempDir.toString() + "/install.vbs"};
-                } else {
+                    break;
+                case LINUX:
+                default:
                     command = new String[]{"chmod", "a+x", tempDir.toString()
                         + "/install.sh", tempDir.toString() + "/uninstall.sh"};
                     new ProcessBuilder(command).start().waitFor();
@@ -171,13 +173,22 @@ public final class Launcher extends Application {
                     command = new String[]{"sh",
                         tempDir.toString() + "/install.sh"};
                 }
+
                 Process installer = new ProcessBuilder(command).start();
                 InputStream outputStream = installer.getErrorStream();
                 int b = outputStream.read();
+                StringBuilder errorMessage = new StringBuilder();
                 while (b > -1) {
-                    System.err.print((char) b);
+                    errorMessage.append((char) b);
                     b = outputStream.read();
                 }
+                if (errorMessage.length() > 0) {
+                    Logger.getLogger(Launcher.class.getName())
+                            .log(Level.WARNING,
+                                    "The installer got follwing error: {0}",
+                                    errorMessage);
+                }
+
                 //FIXME Doesn´t really wait for everything is completed.
                 installer.waitFor();
 

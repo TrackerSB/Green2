@@ -68,7 +68,7 @@ public class Splashscreen extends View {
                 Thread.sleep(millis);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Splashscreen.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                        .log(Level.WARNING, null, ex);
             }
             Platform.runLater(() -> stage.close());
             return null;

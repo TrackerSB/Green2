@@ -50,7 +50,7 @@ public abstract class DBConnection implements AutoCloseable {
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream().collect(Collectors.joining(","));
     private static final String EXIST_TEST
-            = "SELECT COUNT(*) FROM Mitglieder, Spitznamen;";
+            = "SELECT 1 FROM Mitglieder, Spitznamen;";
     private static final String CREATE_MITGLIEDER = "CREATE TABLE Mitglieder ("
             + "Mitgliedsnummer INTEGER PRIMARY KEY,"
             + "Titel VARCHAR(255) NOT NULL,"
@@ -119,9 +119,8 @@ public abstract class DBConnection implements AutoCloseable {
         try {
             execQuery(EXIST_TEST);
             return true;
+            //FIXME Avoid using SQLException as control flow.
         } catch (SQLException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
             return false;
         }
     }
@@ -158,8 +157,6 @@ public abstract class DBConnection implements AutoCloseable {
             return MemberGenerator.generateMemberList(
                     execQuery(QUERY_ALL_MEMBER));
         } catch (SQLException ex) {
-            Logger.getLogger(DBConnection.class.getName())
-                    .log(Level.SEVERE, null, ex);
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
     }
@@ -180,8 +177,6 @@ public abstract class DBConnection implements AutoCloseable {
             });
             return mappedNicknames;
         } catch (SQLException ex) {
-            Logger.getLogger(DBConnection.class.getName())
-                    .log(Level.SEVERE, null, ex);
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
     }
@@ -196,10 +191,10 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table contains the given column.
      */
     public boolean checkColumn(String table, String column) {
-        //FIXME Try to find other solution not using SQLException.
         try {
             execQuery("SELECT " + column + " FROM " + table + ";");
             return true;
+            //FIXME Avoid using SQLException as control flow.
         } catch (SQLException ex) {
             return false;
         }

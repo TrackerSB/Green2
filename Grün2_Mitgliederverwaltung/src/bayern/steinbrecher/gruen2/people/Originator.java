@@ -110,20 +110,20 @@ public class Originator {
                             } else if (f.getType() == String.class) {
                                 f.set(this, property);
                             } else {
-                                System.err.println(Originator.class
-                                        + ": No action for reading in "
-                                        + f.getType()
-                                        + " defined. Gets skipped.");
+                                Logger.getLogger(Originator.class.getName())
+                                        .log(Level.INFO, "No action for reading"
+                                                + " in {0} defined. Gets "
+                                                + "skipped.", f.getType());
                             }
                         } catch (IllegalArgumentException |
                                 IllegalAccessException ex) {
                             Logger.getLogger(Originator.class.getName())
-                                    .log(Level.SEVERE, null, ex);
+                                    .log(Level.WARNING, null, ex);
                         }
                     });
         } catch (IOException ex) {
             Logger.getLogger(Originator.class.getName())
-                    .log(Level.SEVERE, null, ex);
+                    .log(Level.WARNING, null, ex);
         }
     }
 
@@ -145,7 +145,7 @@ public class Originator {
                     } catch (IllegalArgumentException |
                             IllegalAccessException ex) {
                         Logger.getLogger(Originator.class.getName())
-                                .log(Level.SEVERE, null, ex);
+                                .log(Level.WARNING, null, ex);
                     }
                 });
         try {
@@ -154,7 +154,7 @@ public class Originator {
                             new FileOutputStream(filename), "UTF-8")), null);
         } catch (Exception ex) {
             Logger.getLogger(Originator.class.getName())
-                    .log(Level.SEVERE, null, ex);
+                    .log(Level.WARNING, null, ex);
         }
     }
 

@@ -118,7 +118,7 @@ public class SepaFormController extends CheckedController {
                     DataProvider.ORIGINATOR_INFO_PATH);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SepaFormController.class.getName())
-                    .log(Level.SEVERE, null, ex);
+                    .log(Level.INFO, null, ex);
             originator = new Originator(DataProvider.ORIGINATOR_INFO_PATH);
         }
         creatorTextField.setText(originator.getCreator());

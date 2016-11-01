@@ -51,7 +51,7 @@ public final class ThreadUtility {
                 }
             } catch (InterruptedException ex1) {
                 Logger.getLogger(ThreadUtility.class.getName())
-                        .log(Level.SEVERE, null, ex1);
+                        .log(Level.WARNING, null, ex1);
             }
         }
     }

@@ -74,8 +74,7 @@ public final class Collector {
                         + URLEncoder.encode(dp.getValue(), "UTF-8"));
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(Collector.class.getName())
-                        .log(Level.SEVERE, null, ex);
-                System.err.println(dp + " skipped on sending.");
+                        .log(Level.INFO, dp + " skipped on sending.", ex);
             }
         }
         return parameters.stream().collect(Collectors.joining("&"));

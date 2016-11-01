@@ -64,9 +64,10 @@ public final class URLUtility {
                         redirected = true;
                         url = connection.getHeaderField("Location");
                     } else {
-                        System.err.println("\"" + url + "\" returned code "
-                                + responseCode
-                                + ". No action defined for handling.");
+                        Logger.getLogger(URLUtility.class.getName())
+                                .log(Level.WARNING, "\"{0}\" returned code {1}."
+                                        + " No action defined for handling.",
+                                        new Object[]{url, responseCode});
                         url = null;
                     }
                 }

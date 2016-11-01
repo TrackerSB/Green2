@@ -130,7 +130,7 @@ public final class DefaultConnection extends DBConnection {
             connection.close();
         } catch (SQLException ex) {
             Logger.getLogger(Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
+                    .log(Level.WARNING, null, ex);
         }
     }
 }

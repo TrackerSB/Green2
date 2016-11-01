@@ -46,10 +46,7 @@ public class VersionHandler {
                     = new URL(DataProvider.VERSIONFILE_PATH_ONLINE);
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
             return Optional.of(sc.nextLine());
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
+        } catch (UnknownHostException | MalformedURLException ex) {
             Logger.getLogger(Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -66,7 +63,7 @@ public class VersionHandler {
                 return Optional.of(sc.nextLine());
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(VersionHandler.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                        .log(Level.INFO, null, ex);
             }
         }
         return Optional.empty();

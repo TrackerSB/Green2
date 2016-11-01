@@ -220,7 +220,9 @@ public class Main extends Application {
                 confirm = ConfirmDialog.createDialog(
                         s, null, DataProvider.getResourceValue("checkInput"));
             } else {
-                System.err.println("Not action specified for: " + cause);
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, "Not action specified for: {0}",
+                                cause);
                 confirm = ConfirmDialog.createDialog(s, null,
                         DataProvider.getResourceValue("unexpectedAbbort"));
             }
@@ -280,9 +282,6 @@ public class Main extends Application {
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
             } catch (UnknownHostException | AuthException ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-
                 handleAuthException(login, waitScreen, ex);
 
                 ThreadUtility.waitWhile(this, login.wouldShowBinding().not());
@@ -344,8 +343,7 @@ public class Main extends Application {
                         member, nicknames.get()), filename, true);
             }
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -410,8 +408,7 @@ public class Main extends Application {
                         + "/Geburtstag_" + year + ".csv", true);
             }
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -423,8 +420,7 @@ public class Main extends Application {
             sepaForm.start(new Stage());
             originator = sepaForm.getOriginator();
         } catch (Exception ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             originator = Optional.empty();
         }
 
@@ -473,8 +469,7 @@ public class Main extends Application {
         try {
             contribution.start(new Stage());
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         Optional<Double> optContribution = contribution.getContribution();
         if (optContribution.isPresent()) {
@@ -488,14 +483,9 @@ public class Main extends Application {
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Menu.class.getName())
                         .log(Level.SEVERE, null, ex);
-                try {
-                    ConfirmDialog.createDialog(new Stage(), menuStage,
-                            DataProvider.getResourceValue("noSepaDebit"))
-                            .showOnceAndWait();
-                } catch (Exception ex1) {
-                    Logger.getLogger(Main.class.getName())
-                            .log(Level.SEVERE, null, ex1);
-                }
+                ConfirmDialog.createDialog(new Stage(), menuStage,
+                        DataProvider.getResourceValue("noSepaDebit"))
+                        .showOnceAndWait();
             }
         }
     }
@@ -535,14 +525,9 @@ public class Main extends Application {
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName())
                     .log(Level.SEVERE, null, ex);
-            try {
-                ConfirmDialog.createDialog(new Stage(), menuStage,
-                        DataProvider.getResourceValue("noSepaDebit"))
-                        .showOnceAndWait();
-            } catch (Exception ex1) {
-                Logger.getLogger(Main.class.getName())
-                        .log(Level.SEVERE, null, ex1);
-            }
+            ConfirmDialog.createDialog(new Stage(), menuStage,
+                    DataProvider.getResourceValue("noSepaDebit"))
+                    .showOnceAndWait();
         }
     }
 

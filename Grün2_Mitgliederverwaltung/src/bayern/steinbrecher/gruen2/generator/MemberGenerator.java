@@ -86,10 +86,9 @@ public class MemberGenerator {
                     birthday = LocalDate.parse(birthdayString);
                 }
             } catch (DateTimeParseException ex) {
-                System.err.println(row.get(birthdayIndex)
-                        + " is invalid birthdaydate");
                 Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                        .log(Level.WARNING, row.get(birthdayIndex)
+                                + " is invalid birthdaydate", ex);
             }
             LocalDate mandatsigned = null;
             try {
@@ -101,10 +100,9 @@ public class MemberGenerator {
                     mandatsigned = LocalDate.parse(mandatSignedString);
                 }
             } catch (DateTimeParseException ex) {
-                System.err.println(row.get(birthdayIndex)
-                        + " is invalid mandatSignedDate");
                 Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                        .log(Level.WARNING, row.get(birthdayIndex)
+                                + " is invalid mandatSignedDate", ex);
             }
             boolean isMale = row.get(isMaleIndex).equalsIgnoreCase("1");
             boolean isActive = row.get(isActiveIndex).equalsIgnoreCase("1");
@@ -116,7 +114,9 @@ public class MemberGenerator {
                         = Integer.parseInt(row.get(membershipnumberIndex));
             } catch (NumberFormatException ex) {
                 Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                        .log(Level.SEVERE, "Could not parse "
+                                + row.get(membershipnumberIndex)
+                                + " as a number", ex);
             }
             String accountholderPrename = row.get(accountholderPrenameIndex);
             if (accountholderPrename.isEmpty()) {
