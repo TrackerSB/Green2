@@ -22,7 +22,7 @@
     -fx-border-color: transparent;
     -fx-background-radius: 3px;
     -fx-border-radius: 3px;
-    -fx-min-width: 200px;
+    -fx-min-width: 250px;
 }
 
 .emptyTextField, .toLongContent, .invalidDate, .invalidSpinnerValue, .unmatchRegex{
@@ -110,5 +110,5 @@
 }
 
 .progress-bar{
-    -fx-accent: forestgreen;
+    -fx-accent: -fx-main-color;
 }
