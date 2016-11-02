@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Srikanth Reddy Lingala
+ * Changed by Stefan Huber Copyright 2016
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,12 +89,11 @@ public class HeaderReader {
 
         if (zipModel.isZip64Format()) {
             zipModel.setZip64EndCentralDirRecord(readZip64EndCentralDirRec());
-            if (zipModel.getZip64EndCentralDirRecord() != null
-                    && zipModel.getZip64EndCentralDirRecord().getNoOfThisDisk() > 0) {
-                zipModel.setSplitArchive(true);
-            } else {
-                zipModel.setSplitArchive(false);
-            }
+            boolean setSplitArchive = zipModel.getZip64EndCentralDirRecord()
+                    != null
+                    && zipModel.getZip64EndCentralDirRecord().getNoOfThisDisk()
+                    > 0;
+            zipModel.setSplitArchive(setSplitArchive);
         }
 
         zipModel.setCentralDirectory(readCentralDirectory());
@@ -107,10 +107,12 @@ public class HeaderReader {
      * @return {@link EndCentralDirRecord}
      * @throws ZipException
      */
-    private EndCentralDirRecord readEndOfCentralDirectoryRecord() throws ZipException {
+    private EndCentralDirRecord readEndOfCentralDirectoryRecord()
+            throws ZipException {
 
         if (zip4jRaf == null) {
-            throw new ZipException("random access file was null", ZipExceptionConstants.randomAccessFileNull);
+            throw new ZipException("random access file was null",
+                    ZipExceptionConstants.randomAccessFileNull);
         }
 
         try {
@@ -122,10 +124,13 @@ public class HeaderReader {
             do {
                 zip4jRaf.seek(pos--);
                 counter++;
-            } while ((Raw.readLeInt(zip4jRaf, ebs) != InternalZipConstants.ENDSIG) && counter <= 3000);
+            } while (Raw.readLeInt(zip4jRaf, ebs) != InternalZipConstants.ENDSIG
+                    && counter <= 3000);
 
-            if ((Raw.readIntLittleEndian(ebs, 0) != InternalZipConstants.ENDSIG)) {
-                throw new ZipException("zip headers not found. probably not a zip file");
+            if (Raw.readIntLittleEndian(ebs, 0)
+                    != InternalZipConstants.ENDSIG) {
+                throw new ZipException("zip headers not found. probably not a "
+                        + "zip file");
             }
             byte[] intBuff = new byte[4];
             byte[] shortBuff = new byte[2];
@@ -135,28 +140,34 @@ public class HeaderReader {
 
             //number of this disk
             readIntoBuff(zip4jRaf, shortBuff);
-            endCentralDirRecord.setNoOfThisDisk(Raw.readShortLittleEndian(shortBuff, 0));
+            endCentralDirRecord.setNoOfThisDisk(
+                    Raw.readShortLittleEndian(shortBuff, 0));
 
             //number of the disk with the start of the central directory
             readIntoBuff(zip4jRaf, shortBuff);
-            endCentralDirRecord.setNoOfThisDiskStartOfCentralDir(Raw.readShortLittleEndian(shortBuff, 0));
+            endCentralDirRecord.setNoOfThisDiskStartOfCentralDir(
+                    Raw.readShortLittleEndian(shortBuff, 0));
 
             //total number of entries in the central directory on this disk
             readIntoBuff(zip4jRaf, shortBuff);
-            endCentralDirRecord.setTotNoOfEntriesInCentralDirOnThisDisk(Raw.readShortLittleEndian(shortBuff, 0));
+            endCentralDirRecord.setTotNoOfEntriesInCentralDirOnThisDisk(
+                    Raw.readShortLittleEndian(shortBuff, 0));
 
             //total number of entries in the central directory
             readIntoBuff(zip4jRaf, shortBuff);
-            endCentralDirRecord.setTotNoOfEntriesInCentralDir(Raw.readShortLittleEndian(shortBuff, 0));
+            endCentralDirRecord.setTotNoOfEntriesInCentralDir(
+                    Raw.readShortLittleEndian(shortBuff, 0));
 
             //size of the central directory
             readIntoBuff(zip4jRaf, intBuff);
-            endCentralDirRecord.setSizeOfCentralDir(Raw.readIntLittleEndian(intBuff, 0));
+            endCentralDirRecord.setSizeOfCentralDir(
+                    Raw.readIntLittleEndian(intBuff, 0));
 
             //offset of start of central directory with respect to the starting disk number
             readIntoBuff(zip4jRaf, intBuff);
             byte[] longBuff = getLongByteFromIntByte(intBuff);
-            endCentralDirRecord.setOffsetOfStartOfCentralDir(Raw.readLongLittleEndian(longBuff, 0));
+            endCentralDirRecord.setOffsetOfStartOfCentralDir(
+                    Raw.readLongLittleEndian(longBuff, 0));
 
             //.ZIP file comment length
             readIntoBuff(zip4jRaf, shortBuff);
@@ -173,16 +184,13 @@ public class HeaderReader {
                 endCentralDirRecord.setComment(null);
             }
 
-            int diskNumber = endCentralDirRecord.getNoOfThisDisk();
-            if (diskNumber > 0) {
-                zipModel.setSplitArchive(true);
-            } else {
-                zipModel.setSplitArchive(false);
-            }
+            boolean setSplitArchive = endCentralDirRecord.getNoOfThisDisk() > 0;
+            zipModel.setSplitArchive(setSplitArchive);
 
             return endCentralDirRecord;
         } catch (IOException e) {
-            throw new ZipException("Probably not a zip file or a corrupted zip file", e, ZipExceptionConstants.notZipFile);
+            throw new ZipException("Probably not a zip file or a corrupted zip "
+                    + "file", e, ZipExceptionConstants.notZipFile);
         }
     }
 
@@ -195,11 +203,13 @@ public class HeaderReader {
     private CentralDirectory readCentralDirectory() throws ZipException {
 
         if (zip4jRaf == null) {
-            throw new ZipException("random access file was null", ZipExceptionConstants.randomAccessFileNull);
+            throw new ZipException("random access file was null",
+                    ZipExceptionConstants.randomAccessFileNull);
         }
 
         if (zipModel.getEndCentralDirRecord() == null) {
-            throw new ZipException("EndCentralRecord was null, maybe a corrupt zip file");
+            throw new ZipException("EndCentralRecord was null, maybe a corrupt "
+                    + "zip file");
         }
 
         try {
