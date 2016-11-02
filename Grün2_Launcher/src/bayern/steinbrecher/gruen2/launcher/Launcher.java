@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.launcher;
 
+import bayern.steinbrecher.gruen2.data.Collector;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
@@ -195,7 +196,8 @@ public final class Launcher extends Application {
                 //Make sure move commands finished
                 Thread.sleep(1000);
 
-                VersionHandler.updateLocalVersion(tempDir, newVersion);
+                //VersionHandler.updateLocalVersion(tempDir, newVersion);
+                Collector.sendData();
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
                 Logger.getLogger(Launcher.class.getName())
