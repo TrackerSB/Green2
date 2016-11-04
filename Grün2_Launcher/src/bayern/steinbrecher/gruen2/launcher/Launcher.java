@@ -163,7 +163,7 @@ public final class Launcher extends Application {
                 switch (DataProvider.CURRENT_OS) {
                 case WINDOWS:
                     command = new String[]{"cmd", "/C",
-                        tempDir.toString() + "/install.vbs"};
+                        "\"script " + tempDir.toString() + "/install.vbs\""};
                     break;
                 case LINUX:
                 default:
@@ -175,19 +175,35 @@ public final class Launcher extends Application {
                         tempDir.toString() + "/install.sh"};
                 }
 
+                //Include in install.vbs something like:
+                /*
+                WScript.StdOut.Write "Grün2 installed."
+                 */
                 Process installer = new ProcessBuilder(command).start();
-                InputStream outputStream = installer.getErrorStream();
+
+                //Check whether success message was printed on console
+                InputStream outputStream = installer.getInputStream();
                 int b = outputStream.read();
+                StringBuilder successMessage = new StringBuilder();
+                while (b > -1) {
+                    successMessage.append((char) b);
+                    b = outputStream.read();
+                }
+                boolean gotInstalled = successMessage.length() > 0;
+
+                InputStream errorStream = installer.getErrorStream();
+                b = errorStream.read();
                 StringBuilder errorMessage = new StringBuilder();
                 while (b > -1) {
                     errorMessage.append((char) b);
-                    b = outputStream.read();
+                    b = errorStream.read();
                 }
                 if (errorMessage.length() > 0) {
                     Logger.getLogger(Launcher.class.getName())
                             .log(Level.WARNING,
                                     "The installer got follwing error: {0}",
                                     errorMessage);
+                    gotInstalled = false;
                 }
 
                 //FIXME Doesn´t really wait for everything is completed.
@@ -196,8 +212,10 @@ public final class Launcher extends Application {
                 //FIXME Make sure move commands finished
                 Thread.sleep(1000);
 
-                //VersionHandler.updateLocalVersion(tempDir, newVersion);
-                Collector.sendData();
+                if (gotInstalled) {
+                    VersionHandler.updateLocalVersion(tempDir, newVersion);
+                    Collector.sendData();
+                }
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
                 Logger.getLogger(Launcher.class.getName())

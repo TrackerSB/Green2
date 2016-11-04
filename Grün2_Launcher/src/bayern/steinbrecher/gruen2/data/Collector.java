@@ -19,6 +19,7 @@ package bayern.steinbrecher.gruen2.data;
 import bayern.steinbrecher.gruen2.utility.URLUtility;
 import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -107,8 +108,20 @@ public final class Collector {
                     wasSent = true;
                 }
 
-                //FIXME POST only successful when getting inputStream
-                connection.getInputStream();
+                //FIXME POST only successful when getInputStream() is called
+                try (InputStreamReader in
+                        = new InputStreamReader(connection.getInputStream())) {
+                    int b = in.read();
+                    StringBuilder s = new StringBuilder();
+                    while (b > -1) {
+                        s.append((char) b);
+                        b = in.read();
+                    }
+                    if (s.length() > 0) {
+                        Logger.getLogger(Collector.class.getName())
+                                .log(Level.INFO, s.toString());
+                    }
+                }
 
                 connection.disconnect();
             } catch (IOException ex) {
