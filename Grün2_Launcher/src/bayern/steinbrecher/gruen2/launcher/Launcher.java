@@ -162,8 +162,8 @@ public final class Launcher extends Application {
                 String[] command;
                 switch (DataProvider.CURRENT_OS) {
                 case WINDOWS:
-                    command = new String[]{"cmd", "/C",
-                        "\"script " + tempDir.toString() + "/install.vbs\""};
+                    command = new String[]{"cscript",
+                        tempDir.toString() + "/install.vbs"};
                     break;
                 case LINUX:
                 default:
@@ -175,7 +175,7 @@ public final class Launcher extends Application {
                         tempDir.toString() + "/install.sh"};
                 }
 
-                //Include in install.vbs something like:
+                //FIXME install.vbs shows no success message.
                 /*
                 WScript.StdOut.Write "Grün2 installed."
                  */
