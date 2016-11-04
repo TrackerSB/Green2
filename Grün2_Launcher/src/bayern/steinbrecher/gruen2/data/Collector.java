@@ -28,6 +28,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -71,7 +72,7 @@ public final class Collector {
         List<String> parameters = new ArrayList<>(DataParams.values().length);
         for (DataParams dp : DataParams.values()) {
             try {
-                parameters.add(dp.toString() + "="
+                parameters.add(URLEncoder.encode(dp.toString(), "UTF-8") + "="
                         + URLEncoder.encode(dp.getValue(), "UTF-8"));
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(Collector.class.getName())
@@ -88,7 +89,7 @@ public final class Collector {
                 HttpsURLConnection connection
                         = (HttpsURLConnection) POST_URL.openConnection();
                 connection.setRequestMethod("POST");
-                connection.setDoInput(false);
+                connection.setDoInput(true);
                 connection.setDoOutput(true);
                 connection.setUseCaches(false);
 
@@ -100,11 +101,16 @@ public final class Collector {
                         String.valueOf(values.length()));
 
                 try (OutputStreamWriter writer = new OutputStreamWriter(
-                        connection.getOutputStream())) {
+                        connection.getOutputStream(),
+                        Charset.forName("UTF-8"))) {
                     writer.write(values);
                     wasSent = true;
                 }
 
+                //FIXME POST only successful when getting inputStream
+                connection.getInputStream();
+
+                connection.disconnect();
             } catch (IOException ex) {
                 Logger.getLogger(Collector.class.getName())
                         .log(Level.SEVERE, null, ex);
@@ -165,5 +171,15 @@ public final class Collector {
          * @return The value represented by the enum.
          */
         public abstract String getValue();
+
+        /**
+         * Calls {@code toString()} of superclass and makes it lowercase.
+         *
+         * @return {@code toString()} of superclass in lowercase.
+         */
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
     }
 }

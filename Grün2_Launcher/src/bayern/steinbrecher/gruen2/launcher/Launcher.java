@@ -193,7 +193,7 @@ public final class Launcher extends Application {
                 //FIXME Doesn´t really wait for everything is completed.
                 installer.waitFor();
 
-                //Make sure move commands finished
+                //FIXME Make sure move commands finished
                 Thread.sleep(1000);
 
                 //VersionHandler.updateLocalVersion(tempDir, newVersion);
