@@ -28,8 +28,9 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -136,13 +137,16 @@ public final class Collector {
                 return null;
             }
         },
-        MESSAGE_CREATION_TIMESTAMP {
+        MESSAGE_CREATION_DATE {
             /**
              * {@inheritDoc}
              */
             @Override
             public String getValue() {
-                return new Timestamp(System.currentTimeMillis()).toString();
+                Calendar today = GregorianCalendar.getInstance();
+                return today.get(Calendar.YEAR) + "-"
+                        + (today.get(Calendar.MONTH) + 1) + "-"
+                        + today.get(Calendar.DAY_OF_MONTH);
             }
         },
         VERSION {
