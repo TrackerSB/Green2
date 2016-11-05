@@ -214,6 +214,7 @@ public final class Launcher extends Application {
                 try (InputStream inputStream = installer.getInputStream()) {
                     successMessage = IOStreamUtility.readAll(inputStream);
                 }
+                //FIXME Search for success message
                 boolean gotInstalled = !successMessage.isEmpty();
 
                 String errorMessage;
