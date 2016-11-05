@@ -59,6 +59,7 @@ public final class Launcher extends Application {
 
     private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
+    private LauncherController controller;
 
     /**
      * Default constructor.
@@ -73,7 +74,7 @@ public final class Launcher extends Application {
         Optional<String> optOnlineVersion = VersionHandler.readOnlineVersion();
         Optional<String> optLocalVersion = VersionHandler.readLocalVersion();
 
-        Service<Boolean> serv = null;
+        Service<Void> serv = null;
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
             if (optLocalVersion.isPresent()) {
@@ -100,38 +101,35 @@ public final class Launcher extends Application {
             serv.setOnFailed(evt -> {
                 Platform.exit();
             });
+            showWindow();
             serv.start();
         }
     }
 
-    private LauncherController showWindow() {
+    private void showWindow() {
         try {
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("Launcher.fxml"));
             fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
             Parent root = fxmlLoader.load();
             root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
-            LauncherController controller = fxmlLoader.getController();
-
+            controller = fxmlLoader.getController();
             stage.setScene(new Scene(root));
             stage.setResizable(false);
-            stage.setTitle(DataProvider.getResourceValue("downloadNewVersion"));
+            stage.setTitle(
+                    DataProvider.getResourceValue("downloadNewVersion"));
             stage.initStyle(StageStyle.UTILITY);
             stage.show();
-
-            return controller;
         } catch (IOException ex) {
             Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            return null;
+                    .log(Level.WARNING, null, ex);
         }
     }
 
-    private File download(LauncherController controller) throws IOException {
+    private File download() throws IOException {
         File tempFile = Files.createTempFile(
                 null, ".zip", new FileAttribute[0])
                 .toFile();
-        tempFile.deleteOnExit();
         URLConnection downloadConnection
                 = new URL(DataProvider.GRUEN2_ZIP_URL)
                 .openConnection();
@@ -159,7 +157,6 @@ public final class Launcher extends Application {
     private Path unzip(File zippedFile) throws IOException {
         Path tempDir = Files.createTempDirectory(
                 null, new FileAttribute[0]);
-        tempDir.toFile().deleteOnExit();
         try {
             ZipFile zipFile = new ZipFile(zippedFile.getAbsolutePath());
             zipFile.extractAll(tempDir.toString());
@@ -193,14 +190,14 @@ public final class Launcher extends Application {
     /**
      * Returns a service which downloads and installs Grün2.
      */
-    private Service<Boolean> downloadAndInstall(String newVersion)
+    private Service<Void> downloadAndInstall(String newVersion)
             throws IOException {
-        LauncherController controller = showWindow();
-
-        Service<Boolean> service = ServiceFactory.createService(() -> {
+        Service<Void> service = ServiceFactory.createService(() -> {
             try {
-                File tempFile = download(controller);
+                File tempFile = download();
+
                 Path tempDir = unzip(tempFile);
+                tempFile.delete();
 
                 //FIXME install.vbs shows no success message.
                 /*
@@ -208,6 +205,11 @@ public final class Launcher extends Application {
                  */
                 Process installer = install(tempDir);
 
+                //FIXME Doesn´t really wait for everything is completed.
+                installer.waitFor();
+
+                //FIXME Make sure move commands finished
+                //Thread.sleep(1000);
                 String successMessage;
                 //Check whether success message was printed on console
                 try (InputStream inputStream = installer.getInputStream()) {
@@ -227,14 +229,8 @@ public final class Launcher extends Application {
                     gotInstalled = false;
                 }
 
-                //FIXME Doesn´t really wait for everything is completed.
-                installer.waitFor();
-
-                //FIXME Make sure move commands finished
-                Thread.sleep(1000);
-
                 if (gotInstalled) {
-                    VersionHandler.updateLocalVersion(tempDir, newVersion);
+                    VersionHandler.updateLocalVersion(newVersion);
                     Collector.sendData();
                 }
             } catch (MalformedURLException | FileNotFoundException |

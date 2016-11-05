@@ -24,10 +24,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,14 +66,9 @@ public class VersionHandler {
         return Optional.empty();
     }
 
-    public static void updateLocalVersion(Path tempDir, String newVersion) {
-        if (tempDir.toFile().list().length > 1) { //If dir is not empty
-            throw new CompletionException(
-                    "Installer got no admin rights", null);
-        } else {
-            new File(DataProvider.APP_DATA_PATH).mkdir();
-            IOStreamUtility.printContent(newVersion,
-                    DataProvider.VERSIONFILE_PATH_LOCAL, false);
-        }
+    public static void updateLocalVersion(String newVersion) {
+        new File(DataProvider.APP_DATA_PATH).mkdir();
+        IOStreamUtility.printContent(newVersion,
+                DataProvider.VERSIONFILE_PATH_LOCAL, false);
     }
 }

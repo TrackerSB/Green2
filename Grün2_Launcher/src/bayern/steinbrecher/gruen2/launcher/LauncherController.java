@@ -48,6 +48,10 @@ public class LauncherController implements Initializable {
             percentageString.set(FORMAT.format(newVal.doubleValue() * 100)
                     + "% ");
         });
+        percentage.addListener(obs -> {
+            percentageString.set(FORMAT.format(percentage.get() * 100)
+                    + "% ");
+        });
     }
 
     public ReadOnlyDoubleProperty percentageProperty() {
@@ -60,7 +64,7 @@ public class LauncherController implements Initializable {
 
     public void incPercentage(int steps) {
         if (percentage.get() < 1) {
-            percentage.set(percentage.get() + 1 / steps);
+            percentage.set(percentage.get() + 1.0 / steps);
         }
     }
 
