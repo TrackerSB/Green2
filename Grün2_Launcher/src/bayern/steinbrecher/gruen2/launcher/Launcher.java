@@ -206,10 +206,9 @@ public final class Launcher extends Application {
                 Process installer = install(tempDir);
 
                 //FIXME Doesn´t really wait for everything is completed.
+                //FIXME Make sure move commands finished
                 installer.waitFor();
 
-                //FIXME Make sure move commands finished
-                //Thread.sleep(1000);
                 String successMessage;
                 //Check whether success message was printed on console
                 try (InputStream inputStream = installer.getInputStream()) {
