@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.generator.sepa;
 
-import bayern.steinbrecher.gruen2.data.Output;
+import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.people.AccountHolder;
 import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Person;
@@ -118,7 +118,7 @@ public final class SepaPain00800302XMLGenerator {
                         "No contribution specified at least for: " + m);
             }
         }
-        Output.printContent(
+        IOStreamUtility.printContent(
                 createXML(member, originator, contributions, sequenceType),
                 outputfile, sepaWithBom);
         return invalidMember;

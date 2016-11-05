@@ -58,9 +58,9 @@ public class LauncherController implements Initializable {
         return percentage.get();
     }
 
-    public void incPercentage() {
+    public void incPercentage(int steps) {
         if (percentage.get() < 1) {
-            percentage.set(percentage.get() + 0.001);
+            percentage.set(percentage.get() + 1 / steps);
         }
     }
 

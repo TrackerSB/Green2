@@ -23,7 +23,7 @@ import bayern.steinbrecher.gruen2.contribution.Contribution;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.LoginKey;
-import bayern.steinbrecher.gruen2.data.Output;
+import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
@@ -339,7 +339,7 @@ public class Main extends Application {
                         DataProvider.getResourceValue("noMemberForOutput"))
                         .showOnceAndWait();
             } else {
-                Output.printContent(AddressGenerator.generateAddressData(
+                IOStreamUtility.printContent(AddressGenerator.generateAddressData(
                         member, nicknames.get()), filename, true);
             }
         } catch (InterruptedException | ExecutionException ex) {
@@ -401,7 +401,7 @@ public class Main extends Application {
                         DataProvider.getResourceValue("noMemberForOutput"))
                         .showOnceAndWait();
             } else {
-                Output.printContent(
+                IOStreamUtility.printContent(
                         BirthdayGenerator.createGroupedOutput(
                                 birthdayList, year),
                         DataProvider.SAVE_PATH

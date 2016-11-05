@@ -17,7 +17,6 @@
 package bayern.steinbrecher.gruen2.utility;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.data.Output;
 import bayern.steinbrecher.gruen2.launcher.Launcher;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -75,7 +74,7 @@ public class VersionHandler {
                     "Installer got no admin rights", null);
         } else {
             new File(DataProvider.APP_DATA_PATH).mkdir();
-            Output.printContent(newVersion,
+            IOStreamUtility.printContent(newVersion,
                     DataProvider.VERSIONFILE_PATH_LOCAL, false);
         }
     }

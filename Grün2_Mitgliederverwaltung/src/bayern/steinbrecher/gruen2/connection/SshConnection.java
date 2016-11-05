@@ -17,20 +17,16 @@
 package bayern.steinbrecher.gruen2.connection;
 
 import bayern.steinbrecher.gruen2.exception.AuthException;
+import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +46,6 @@ public final class SshConnection extends DBConnection {
      * The default port for ssh.
      */
     public static final int DEFAULT_SSH_PORT = 22;
-    private static final int BYTEBUFFER_SIZE = 1024;
     /**
      * The name of the database.
      */
@@ -165,15 +160,14 @@ public final class SshConnection extends DBConnection {
                     + " -p" + databasePasswd
                     + " -h" + databaseHost
                     + " -e'" + sqlCode + "' " + databaseName);
-            BufferedInputStream in
-                    = new BufferedInputStream(channel.getInputStream());
+            String result = IOStreamUtility.readAll(channel.getInputStream());
 
             channel.connect();
 
-            String result = readResult(in);
-            String message = errStream.toString();
-            if (result == null || message.toLowerCase().contains("error")) {
-                throw new SQLException(message);
+            String errorMessage = errStream.toString();
+            if (result == null
+                    || errorMessage.toLowerCase().contains("error")) {
+                throw new SQLException(errorMessage);
             }
             String[] rows = result.split("\n");
             List<List<String>> resultTable = Arrays.stream(rows)
@@ -217,33 +211,6 @@ public final class SshConnection extends DBConnection {
             Logger.getLogger(SshConnection.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Reads the result of a SQL-Query bytewise.
-     *
-     * @param in The inputstream to read from.
-     * @return The result as one single String.
-     * @throws IOException If the inputstream has been closed or some other
-     * I/O-Exception is thrown.
-     */
-    private String readResult(BufferedInputStream in) throws IOException {
-        StringBuilder output = new StringBuilder();
-
-        try (ReadableByteChannel rbc = Channels.newChannel(in)) {
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_SIZE);
-            CharBuffer charBuffer;
-            int bytesRead = rbc.read(byteBuffer);
-            while (bytesRead != -1) {
-                byteBuffer.flip();
-                charBuffer = StandardCharsets.ISO_8859_1.decode(byteBuffer);
-                output.append(charBuffer);
-                byteBuffer.clear();
-                bytesRead = rbc.read(byteBuffer);
-            }
-        }
-
-        return output.toString();
     }
 
     /**

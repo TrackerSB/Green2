@@ -20,6 +20,7 @@ import bayern.steinbrecher.gruen2.data.Collector;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
+import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,6 +57,7 @@ import net.lingala.zip4j.exception.ZipException;
  */
 public final class Launcher extends Application {
 
+    private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
 
     /**
@@ -78,13 +80,13 @@ public final class Launcher extends Application {
                 String localVersion = optLocalVersion.get();
                 if (!localVersion.equalsIgnoreCase(onlineVersion)
                         && ChoiceDialog.askForUpdate()) {
-                    serv = downloadAndInstallGruen2(onlineVersion);
+                    serv = downloadAndInstall(onlineVersion);
                     serv.setOnSucceeded(evt -> executeGruen2());
                 } else {
                     executeGruen2();
                 }
             } else {
-                serv = downloadAndInstallGruen2(onlineVersion);
+                serv = downloadAndInstall(onlineVersion);
                 serv.setOnSucceeded(evt -> executeGruen2Config());
             }
         } else if (optLocalVersion.isPresent()) {
@@ -102,103 +104,122 @@ public final class Launcher extends Application {
         }
     }
 
+    private LauncherController showWindow() {
+        try {
+            FXMLLoader fxmlLoader
+                    = new FXMLLoader(getClass().getResource("Launcher.fxml"));
+            fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+            Parent root = fxmlLoader.load();
+            root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+            LauncherController controller = fxmlLoader.getController();
+
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.setTitle(DataProvider.getResourceValue("downloadNewVersion"));
+            stage.initStyle(StageStyle.UTILITY);
+            stage.show();
+
+            return controller;
+        } catch (IOException ex) {
+            Logger.getLogger(Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    private File download(LauncherController controller) throws IOException {
+        File tempFile = Files.createTempFile(
+                null, ".zip", new FileAttribute[0])
+                .toFile();
+        tempFile.deleteOnExit();
+        URLConnection downloadConnection
+                = new URL(DataProvider.GRUEN2_ZIP_URL)
+                .openConnection();
+        long fileSize = Long.parseLong(
+                downloadConnection.getHeaderField("Content-Length"));
+        long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
+        ReadableByteChannel rbc = Channels.newChannel(
+                downloadConnection.getInputStream());
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            for (long offset = 0; offset < fileSize;
+                    offset += bytesPerLoop) {
+                fos.getChannel()
+                        .transferFrom(rbc, offset, bytesPerLoop);
+                if (controller != null) {
+                    Platform.runLater(() -> {
+                        controller.incPercentage(DOWNLOAD_STEPS);
+                    });
+                }
+            }
+        }
+
+        return tempFile;
+    }
+
+    private Path unzip(File zippedFile) throws IOException {
+        Path tempDir = Files.createTempDirectory(
+                null, new FileAttribute[0]);
+        tempDir.toFile().deleteOnExit();
+        try {
+            ZipFile zipFile = new ZipFile(zippedFile.getAbsolutePath());
+            zipFile.extractAll(tempDir.toString());
+        } catch (ZipException ex) {
+            Logger.getLogger(Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        return tempDir;
+    }
+
+    private Process install(Path downloadedDir)
+            throws IOException, InterruptedException {
+        String dirPath = downloadedDir.toString();
+        String[] command;
+        switch (DataProvider.CURRENT_OS) {
+        case WINDOWS:
+            command = new String[]{"cscript", dirPath + "/install.vbs"};
+            break;
+        case LINUX:
+        default:
+            command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
+                dirPath + "/uninstall.sh"};
+            new ProcessBuilder(command).start().waitFor();
+
+            command = new String[]{"sh", dirPath + "/install.sh"};
+        }
+
+        return new ProcessBuilder(command).start();
+    }
+
     /**
      * Returns a service which downloads and installs Grün2.
      */
-    private Service<Boolean> downloadAndInstallGruen2(String newVersion)
+    private Service<Boolean> downloadAndInstall(String newVersion)
             throws IOException {
-
-        FXMLLoader fxmlLoader
-                = new FXMLLoader(getClass().getResource("Launcher.fxml"));
-        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
-        Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
-        LauncherController controller = fxmlLoader.getController();
-
-        stage.setScene(new Scene(root));
-        stage.setResizable(false);
-        stage.setTitle(DataProvider.getResourceValue("downloadNewVersion"));
-        stage.initStyle(StageStyle.UTILITY);
-        stage.show();
+        LauncherController controller = showWindow();
 
         Service<Boolean> service = ServiceFactory.createService(() -> {
             try {
-                File tempFile = Files.createTempFile(
-                        null, ".zip", new FileAttribute[0])
-                        .toFile();
-                tempFile.deleteOnExit();
-                Path tempDir = Files.createTempDirectory(
-                        null, new FileAttribute[0]);
-                tempDir.toFile().deleteOnExit();
-
-                //Download
-                URLConnection downloadConnection
-                        = new URL(DataProvider.GRUEN2_ZIP_URL)
-                        .openConnection();
-                long fileSize = Long.parseLong(
-                        downloadConnection.getHeaderField("Content-Length"));
-                long bytesPerLoop = fileSize / 1000;
-                ReadableByteChannel rbc
-                        = Channels.newChannel(downloadConnection.getInputStream());
-                try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                    for (long offset = 0; offset < fileSize;
-                            offset += bytesPerLoop) {
-                        fos.getChannel()
-                                .transferFrom(rbc, offset, bytesPerLoop);
-                        Platform.runLater(() -> controller.incPercentage());
-                    }
-                }
-
-                //Unzip
-                try {
-                    ZipFile zipFile = new ZipFile(tempFile.getAbsolutePath());
-                    zipFile.extractAll(tempDir.toString());
-                } catch (ZipException ex) {
-                    Logger.getLogger(Launcher.class.getName())
-                            .log(Level.SEVERE, null, ex);
-                }
-
-                //Install
-                String[] command;
-                switch (DataProvider.CURRENT_OS) {
-                case WINDOWS:
-                    command = new String[]{"cscript",
-                        tempDir.toString() + "/install.vbs"};
-                    break;
-                case LINUX:
-                default:
-                    command = new String[]{"chmod", "a+x", tempDir.toString()
-                        + "/install.sh", tempDir.toString() + "/uninstall.sh"};
-                    new ProcessBuilder(command).start().waitFor();
-
-                    command = new String[]{"sh",
-                        tempDir.toString() + "/install.sh"};
-                }
+                File tempFile = download(controller);
+                Path tempDir = unzip(tempFile);
 
                 //FIXME install.vbs shows no success message.
                 /*
                 WScript.StdOut.Write "Grün2 installed."
                  */
-                Process installer = new ProcessBuilder(command).start();
+                Process installer = install(tempDir);
 
+                String successMessage;
                 //Check whether success message was printed on console
-                InputStream outputStream = installer.getInputStream();
-                int b = outputStream.read();
-                StringBuilder successMessage = new StringBuilder();
-                while (b > -1) {
-                    successMessage.append((char) b);
-                    b = outputStream.read();
+                try (InputStream inputStream = installer.getInputStream()) {
+                    successMessage = IOStreamUtility.readAll(inputStream);
                 }
-                boolean gotInstalled = successMessage.length() > 0;
+                boolean gotInstalled = !successMessage.isEmpty();
 
-                InputStream errorStream = installer.getErrorStream();
-                b = errorStream.read();
-                StringBuilder errorMessage = new StringBuilder();
-                while (b > -1) {
-                    errorMessage.append((char) b);
-                    b = errorStream.read();
+                String errorMessage;
+                try (InputStream errorStream = installer.getErrorStream()) {
+                    errorMessage = IOStreamUtility.readAll(errorStream);
                 }
-                if (errorMessage.length() > 0) {
+                if (!errorMessage.isEmpty()) {
                     Logger.getLogger(Launcher.class.getName())
                             .log(Level.WARNING,
                                     "The installer got follwing error: {0}",

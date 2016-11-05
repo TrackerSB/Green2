@@ -14,12 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.gruen2.data;
+package bayern.steinbrecher.gruen2.utility;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,14 +35,45 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public final class Output {
+public final class IOStreamUtility {
+
+    private static final int BYTEBUFFER_SIZE = 1024;
 
     /**
      * Default constructor.
      */
-    private Output() {
+    private IOStreamUtility() {
         throw new UnsupportedOperationException(
                 "Construction of a new object is not allowed.");
+    }
+
+    /**
+     * Reads the hole content of a given {@code InputStream}.
+     *
+     * @param inputStream The {@code InputStream} to read.
+     * @return The content of the given {@code InputStream}. It never returns
+     * {@code null}.
+     * @throws IOException Thrown if an {@code IOException} is thrown by
+     * {@code InputStream::read}.
+     * @see InputStream#read()
+     */
+    public static String readAll(InputStream inputStream) throws IOException {
+        StringBuilder output = new StringBuilder();
+
+        try (ReadableByteChannel rbc = Channels.newChannel(inputStream)) {
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_SIZE);
+            CharBuffer charBuffer;
+            int bytesRead = rbc.read(byteBuffer);
+            while (bytesRead != -1) {
+                byteBuffer.flip();
+                charBuffer = StandardCharsets.UTF_8.decode(byteBuffer);
+                output.append(charBuffer);
+                byteBuffer.clear();
+                bytesRead = rbc.read(byteBuffer);
+            }
+        }
+
+        return output.toString();
     }
 
     /**
@@ -57,7 +95,7 @@ public final class Output {
             }
             bw.append(content);
         } catch (IOException ex) {
-            Logger.getLogger(Output.class.getName())
+            Logger.getLogger(IOStreamUtility.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
     }

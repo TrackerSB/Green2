@@ -19,7 +19,7 @@ package bayern.steinbrecher.gruen2.configDialog;
 import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.data.Output;
+import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import java.net.URL;
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class ConfigDialogController extends CheckedController {
                     + birthdayExpressionTextField.getText() + '\n'
                     + ConfigKey.SEPA_USE_BOM + ":"
                     + (sepaWithBomCheckBox.isSelected() ? "true" : "false");
-            Output.printContent(out, DataProvider.CONFIGFILE_PATH, false);
+            IOStreamUtility.printContent(out, DataProvider.CONFIGFILE_PATH, false);
             stage.close();
         }
     }

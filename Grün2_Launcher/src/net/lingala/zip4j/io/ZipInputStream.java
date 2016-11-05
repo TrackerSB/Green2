@@ -28,6 +28,7 @@ public class ZipInputStream extends InputStream {
         this.is = is;
     }
 
+    @Override
     public int read() throws IOException {
         int readByte = is.read();
         if (readByte != -1) {
@@ -36,10 +37,12 @@ public class ZipInputStream extends InputStream {
         return readByte;
     }
 
+    @Override
     public int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int readLen = is.read(b, off, len);
         if (readLen > 0 && is.getUnzipEngine() != null) {
@@ -55,6 +58,7 @@ public class ZipInputStream extends InputStream {
      *
      * @throws IOException
      */
+    @Override
     public void close() throws IOException {
         close(false);
     }
@@ -63,6 +67,7 @@ public class ZipInputStream extends InputStream {
      * Closes the input stream and releases any resources. If skipCRCCheck flag
      * is set to true, this method skips CRC Check of the extracted file
      *
+     * @param skipCRCCheck
      * @throws IOException
      */
     public void close(boolean skipCRCCheck) throws IOException {
@@ -76,10 +81,12 @@ public class ZipInputStream extends InputStream {
         }
     }
 
+    @Override
     public int available() throws IOException {
         return is.available();
     }
 
+    @Override
     public long skip(long n) throws IOException {
         return is.skip(n);
     }
