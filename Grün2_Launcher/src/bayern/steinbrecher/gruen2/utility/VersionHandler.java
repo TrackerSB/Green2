@@ -37,6 +37,12 @@ import java.util.logging.Logger;
  */
 public class VersionHandler {
 
+    /**
+     * Returns the version of the application on the repository.
+     *
+     * @return The version of the application on the repository. Returns
+     * {@code Optional.empty()} only if the online version could not be read.
+     */
     public static Optional<String> readOnlineVersion() {
         try {
             URL onlineVersionUrl
@@ -53,6 +59,13 @@ public class VersionHandler {
         return Optional.empty();
     }
 
+    /**
+     * Returns the currently installed version of this application.
+     *
+     * @return The currently installed version of the application. Returns
+     * {@code Optional.empty()} if this application is not installed yet or the
+     * version could not be read.
+     */
     public static Optional<String> readLocalVersion() {
         File localVersionfile = new File(DataProvider.VERSIONFILE_PATH_LOCAL);
         if (localVersionfile.exists()) {
@@ -66,6 +79,11 @@ public class VersionHandler {
         return Optional.empty();
     }
 
+    /**
+     * Placed the version {@code newVersion} into the local version file.
+     *
+     * @param newVersion The new version to set as new local version.
+     */
     public static void updateLocalVersion(String newVersion) {
         new File(DataProvider.APP_DATA_PATH).mkdir();
         IOStreamUtility.printContent(newVersion,

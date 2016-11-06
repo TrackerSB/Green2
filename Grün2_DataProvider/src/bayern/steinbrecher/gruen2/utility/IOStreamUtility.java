@@ -16,7 +16,6 @@
  */
 package bayern.steinbrecher.gruen2.utility;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;

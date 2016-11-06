@@ -31,6 +31,9 @@ import javafx.stage.Stage;
  */
 public class ConfigDialog extends Application {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(

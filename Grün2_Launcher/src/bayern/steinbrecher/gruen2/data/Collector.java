@@ -84,6 +84,11 @@ public final class Collector {
         return parameters.stream().collect(Collectors.joining("&"));
     }
 
+    /**
+     * Collects data and send it to the central database.
+     *
+     * @return {@code true} only if the was successfully collected and sent.
+     */
     public static boolean sendData() {
         boolean wasSent = false;
         if (preparedToSend) {

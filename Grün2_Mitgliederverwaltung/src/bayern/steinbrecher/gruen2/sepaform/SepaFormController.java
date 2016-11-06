@@ -47,8 +47,18 @@ public class SepaFormController extends CheckedController {
     private static final SimpleDateFormat YEAR_MONTH_DAY
             = new SimpleDateFormat("yyyy-MM-dd");
     private static final int UNIQUE_DAYS_PMTINFID = 15;
+    /**
+     * The maximum length of the message id.
+     */
     public static final int MAX_CHAR_MESSAGE_ID = 35;
+    /**
+     * The maximum length of payment information id (PmtInfId).
+     */
     public static final int MAX_CHAR_PMTINFID = 35;
+    /**
+     * The maximum length of the name of the party creating the SEPA Direct
+     * Debit.
+     */
     public static final int MAX_CHAR_NAME_OF_INITIATING_PARTY = 70;
     private Originator originator;
     @FXML

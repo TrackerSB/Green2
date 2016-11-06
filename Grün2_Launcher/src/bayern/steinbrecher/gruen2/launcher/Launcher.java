@@ -67,6 +67,9 @@ public final class Launcher extends Application {
     public Launcher() {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.stage = primaryStage;

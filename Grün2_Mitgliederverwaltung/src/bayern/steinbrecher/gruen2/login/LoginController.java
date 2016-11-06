@@ -32,8 +32,18 @@ import javafx.fxml.FXML;
  */
 public abstract class LoginController extends CheckedController {
 
+    /**
+     * An useful list of all textfields which the login contains.
+     */
     protected List<CheckedTextField> textInputFields;
 
+    /**
+     * Adds all given textfields into {@code textInputFields} and sets up the
+     * properties {@code anyInputMissing}, {@code anyInputToLong} and
+     * {@code valid}.
+     *
+     * @param fields The textfields to use for setup.
+     */
     protected void initProperties(CheckedTextField... fields) {
         textInputFields = Arrays.asList(fields);
         anyInputMissing.bind(textInputFields.stream()
