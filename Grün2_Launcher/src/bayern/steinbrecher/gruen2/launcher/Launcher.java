@@ -177,7 +177,7 @@ public final class Launcher extends Application {
         switch (DataProvider.CURRENT_OS) {
         case WINDOWS:
             //command = new String[]{"cscript", dirPath + "/install.vbs"};
-            command = new String[]{"cmd", dirPath + "/Gruen2Helper.exe"};
+            command = new String[]{dirPath + "/Gruen2Helper.exe"};
             break;
         case LINUX:
         default:
