@@ -176,7 +176,8 @@ public final class Launcher extends Application {
         String[] command;
         switch (DataProvider.CURRENT_OS) {
         case WINDOWS:
-            command = new String[]{"cscript", dirPath + "/install.vbs"};
+            //command = new String[]{"cscript", dirPath + "/install.vbs"};
+            command = new String[]{"cmd", dirPath + "/Gruen2Helper.exe"};
             break;
         case LINUX:
         default:
@@ -203,9 +204,6 @@ public final class Launcher extends Application {
                 tempFile.delete();
 
                 //FIXME install.vbs shows no success message.
-                /*
-                WScript.StdOut.Write "Grün2 installed."
-                 */
                 Process installer = install(tempDir);
 
                 //FIXME Doesn´t really wait for everything is completed.
@@ -218,7 +216,8 @@ public final class Launcher extends Application {
                     successMessage = IOStreamUtility.readAll(inputStream);
                 }
                 //FIXME Search for success message
-                boolean gotInstalled = !successMessage.isEmpty();
+                boolean gotInstalled = successMessage.contains(
+                        "Grün2 wurde installiert/aktualisiert");
 
                 String errorMessage;
                 try (InputStream errorStream = installer.getErrorStream()) {
