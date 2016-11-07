@@ -176,8 +176,8 @@ public final class Launcher extends Application {
         String[] command;
         switch (DataProvider.CURRENT_OS) {
         case WINDOWS:
-            //command = new String[]{"cscript", dirPath + "/install.vbs"};
-            command = new String[]{dirPath + "/Gruen2Helper.exe"};
+            command = new String[]{"cscript", dirPath + "/install.vbs"};
+            //command = new String[]{dirPath + "/Gruen2Helper.exe"};
             break;
         case LINUX:
         default:
@@ -194,8 +194,7 @@ public final class Launcher extends Application {
     /**
      * Returns a service which downloads and installs Grün2.
      */
-    private Service<Void> downloadAndInstall(String newVersion)
-            throws IOException {
+    private Service<Void> downloadAndInstall(String newVersion) {
         Service<Void> service = ServiceFactory.createService(() -> {
             try {
                 File tempFile = download();
