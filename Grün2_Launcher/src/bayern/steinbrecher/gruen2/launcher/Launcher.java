@@ -158,7 +158,7 @@ public final class Launcher extends Application {
         return tempFile;
     }
 
-    private Path unzip(File zippedFile) throws IOException {
+    private File unzip(File zippedFile) throws IOException {
         Path tempDir = Files.createTempDirectory(
                 null, new FileAttribute[0]);
         try {
@@ -168,12 +168,12 @@ public final class Launcher extends Application {
             Logger.getLogger(Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
-        return tempDir;
+        return tempDir.toFile();
     }
 
-    private Process install(Path downloadedDir)
+    private Process install(File downloadedDir)
             throws IOException, InterruptedException {
-        String dirPath = downloadedDir.toString();
+        String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
         switch (DataProvider.CURRENT_OS) {
         case WINDOWS:
@@ -199,7 +199,7 @@ public final class Launcher extends Application {
             try {
                 File tempFile = download();
 
-                Path tempDir = unzip(tempFile);
+                File tempDir = unzip(tempFile);
                 tempFile.delete();
 
                 Process installer = install(tempDir);
@@ -211,10 +211,9 @@ public final class Launcher extends Application {
                 Thread.sleep(1000);
 
                 //Check whether file "installed" was created.
-                boolean gotInstalled = Arrays.binarySearch(
-                        tempDir.toFile().list(), "installed") >= 0;
-                tempDir.toFile()
-                        .delete();
+                boolean gotInstalled = Arrays.asList(tempDir.list())
+                        .contains("installed");
+                tempDir.delete();
 
                 String errorMessage;
                 try (InputStream errorStream = installer.getErrorStream()) {
