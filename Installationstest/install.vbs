@@ -57,3 +57,6 @@ Sub createLink(linkname, workingDir, fileOfWorkingDir)
         .Save
     End With
 End Sub
+
+'Create file to show success
+fso.CreateTextFile(downloadedDir & "installed")

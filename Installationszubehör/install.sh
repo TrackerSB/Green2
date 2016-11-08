@@ -28,6 +28,7 @@ mv -f $TempDir/*.desktop $MenuEntryFolder/;
 mv -f $TempDir/* $ProgramFolder/;
 rm $ProgramFolder/*.xml;
 rm $ProgramFolder/*.bat;
-rm $ProgramFolder/*.vbs;"
+rm $ProgramFolder/*.vbs;
+touch $TempDir/installed"
 
 echo "Grün2 wurde installiert/aktualisiert"
