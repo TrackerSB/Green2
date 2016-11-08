@@ -35,6 +35,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -177,7 +178,6 @@ public final class Launcher extends Application {
         switch (DataProvider.CURRENT_OS) {
         case WINDOWS:
             command = new String[]{"cscript", dirPath + "/install.vbs"};
-            //command = new String[]{dirPath + "/Gruen2Helper.exe"};
             break;
         case LINUX:
         default:
@@ -202,21 +202,19 @@ public final class Launcher extends Application {
                 Path tempDir = unzip(tempFile);
                 tempFile.delete();
 
-                //FIXME install.vbs shows no success message.
                 Process installer = install(tempDir);
 
-                //FIXME Doesn´t really wait for everything is completed.
-                //FIXME Make sure move commands finished
+                /* FIXME Doesn´t really wait for everything is completed on
+                 * windows.
+                 */
                 installer.waitFor();
+                Thread.sleep(1000);
 
-                String successMessage;
-                //Check whether success message was printed on console
-                try (InputStream inputStream = installer.getInputStream()) {
-                    successMessage = IOStreamUtility.readAll(inputStream);
-                }
-                //FIXME Search for success message
-                boolean gotInstalled = successMessage.contains(
-                        "Grün2 wurde installiert/aktualisiert");
+                //Check whether file "installed" was created.
+                boolean gotInstalled = Arrays.binarySearch(
+                        tempDir.toFile().list(), "installed") >= 0;
+                tempDir.toFile()
+                        .delete();
 
                 String errorMessage;
                 try (InputStream errorStream = installer.getErrorStream()) {
