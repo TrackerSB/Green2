@@ -19,7 +19,6 @@ package bayern.steinbrecher.gruen2.generator.sepa;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.people.AccountHolder;
 import bayern.steinbrecher.gruen2.people.Member;
-import bayern.steinbrecher.gruen2.people.Person;
 import bayern.steinbrecher.gruen2.people.Originator;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -134,7 +133,6 @@ public final class SepaPain00800302XMLGenerator {
         List<Member> invalidMember = new LinkedList<>();
         member.parallelStream().forEach(m -> {
             boolean valid = true;
-            Person p = m.getPerson();
             AccountHolder ah = m.getAccountHolder();
             if (!hasValidIban(ah)) {
                 valid = false;
