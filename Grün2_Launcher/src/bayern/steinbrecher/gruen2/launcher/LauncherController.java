@@ -48,10 +48,6 @@ public class LauncherController implements Initializable {
             percentageString.set(FORMAT.format(newVal.doubleValue() * 100)
                     + "% ");
         });
-        percentage.addListener(obs -> {
-            percentageString.set(FORMAT.format(percentage.get() * 100)
-                    + "% ");
-        });
     }
 
     /**
