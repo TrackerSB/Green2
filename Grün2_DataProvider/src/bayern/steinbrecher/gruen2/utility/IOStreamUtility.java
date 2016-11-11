@@ -88,7 +88,7 @@ public final class IOStreamUtility {
             boolean withBom) {
         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(pathToFile), "UTF-8"))) {
-            //To make no UTF-8 without BOM but with BOM.
+            //To make no UTF-8 without BOM but with BOM (Big Endian).
             if (withBom) {
                 bw.append('\uFEFF');
             }

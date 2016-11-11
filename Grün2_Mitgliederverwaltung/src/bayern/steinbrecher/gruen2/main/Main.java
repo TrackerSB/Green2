@@ -50,6 +50,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -247,6 +248,8 @@ public class Main extends Application {
      * {@code ServiceFactory.createService(...)}.
      *
      * @param login The loginframe used to ask the user.
+     * @param waitScreen The waitscreen to show when trying to connect to the
+     * server.
      * @return {@code Optional.empty()} only if the connection could not be
      * established. E.g. the user closed the window or the configured connection
      * is not reachable.
@@ -324,14 +327,13 @@ public class Main extends Application {
      * @param obj The objects to test.
      */
     private void checkNull(Object... obj) {
-        if (Arrays.stream(obj).anyMatch(o -> o == null)) {
+        if (Arrays.stream(obj).anyMatch(Objects::isNull)) {
             throw new IllegalStateException(
                     "You have to call start(...) first");
         }
     }
 
-    private void generateAddresses(List<Member> member,
-            String filename) {
+    private void generateAddresses(List<Member> member, String filename) {
         checkNull(nicknames);
         try {
             if (member.isEmpty()) {
@@ -532,6 +534,7 @@ public class Main extends Application {
     }
 
     private String checkIbans() {
+        checkNull(member);
         List<Member> badIban = new ArrayList<>();
         try {
             badIban = member.get().parallelStream()
