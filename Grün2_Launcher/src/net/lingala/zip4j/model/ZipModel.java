@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Srikanth Reddy Lingala
+ * Changed by Stefan Huber 2016
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +16,7 @@
  */
 package net.lingala.zip4j.model;
 
+import java.io.File;
 import java.util.List;
 
 public class ZipModel implements Cloneable {
@@ -37,7 +39,7 @@ public class ZipModel implements Cloneable {
 
     private long splitLength;
 
-    private String zipFile;
+    private File zipFile;
 
     private boolean isZip64Format;
 
@@ -102,11 +104,11 @@ public class ZipModel implements Cloneable {
         this.splitArchive = splitArchive;
     }
 
-    public String getZipFile() {
+    public File getZipFile() {
         return zipFile;
     }
 
-    public void setZipFile(String zipFile) {
+    public void setZipFile(File zipFile) {
         this.zipFile = zipFile;
     }
 

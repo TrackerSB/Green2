@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Srikanth Reddy Lingala
+ * Changed by Stefan Huber 2016
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +24,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.SplitOutputStream;
@@ -45,17 +47,21 @@ public class ZipEngine {
     public ZipEngine(ZipModel zipModel) throws ZipException {
 
         if (zipModel == null) {
-            throw new ZipException("zip model is null in ZipEngine constructor");
+            throw new ZipException("zip model is null in ZipEngine "
+                    + "constructor");
         }
 
         this.zipModel = zipModel;
     }
 
-    public void addFiles(final ArrayList fileList, final ZipParameters parameters,
-            final ProgressMonitor progressMonitor, boolean runInThread) throws ZipException {
+    public void addFiles(final List<File> fileList,
+            final ZipParameters parameters,
+            final ProgressMonitor progressMonitor, boolean runInThread)
+            throws ZipException {
 
         if (fileList == null || parameters == null) {
-            throw new ZipException("one of the input parameters is null when adding files");
+            throw new ZipException("one of the input parameters is null when "
+                    + "adding files");
         }
 
         if (fileList.size() <= 0) {
@@ -67,10 +73,12 @@ public class ZipEngine {
         progressMonitor.setResult(ProgressMonitor.RESULT_WORKING);
 
         if (runInThread) {
-            progressMonitor.setTotalWork(calculateTotalWork(fileList, parameters));
-            progressMonitor.setFileName(((File) fileList.get(0)).getAbsolutePath());
+            progressMonitor.setTotalWork(
+                    calculateTotalWork(fileList, parameters));
+            progressMonitor.setFileName(fileList.get(0).getAbsolutePath());
 
             Thread thread = new Thread(InternalZipConstants.THREAD_NAME) {
+                @Override
                 public void run() {
                     try {
                         initAddFiles(fileList, parameters, progressMonitor);
@@ -85,11 +93,12 @@ public class ZipEngine {
         }
     }
 
-    private void initAddFiles(ArrayList fileList, ZipParameters parameters,
+    private void initAddFiles(List<File> fileList, ZipParameters parameters,
             ProgressMonitor progressMonitor) throws ZipException {
 
         if (fileList == null || parameters == null) {
-            throw new ZipException("one of the input parameters is null when adding files");
+            throw new ZipException("one of the input parameters is null when "
+                    + "adding files");
         }
 
         if (fileList.size() <= 0) {
@@ -97,7 +106,8 @@ public class ZipEngine {
         }
 
         if (zipModel.getEndCentralDirRecord() == null) {
-            zipModel.setEndCentralDirRecord(createEndOfCentralDirectoryRecord());
+            zipModel.setEndCentralDirRecord(
+                    createEndOfCentralDirectoryRecord());
         }
 
         ZipOutputStream outputStream = null;
@@ -133,7 +143,9 @@ public class ZipEngine {
                 progressMonitor.setFileName(((File) fileList.get(i)).getAbsolutePath());
 
                 if (!((File) fileList.get(i)).isDirectory()) {
-                    if (fileParameters.isEncryptFiles() && fileParameters.getEncryptionMethod() == Zip4jConstants.ENC_METHOD_STANDARD) {
+                    if (fileParameters.isEncryptFiles()
+                            && fileParameters.getEncryptionMethod()
+                            == Zip4jConstants.ENC_METHOD_STANDARD) {
                         progressMonitor.setCurrentOperation(ProgressMonitor.OPERATION_CALC_CRC);
                         fileParameters.setSourceFileCRC((int) CRCUtil.computeFileCRC(((File) fileList.get(i)).getAbsolutePath(), progressMonitor));
                         progressMonitor.setCurrentOperation(ProgressMonitor.OPERATION_ADD);
@@ -201,7 +213,8 @@ public class ZipEngine {
         }
     }
 
-    public void addStreamToZip(InputStream inputStream, ZipParameters parameters) throws ZipException {
+    public void addStreamToZip(InputStream inputStream, ZipParameters parameters)
+            throws ZipException {
         if (inputStream == null || parameters == null) {
             throw new ZipException("one of the input parameters is null, cannot add stream to zip");
         }
@@ -268,7 +281,8 @@ public class ZipEngine {
         }
 
         if (!Zip4jUtil.checkFileReadAccess(file.getAbsolutePath())) {
-            throw new ZipException("cannot read folder: " + file.getAbsolutePath());
+            throw new ZipException("cannot read folder: "
+                    + file.getAbsolutePath());
         }
 
         String rootFolderPath = null;
@@ -303,23 +317,28 @@ public class ZipEngine {
         }
 
         if ((parameters.getCompressionMethod() != Zip4jConstants.COMP_STORE)
-                && parameters.getCompressionMethod() != Zip4jConstants.COMP_DEFLATE) {
+                && parameters.getCompressionMethod()
+                != Zip4jConstants.COMP_DEFLATE) {
             throw new ZipException("unsupported compression type");
         }
 
         if (parameters.getCompressionMethod() == Zip4jConstants.COMP_DEFLATE) {
-            if (parameters.getCompressionLevel() < 0 && parameters.getCompressionLevel() > 9) {
+            if (parameters.getCompressionLevel() < 0
+                    && parameters.getCompressionLevel() > 9) {
                 throw new ZipException("invalid compression level. compression level dor deflate should be in the range of 0-9");
             }
         }
 
         if (parameters.isEncryptFiles()) {
-            if (parameters.getEncryptionMethod() != Zip4jConstants.ENC_METHOD_STANDARD
-                    && parameters.getEncryptionMethod() != Zip4jConstants.ENC_METHOD_AES) {
+            if (parameters.getEncryptionMethod()
+                    != Zip4jConstants.ENC_METHOD_STANDARD
+                    && parameters.getEncryptionMethod()
+                    != Zip4jConstants.ENC_METHOD_AES) {
                 throw new ZipException("unsupported encryption method");
             }
 
-            if (parameters.getPassword() == null || parameters.getPassword().length <= 0) {
+            if (parameters.getPassword() == null
+                    || parameters.getPassword().length <= 0) {
                 throw new ZipException("input password is empty or null");
             }
         } else {
@@ -340,7 +359,8 @@ public class ZipEngine {
      * @param fileName
      * @throws ZipException
      */
-    private void removeFilesIfExists(ArrayList fileList, ZipParameters parameters, ProgressMonitor progressMonitor) throws ZipException {
+    private void removeFilesIfExists(ArrayList fileList, ZipParameters parameters, ProgressMonitor progressMonitor)
+            throws ZipException {
 
         if (zipModel == null || zipModel.getCentralDirectory() == null
                 || zipModel.getCentralDirectory().getFileHeaders() == null
@@ -383,7 +403,8 @@ public class ZipEngine {
                         outputStream = prepareFileOutputStream();
 
                         if (retMap != null) {
-                            if (retMap.get(InternalZipConstants.OFFSET_CENTRAL_DIR) != null) {
+                            if (retMap.get(InternalZipConstants.OFFSET_CENTRAL_DIR)
+                                    != null) {
                                 long offsetCentralDir = -1;
                                 try {
                                     offsetCentralDir = Long
@@ -447,7 +468,9 @@ public class ZipEngine {
         return endCentralDirRecord;
     }
 
-    private long calculateTotalWork(ArrayList fileList, ZipParameters parameters) throws ZipException {
+    private long calculateTotalWork(List<File> fileList,
+            ZipParameters parameters)
+            throws ZipException {
         if (fileList == null) {
             throw new ZipException("file list is null, cannot calculate total work");
         }
@@ -458,20 +481,25 @@ public class ZipEngine {
             if (fileList.get(i) instanceof File) {
                 if (((File) fileList.get(i)).exists()) {
                     if (parameters.isEncryptFiles()
-                            && parameters.getEncryptionMethod() == Zip4jConstants.ENC_METHOD_STANDARD) {
-                        totalWork += (Zip4jUtil.getFileLengh((File) fileList.get(i)) * 2);
+                            && parameters.getEncryptionMethod()
+                            == Zip4jConstants.ENC_METHOD_STANDARD) {
+                        totalWork += (Zip4jUtil.getFileLengh((File) fileList.get(i))
+                                * 2);
                     } else {
                         totalWork += Zip4jUtil.getFileLengh((File) fileList.get(i));
                     }
 
                     if (zipModel.getCentralDirectory() != null
-                            && zipModel.getCentralDirectory().getFileHeaders() != null
-                            && zipModel.getCentralDirectory().getFileHeaders().size() > 0) {
+                            && zipModel.getCentralDirectory().getFileHeaders()
+                            != null
+                            && zipModel.getCentralDirectory().getFileHeaders().size()
+                            > 0) {
                         String relativeFileName = Zip4jUtil.getRelativeFileName(
                                 ((File) fileList.get(i)).getAbsolutePath(), parameters.getRootFolderInZip(), parameters.getDefaultFolderPath());
                         FileHeader fileHeader = Zip4jUtil.getFileHeader(zipModel, relativeFileName);
                         if (fileHeader != null) {
-                            totalWork += (Zip4jUtil.getFileLengh(new File(zipModel.getZipFile())) - fileHeader.getCompressedSize());
+                            totalWork += (Zip4jUtil.getFileLengh(new File(zipModel.getZipFile()))
+                                    - fileHeader.getCompressedSize());
                         }
                     }
                 }
