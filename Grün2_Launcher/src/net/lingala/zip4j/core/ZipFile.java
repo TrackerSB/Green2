@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Srikanth Reddy Lingala
+ * Changed by Stefan Huber 2016
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +53,7 @@ import net.lingala.zip4j.zip.ZipEngine;
  */
 public class ZipFile {
 
-    private String file;
+    private File file;
     private int mode;
     private ZipModel zipModel;
     private boolean isEncrypted;
@@ -84,7 +85,7 @@ public class ZipFile {
                     ZipExceptionConstants.inputZipParamIsNull);
         }
 
-        this.file = zipFile.getPath();
+        this.file = zipFile;
         this.mode = InternalZipConstants.MODE_UNZIP;
         this.progressMonitor = new ProgressMonitor();
         this.runInThread = false;
@@ -99,7 +100,8 @@ public class ZipFile {
      * @param parameters - parameters to create the zip file
      * @throws ZipException
      */
-    public void createZipFile(File sourceFile, ZipParameters parameters) throws ZipException {
+    public void createZipFile(File sourceFile, ZipParameters parameters)
+            throws ZipException {
         ArrayList sourceFileList = new ArrayList();
         sourceFileList.add(sourceFile);
         createZipFile(sourceFileList, parameters, false, -1);
@@ -162,20 +164,24 @@ public class ZipFile {
     public void createZipFile(ArrayList sourceFileList, ZipParameters parameters,
             boolean splitArchive, long splitLength) throws ZipException {
 
-        if (!Zip4jUtil.isStringNotNullAndNotEmpty(file)) {
+        if (!Zip4jUtil.isStringNotNullAndNotEmpty(file.getAbsolutePath())) {
             throw new ZipException("zip file path is empty");
         }
 
         if (Zip4jUtil.checkFileExists(file)) {
-            throw new ZipException("zip file: " + file + " already exists. To add files to existing zip file use addFile method");
+            throw new ZipException("zip file: " + file + " already exists. "
+                    + "To add files to existing zip file use addFile method");
         }
 
         if (sourceFileList == null) {
-            throw new ZipException("input file ArrayList is null, cannot create zip file");
+            throw new ZipException("input file ArrayList is null, cannot "
+                    + "create zip file");
         }
 
-        if (!Zip4jUtil.checkArrayListTypes(sourceFileList, InternalZipConstants.LIST_TYPE_FILE)) {
-            throw new ZipException("One or more elements in the input ArrayList is not of type File");
+        if (!Zip4jUtil.checkArrayListTypes(sourceFileList,
+                InternalZipConstants.LIST_TYPE_FILE)) {
+            throw new ZipException("One or more elements in the input "
+                    + "ArrayList is not of type File");
         }
 
         createNewZipModel();
@@ -199,14 +205,17 @@ public class ZipFile {
      * @param splitLength
      * @throws ZipException
      */
-    public void createZipFileFromFolder(String folderToAdd, ZipParameters parameters,
-            boolean splitArchive, long splitLength) throws ZipException {
+    public void createZipFileFromFolder(String folderToAdd,
+            ZipParameters parameters, boolean splitArchive, long splitLength)
+            throws ZipException {
 
         if (!Zip4jUtil.isStringNotNullAndNotEmpty(folderToAdd)) {
-            throw new ZipException("folderToAdd is empty or null, cannot create Zip File from folder");
+            throw new ZipException("folderToAdd is empty or null, cannot "
+                    + "create Zip File from folder");
         }
 
-        createZipFileFromFolder(new File(folderToAdd), parameters, splitArchive, splitLength);
+        createZipFileFromFolder(new File(folderToAdd), parameters,
+                splitArchive, splitLength);
 
     }
 
@@ -225,19 +234,24 @@ public class ZipFile {
      * @param splitLength
      * @throws ZipException
      */
-    public void createZipFileFromFolder(File folderToAdd, ZipParameters parameters,
-            boolean splitArchive, long splitLength) throws ZipException {
+    public void createZipFileFromFolder(File folderToAdd,
+            ZipParameters parameters, boolean splitArchive, long splitLength)
+            throws ZipException {
 
         if (folderToAdd == null) {
-            throw new ZipException("folderToAdd is null, cannot create zip file from folder");
+            throw new ZipException("folderToAdd is null, cannot create zip "
+                    + "file from folder");
         }
 
         if (parameters == null) {
-            throw new ZipException("input parameters are null, cannot create zip file from folder");
+            throw new ZipException("input parameters are null, cannot create "
+                    + "zip file from folder");
         }
 
         if (Zip4jUtil.checkFileExists(file)) {
-            throw new ZipException("zip file: " + file + " already exists. To add files to existing zip file use addFolder method");
+            throw new ZipException("zip file: " + file
+                    + " already exists. To add files to existing zip file use "
+                    + "addFolder method");
         }
 
         createNewZipModel();
@@ -258,7 +272,8 @@ public class ZipFile {
      * @param parameters - zip parameters for this file
      * @throws ZipException
      */
-    public void addFile(File sourceFile, ZipParameters parameters) throws ZipException {
+    public void addFile(File sourceFile, ZipParameters parameters)
+            throws ZipException {
         ArrayList sourceFileList = new ArrayList();
         sourceFileList.add(sourceFile);
         addFiles(sourceFileList, parameters);
@@ -273,7 +288,8 @@ public class ZipFile {
      * @param parameters
      * @throws ZipException
      */
-    public void addFiles(ArrayList sourceFileList, ZipParameters parameters) throws ZipException {
+    public void addFiles(ArrayList sourceFileList, ZipParameters parameters)
+            throws ZipException {
 
         checkZipModel();
 
@@ -282,29 +298,36 @@ public class ZipFile {
         }
 
         if (sourceFileList == null) {
-            throw new ZipException("input file ArrayList is null, cannot add files");
+            throw new ZipException("input file ArrayList is null, cannot add "
+                    + "files");
         }
 
-        if (!Zip4jUtil.checkArrayListTypes(sourceFileList, InternalZipConstants.LIST_TYPE_FILE)) {
-            throw new ZipException("One or more elements in the input ArrayList is not of type File");
+        if (!Zip4jUtil.checkArrayListTypes(sourceFileList,
+                InternalZipConstants.LIST_TYPE_FILE)) {
+            throw new ZipException("One or more elements in the input "
+                    + "ArrayList is not of type File");
         }
 
         if (parameters == null) {
-            throw new ZipException("input parameters are null, cannot add files to zip");
+            throw new ZipException("input parameters are null, cannot "
+                    + "add files to zip");
         }
 
         if (progressMonitor.getState() == ProgressMonitor.STATE_BUSY) {
-            throw new ZipException("invalid operation - Zip4j is in busy state");
+            throw new ZipException("invalid operation - Zip4j is in busy "
+                    + "state");
         }
 
         if (Zip4jUtil.checkFileExists(file)) {
             if (zipModel.isSplitArchive()) {
-                throw new ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files");
+                throw new ZipException("Zip file already exists. Zip file "
+                        + "format does not allow updating split/spanned files");
             }
         }
 
         ZipEngine zipEngine = new ZipEngine(zipModel);
-        zipEngine.addFiles(sourceFileList, parameters, progressMonitor, runInThread);
+        zipEngine.addFiles(sourceFileList, parameters, progressMonitor,
+                runInThread);
     }
 
     /**
@@ -317,9 +340,11 @@ public class ZipFile {
      * @param parameters
      * @throws ZipException
      */
-    public void addFolder(String path, ZipParameters parameters) throws ZipException {
+    public void addFolder(String path, ZipParameters parameters)
+            throws ZipException {
         if (!Zip4jUtil.isStringNotNullAndNotEmpty(path)) {
-            throw new ZipException("input path is null or empty, cannot add folder to zip file");
+            throw new ZipException("input path is null or empty, cannot add "
+                    + "folder to zip file");
         }
 
         addFolder(new File(path), parameters);
@@ -335,13 +360,16 @@ public class ZipFile {
      * @param parameters
      * @throws ZipException
      */
-    public void addFolder(File path, ZipParameters parameters) throws ZipException {
+    public void addFolder(File path, ZipParameters parameters)
+            throws ZipException {
         if (path == null) {
-            throw new ZipException("input path is null, cannot add folder to zip file");
+            throw new ZipException("input path is null, cannot add folder "
+                    + "to zip file");
         }
 
         if (parameters == null) {
-            throw new ZipException("input parameters are null, cannot add folder to zip file");
+            throw new ZipException("input parameters are null, cannot add "
+                    + "folder to zip file");
         }
 
         addFolder(path, parameters, true);
@@ -366,12 +394,14 @@ public class ZipFile {
 
         if (checkSplitArchive) {
             if (this.zipModel.isSplitArchive()) {
-                throw new ZipException("This is a split archive. Zip file format does not allow updating split/spanned files");
+                throw new ZipException("This is a split archive. Zip file "
+                        + "format does not allow updating split/spanned files");
             }
         }
 
         ZipEngine zipEngine = new ZipEngine(zipModel);
-        zipEngine.addFolderToZip(path, parameters, progressMonitor, runInThread);
+        zipEngine.addFolderToZip(path, parameters, progressMonitor,
+                runInThread);
 
     }
 
@@ -388,9 +418,11 @@ public class ZipFile {
      * @param parameters
      * @throws ZipException
      */
-    public void addStream(InputStream inputStream, ZipParameters parameters) throws ZipException {
+    public void addStream(InputStream inputStream, ZipParameters parameters)
+            throws ZipException {
         if (inputStream == null) {
-            throw new ZipException("inputstream is null, cannot add file to zip");
+            throw new ZipException("inputstream is null, cannot add file "
+                    + "to zip");
         }
 
         if (parameters == null) {
@@ -407,7 +439,8 @@ public class ZipFile {
 
         if (Zip4jUtil.checkFileExists(file)) {
             if (zipModel.isSplitArchive()) {
-                throw new ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files");
+                throw new ZipException("Zip file already exists. Zip file "
+                        + "format does not allow updating split/spanned files");
             }
         }
 
@@ -438,7 +471,7 @@ public class ZipFile {
 
         RandomAccessFile raf = null;
         try {
-            raf = new RandomAccessFile(new File(file), InternalZipConstants.READ_MODE);
+            raf = new RandomAccessFile(file, InternalZipConstants.READ_MODE);
 
             if (zipModel == null) {
 
@@ -699,11 +732,13 @@ public class ZipFile {
             }
         }
 
-        if (zipModel.getCentralDirectory() == null || zipModel.getCentralDirectory().getFileHeaders() == null) {
+        if (zipModel.getCentralDirectory() == null
+                || zipModel.getCentralDirectory().getFileHeaders() == null) {
             throw new ZipException("invalid zip file");
         }
 
-        for (int i = 0; i < zipModel.getCentralDirectory().getFileHeaders().size(); i++) {
+        for (int i = 0; i
+                < zipModel.getCentralDirectory().getFileHeaders().size(); i++) {
             if (zipModel.getCentralDirectory().getFileHeaders().get(i) != null) {
                 if (((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).isEncrypted()) {
                     ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).setPassword(password);
@@ -762,7 +797,8 @@ public class ZipFile {
             }
         }
 
-        if (zipModel.getCentralDirectory() == null || zipModel.getCentralDirectory().getFileHeaders() == null) {
+        if (zipModel.getCentralDirectory() == null
+                || zipModel.getCentralDirectory().getFileHeaders() == null) {
             throw new ZipException("invalid zip file");
         }
 
@@ -827,7 +863,8 @@ public class ZipFile {
 
         FileHeader fileHeader = Zip4jUtil.getFileHeader(zipModel, fileName);
         if (fileHeader == null) {
-            throw new ZipException("could not find file header for file: " + fileName);
+            throw new ZipException("could not find file header for file: "
+                    + fileName);
         }
 
         removeFile(fileHeader);
@@ -958,7 +995,8 @@ public class ZipFile {
         }
 
         if (this.zipModel.getEndCentralDirRecord().getCommentBytes() == null
-                || this.zipModel.getEndCentralDirRecord().getCommentBytes().length <= 0) {
+                || this.zipModel.getEndCentralDirRecord().getCommentBytes().length
+                <= 0) {
             return null;
         }
 
@@ -1087,6 +1125,6 @@ public class ZipFile {
      * @return File
      */
     public File getFile() {
-        return new File(this.file);
+        return this.file;
     }
 }

@@ -32,11 +32,7 @@ import net.lingala.zip4j.model.ZipModel;
 public class Zip4jUtil {
 
     public static boolean isStringNotNullAndNotEmpty(String str) {
-        if (str == null || str.trim().length() <= 0) {
-            return false;
-        }
-
-        return true;
+        return !(str == null || str.trim().length() <= 0);
     }
 
     public static boolean checkOutputFolder(String path) throws ZipException {
@@ -81,7 +77,8 @@ public class Zip4jUtil {
         return true;
     }
 
-    public static boolean checkFileReadAccess(String path) throws ZipException {
+    public static boolean checkFileReadAccess(File file) throws ZipException {
+        String path = file.getAbsolutePath();
         if (!isStringNotNullAndNotEmpty(path)) {
             throw new ZipException("path is null");
         }
@@ -91,9 +88,8 @@ public class Zip4jUtil {
         }
 
         try {
-            File file = new File(path);
             return file.canRead();
-        } catch (Exception e) {
+        } catch (Exception ex) {
             throw new ZipException("cannot read zip file");
         }
     }
@@ -685,11 +681,13 @@ public class Zip4jUtil {
 
         ArrayList retList = new ArrayList();
         File currZipFile = zipModel.getZipFile();
-        String zipFileName = (currZipFile).getName();
-        String partFile = null;
+        String zipFileName = currZipFile.getName();
+        String zipFilePath = currZipFile.getAbsolutePath();
+        String partFile;
 
-        if (!isStringNotNullAndNotEmpty(currZipFile)) {
-            throw new ZipException("cannot get split zip files: zipfile is null");
+        if (!isStringNotNullAndNotEmpty(zipFilePath)) {
+            throw new ZipException(
+                    "cannot get split zip files: zipfile is null");
         }
 
         if (!zipModel.isSplitArchive()) {
@@ -697,7 +695,8 @@ public class Zip4jUtil {
             return retList;
         }
 
-        int numberOfThisDisk = zipModel.getEndCentralDirRecord().getNoOfThisDisk();
+        int numberOfThisDisk = zipModel.getEndCentralDirRecord()
+                .getNoOfThisDisk();
 
         if (numberOfThisDisk == 0) {
             retList.add(currZipFile);
@@ -711,7 +710,10 @@ public class Zip4jUtil {
                     if (i > 9) {
                         fileExt = ".z";
                     }
-                    partFile = (zipFileName.indexOf(".") >= 0) ? currZipFile.substring(0, currZipFile.lastIndexOf(".")) : currZipFile;
+                    partFile = zipFileName.contains(".")
+                            ? zipFilePath.substring(
+                                    0, zipFilePath.lastIndexOf("."))
+                            : zipFilePath;
                     partFile = partFile + fileExt + (i + 1);
                     retList.add(partFile);
                 }
@@ -720,13 +722,15 @@ public class Zip4jUtil {
         return retList;
     }
 
-    public static String getRelativeFileName(String file, String rootFolderInZip, String rootFolderPath)
+    public static String getRelativeFileName(String file,
+            String rootFolderInZip, String rootFolderPath)
             throws ZipException {
         if (!Zip4jUtil.isStringNotNullAndNotEmpty(file)) {
-            throw new ZipException("input file path/name is empty, cannot calculate relative file name");
+            throw new ZipException("input file path/name is empty, "
+                    + "cannot calculate relative file name");
         }
 
-        String fileName = null;
+        String fileName;
 
         if (Zip4jUtil.isStringNotNullAndNotEmpty(rootFolderPath)) {
 
@@ -734,7 +738,8 @@ public class Zip4jUtil {
 
             String rootFolderFileRef = rootFolderFile.getPath();
 
-            if (!rootFolderFileRef.endsWith(InternalZipConstants.FILE_SEPARATOR)) {
+            if (!rootFolderFileRef.endsWith(
+                    InternalZipConstants.FILE_SEPARATOR)) {
                 rootFolderFileRef += InternalZipConstants.FILE_SEPARATOR;
             }
 
@@ -749,7 +754,8 @@ public class Zip4jUtil {
                 tmpFileName = tmpFileName.replaceAll("\\\\", "/");
                 tmpFileName += InternalZipConstants.ZIP_FILE_SEPARATOR;
             } else {
-                String bkFileName = tmpFileName.substring(0, tmpFileName.lastIndexOf(tmpFile.getName()));
+                String bkFileName = tmpFileName.substring(
+                        0, tmpFileName.lastIndexOf(tmpFile.getName()));
                 bkFileName = bkFileName.replaceAll("\\\\", "/");
                 tmpFileName = bkFileName + tmpFile.getName();
             }

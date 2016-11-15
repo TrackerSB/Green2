@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Srikanth Reddy Lingala
+ * Changed by Stefan Huber 2016
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +43,8 @@ public class ArchiveMaintainer {
     }
 
     public HashMap removeZipFile(final ZipModel zipModel,
-            final FileHeader fileHeader, final ProgressMonitor progressMonitor, boolean runInThread) throws ZipException {
+            final FileHeader fileHeader, final ProgressMonitor progressMonitor, boolean runInThread)
+            throws ZipException {
 
         if (runInThread) {
             Thread thread = new Thread(InternalZipConstants.THREAD_NAME) {
@@ -64,7 +66,7 @@ public class ArchiveMaintainer {
 
     }
 
-    public HashMap initRemoveZipFile(ZipModel zipModel,
+    public HashMap<String, String> initRemoveZipFile(ZipModel zipModel,
             FileHeader fileHeader, ProgressMonitor progressMonitor) throws ZipException {
 
         if (fileHeader == null || zipModel == null) {
@@ -76,7 +78,7 @@ public class ArchiveMaintainer {
         RandomAccessFile inputStream = null;
         boolean successFlag = false;
         String tmpZipFileName = null;
-        HashMap retMap = new HashMap();
+        HashMap<String, String> retMap = new HashMap<>();
 
         try {
             int indexOfFileHeader = Zip4jUtil.getIndexOfFileHeader(zipModel, fileHeader);
@@ -90,12 +92,14 @@ public class ArchiveMaintainer {
             }
 
             long currTime = System.currentTimeMillis();
-            tmpZipFileName = zipModel.getZipFile() + currTime % 1000;
+            tmpZipFileName = zipModel.getZipFile().getAbsolutePath() + currTime
+                    % 1000;
             File tmpFile = new File(tmpZipFileName);
 
             while (tmpFile.exists()) {
                 currTime = System.currentTimeMillis();
-                tmpZipFileName = zipModel.getZipFile() + currTime % 1000;
+                tmpZipFileName = zipModel.getZipFile().getAbsolutePath()
+                        + currTime % 1000;
                 tmpFile = new File(tmpZipFileName);
             }
 
@@ -105,7 +109,7 @@ public class ArchiveMaintainer {
                 throw new ZipException(e1);
             }
 
-            zipFile = new File(zipModel.getZipFile());
+            zipFile = zipModel.getZipFile();
 
             inputStream = createFileHandler(zipModel, InternalZipConstants.READ_MODE);
 
@@ -118,7 +122,8 @@ public class ArchiveMaintainer {
             long offsetLocalFileHeader = fileHeader.getOffsetLocalHeader();
 
             if (fileHeader.getZip64ExtendedInfo() != null
-                    && fileHeader.getZip64ExtendedInfo().getOffsetLocalHeader() != -1) {
+                    && fileHeader.getZip64ExtendedInfo().getOffsetLocalHeader()
+                    != -1) {
                 offsetLocalFileHeader = fileHeader.getZip64ExtendedInfo().getOffsetLocalHeader();
             }
 
@@ -136,12 +141,16 @@ public class ArchiveMaintainer {
             if (indexOfFileHeader == fileHeaderList.size() - 1) {
                 offsetEndOfCompressedFile = offsetStartCentralDir - 1;
             } else {
-                FileHeader nextFileHeader = (FileHeader) fileHeaderList.get(indexOfFileHeader + 1);
+                FileHeader nextFileHeader = (FileHeader) fileHeaderList.get(indexOfFileHeader
+                        + 1);
                 if (nextFileHeader != null) {
-                    offsetEndOfCompressedFile = nextFileHeader.getOffsetLocalHeader() - 1;
+                    offsetEndOfCompressedFile = nextFileHeader.getOffsetLocalHeader()
+                            - 1;
                     if (nextFileHeader.getZip64ExtendedInfo() != null
-                            && nextFileHeader.getZip64ExtendedInfo().getOffsetLocalHeader() != -1) {
-                        offsetEndOfCompressedFile = nextFileHeader.getZip64ExtendedInfo().getOffsetLocalHeader() - 1;
+                            && nextFileHeader.getZip64ExtendedInfo().getOffsetLocalHeader()
+                            != -1) {
+                        offsetEndOfCompressedFile = nextFileHeader.getZip64ExtendedInfo().getOffsetLocalHeader()
+                                - 1;
                     }
                 }
             }
@@ -153,13 +162,15 @@ public class ArchiveMaintainer {
             if (indexOfFileHeader == 0) {
                 if (zipModel.getCentralDirectory().getFileHeaders().size() > 1) {
                     // if this is the only file and it is deleted then no need to do this
-                    copyFile(inputStream, outputStream, offsetEndOfCompressedFile + 1, offsetStartCentralDir, progressMonitor);
+                    copyFile(inputStream, outputStream, offsetEndOfCompressedFile
+                            + 1, offsetStartCentralDir, progressMonitor);
                 }
             } else if (indexOfFileHeader == fileHeaderList.size() - 1) {
                 copyFile(inputStream, outputStream, 0, offsetLocalFileHeader, progressMonitor);
             } else {
                 copyFile(inputStream, outputStream, 0, offsetLocalFileHeader, progressMonitor);
-                copyFile(inputStream, outputStream, offsetEndOfCompressedFile + 1, offsetStartCentralDir, progressMonitor);
+                copyFile(inputStream, outputStream, offsetEndOfCompressedFile
+                        + 1, offsetStartCentralDir, progressMonitor);
             }
 
             if (progressMonitor.isCancelAllTasks()) {
@@ -170,21 +181,27 @@ public class ArchiveMaintainer {
 
             zipModel.getEndCentralDirRecord().setOffsetOfStartOfCentralDir(((SplitOutputStream) outputStream).getFilePointer());
             zipModel.getEndCentralDirRecord().setTotNoOfEntriesInCentralDir(
-                    zipModel.getEndCentralDirRecord().getTotNoOfEntriesInCentralDir() - 1);
+                    zipModel.getEndCentralDirRecord().getTotNoOfEntriesInCentralDir()
+                    - 1);
             zipModel.getEndCentralDirRecord().setTotNoOfEntriesInCentralDirOnThisDisk(
-                    zipModel.getEndCentralDirRecord().getTotNoOfEntriesInCentralDirOnThisDisk() - 1);
+                    zipModel.getEndCentralDirRecord().getTotNoOfEntriesInCentralDirOnThisDisk()
+                    - 1);
 
             zipModel.getCentralDirectory().getFileHeaders().remove(indexOfFileHeader);
 
-            for (int i = indexOfFileHeader; i < zipModel.getCentralDirectory().getFileHeaders().size(); i++) {
+            for (int i = indexOfFileHeader; i
+                    < zipModel.getCentralDirectory().getFileHeaders().size(); i++) {
                 long offsetLocalHdr = ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getOffsetLocalHeader();
-                if (((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getZip64ExtendedInfo() != null
-                        && ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getZip64ExtendedInfo().getOffsetLocalHeader() != -1) {
+                if (((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getZip64ExtendedInfo()
+                        != null
+                        && ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getZip64ExtendedInfo().getOffsetLocalHeader()
+                        != -1) {
                     offsetLocalHdr = ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getZip64ExtendedInfo().getOffsetLocalHeader();
                 }
 
                 ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).setOffsetLocalHeader(
-                        offsetLocalHdr - (offsetEndOfCompressedFile - offsetLocalFileHeader) - 1);
+                        offsetLocalHdr - (offsetEndOfCompressedFile
+                        - offsetLocalFileHeader) - 1);
             }
 
             HeaderWriter headerWriter = new HeaderWriter();
@@ -198,7 +215,7 @@ public class ArchiveMaintainer {
         } catch (ZipException e) {
             progressMonitor.endProgressMonitorError(e);
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             progressMonitor.endProgressMonitorError(e);
             throw new ZipException(e);
         } finally {
@@ -236,7 +253,8 @@ public class ArchiveMaintainer {
     }
 
     private void copyFile(RandomAccessFile inputStream,
-            OutputStream outputStream, long start, long end, ProgressMonitor progressMonitor) throws ZipException {
+            OutputStream outputStream, long start, long end, ProgressMonitor progressMonitor)
+            throws ZipException {
 
         if (inputStream == null || outputStream == null) {
             throw new ZipException("input or output stream is null, cannot copy file");
@@ -303,13 +321,15 @@ public class ArchiveMaintainer {
         }
     }
 
-    private RandomAccessFile createFileHandler(ZipModel zipModel, String mode) throws ZipException {
-        if (zipModel == null || !Zip4jUtil.isStringNotNullAndNotEmpty(zipModel.getZipFile())) {
+    private RandomAccessFile createFileHandler(ZipModel zipModel, String mode)
+            throws ZipException {
+        if (zipModel == null
+                || !Zip4jUtil.isStringNotNullAndNotEmpty(zipModel.getZipFile().getAbsolutePath())) {
             throw new ZipException("input parameter is null in getFilePointer, cannot create file handler to remove file");
         }
 
         try {
-            return new RandomAccessFile(new File(zipModel.getZipFile()), mode);
+            return new RandomAccessFile(zipModel.getZipFile(), mode);
         } catch (FileNotFoundException e) {
             throw new ZipException(e);
         }
@@ -374,12 +394,15 @@ public class ArchiveMaintainer {
 
                 if (i == 0) {
                     if (zipModel.getCentralDirectory() != null
-                            && zipModel.getCentralDirectory().getFileHeaders() != null
-                            && zipModel.getCentralDirectory().getFileHeaders().size() > 0) {
+                            && zipModel.getCentralDirectory().getFileHeaders()
+                            != null
+                            && zipModel.getCentralDirectory().getFileHeaders().size()
+                            > 0) {
                         byte[] buff = new byte[4];
                         inputStream.seek(0);
                         inputStream.read(buff);
-                        if (Raw.readIntLittleEndian(buff, 0) == InternalZipConstants.SPLITSIG) {
+                        if (Raw.readIntLittleEndian(buff, 0)
+                                == InternalZipConstants.SPLITSIG) {
                             start = 4;
                             splitSigRemoved = true;
                         }
@@ -448,7 +471,8 @@ public class ArchiveMaintainer {
      * @return Zip4jInputStream
      * @throws ZipException
      */
-    private RandomAccessFile createSplitZipFileHandler(ZipModel zipModel, int partNumber) throws ZipException {
+    private RandomAccessFile createSplitZipFileHandler(ZipModel zipModel, int partNumber)
+            throws ZipException {
         if (zipModel == null) {
             throw new ZipException("zip model is null, cannot create split file handler");
         }
@@ -458,14 +482,17 @@ public class ArchiveMaintainer {
         }
 
         try {
-            String curZipFile = zipModel.getZipFile();
-            String partFile = null;
-            if (partNumber == zipModel.getEndCentralDirRecord().getNoOfThisDisk()) {
-                partFile = zipModel.getZipFile();
+            String curZipFile = zipModel.getZipFile().getAbsolutePath();
+            String partFile;
+            if (partNumber
+                    == zipModel.getEndCentralDirRecord().getNoOfThisDisk()) {
+                partFile = zipModel.getZipFile().getAbsolutePath();
             } else if (partNumber >= 9) {
-                partFile = curZipFile.substring(0, curZipFile.lastIndexOf(".")) + ".z" + (partNumber + 1);
+                partFile = curZipFile.substring(0, curZipFile.lastIndexOf("."))
+                        + ".z" + (partNumber + 1);
             } else {
-                partFile = curZipFile.substring(0, curZipFile.lastIndexOf(".")) + ".z0" + (partNumber + 1);
+                partFile = curZipFile.substring(0, curZipFile.lastIndexOf("."))
+                        + ".z0" + (partNumber + 1);
             }
             File tmpFile = new File(partFile);
 
@@ -496,7 +523,8 @@ public class ArchiveMaintainer {
         }
     }
 
-    private void updateSplitZipModel(ZipModel zipModel, ArrayList fileSizeList, boolean splitSigRemoved) throws ZipException {
+    private void updateSplitZipModel(ZipModel zipModel, ArrayList fileSizeList, boolean splitSigRemoved)
+            throws ZipException {
         if (zipModel == null) {
             throw new ZipException("zip model is null, cannot update split zip model");
         }
@@ -510,7 +538,8 @@ public class ArchiveMaintainer {
         }
     }
 
-    private void updateSplitFileHeader(ZipModel zipModel, ArrayList fileSizeList, boolean splitSigRemoved) throws ZipException {
+    private void updateSplitFileHeader(ZipModel zipModel, ArrayList fileSizeList, boolean splitSigRemoved)
+            throws ZipException {
         try {
 
             if (zipModel.getCentralDirectory() == null) {
@@ -526,7 +555,8 @@ public class ArchiveMaintainer {
             for (int i = 0; i < fileHeaderCount; i++) {
                 long offsetLHToAdd = 0;
 
-                for (int j = 0; j < ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getDiskNumberStart(); j++) {
+                for (int j = 0; j
+                        < ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).getDiskNumberStart(); j++) {
                     offsetLHToAdd += ((Long) fileSizeList.get(j)).longValue();
                 }
                 ((FileHeader) zipModel.getCentralDirectory().getFileHeaders().get(i)).setOffsetLocalHeader(
@@ -566,7 +596,8 @@ public class ArchiveMaintainer {
         }
     }
 
-    private void updateSplitZip64EndCentralDirLocator(ZipModel zipModel, ArrayList fileSizeList) throws ZipException {
+    private void updateSplitZip64EndCentralDirLocator(ZipModel zipModel, ArrayList fileSizeList)
+            throws ZipException {
         if (zipModel == null) {
             throw new ZipException("zip model is null, cannot update split Zip64 end of central directory locator");
         }
@@ -587,7 +618,8 @@ public class ArchiveMaintainer {
         zipModel.getZip64EndCentralDirLocator().setTotNumberOfDiscs(1);
     }
 
-    private void updateSplitZip64EndCentralDirRec(ZipModel zipModel, ArrayList fileSizeList) throws ZipException {
+    private void updateSplitZip64EndCentralDirRec(ZipModel zipModel, ArrayList fileSizeList)
+            throws ZipException {
         if (zipModel == null) {
             throw new ZipException("zip model is null, cannot update split Zip64 end of central directory record");
         }
@@ -685,17 +717,20 @@ public class ArchiveMaintainer {
         progressMonitor.setState(ProgressMonitor.STATE_BUSY);
     }
 
-    private long calculateTotalWorkForRemoveOp(ZipModel zipModel, FileHeader fileHeader) throws ZipException {
-        return Zip4jUtil.getFileLengh(new File(zipModel.getZipFile())) - fileHeader.getCompressedSize();
+    private long calculateTotalWorkForRemoveOp(ZipModel zipModel, FileHeader fileHeader)
+            throws ZipException {
+        return Zip4jUtil.getFileLengh(zipModel.getZipFile())
+                - fileHeader.getCompressedSize();
     }
 
-    public void initProgressMonitorForMergeOp(ZipModel zipModel, ProgressMonitor progressMonitor) throws ZipException {
+    public void initProgressMonitorForMergeOp(ZipModel zipModel, ProgressMonitor progressMonitor)
+            throws ZipException {
         if (zipModel == null) {
             throw new ZipException("zip model is null, cannot calculate total work for merge op");
         }
 
         progressMonitor.setCurrentOperation(ProgressMonitor.OPERATION_MERGE);
-        progressMonitor.setFileName(zipModel.getZipFile());
+        progressMonitor.setFileName(zipModel.getZipFile().getAbsolutePath());
         progressMonitor.setTotalWork(calculateTotalWorkForMergeOp(zipModel));
         progressMonitor.setState(ProgressMonitor.STATE_BUSY);
     }
@@ -705,15 +740,18 @@ public class ArchiveMaintainer {
         if (zipModel.isSplitArchive()) {
             int totNoOfSplitFiles = zipModel.getEndCentralDirRecord().getNoOfThisDisk();
             String partFile = null;
-            String curZipFile = zipModel.getZipFile();
+            String curZipFile = zipModel.getZipFile().getAbsolutePath();
             int partNumber = 0;
             for (int i = 0; i <= totNoOfSplitFiles; i++) {
-                if (partNumber == zipModel.getEndCentralDirRecord().getNoOfThisDisk()) {
-                    partFile = zipModel.getZipFile();
+                if (partNumber
+                        == zipModel.getEndCentralDirRecord().getNoOfThisDisk()) {
+                    partFile = zipModel.getZipFile().getAbsolutePath();
                 } else if (partNumber >= 9) {
-                    partFile = curZipFile.substring(0, curZipFile.lastIndexOf(".")) + ".z" + (partNumber + 1);
+                    partFile = curZipFile.substring(0, curZipFile.lastIndexOf("."))
+                            + ".z" + (partNumber + 1);
                 } else {
-                    partFile = curZipFile.substring(0, curZipFile.lastIndexOf(".")) + ".z0" + (partNumber + 1);
+                    partFile = curZipFile.substring(0, curZipFile.lastIndexOf("."))
+                            + ".z0" + (partNumber + 1);
                 }
 
                 totSize += Zip4jUtil.getFileLengh(new File(partFile));
