@@ -22,6 +22,7 @@ import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
+import bayern.steinbrecher.gruen2.utility.ZipUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -32,8 +33,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
 import java.util.Optional;
@@ -47,8 +48,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 /**
  * Installs Grün2 and checks for updates. (This application needs to be
@@ -58,6 +57,10 @@ import net.lingala.zip4j.exception.ZipException;
  */
 public final class Launcher extends Application {
 
+    /**
+     * Zipfile is delivered ISO-8859-1 (Latin-1) encoded.
+     */
+    private static final Charset ZIP_CHARSET = Charset.forName("ISO-8859-1");
     private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
     private LauncherController controller;
@@ -158,19 +161,6 @@ public final class Launcher extends Application {
         return tempFile;
     }
 
-    private File unzip(File zippedFile) throws IOException {
-        Path tempDir = Files.createTempDirectory(
-                null, new FileAttribute[0]);
-        try {
-            ZipFile zipFile = new ZipFile(zippedFile.getAbsolutePath());
-            zipFile.extractAll(tempDir.toString());
-        } catch (ZipException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        return tempDir.toFile();
-    }
-
     private Process install(File downloadedDir)
             throws IOException, InterruptedException {
         String dirPath = downloadedDir.getAbsolutePath();
@@ -199,7 +189,11 @@ public final class Launcher extends Application {
             try {
                 File tempFile = download();
 
-                File tempDir = unzip(tempFile);
+                File tempDir = Files.createTempDirectory(
+                        null, new FileAttribute[0])
+                        .toFile();
+
+                ZipUtility.unzip(tempFile, tempDir, ZIP_CHARSET);
                 tempFile.delete();
 
                 Process installer = install(tempDir);
