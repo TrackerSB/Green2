@@ -24,6 +24,7 @@ import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ZipUtility;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,6 +42,8 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
@@ -175,6 +178,50 @@ public final class Launcher extends Application {
         return tempFile;
     }
 
+    private File unzip(File zippedFile) throws IOException {
+        File zipOutFolder = Files.createTempDirectory(
+                null, new FileAttribute[0])
+                .toFile();
+        /*try {
+            ZipFile zipFile = new ZipFile(zippedFile.getAbsolutePath());
+            zipFile.extractAll(tempDir.toString());
+        } catch (ZipException ex) {
+            Logger.getLogger(Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }*/
+        try (ZipInputStream zis = new ZipInputStream(
+                new FileInputStream(zippedFile))) {
+            ZipEntry zipEntry = zis.getNextEntry();
+
+            while (zipEntry != null) {
+                File unzippedFile
+                        = new File(zipOutFolder + "/" + zipEntry.getName());
+
+                unzippedFile.getParentFile().mkdirs();
+
+                try (FileOutputStream fos
+                        = new FileOutputStream(unzippedFile)) {
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                }
+                zipEntry = zis.getNextEntry();
+            }
+
+            zis.closeEntry();
+        } catch (IOException ex) {
+            Logger.getLogger(Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } catch(Exception ex){
+            Logger.getLogger(Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+
+        return zipOutFolder;
+    }
+
     private Process install(File downloadedDir)
             throws IOException, InterruptedException {
         String dirPath = downloadedDir.getAbsolutePath();
@@ -226,9 +273,11 @@ public final class Launcher extends Application {
                 String errorMessage;
                 try (InputStream errorStream = installer.getErrorStream()) {
                     errorMessage = IOStreamUtility.readAll(errorStream);
+
                 }
                 if (!errorMessage.isEmpty()) {
-                    Logger.getLogger(Launcher.class.getName())
+                    Logger.getLogger(Launcher.class
+                            .getName())
                             .log(Level.WARNING,
                                     "The installer got follwing error: {0}",
                                     errorMessage);
@@ -238,13 +287,17 @@ public final class Launcher extends Application {
                 if (gotInstalled) {
                     VersionHandler.updateLocalVersion(newVersion);
                     Collector.sendData();
+
                 }
             } catch (MalformedURLException | FileNotFoundException |
                     InterruptedException ex) {
-                Logger.getLogger(Launcher.class.getName())
+                Logger.getLogger(Launcher.class
+                        .getName())
                         .log(Level.SEVERE, null, ex);
+
             } catch (IOException ex) {
-                Logger.getLogger(Launcher.class.getName())
+                Logger.getLogger(Launcher.class
+                        .getName())
                         .log(Level.SEVERE, null, ex);
             }
             return null;
@@ -260,8 +313,10 @@ public final class Launcher extends Application {
                     + "/Grün2_Mitgliederverwaltung.jar")
                     .start();
             Platform.exit();
+
         } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName())
+            Logger.getLogger(Launcher.class
+                    .getName())
                     .log(Level.SEVERE, null, ex);
         }
     }
@@ -272,8 +327,10 @@ public final class Launcher extends Application {
                     DataProvider.PROGRAMFOLDER_PATH_LOCAL + "/Grün2_config.jar")
                     .start();
             Platform.exit();
+
         } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName())
+            Logger.getLogger(Launcher.class
+                    .getName())
                     .log(Level.SEVERE, null, ex);
         }
     }
