@@ -22,6 +22,7 @@ import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
+import bayern.steinbrecher.gruen2.utility.URLUtility;
 import bayern.steinbrecher.gruen2.utility.ZipUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -58,12 +60,25 @@ import javafx.stage.StageStyle;
 public final class Launcher extends Application {
 
     /**
-     * Zipfile is delivered ISO-8859-1 (Latin-1) encoded.
+     * Zipfile is currently delivered ISO-8859-1 (Latin-1) encoded.
      */
-    private static final Charset ZIP_CHARSET = Charset.forName("ISO-8859-1");
+    private static Charset ZIP_CHARSET = Charset.forName("ISO-8859-1^");
     private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
     private LauncherController controller;
+
+    static {
+        try (Scanner sc = new Scanner(
+                new URL(DataProvider.CHARSET_PATH_ONLINE).openStream())) {
+            ZIP_CHARSET = Charset.forName(sc.nextLine());
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Launcher.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * Default constructor.
@@ -143,6 +158,7 @@ public final class Launcher extends Application {
         long fileSize = Long.parseLong(
                 downloadConnection.getHeaderField("Content-Length"));
         long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
+
         ReadableByteChannel rbc = Channels.newChannel(
                 downloadConnection.getInputStream());
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
@@ -157,7 +173,6 @@ public final class Launcher extends Application {
                 }
             }
         }
-
         return tempFile;
     }
 

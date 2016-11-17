@@ -61,11 +61,11 @@ public final class ZipUtility {
                 File unzippedFile
                         = new File(outDirPath + "/" + zipEntry.getName());
                 unzippedFile.getParentFile().mkdirs();
-                try (OutputStreamWriter bos = new OutputStreamWriter(
-                        new FileOutputStream(unzippedFile))) {
+                try (OutputStreamWriter ows = new OutputStreamWriter(
+                        new FileOutputStream(unzippedFile), charset)) {
                     int bytesRead;
                     while ((bytesRead = isr.read(buffer)) > 0) {
-                        bos.write(buffer, 0, bytesRead);
+                        ows.write(buffer, 0, bytesRead);
                     }
                 }
             }

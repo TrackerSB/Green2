@@ -49,7 +49,7 @@ public class VersionHandler {
                     = new URL(DataProvider.VERSIONFILE_PATH_ONLINE);
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
             return Optional.of(sc.nextLine());
-        } catch (UnknownHostException | MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             Logger.getLogger(Launcher.class.getName())
                     .log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

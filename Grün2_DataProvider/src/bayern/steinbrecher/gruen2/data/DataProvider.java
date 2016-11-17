@@ -132,6 +132,11 @@ public final class DataProvider {
                     "https://traunviertler-traunwalchen.de/programme")
             .orElse("");
     /**
+     * The URL of the file containing the used charset of the zip and its files.
+     */
+    public static final String CHARSET_PATH_ONLINE
+            = PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
+    /**
      * The URL of the version file describing the version of the files at
      * {@code PROGRAMFOLDER_PATH_ONLINE}.
      */
