@@ -22,7 +22,6 @@ import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
-import bayern.steinbrecher.gruen2.utility.URLUtility;
 import bayern.steinbrecher.gruen2.utility.ZipUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,7 +61,7 @@ public final class Launcher extends Application {
     /**
      * Zipfile is currently delivered ISO-8859-1 (Latin-1) encoded.
      */
-    private static Charset ZIP_CHARSET = Charset.forName("ISO-8859-1^");
+    private static Charset ZIP_CHARSET = Charset.forName("ISO-8859-1");
     private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
     private LauncherController controller;
