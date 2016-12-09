@@ -60,7 +60,7 @@ public final class IOStreamUtility {
         StringBuilder output = new StringBuilder();
 
         try (ReadableByteChannel rbc = Channels.newChannel(inputStream)) {
-            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(BYTEBUFFER_SIZE);
+            ByteBuffer byteBuffer = ByteBuffer.allocate(BYTEBUFFER_SIZE);
             CharBuffer charBuffer;
             int bytesRead = rbc.read(byteBuffer);
             while (bytesRead != -1) {
