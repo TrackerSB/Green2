@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Generates a Sepa.Pain.008.003.02.
@@ -53,6 +54,7 @@ public final class SepaPain00800302XMLGenerator {
      */
     private static final int SEPA_SHIFT_COUTRYCODE = 10;
     private static final int SEPA_CHECKSUM_MODULO = 97;
+    private static final Pattern SEPA_PATTERN = Pattern.compile("[A-Z]{2}\\d+");
 
     /**
      * Prohibit construction of an object.
@@ -73,7 +75,14 @@ public final class SepaPain00800302XMLGenerator {
             return false;
         }
 
-        String iban = ah.getIban();
+        String iban = ah.getIban().replace(" ", "");
+
+        //Check whether it CAN be a valid IBAN
+        if (!SEPA_PATTERN.matcher(iban).matches()) {
+            return false;
+        }
+
+        //Check the checksum
         int posAlphabetFirstChar
                 = ((int) iban.charAt(0)) - SEPA_SHIFT_ASCII_ALPHABET;
         int posAlphabetSecondChar
