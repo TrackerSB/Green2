@@ -44,6 +44,7 @@ import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,7 +126,7 @@ public class Main extends Application {
 
     private Login createLogin() {
         Login login;
-        if (DataProvider.useSsh()) {
+        if (DataProvider.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
             login = new SshLogin();
         } else {
             login = new DefaultLogin();
@@ -263,25 +264,28 @@ public class Main extends Application {
         if (loginInfos.isPresent()) {
             Map<LoginKey, String> loginValues = loginInfos.get();
             try {
-                if (DataProvider.useSsh()) {
+                if (DataProvider.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
                     con = new SshConnection(
-                            DataProvider.getOrDefault(
+                            DataProvider.getOrDefaultString(
                                     ConfigKey.SSH_HOST, "localhost"),
                             loginValues.get(LoginKey.SSH_USERNAME),
                             loginValues.get(LoginKey.SSH_PASSWORD),
-                            DataProvider.getOrDefault(
+                            DataProvider.getOrDefaultString(
                                     ConfigKey.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            DataProvider.getOrDefault(
-                                    ConfigKey.DATABASE_NAME, "dbname"));
+                            DataProvider.getOrDefaultString(
+                                    ConfigKey.DATABASE_NAME, "dbname"),
+                            DataProvider.getOrDefaultCharset(
+                                    ConfigKey.SSH_CHARSET,
+                                    StandardCharsets.ISO_8859_1));
                 } else {
                     con = new DefaultConnection(
-                            DataProvider.getOrDefault(
+                            DataProvider.getOrDefaultString(
                                     ConfigKey.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            DataProvider.getOrDefault(
+                            DataProvider.getOrDefaultString(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
             } catch (UnknownHostException | AuthException ex) {
@@ -440,7 +444,8 @@ public class Main extends Application {
                                     selectedMember.get(), contribution,
                                     originator.get(), sequenceType,
                                     DataProvider.SAVE_PATH + "/Sepa.xml",
-                                    DataProvider.isSepaWithBom());
+                                    DataProvider.getOrDefaultBoolean(
+                                            ConfigKey.SEPA_USE_BOM, true));
                     String message = invalidMember.stream()
                             .map(m -> m.toString())
                             .collect(Collectors.joining("\n"));

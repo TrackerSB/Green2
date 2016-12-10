@@ -22,6 +22,7 @@ import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,8 @@ public class ConfigDialogController extends CheckedController {
     private CheckBox useSSHCheckBox;
     @FXML
     private CheckBox sepaWithBomCheckBox;
+    @FXML
+    private CheckedTextField sshCharsetTextField;
     @FXML
     private CheckedTextField sshHostTextField;
     @FXML
@@ -73,35 +76,44 @@ public class ConfigDialogController extends CheckedController {
                         BooleanBinding::and));
 
         //Load settings
-        useSSHCheckBox.setSelected(DataProvider.useSsh());
+        useSSHCheckBox.setSelected(
+                DataProvider.getOrDefaultBoolean(ConfigKey.USE_SSH, true));
         sshHostTextField.setText(
-                DataProvider.getOrDefault(ConfigKey.SSH_HOST, ""));
+                DataProvider.getOrDefaultString(ConfigKey.SSH_HOST, ""));
         databaseHostTextField.setText(
-                DataProvider.getOrDefault(ConfigKey.DATABASE_HOST, ""));
+                DataProvider.getOrDefaultString(ConfigKey.DATABASE_HOST, ""));
         databaseNameTextField.setText(
-                DataProvider.getOrDefault(ConfigKey.DATABASE_NAME, ""));
+                DataProvider.getOrDefaultString(ConfigKey.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(
-                DataProvider.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
-        sepaWithBomCheckBox.setSelected(DataProvider.isSepaWithBom());
-
+                DataProvider.getOrDefaultString(
+                        ConfigKey.BIRTHDAY_EXPRESSION, ""));
+        sepaWithBomCheckBox.setSelected(
+                DataProvider.getOrDefaultBoolean(ConfigKey.SEPA_USE_BOM, true));
+        sshCharsetTextField.setText(DataProvider.getOrDefaultString(
+                ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1.name()));
     }
 
     @FXML
     private void saveSettings() {
         checkStage();
         if (isValid()) {
-            String out = ConfigKey.USE_SSH + ":"
+            String out = ConfigKey.USE_SSH + DataProvider.VALUE_SEPARATOR
                     + (useSSHCheckBox.isSelected() ? "true" : "false") + '\n'
-                    + ConfigKey.SSH_HOST + ":" + (useSSHCheckBox.isSelected()
-                            ? sshHostTextField.getText() : "noHost") + '\n'
-                    + ConfigKey.DATABASE_HOST + ":"
+                    + ConfigKey.SSH_HOST + DataProvider.VALUE_SEPARATOR
+                    + (useSSHCheckBox.isSelected()
+                    ? sshHostTextField.getText() : "noHost") + '\n'
+                    + ConfigKey.DATABASE_HOST + DataProvider.VALUE_SEPARATOR
                     + databaseHostTextField.getText() + '\n'
-                    + ConfigKey.DATABASE_NAME + ":"
+                    + ConfigKey.DATABASE_NAME + DataProvider.VALUE_SEPARATOR
                     + databaseNameTextField.getText() + '\n'
-                    + ConfigKey.BIRTHDAY_EXPRESSION + ":"
+                    + ConfigKey.BIRTHDAY_EXPRESSION
+                    + DataProvider.VALUE_SEPARATOR
                     + birthdayExpressionTextField.getText() + '\n'
-                    + ConfigKey.SEPA_USE_BOM + ":"
-                    + (sepaWithBomCheckBox.isSelected() ? "true" : "false");
+                    + ConfigKey.SEPA_USE_BOM + DataProvider.VALUE_SEPARATOR
+                    + (sepaWithBomCheckBox.isSelected() ? "true" : "false")
+                    + '\n'
+                    + ConfigKey.SSH_CHARSET + DataProvider.VALUE_SEPARATOR
+                    + sshCharsetTextField.getText();
             IOStreamUtility.printContent(out, DataProvider.CONFIGFILE_PATH, false);
             stage.close();
         }

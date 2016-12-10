@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
@@ -59,7 +60,7 @@ public final class Launcher extends Application {
     /**
      * Zipfile is currently delivered ISO-8859-1 (Latin-1) encoded.
      */
-    private static Charset ZIP_CHARSET = Charset.forName("ISO-8859-1");
+    private static Charset ZIP_CHARSET = StandardCharsets.UTF_8;
     private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
     private LauncherController controller;
@@ -170,16 +171,16 @@ public final class Launcher extends Application {
         String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
         switch (DataProvider.CURRENT_OS) {
-            case WINDOWS:
-                command = new String[]{"cscript", dirPath + "/install.vbs"};
-                break;
-            case LINUX:
-            default:
-                command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
-                    dirPath + "/uninstall.sh"};
-                new ProcessBuilder(command).start().waitFor();
+        case WINDOWS:
+            command = new String[]{"cscript", dirPath + "/install.vbs"};
+            break;
+        case LINUX:
+        default:
+            command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
+                dirPath + "/uninstall.sh"};
+            new ProcessBuilder(command).start().waitFor();
 
-                command = new String[]{"sh", dirPath + "/install.sh"};
+            command = new String[]{"sh", dirPath + "/install.sh"};
         }
 
         return new ProcessBuilder(command).start();
