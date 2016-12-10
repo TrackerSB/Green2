@@ -19,6 +19,7 @@ package bayern.steinbrecher.gruen2.data;
 import bayern.steinbrecher.gruen2.utility.URLUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,7 +131,7 @@ public final class DataProvider {
     public static final String PROGRAMFOLDER_PATH_ONLINE
             = URLUtility.resolveURL(
                     "https://traunviertler-traunwalchen.de/programme")
-            .orElse("");
+                    .orElse("");
     /**
      * The URL of the file containing the used charset of the zip and its files.
      */
@@ -196,7 +197,7 @@ public final class DataProvider {
     static {
         Set<IntFunction<Boolean>> ageFunctionParts = new HashSet<>();
         String birthdayExpression
-                = getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, "");
+                = getOrDefaultString(ConfigKey.BIRTHDAY_EXPRESSION, "");
         for (String part : Arrays.asList(birthdayExpression.split(","))) {
             if (part.isEmpty()) {
                 continue;
@@ -269,30 +270,50 @@ public final class DataProvider {
      * @return The value belonging to key {@code key} or {@code defaultValue} if
      * {@code key} could not be found or is not specified.
      */
-    public static String getOrDefault(ConfigKey key, String defaultValue) {
+    public static String getOrDefaultString(
+            ConfigKey key, String defaultValue) {
         return CONFIGURATIONS.getOrDefault(key, defaultValue);
     }
 
     /**
-     * Checks whether to use SSH or not. (Default is yes)
+     * Returns the value belonging to key {@code key} or {@code defaultValue} if
+     * {@code key} could not be found or is not specified.
      *
-     * @return {@code true} only if the connections have to use SSH.
+     * @param key The key to search for.
+     * @param defaultValue The value to return when {@code key} was not found.
+     * @return The value belonging to key {@code key} or {@code defaultValue} if
+     * {@code key} could not be found or is not specified.
      */
-    public static boolean useSsh() {
-        String key = getOrDefault(ConfigKey.USE_SSH, "true");
-        //Legacy checking for old config files containing "ja" instead of "yes".
-        return key.equalsIgnoreCase("ja") || key.equalsIgnoreCase("true");
+    public static boolean getOrDefaultBoolean(
+            ConfigKey key, boolean defaultValue) {
+        if (CONFIGURATIONS.containsKey(key)) {
+            String value = CONFIGURATIONS.get(key);
+            /*FIXME Legacy checking for old config files containing "ja" instead
+             * of "yes".
+             */
+            return value.equalsIgnoreCase("ja")
+                    || value.equalsIgnoreCase("true");
+        } else {
+            return defaultValue;
+        }
     }
 
     /**
-     * Checks whether the generated SEPA has to be UTF-8 or "UTF-8 with BOM".
+     * Returns the value belonging to key {@code key} or {@code defaultValue} if
+     * {@code key} could not be found or is not specified.
      *
-     * @return {@code true} only if the generated SEPA has to be encoding with
-     * UTF-8 with BOM.
+     * @param key The key to search for.
+     * @param defaultValue The value to return when {@code key} was not found.
+     * @return The value belonging to key {@code key} or {@code defaultValue} if
+     * {@code key} could not be found or is not specified.
      */
-    public static boolean isSepaWithBom() {
-        return getOrDefault(ConfigKey.SEPA_USE_BOM, "true")
-                .equalsIgnoreCase("true");
+    public static Charset getOrDefaultCharset(
+            ConfigKey key, Charset defaultValue) {
+        if (CONFIGURATIONS.containsKey(key)) {
+            return Charset.forName(CONFIGURATIONS.get(key));
+        } else {
+            return defaultValue;
+        }
     }
 
     /**

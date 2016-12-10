@@ -24,9 +24,8 @@ package bayern.steinbrecher.gruen2.data;
 public enum ConfigKey {
 
     /**
-     * Indicating whether to use SSH or not. Write "Ja" to use SSH.
-     *//**
-     * Indicating whether to use SSH or not. Write "Ja" to use SSH.
+     * Indicating whether to use SSH or not. Write "Yes" to use SSH. ("Ja" is
+     * also accepted because of legacy.)
      */
     USE_SSH,
     /**
@@ -49,5 +48,9 @@ public enum ConfigKey {
      * The expression to indicate which people get birthday notifications. Like
      * =50,=60,=70,=75,&gt;=80
      */
-    BIRTHDAY_EXPRESSION;
+    BIRTHDAY_EXPRESSION,
+    /**
+     * The charset used by the response of the ssh connection.
+     */
+    SSH_CHARSET;
 }
