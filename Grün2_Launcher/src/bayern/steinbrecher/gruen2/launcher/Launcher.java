@@ -24,7 +24,6 @@ import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ZipUtility;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,8 +31,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
@@ -42,8 +39,6 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
@@ -125,12 +120,12 @@ public final class Launcher extends Application {
             serv.setOnFailed(evt -> {
                 Platform.exit();
             });
-            showWindow();
+            showProgressWindow();
             serv.start();
         }
     }
 
-    private void showWindow() {
+    private void showProgressWindow() {
         try {
             FXMLLoader fxmlLoader
                     = new FXMLLoader(getClass().getResource("Launcher.fxml"));
@@ -151,75 +146,23 @@ public final class Launcher extends Application {
     }
 
     private File download() throws IOException {
-        File tempFile = Files.createTempFile(
-                null, ".zip", new FileAttribute[0])
+        File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
                 .toFile();
-        URLConnection downloadConnection
-                = new URL(DataProvider.GRUEN2_ZIP_URL)
+        URLConnection downloadConnection = new URL(DataProvider.GRUEN2_ZIP_URL)
                 .openConnection();
         long fileSize = Long.parseLong(
                 downloadConnection.getHeaderField("Content-Length"));
         long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
 
-        ReadableByteChannel rbc = Channels.newChannel(
-                downloadConnection.getInputStream());
-        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-            for (long offset = 0; offset < fileSize;
-                    offset += bytesPerLoop) {
-                fos.getChannel()
-                        .transferFrom(rbc, offset, bytesPerLoop);
-                if (controller != null) {
-                    Platform.runLater(() -> {
-                        controller.incPercentage(DOWNLOAD_STEPS);
-                    });
-                }
-            }
-        }
-        return tempFile;
-    }
-
-    private File unzip(File zippedFile) throws IOException {
-        File zipOutFolder = Files.createTempDirectory(
-                null, new FileAttribute[0])
-                .toFile();
-        /*try {
-            ZipFile zipFile = new ZipFile(zippedFile.getAbsolutePath());
-            zipFile.extractAll(tempDir.toString());
-        } catch (ZipException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }*/
-        try (ZipInputStream zis = new ZipInputStream(
-                new FileInputStream(zippedFile))) {
-            ZipEntry zipEntry = zis.getNextEntry();
-
-            while (zipEntry != null) {
-                File unzippedFile
-                        = new File(zipOutFolder + "/" + zipEntry.getName());
-
-                unzippedFile.getParentFile().mkdirs();
-
-                try (FileOutputStream fos
-                        = new FileOutputStream(unzippedFile)) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
+        IOStreamUtility.transfer(downloadConnection.getInputStream(),
+                new FileOutputStream(tempFile), fileSize, bytesPerLoop, () -> {
+                    if (controller != null) {
+                        Platform.runLater(() -> {
+                            controller.incPercentage(DOWNLOAD_STEPS);
+                        });
                     }
-                }
-                zipEntry = zis.getNextEntry();
-            }
-
-            zis.closeEntry();
-        } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        } catch(Exception ex){
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-
-        return zipOutFolder;
+                });
+        return tempFile;
     }
 
     private Process install(File downloadedDir)
@@ -227,16 +170,16 @@ public final class Launcher extends Application {
         String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
         switch (DataProvider.CURRENT_OS) {
-        case WINDOWS:
-            command = new String[]{"cscript", dirPath + "/install.vbs"};
-            break;
-        case LINUX:
-        default:
-            command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
-                dirPath + "/uninstall.sh"};
-            new ProcessBuilder(command).start().waitFor();
+            case WINDOWS:
+                command = new String[]{"cscript", dirPath + "/install.vbs"};
+                break;
+            case LINUX:
+            default:
+                command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
+                    dirPath + "/uninstall.sh"};
+                new ProcessBuilder(command).start().waitFor();
 
-            command = new String[]{"sh", dirPath + "/install.sh"};
+                command = new String[]{"sh", dirPath + "/install.sh"};
         }
 
         return new ProcessBuilder(command).start();
@@ -272,32 +215,26 @@ public final class Launcher extends Application {
 
                 String errorMessage;
                 try (InputStream errorStream = installer.getErrorStream()) {
-                    errorMessage = IOStreamUtility.readAll(errorStream);
-
+                    errorMessage = IOStreamUtility.readAll(
+                            errorStream, Charset.defaultCharset());
                 }
                 if (!errorMessage.isEmpty()) {
-                    Logger.getLogger(Launcher.class
-                            .getName())
+                    Logger.getLogger(Launcher.class.getName())
                             .log(Level.WARNING,
-                                    "The installer got follwing error: {0}",
+                                    "The installer got follwing error:\n{0}",
                                     errorMessage);
-                    gotInstalled = false;
                 }
 
                 if (gotInstalled) {
                     VersionHandler.updateLocalVersion(newVersion);
                     Collector.sendData();
-
                 }
-            } catch (MalformedURLException | FileNotFoundException |
-                    InterruptedException ex) {
-                Logger.getLogger(Launcher.class
-                        .getName())
+            } catch (MalformedURLException | FileNotFoundException
+                    | InterruptedException ex) {
+                Logger.getLogger(Launcher.class.getName())
                         .log(Level.SEVERE, null, ex);
-
             } catch (IOException ex) {
-                Logger.getLogger(Launcher.class
-                        .getName())
+                Logger.getLogger(Launcher.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
             return null;

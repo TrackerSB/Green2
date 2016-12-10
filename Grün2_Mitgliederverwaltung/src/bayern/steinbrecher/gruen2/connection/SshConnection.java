@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +67,10 @@ public final class SshConnection extends DBConnection {
      * The ssh session used to connect to the database over a secure channel.
      */
     private final Session sshSession;
+    /**
+     * The charset used by ssh response.
+     */
+    private final Charset charset;
 
     static {
         //Configurations which are applieid to all sessions.
@@ -92,24 +97,26 @@ public final class SshConnection extends DBConnection {
      * @param databaseUsername The username for the database.
      * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
+     * @param charset The charset used by ssh response.
      * @throws AuthException Thrown if some of username, password or host is
      * wrong or not reachable.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      */
     public SshConnection(String sshHost, String sshUsername,
             String sshPassword, String databaseHost, String databaseUsername,
-            String databasePasswd, String databaseName)
+            String databasePasswd, String databaseName, Charset charset)
             throws AuthException, UnknownHostException {
         this.databaseHost = databaseHost;
         this.databaseUsername = databaseUsername;
         this.databasePasswd = databasePasswd;
         this.databaseName = databaseName;
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
+        this.charset = charset;
 
         try {
             this.sshSession.connect();
 
-            //Check host connection
+            //Check sql-host connection
             execQuery("SELECT 1");
         } catch (SQLException | JSchException ex) {
             close();
@@ -165,7 +172,7 @@ public final class SshConnection extends DBConnection {
 
             channel.connect();
 
-            String result = IOStreamUtility.readAll(in);
+            String result = IOStreamUtility.readAll(in, charset);
 
             String errorMessage = errStream.toString();
             if (result == null

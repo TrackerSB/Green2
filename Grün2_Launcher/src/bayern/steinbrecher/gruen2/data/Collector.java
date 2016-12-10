@@ -31,6 +31,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -50,6 +51,7 @@ public final class Collector {
 
     private static URL POST_URL; //FIXME Should be final
     private static boolean preparedToSend = false;
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     static {
         Optional<String> resolvedURL = URLUtility.resolveURL(
@@ -108,8 +110,7 @@ public final class Collector {
                         String.valueOf(values.length()));
 
                 try (OutputStreamWriter writer = new OutputStreamWriter(
-                        connection.getOutputStream(),
-                        Charset.forName("UTF-8"))) {
+                        connection.getOutputStream(), CHARSET)) {
                     writer.write(values);
                     wasSent = true;
                 }
@@ -117,7 +118,7 @@ public final class Collector {
                 //FIXME POST only successful when getInputStream() is called
                 String response;
                 try (InputStream inputStream = connection.getInputStream()) {
-                    response = IOStreamUtility.readAll(inputStream);
+                    response = IOStreamUtility.readAll(inputStream, CHARSET);
                 }
                 if (!response.isEmpty()) {
                     Logger.getLogger(Collector.class.getName())

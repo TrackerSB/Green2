@@ -53,20 +53,15 @@ public final class ZipUtility {
         String outDirPath = outputDir.getAbsolutePath();
         try (ZipInputStream zis = new ZipInputStream(
                 new FileInputStream(zippedFile), charset);
-                InputStreamReader isr
-                = new InputStreamReader(zis, charset)) {
+                InputStreamReader isr = new InputStreamReader(zis, charset)) {
             ZipEntry zipEntry;
-            char[] buffer = new char[1024];
             while ((zipEntry = zis.getNextEntry()) != null) {
                 File unzippedFile
                         = new File(outDirPath + "/" + zipEntry.getName());
                 unzippedFile.getParentFile().mkdirs();
-                try (OutputStreamWriter ows = new OutputStreamWriter(
+                try (OutputStreamWriter osw = new OutputStreamWriter(
                         new FileOutputStream(unzippedFile), charset)) {
-                    int bytesRead;
-                    while ((bytesRead = isr.read(buffer)) > 0) {
-                        ows.write(buffer, 0, bytesRead);
-                    }
+                    IOStreamUtility.transfer(isr, osw);
                 }
             }
         }
