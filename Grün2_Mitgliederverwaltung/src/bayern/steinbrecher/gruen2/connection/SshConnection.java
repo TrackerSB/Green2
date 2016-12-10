@@ -161,9 +161,11 @@ public final class SshConnection extends DBConnection {
                     + " -p" + databasePasswd
                     + " -h" + databaseHost
                     + " -e'" + sqlCode + "' " + databaseName);
-            String result = IOStreamUtility.readAll(channel.getInputStream());
+            InputStream in = channel.getInputStream();
 
             channel.connect();
+
+            String result = IOStreamUtility.readAll(in);
 
             String errorMessage = errStream.toString();
             if (result == null
