@@ -109,7 +109,7 @@ public final class SshConnection extends DBConnection {
         try {
             this.sshSession.connect();
 
-            //Check authentification
+            //Check host connection
             execQuery("SELECT 1");
         } catch (SQLException | JSchException ex) {
             close();
@@ -152,10 +152,11 @@ public final class SshConnection extends DBConnection {
     @Override
     public List<List<String>> execQuery(String sqlCode) throws SQLException {
         try {
-            Channel channel = sshSession.openChannel("exec");
+            ChannelExec channel = (ChannelExec) sshSession.openChannel("exec");
             ByteArrayOutputStream errStream = new ByteArrayOutputStream();
-            ((ChannelExec) channel).setErrStream(errStream);
-            ((ChannelExec) channel).setCommand("mysql"
+            channel.setErrStream(errStream);
+            channel.setInputStream(null);
+            channel.setCommand("mysql"
                     + " -u" + databaseUsername
                     + " -p" + databasePasswd
                     + " -h" + databaseHost
