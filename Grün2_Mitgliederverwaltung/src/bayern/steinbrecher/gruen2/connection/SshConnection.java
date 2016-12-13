@@ -124,7 +124,7 @@ public final class SshConnection extends DBConnection {
                     && !ex.getMessage().contains("Auth")) {
                 throw new UnknownHostException(ex.getMessage());
             } else {
-                throw new AuthException();
+                throw new AuthException("Auth fail", ex);
             }
         }
     }

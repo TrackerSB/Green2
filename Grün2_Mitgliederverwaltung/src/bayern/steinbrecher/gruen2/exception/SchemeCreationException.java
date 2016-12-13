@@ -17,40 +17,41 @@
 package bayern.steinbrecher.gruen2.exception;
 
 /**
- * Indicating that a try to authenticate somewhere failed.
+ * Indicating that a database scheme could not be created.
  *
  * @author Stefan Huber
  */
-public class AuthException extends Exception {
+public class SchemeCreationException extends RuntimeException {
 
     /**
-     * Erstellt eine {@code AuthException}, welche weder eine Detalinachricht
-     * noch einen Grund für ihr Auftreten enthält.
+     * Erstellt eine {@code SchemeCreationException}, welche weder eine
+     * Detalinachricht noch einen Grund für ihr Auftreten enthält.
      */
-    public AuthException() {
+    public SchemeCreationException() {
         super();
     }
 
     /**
-     * Erstellt eine {@code AuthException}, welche die Datailnachricht
+     * Erstellt eine {@code SchemeCreationException}, welche die Datailnachricht
      * {@code message} enthält, jedoch keinen Grund für ihr Auftreten.
      *
      * @param message Die Detailnachricht, die weitere Informationen zum Fehler
      * geben kann.
      */
-    public AuthException(String message) {
+    public SchemeCreationException(String message) {
         super(message);
     }
 
     /**
-     * Erstellt eine {@code AuthException} mit gegebener Detailnachricht
-     * {@code message} und dem Grund {@code cause} für ihr Auftreten.
+     * Erstellt eine {@code SchemeCreationException} mit gegebener
+     * Detailnachricht {@code message} und dem Grund {@code cause} für ihr
+     * Auftreten.
      *
      * @param message Die Detailnachricht, die weitere Informationen zum Fehler
      * geben kann.
      * @param cause Der Grund weswegen der Fehler ausgelöst wurde.
      */
-    public AuthException(String message, Throwable cause) {
+    public SchemeCreationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

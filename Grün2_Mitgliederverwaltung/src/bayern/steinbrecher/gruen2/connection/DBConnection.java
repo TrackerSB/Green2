@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.connection;
 
+import bayern.steinbrecher.gruen2.exception.SchemeCreationException;
 import bayern.steinbrecher.gruen2.generator.MemberGenerator;
 import bayern.steinbrecher.gruen2.menu.Menu;
 import bayern.steinbrecher.gruen2.people.Member;
@@ -133,15 +134,10 @@ public abstract class DBConnection implements AutoCloseable {
         if (!tablesExist()) {
             try {
                 execUpdate(CREATE_MITGLIEDER);
-            } catch (SQLException ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
-            try {
                 execUpdate(CREATE_SPITZNAMEN);
             } catch (SQLException ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                throw new SchemeCreationException(
+                        "Could not create database tables", ex);
             }
         }
     }

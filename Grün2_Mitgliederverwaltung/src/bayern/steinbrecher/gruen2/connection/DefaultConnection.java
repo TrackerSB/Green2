@@ -21,6 +21,7 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import java.net.UnknownHostException;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -92,25 +93,28 @@ public final class DefaultConnection extends DBConnection {
      */
     @Override
     public List<List<String>> execQuery(String sqlCode) throws SQLException {
-        ResultSet resultset = connection.prepareStatement(sqlCode)
-                .executeQuery();
+        try (PreparedStatement preparedStatement
+                = connection.prepareStatement(sqlCode)) {
+            ResultSet resultset = preparedStatement.executeQuery();
 
-        List<List<String>> resultTable = new ArrayList<>();
-        List<String> labels = new ArrayList<>();
-        for (int i = 1; i <= resultset.getMetaData().getColumnCount(); i++) {
-            labels.add(resultset.getMetaData().getColumnLabel(i));
-        }
-        resultTable.add(labels);
-
-        while (resultset.next()) {
-            List<String> columns = new ArrayList<>();
-            for (String l : labels) {
-                columns.add(resultset.getString(l));
+            List<List<String>> resultTable = new ArrayList<>();
+            List<String> labels = new ArrayList<>();
+            for (int i = 1; i <= resultset.getMetaData()
+                    .getColumnCount(); i++) {
+                labels.add(resultset.getMetaData().getColumnLabel(i));
             }
-            resultTable.add(columns);
-        }
+            resultTable.add(labels);
 
-        return resultTable;
+            while (resultset.next()) {
+                List<String> columns = new ArrayList<>();
+                for (String l : labels) {
+                    columns.add(resultset.getString(l));
+                }
+                resultTable.add(columns);
+            }
+
+            return resultTable;
+        }
     }
 
     /**
@@ -118,7 +122,10 @@ public final class DefaultConnection extends DBConnection {
      */
     @Override
     public void execUpdate(String sqlCode) throws SQLException {
-        connection.prepareStatement(sqlCode).executeUpdate();
+        try (PreparedStatement preparedStatement
+                = connection.prepareStatement(sqlCode)) {
+            preparedStatement.executeUpdate();
+        }
     }
 
     /**

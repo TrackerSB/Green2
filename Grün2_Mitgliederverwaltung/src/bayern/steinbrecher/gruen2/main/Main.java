@@ -173,12 +173,12 @@ public class Main extends Application {
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                            if (newVal) {
-                                waitScreen.close();
-                            } else {
-                                Platform.exit();
-                            }
-                        });
+                    if (newVal) {
+                        waitScreen.close();
+                    } else {
+                        Platform.exit();
+                    }
+                });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -313,7 +313,7 @@ public class Main extends Application {
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
                 .forEach(y -> memberBirthday.put(
-                y, exserv.submit(() -> getBirthdayMember(y))));
+                        y, exserv.submit(() -> getBirthdayMember(y))));
         memberNonContributionfree = exserv.submit(() -> member.get()
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
@@ -345,8 +345,9 @@ public class Main extends Application {
                         DataProvider.getResourceValue("noMemberForOutput"))
                         .showOnceAndWait();
             } else {
-                IOStreamUtility.printContent(AddressGenerator.generateAddressData(
-                        member, nicknames.get()), filename, true);
+                IOStreamUtility.printContent(
+                        AddressGenerator.generateAddressData(
+                                member, nicknames.get()), filename, true);
             }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -544,7 +545,7 @@ public class Main extends Application {
         try {
             badIban = member.get().parallelStream()
                     .filter(m -> !SepaPain00800302XMLGenerator
-                    .hasValidIban(m.getAccountHolder()))
+                            .hasValidIban(m.getAccountHolder()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName())
@@ -573,7 +574,7 @@ public class Main extends Application {
             String message = member.get().parallelStream()
                     .filter(m -> dateFunction.apply(m) == null)
                     .map(m -> m.toString()
-                    + ": \"" + dateFunction.apply(m) + "\"")
+                            + ": \"" + dateFunction.apply(m) + "\"")
                     .collect(Collectors.joining("\n"));
             return message.isEmpty() ? allCorrectMessage
                     : invalidDatesIntro + "\n" + message;

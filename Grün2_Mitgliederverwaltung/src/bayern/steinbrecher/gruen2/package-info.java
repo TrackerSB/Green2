@@ -3,7 +3,9 @@
  *
  * For using Grün2 you need a MySQL database with at least the following tables
  * and attributes. (Grün2 creates these tables for you if they not already
- * exist)
+ * exist). This means at least for the first login you have to use an account
+ * which is allowed to create tables. After the scheme is created you can use a
+ * readonly account.
  * <ol>
  * <li>Mitglieder
  * <ul>
