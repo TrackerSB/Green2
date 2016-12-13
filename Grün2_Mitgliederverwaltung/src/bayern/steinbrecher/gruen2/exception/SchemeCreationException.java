@@ -21,7 +21,7 @@ package bayern.steinbrecher.gruen2.exception;
  *
  * @author Stefan Huber
  */
-public class SchemeCreationException extends RuntimeException {
+public class SchemeCreationException extends Exception {
 
     /**
      * Erstellt eine {@code SchemeCreationException}, welche weder eine

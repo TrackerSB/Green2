@@ -129,8 +129,11 @@ public abstract class DBConnection implements AutoCloseable {
     /**
      * Creates table &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; if
      * they not already exist.
+     *
+     * @throws SchemeCreationException Thrown, only if there are tables missing
+     * in the database and they could not be created.
      */
-    public void createTablesIfNeeded() {
+    public void createTablesIfNeeded() throws SchemeCreationException {
         if (!tablesExist()) {
             try {
                 execUpdate(CREATE_MITGLIEDER);

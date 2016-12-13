@@ -28,6 +28,7 @@ import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
 import bayern.steinbrecher.gruen2.exception.AuthException;
+import bayern.steinbrecher.gruen2.exception.SchemeCreationException;
 import bayern.steinbrecher.gruen2.generator.AddressGenerator;
 import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.generator.sepa.SepaPain00800302XMLGenerator;
@@ -167,7 +168,17 @@ public class Main extends Application {
                     = connectionService.getValue();
             if (optDBConnection.isPresent()) {
                 dbConnection = optDBConnection.get();
-                dbConnection.createTablesIfNeeded();
+                try {
+                    dbConnection.createTablesIfNeeded();
+                } catch (SchemeCreationException ex) {
+                    ConfirmDialog.createDialog(menuStage, null,
+                            DataProvider.getResourceValue(
+                                    "couldntCreateScheme"))
+                            .showOnceAndWait();
+                    Logger.getLogger(Main.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                    Platform.exit();
+                }
 
                 executeQueries();
 
