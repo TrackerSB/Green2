@@ -94,8 +94,8 @@ public class AddressGenerator {
      */
     private static String createOutput(List<Member> member,
             List<String> salutations) {
-        StringBuilder output = new StringBuilder(
-                "Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Anrede\n");
+        StringBuilder output = new StringBuilder("Vorname;Nachname;Strasse;"
+                + "Hausnummer;PLZ;Ort;Geburtstag;Anrede\n");
         for (int i = 0; i < member.size(); i++) {
             Person currentPerson = member.get(i).getPerson();
             Address currentAddress = member.get(i).getHome();
@@ -105,6 +105,7 @@ public class AddressGenerator {
                     .append(currentAddress.getHousenumber()).append(';')
                     .append(currentAddress.getPostcode()).append(';')
                     .append(currentAddress.getPlace()).append(';')
+                    .append(currentPerson.getBirthday()).append(';')
                     .append(salutations.get(i)).append('\n');
         }
         output.deleteCharAt(output.length() - 1);
