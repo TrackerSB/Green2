@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
+I
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -55,6 +56,8 @@ import javafx.stage.StageStyle;
  *
  * @author Stefan Huber
  */
+
+
 public final class Launcher extends Application {
 
     /**
@@ -230,11 +233,7 @@ public final class Launcher extends Application {
                     VersionHandler.updateLocalVersion(newVersion);
                     Collector.sendData();
                 }
-            } catch (MalformedURLException | FileNotFoundException
-                    | InterruptedException ex) {
-                Logger.getLogger(Launcher.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (InterruptedException | IOException ex) {
                 Logger.getLogger(Launcher.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
