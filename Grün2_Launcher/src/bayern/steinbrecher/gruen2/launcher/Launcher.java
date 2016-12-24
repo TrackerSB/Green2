@@ -35,7 +35,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
-I
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -55,8 +54,6 @@ import javafx.stage.StageStyle;
  *
  * @author Stefan Huber
  */
-
-
 public final class Launcher extends Application {
 
     /**
