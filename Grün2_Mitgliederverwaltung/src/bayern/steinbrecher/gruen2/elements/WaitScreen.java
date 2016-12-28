@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.elements;
 
+import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.stream.IntStream;
@@ -42,7 +43,7 @@ import javafx.util.Duration;
  *
  * @author Stefan Huber
  */
-public class WaitScreen extends View {
+public class WaitScreen extends View<Controller> {
 
     private static final int CORNERCOUNT = 6;
     private static final double ANGLE = 360.0 / CORNERCOUNT;
@@ -53,6 +54,8 @@ public class WaitScreen extends View {
     private static final int VERTICAL_COUNT = 5;
     private static final int HORIZONTAL_COUNT = 9;
     private static final Duration DURATION_ANIMATION = Duration.millis(600);
+    private static final Duration DURATION_ANIMATION_HALF
+            = DURATION_ANIMATION.divide(2);
     private static final Duration DURATION_PAUSE = Duration.seconds(3);
     private static final int DELAY = 200;
     private static final double START_OPACITY = 0.5;
@@ -87,56 +90,68 @@ public class WaitScreen extends View {
             int shorten = (row + 1) % 2;
             double yCoo = row * DIAMETER + RADIUS
                     - 1.5 * row * RADIUS / CORNERCOUNT;
-            IntStream.range(0, HORIZONTAL_COUNT - shorten).parallel().forEach(column -> {
-                double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
-                Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
-                p.setOpacity(START_OPACITY);
-                p.setFill(Color.FORESTGREEN);
+            IntStream.range(0, HORIZONTAL_COUNT - shorten)
+                    .parallel()
+                    .forEach(column -> {
+                        double xCoo
+                                = column * DIAMETER + (shorten + 1) * RADIUS;
+                        Polygon p = createHexagon(
+                                new Point2D(xCoo, yCoo), RADIUS);
+                        p.setOpacity(START_OPACITY);
+                        p.setFill(Color.FORESTGREEN);
 
-                RotateTransition rt1
-                        = new RotateTransition(DURATION_ANIMATION, p);
-                rt1.setByAngle(ANGLE / 2);
-                FadeTransition ft11
-                        = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft11.setFromValue(START_OPACITY);
-                ft11.setToValue(CENTER_OPACITY);
-                FadeTransition ft12
-                        = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft12.setFromValue(CENTER_OPACITY);
-                ft12.setToValue(START_OPACITY);
-                SequentialTransition st1 = new SequentialTransition(ft11, ft12);
-                ParallelTransition plt1 = new ParallelTransition(rt1, st1);
+                        RotateTransition rt1
+                                = new RotateTransition(DURATION_ANIMATION, p);
+                        rt1.setByAngle(ANGLE / 2);
+                        FadeTransition ft11 = new FadeTransition(
+                                DURATION_ANIMATION_HALF, p);
+                        ft11.setFromValue(START_OPACITY);
+                        ft11.setToValue(CENTER_OPACITY);
+                        FadeTransition ft12 = new FadeTransition(
+                                DURATION_ANIMATION_HALF, p);
+                        ft12.setFromValue(CENTER_OPACITY);
+                        ft12.setToValue(START_OPACITY);
+                        SequentialTransition st1
+                                = new SequentialTransition(ft11, ft12);
+                        ParallelTransition plt1
+                                = new ParallelTransition(rt1, st1);
 
-                PauseTransition pt1 = new PauseTransition(DURATION_PAUSE);
+                        PauseTransition pt1
+                                = new PauseTransition(DURATION_PAUSE);
 
-                RotateTransition rt2
-                        = new RotateTransition(DURATION_ANIMATION, p);
-                rt2.setByAngle(ANGLE / 2);
-                FadeTransition ft21
-                        = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft21.setFromValue(START_OPACITY);
-                ft21.setToValue(CENTER_OPACITY);
-                FadeTransition ft22
-                        = new FadeTransition(DURATION_ANIMATION.divide(2), p);
-                ft22.setFromValue(START_OPACITY);
-                ft22.setToValue(CENTER_OPACITY);
-                SequentialTransition st2 = new SequentialTransition(ft11, ft12);
-                ParallelTransition plt2 = new ParallelTransition(rt2, st2);
+                        RotateTransition rt2
+                                = new RotateTransition(DURATION_ANIMATION, p);
+                        rt2.setByAngle(ANGLE / 2);
+                        FadeTransition ft21 = new FadeTransition(
+                                DURATION_ANIMATION_HALF, p);
+                        ft21.setFromValue(START_OPACITY);
+                        ft21.setToValue(CENTER_OPACITY);
+                        FadeTransition ft22 = new FadeTransition(
+                                DURATION_ANIMATION_HALF, p);
+                        ft22.setFromValue(START_OPACITY);
+                        ft22.setToValue(CENTER_OPACITY);
+                        SequentialTransition st2
+                                = new SequentialTransition(ft11, ft12);
+                        ParallelTransition plt2
+                                = new ParallelTransition(rt2, st2);
 
-                PauseTransition pt2 = new PauseTransition(DURATION_PAUSE);
+                        PauseTransition pt2
+                                = new PauseTransition(DURATION_PAUSE);
 
-                SequentialTransition sequence
-                        = new SequentialTransition(plt1, pt1, plt2, pt2);
-                sequence.setDelay(Duration.millis((column + row) * DELAY));
-                sequence.setCycleCount(Animation.INDEFINITE);
+                        SequentialTransition sequence
+                                = new SequentialTransition(
+                                        plt1, pt1, plt2, pt2);
+                        sequence.setDelay(
+                                Duration.millis((column + row) * DELAY));
+                        sequence.setCycleCount(Animation.INDEFINITE);
 
-                synchronized (root) {
-                    root.getChildren().add(p);
-                }
-                synchronized (overallTransition) {
-                    overallTransition.getChildren().add(sequence);
-                }
-            });
+                        synchronized (root) {
+                            root.getChildren().add(p);
+                        }
+                        synchronized (overallTransition) {
+                            overallTransition.getChildren().add(sequence);
+                        }
+                    });
         });
 
         overallTransition.play();
@@ -191,6 +206,6 @@ public class WaitScreen extends View {
     @Override
     public BooleanBinding wouldShowBinding() {
         throw new UnsupportedOperationException(
-                "WaitScreen does not use onlyShowOnce()");
+                "WaitScreen does not use showOnceAndWait()");
     }
 }

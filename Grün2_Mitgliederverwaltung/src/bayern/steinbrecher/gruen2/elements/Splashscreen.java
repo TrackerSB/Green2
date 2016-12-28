@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.elements;
 
+import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
@@ -34,7 +35,7 @@ import javafx.stage.StageStyle;
  *
  * @author Stefan Huber
  */
-public class Splashscreen extends View {
+public class Splashscreen extends View<Controller> {
 
     /**
      * {@inheritDoc}

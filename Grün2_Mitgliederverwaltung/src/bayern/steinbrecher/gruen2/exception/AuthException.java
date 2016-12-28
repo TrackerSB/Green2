@@ -23,6 +23,8 @@ package bayern.steinbrecher.gruen2.exception;
  */
 public class AuthException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Erstellt eine {@code AuthException}, welche weder eine Detalinachricht
      * noch einen Grund für ihr Auftreten enthält.

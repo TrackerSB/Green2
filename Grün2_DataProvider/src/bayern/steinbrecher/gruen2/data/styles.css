@@ -17,6 +17,10 @@
     -fx-default-button: -fx-focus-color;
 }
 
+.button:hover{
+    -fx-font-color: white;
+}
+
 .date-picker, .text-field{
     -fx-highlight-fill: -fx-main-color;
     -fx-border-color: transparent;
@@ -25,7 +29,8 @@
     -fx-min-width: 250px;
 }
 
-.emptyTextField, .toLongContent, .invalidDate, .invalidSpinnerValue, .unmatchRegex{
+.emptyTextField, .toLongContent, .invalidDate, .invalidSpinnerValue,
+.unmatchRegex{
     -fx-border-color: -fx-main-error-color;
     -fx-highlight-fill: -fx-main-error-color;
     -fx-focus-color: -fx-main-error-color;
@@ -111,4 +116,8 @@
 
 .progress-bar{
     -fx-accent: -fx-main-color;
+}
+
+.heading{
+    -fx-font-weight: bold;
 }

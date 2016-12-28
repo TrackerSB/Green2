@@ -5,25 +5,54 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import bayern.steinbrecher.gruen2.elements.*?>
 
-<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="10" fx:controller="bayern.steinbrecher.gruen2.menu.MenuController">
-    <VBox spacing="10">
-        <Label text="%allAboutSepa" />
-        <Button fx:id="generateContribution" onAction="#generateContributionSepa" text="%contributions" />
-        <Button fx:id="generateUniversalSepa" onAction="#generateUniversalSepa" text="%arbitrarySepaDirectDebit" />
-        <Button fx:id="checkData" onAction="#checkData" text="%checkData" />
-    </VBox>
-    <VBox spacing="10">
-        <Label text="%getAddressesForWord" />
-        <Button fx:id="generateAllAddresses" onAction="#generateAddressesAll" text="Von allen Mitgliedern" />
-        <Button fx:id="generateAddressesBirthdayLastYear" onAction="#generateAddressesBirthdayLastYear" />
-        <Button fx:id="generateAddressesBirthdayThisYear" onAction="#generateAddressesBirthdayThisYear" />
-        <Button fx:id="generateAddressesBirthdayNextYear" onAction="#generateAddressesBirthdayNextYear" />
-    </VBox>
-    <VBox spacing="10">
-        <Label text="Informationen holen:" />
-        <Button fx:id="generateBirthdayLastYearInfos" onAction="#generateBirthdayLastYearInfos" />
-        <Button fx:id="generateBirthdayThisYearInfos" onAction="#generateBirthdayThisYearInfos" />
-        <Button fx:id="generateBirthdayNextYearInfos" onAction="#generateBirthdayNextYearInfos" />
-    </VBox>
-</HBox>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      spacing="10"
+      fx:controller="bayern.steinbrecher.gruen2.menu.MenuController">
+    <HBox spacing="10">
+        <Label text="%year" />
+        <CheckedIntegerSpinner fx:id="yearSpinner"
+                               min="0"
+                               max="5000"
+                               amountToStepBy="1"
+                               editable="true" />
+        <Label visible="${!yearSpinner.valid}"
+               text="%invalidOrMissingInput"
+               styleClass="warningLabel" />
+    </HBox>
+    <HBox spacing="10">
+        <VBox spacing="10">
+            <Label text="%allAboutSepa"
+                   styleClass="heading" />
+            <Button fx:id="generateContribution"
+                    onAction="#generateContributionSepa"
+                    text="%contributions" />
+            <Button fx:id="generateUniversalSepa"
+                    onAction="#generateUniversalSepa"
+                    text="%arbitrarySepaDirectDebit" />
+            <Button fx:id="checkData"
+                    onAction="#checkData"
+                    text="%checkData" />
+        </VBox>
+        <VBox spacing="10">
+            <Label text="%getAddressesForWord"
+                   styleClass="heading" />
+            <Button fx:id="generateAllAddresses"
+                    onAction="#generateAddressesAll"
+                    text="%ofAllMember" />
+            <Button fx:id="generateAddressesBirthday"
+                    onAction="#generateAddressesBirthday"
+                    text="%birthdayExpression"
+                    disable="${!yearSpinner.valid}" />
+        </VBox>
+        <VBox spacing="10">
+            <Label text="%getInformations"
+                   styleClass="heading" />
+            <Button fx:id="generateBirthdayInfos"
+                    onAction="#generateBirthdayInfos"
+                    text="%groupedBirthdayMember"
+                    disable="${!yearSpinner.valid}" />
+        </VBox>
+    </HBox>
+</VBox>

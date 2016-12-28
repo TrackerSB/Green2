@@ -47,6 +47,8 @@ public class Originator {
             purpose,
             filename;
     private static final Properties DEFAULT_PROPERTIES = new Properties() {
+        private static final long serialVersionUID = 1L;
+
         {
             put("creator", "");
             put("creditor", "");
@@ -115,8 +117,8 @@ public class Originator {
                                                 + " in {0} defined. Gets "
                                                 + "skipped.", f.getType());
                             }
-                        } catch (IllegalArgumentException |
-                                IllegalAccessException ex) {
+                        } catch (IllegalArgumentException
+                                | IllegalAccessException ex) {
                             Logger.getLogger(Originator.class.getName())
                                     .log(Level.WARNING, null, ex);
                         }
@@ -142,8 +144,8 @@ public class Originator {
                     try {
                         originatorProps.put(
                                 f.getName(), f.get(this).toString());
-                    } catch (IllegalArgumentException |
-                            IllegalAccessException ex) {
+                    } catch (IllegalArgumentException
+                            | IllegalAccessException ex) {
                         Logger.getLogger(Originator.class.getName())
                                 .log(Level.WARNING, null, ex);
                     }

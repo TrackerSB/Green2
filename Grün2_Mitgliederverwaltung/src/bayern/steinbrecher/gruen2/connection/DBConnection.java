@@ -191,10 +191,15 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean checkColumn(String table, String column) {
         try {
-            execQuery("SELECT " + column + " FROM " + table + ";");
-            return true;
-            //FIXME Avoid using SQLException as control flow.
+            List<String> headings
+                    = execQuery("SELECT * FROM " + table + " WHERE 0;")
+                            .get(0);
+            return headings.stream()
+                    .map(s -> s.toLowerCase())
+                    .anyMatch(s -> s.equalsIgnoreCase(column));
         } catch (SQLException ex) {
+            Logger.getLogger(DBConnection.class.getName())
+                    .log(Level.SEVERE, null, ex);
             return false;
         }
     }

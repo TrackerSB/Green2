@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.elements;
 
+import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import java.util.logging.Level;
@@ -35,7 +36,7 @@ import javafx.stage.Window;
  *
  * @author Stefan Huber
  */
-public class ConfirmDialog extends View {
+public class ConfirmDialog extends View<Controller> {
 
     private static final int MIN_WIDTH = 250;
     private static final int MIN_HEIGHT = 100;

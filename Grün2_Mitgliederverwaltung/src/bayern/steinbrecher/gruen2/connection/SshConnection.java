@@ -136,7 +136,7 @@ public final class SshConnection extends DBConnection {
      * @param sshUsername The username used to login.
      * @param sshPassword The password used to login.
      * @return A Session representing the ssh connection.
-     * @throws JSchException Thrown if some of username, password or host is
+     * @throws AuthException Thrown if some of username, password or host is
      * wrong or unreachable.
      */
     private Session createSshSession(String sshHost, String sshUsername,
@@ -181,7 +181,6 @@ public final class SshConnection extends DBConnection {
             }
             String[] rows = result.split("\n");
             List<List<String>> resultTable = Arrays.stream(rows)
-                    .parallel()
                     .map(row -> splitUp(row, '\t'))
                     .collect(Collectors.toList());
 
@@ -228,10 +227,6 @@ public final class SshConnection extends DBConnection {
      * any element of the returned list. When two or more regex are right in a
      * row an empty {@code String} will be added. (This is the main difference
      * to {@code String.split(...)})
-     *
-     * @param row
-     * @param regex
-     * @return
      */
     private List<String> splitUp(String row, char regex) {
         List<String> columns = new ArrayList<>();

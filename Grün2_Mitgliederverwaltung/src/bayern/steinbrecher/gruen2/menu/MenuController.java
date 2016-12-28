@@ -17,14 +17,11 @@
 package bayern.steinbrecher.gruen2.menu;
 
 import bayern.steinbrecher.gruen2.Controller;
-import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.elements.CheckedIntegerSpinner;
 import bayern.steinbrecher.gruen2.main.Main;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -46,24 +43,19 @@ public class MenuController extends Controller {
     @FXML
     private Button checkData;
     @FXML
-    private Button generateAddressesBirthdayLastYear;
+    private Button generateAddressesBirthday;
     @FXML
-    private Button generateAddressesBirthdayThisYear;
+    private Button generateBirthdayInfos;
     @FXML
-    private Button generateAddressesBirthdayNextYear;
-    @FXML
-    private Button generateBirthdayLastYearInfos;
-    @FXML
-    private Button generateBirthdayThisYearInfos;
-    @FXML
-    private Button generateBirthdayNextYearInfos;
+    private CheckedIntegerSpinner yearSpinner;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        List<Object[]> params = IntStream.rangeClosed(CURRENT_YEAR - 1, CURRENT_YEAR + 1)
+        yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
+        /*List<Object[]> params = IntStream.rangeClosed(CURRENT_YEAR - 1, CURRENT_YEAR + 1)
                 .boxed()
                 .map(i -> new Object[]{i})
                 .collect(Collectors.toList());
@@ -78,7 +70,7 @@ public class MenuController extends Controller {
             generateBirthdayThisYearInfos, generateBirthdayNextYearInfos};
         for (int i = 0; i < buttons.length; i++) {
             buttons[i].setText(values.get(i));
-        }
+        }*/
     }
 
     /**
@@ -130,50 +122,18 @@ public class MenuController extends Controller {
     }
 
     @FXML
-    private void generateAddressesBirthdayLastYear() {
+    private void generateAddressesBirthday() {
         checkCaller();
-        generateAddressesBirthdayLastYear.setDisable(true);
-        caller.generateAddressesBirthday(CURRENT_YEAR - 1);
-        generateAddressesBirthdayLastYear.setDisable(false);
+        if (yearSpinner.isValid()) {
+            caller.generateAddressesBirthday(yearSpinner.getValue());
+        }
     }
 
     @FXML
-    private void generateAddressesBirthdayThisYear() {
+    private void generateBirthdayInfos() {
         checkCaller();
-        generateAddressesBirthdayThisYear.setDisable(true);
-        caller.generateAddressesBirthday(CURRENT_YEAR);
-        generateAddressesBirthdayThisYear.setDisable(false);
-    }
-
-    @FXML
-    private void generateAddressesBirthdayNextYear() {
-        checkCaller();
-        generateAddressesBirthdayNextYear.setDisable(true);
-        caller.generateAddressesBirthday(CURRENT_YEAR + 1);
-        generateAddressesBirthdayNextYear.setDisable(false);
-    }
-
-    @FXML
-    private void generateBirthdayLastYearInfos() {
-        checkCaller();
-        generateBirthdayLastYearInfos.setDisable(true);
-        caller.generateBirthdayInfos(CURRENT_YEAR - 1);
-        generateBirthdayLastYearInfos.setDisable(false);
-    }
-
-    @FXML
-    private void generateBirthdayThisYearInfos() {
-        checkCaller();
-        generateBirthdayThisYearInfos.setDisable(true);
-        caller.generateBirthdayInfos(CURRENT_YEAR);
-        generateBirthdayThisYearInfos.setDisable(false);
-    }
-
-    @FXML
-    private void generateBirthdayNextYearInfos() {
-        checkCaller();
-        generateBirthdayNextYearInfos.setDisable(true);
-        caller.generateBirthdayInfos(CURRENT_YEAR + 1);
-        generateBirthdayNextYearInfos.setDisable(false);
+        if (yearSpinner.isValid()) {
+            caller.generateBirthdayInfos(yearSpinner.getValue());
+        }
     }
 }

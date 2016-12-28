@@ -146,8 +146,9 @@ public final class Launcher extends Application {
     }
 
     private File download() throws IOException {
-        File tempFile = Files.createTempFile(null, ".zip", new FileAttribute[0])
-                .toFile();
+        File tempFile
+                = Files.createTempFile(null, ".zip", new FileAttribute<?>[0])
+                        .toFile();
         URLConnection downloadConnection = new URL(DataProvider.GRUEN2_ZIP_URL)
                 .openConnection();
         long fileSize = Long.parseLong(
@@ -170,16 +171,16 @@ public final class Launcher extends Application {
         String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
         switch (DataProvider.CURRENT_OS) {
-        case WINDOWS:
-            command = new String[]{"cscript", dirPath + "/install.vbs"};
-            break;
-        case LINUX:
-        default:
-            command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
-                dirPath + "/uninstall.sh"};
-            new ProcessBuilder(command).start().waitFor();
+            case WINDOWS:
+                command = new String[]{"cscript", dirPath + "/install.vbs"};
+                break;
+            case LINUX:
+            default:
+                command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
+                    dirPath + "/uninstall.sh"};
+                new ProcessBuilder(command).start().waitFor();
 
-            command = new String[]{"sh", dirPath + "/install.sh"};
+                command = new String[]{"sh", dirPath + "/install.sh"};
         }
 
         return new ProcessBuilder(command).start();
@@ -194,7 +195,7 @@ public final class Launcher extends Application {
                 File tempFile = download();
 
                 File tempDir = Files.createTempDirectory(
-                        null, new FileAttribute[0])
+                        null, new FileAttribute<?>[0])
                         .toFile();
 
                 ZipUtility.unzip(tempFile, tempDir, ZIP_CHARSET);

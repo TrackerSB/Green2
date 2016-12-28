@@ -31,7 +31,7 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  * @param <T> The type of the attributes being able to selct.
  */
-public class Selection<T extends Comparable>
+public class Selection<T extends Comparable<T>>
         extends View<SelectionController<T>> {
 
     private final List<T> options;
