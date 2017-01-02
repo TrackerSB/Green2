@@ -31,30 +31,26 @@ public abstract class Controller implements Initializable {
      */
     protected Stage stage = null;
     /**
-     * Only {@code true} when the user explicitly confirmed his input. (E.g.
-     * pressing "Login" or "Auswählen" confirms; closing the window with "X"
-     * does not confirm.)
+     * Only {@code true} when the user explicitly abborted his input. (E.g.
+     * pressing the X of the window.)
      */
-    protected boolean userConfirmed = false;
+    private boolean userAbborted = false;
 
     /**
      * Sets the stage the conroller can refer to. (E.g. for closing the stage)
+     * NOTE: It overrides {@code onCloseRequest}.
      *
      * @param stage The stage to refer to.
      */
     public void setStage(Stage stage) {
         this.stage = stage;
-        stage.showingProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                userConfirmed = false;
-            }
-        });
+        stage.setOnCloseRequest(evt -> userAbborted = true);
     }
 
     /**
      * Throws a {@code IllegalStateException} only if stage is {@code null}.
      */
-    public void checkStage() {
+    protected void checkStage() {
         if (stage == null) {
             throw new IllegalStateException(
                     "You have to call setStage(...) first");
@@ -62,11 +58,11 @@ public abstract class Controller implements Initializable {
     }
 
     /**
-     * Checks whether the user confirmed his input.
+     * Checks whether the user abborted his input.
      *
-     * @return {@code true} only if the user confirmed his input explicitly.
+     * @return {@code true} only if the user abborted his input explicitly.
      */
-    public boolean userConfirmed() {
-        return userConfirmed;
+    public boolean userAbborted() {
+        return userAbborted;
     }
 }

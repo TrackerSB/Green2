@@ -27,7 +27,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Stefan Huber
  */
-public abstract class CheckedController extends Controller {
+public abstract class CheckedController extends WizardableController {
 
     /**
      * Used as identity for sequence of or bindings connected with OR.
@@ -51,8 +51,6 @@ public abstract class CheckedController extends Controller {
             = new SimpleBooleanProperty(this, "anyInputToLong");
     protected final BooleanProperty anyInputMissing
             = new SimpleBooleanProperty(this, "anyInputMissing");
-    protected final BooleanProperty valid
-            = new SimpleBooleanProperty(this, "valid");
 
     /**
      * Returns the property reprsenting a boolean value indicating whether any

@@ -16,12 +16,16 @@
  */
 package bayern.steinbrecher.gruen2;
 
+import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 /**
@@ -58,6 +62,17 @@ public abstract class View<T extends Controller> extends Application {
         synchronized (this) {
             notifyAll();
         }
+    }
+
+    protected <T extends Parent> T loadFXML(String resource)
+            throws IOException {
+        FXMLLoader fxmlLoader
+                = new FXMLLoader(getClass().getResource(resource));
+        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+        T root = fxmlLoader.load();
+        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        controller = fxmlLoader.getController();
+        return root;
     }
 
     /**
@@ -103,7 +118,9 @@ public abstract class View<T extends Controller> extends Application {
             gotShownProperty.set(true);
             stage.showingProperty().addListener((obs, oldVal, newVal) -> {
                 if (!newVal) {
-                    callback.run();
+                    if (callback != null) {
+                        callback.run();
+                    }
                     setClosedAndNotify();
                 }
             });
@@ -132,12 +149,12 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * Indicates whether the currently inserted data is confirmed by the user.
+     * Indicates whether the currently inserted data is abborted by the user.
      *
-     * @return {@code true} only if the user confirmed the currently inserted
+     * @return {@code true} only if the user abborted the currently inserted
      * data.
      */
-    public boolean userConfirmed() {
-        return controller.userConfirmed();
+    public boolean userAbborted() {
+        return controller.userAbborted();
     }
 }
