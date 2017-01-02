@@ -440,8 +440,9 @@ public class Main extends Application {
             Map<Integer, Double> contributions = new HashMap<>();
             Optional<Map<Integer, Double>> optContributions
                     = individualContributions.get();
-            boolean askForContribution
-                    = useMemberContributions && !optContributions.isPresent();
+            boolean askForContribution = !useMemberContributions
+                    || (useMemberContributions
+                    && !optContributions.isPresent());
             if (useMemberContributions) {
                 optContributions.ifPresent(map -> {
                     contributions.putAll(map);
