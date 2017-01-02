@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Stefan Huber
+ * Copyright (C) 2017 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.selection;
 
-import bayern.steinbrecher.gruen2.Controller;
+import bayern.steinbrecher.gruen2.WizardableController;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,8 @@ import javafx.scene.control.ListView;
  * @author Stefan Huber
  * @param <T> The type of the objects being able to select.
  */
-public class SelectionController<T extends Comparable<T>> extends Controller {
+public class SelectionController<T extends Comparable<T>>
+        extends WizardableController {
 
     private final ListProperty<T> optionsProperty
             = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -74,6 +75,7 @@ public class SelectionController<T extends Comparable<T>> extends Controller {
     public void initialize(URL location, ResourceBundle resources) {
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
+        valid.bind(nothingSelected.not());
 
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
@@ -98,8 +100,7 @@ public class SelectionController<T extends Comparable<T>> extends Controller {
     @FXML
     private void select() {
         checkStage();
-        if (!isNothingSelected()) {
-            userConfirmed = true;
+        if (valid.get()) {
             stage.close();
         }
     }
@@ -122,7 +123,9 @@ public class SelectionController<T extends Comparable<T>> extends Controller {
      * @return An Optional containing the selection if any.
      */
     public Optional<List<T>> getSelection() {
-        if (userConfirmed) {
+        if (userAbborted()) {
+            return Optional.empty();
+        } else {
             List<T> selection = new ArrayList<>();
             ObservableList<CheckBox> items = optionsListView.getItems();
             for (int i = 0; i < items.size(); i++) {
@@ -132,7 +135,6 @@ public class SelectionController<T extends Comparable<T>> extends Controller {
             }
             return Optional.of(selection);
         }
-        return Optional.empty();
     }
 
     /**

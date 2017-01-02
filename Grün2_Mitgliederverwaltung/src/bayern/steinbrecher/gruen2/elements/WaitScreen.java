@@ -80,7 +80,7 @@ public class WaitScreen extends View<Controller> {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         this.stage = stage;
 
         Pane root = new Pane();

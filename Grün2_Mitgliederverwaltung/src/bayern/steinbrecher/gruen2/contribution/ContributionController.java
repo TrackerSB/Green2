@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.contribution;
 
-import bayern.steinbrecher.gruen2.Controller;
+import bayern.steinbrecher.gruen2.WizardableController;
 import bayern.steinbrecher.gruen2.elements.CheckedDoubleSpinner;
 import java.net.URL;
 import java.util.Optional;
@@ -28,7 +28,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public class ContributionController extends Controller {
+public class ContributionController extends WizardableController {
 
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
@@ -39,13 +39,13 @@ public class ContributionController extends Controller {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contributionSpinner.getEditor().setOnAction(aevt -> select());
+        valid.bind(contributionSpinner.validProperty());
     }
 
     @FXML
     private void select() {
         checkStage();
-        if (contributionSpinner.isValid()) {
-            userConfirmed = true;
+        if (valid.get()) {
             stage.close();
         }
     }
@@ -57,9 +57,10 @@ public class ContributionController extends Controller {
      * @return The currently inserted contribution.
      */
     public Optional<Double> getContribution() {
-        if (userConfirmed) {
+        if (userAbborted()) {
+            return Optional.empty();
+        } else {
             return Optional.of(contributionSpinner.getValue());
         }
-        return Optional.empty();
     }
 }

@@ -22,6 +22,7 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Generates a Sepa.Pain.008.003.02.
@@ -120,16 +122,21 @@ public final class SepaPain00800302XMLGenerator {
             Map<Integer, Double> contributions, Originator originator,
             SequenceType sequenceType, String outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
-        for (Member m : member) {
-            if (!contributions.containsKey(m.getMembershipnumber())) {
-                throw new IllegalArgumentException(
-                        "No contribution specified at least for: " + m);
-            }
+        List<Member> missingContribution = member.stream()
+                .filter(m -> !contributions.containsKey(
+                m.getMembershipnumber()))
+                .collect(Collectors.toList());
+        if (missingContribution.isEmpty()) {
+            IOStreamUtility.printContent(
+                    createXML(member, originator, contributions, sequenceType),
+                    outputfile, sepaWithBom);
+            return invalidMember;
+        } else {
+            throw new IllegalArgumentException(missingContribution.stream()
+                    .map(Member::toString)
+                    .collect(Collectors.joining("\n",
+                            "Missing contributions for valid members:\n", "")));
         }
-        IOStreamUtility.printContent(
-                createXML(member, originator, contributions, sequenceType),
-                outputfile, sepaWithBom);
-        return invalidMember;
     }
 
     /**

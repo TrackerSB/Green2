@@ -16,10 +16,6 @@
                               editable="true" />
     </HBox>
     <HBox spacing="10">
-        <Button disable="${!contributionSpinner.valid}"
-                text="%ready"
-                defaultButton="true"
-                onAction="#select" />
         <Label visible="${!contributionSpinner.valid}"
                text="%invalidOrMissingInput"
                styleClass="warningLabel" />

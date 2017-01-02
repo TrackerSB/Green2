@@ -18,6 +18,7 @@ package bayern.steinbrecher.gruen2.login.standard;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.Login;
+import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -34,7 +35,7 @@ public class DefaultLogin extends Login {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws IOException {
         this.stage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()

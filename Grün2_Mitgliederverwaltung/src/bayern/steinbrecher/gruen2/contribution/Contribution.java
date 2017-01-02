@@ -16,20 +16,25 @@
  */
 package bayern.steinbrecher.gruen2.contribution;
 
-import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.wizard.WizardPage;
+import java.io.IOException;
 import java.util.Optional;
-import javafx.fxml.FXMLLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import bayern.steinbrecher.gruen2.WizardableView;
 
 /**
  * Represents the contribution inserted.
  *
  * @author Stefan Huber
  */
-public class Contribution extends View<ContributionController> {
+public class Contribution
+        extends WizardableView<Optional<Double>, ContributionController> {
 
     private Stage owner;
 
@@ -56,14 +61,11 @@ public class Contribution extends View<ContributionController> {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
+        stage.setOnCloseRequest(evt -> {
+            System.out.println("CLOSE REQUESTED");
+        });
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass()
-                .getResource("Contribution.fxml"));
-        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
-        Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
-
-        controller = fxmlLoader.getController();
+        Parent root = loadFXML("Contribution.fxml");
         controller.setStage(stage);
 
         stage.initOwner(owner);
@@ -87,5 +89,22 @@ public class Contribution extends View<ContributionController> {
     public Optional<Double> getContribution() {
         showOnceAndWait();
         return controller.getContribution();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WizardPage<Optional<Double>> getWizardPage() {
+        try {
+            Pane root = loadFXML("Contribution_Wizard.fxml");
+            return new WizardPage<>(root, null, false,
+                    () -> controller.getContribution(),
+                    controller.validProperty());
+        } catch (IOException ex) {
+            Logger.getLogger(Contribution.class.getName())
+                    .log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }

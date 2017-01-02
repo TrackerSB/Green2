@@ -149,9 +149,7 @@ public class SepaFormController extends CheckedController {
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
 
-    @FXML
-    private void ready() {
-        checkStage();
+    private void saveOriginator() {
         if (isValid()) {
             originator.setCreator(creatorTextField.getText());
             originator.setCreditor(creditorTextField.getText());
@@ -163,7 +161,14 @@ public class SepaFormController extends CheckedController {
             originator.setPmtInfId(pmtInfIdTextField.getText());
             originator.setExecutiondate(executionDatePicker.getValue());
             originator.saveOriginator();
-            userConfirmed = true;
+        }
+    }
+
+    @FXML
+    private void ready() {
+        checkStage();
+        if (isValid()) {
+            saveOriginator();
             stage.close();
         }
     }
@@ -175,10 +180,12 @@ public class SepaFormController extends CheckedController {
      * @return The currently set originator or {@code Optional.empty()}.
      */
     public Optional<Originator> getOriginator() {
-        if (userConfirmed) {
+        if (userAbborted()) {
+            return Optional.empty();
+        } else {
+            saveOriginator();
             return Optional.of(originator);
         }
-        return Optional.empty();
     }
 
     /**

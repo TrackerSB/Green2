@@ -17,8 +17,10 @@
 package bayern.steinbrecher.gruen2.login;
 
 import bayern.steinbrecher.gruen2.View;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import javafx.stage.Stage;
 
 /**
  * Represents a login.
@@ -26,6 +28,9 @@ import java.util.Optional;
  * @author Stefan Huber
  */
 public abstract class Login extends View<LoginController> {
+
+    @Override
+    public abstract void start(Stage primaryStage) throws IOException;
 
     /**
      * Returns the information that was entered in the login. This method blocks

@@ -42,7 +42,6 @@ public class ConfirmDialog extends View<Controller> {
     private static final int MIN_HEIGHT = 100;
     private String message;
     private Window owner;
-    private boolean userConfirmed = false;
 
     /**
      * Creates a new dialog showing {@code message} and a single button for
@@ -69,7 +68,6 @@ public class ConfirmDialog extends View<Controller> {
         Button okButton = new Button("OK");
         okButton.setDefaultButton(true);
         okButton.setOnAction(aevt -> {
-            userConfirmed = true;
             stage.close();
         });
 
@@ -100,14 +98,6 @@ public class ConfirmDialog extends View<Controller> {
             Logger.getLogger(ConfirmDialog.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean userConfirmed() {
-        return userConfirmed;
     }
 
     /**

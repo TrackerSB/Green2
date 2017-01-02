@@ -93,11 +93,4 @@
            visible="${!executionDatePicker.invalidPastDate}"
            GridPane.columnIndex="1"
            GridPane.rowIndex="11" />
-    
-    <Button text="%ready"
-            defaultButton="true"
-            onAction="#ready"
-            disable="${!controller.valid}"
-            GridPane.columnIndex="0"
-            GridPane.rowIndex="11" />
 </GridPane>

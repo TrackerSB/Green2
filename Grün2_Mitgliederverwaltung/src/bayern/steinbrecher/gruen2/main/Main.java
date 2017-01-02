@@ -43,6 +43,9 @@ import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
+import bayern.steinbrecher.wizard.Wizard;
+import bayern.steinbrecher.wizard.WizardPage;
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -96,11 +99,9 @@ public class Main extends Application {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws IOException {
         menuStage = primaryStage;
-
         Platform.setImplicitExit(false);
-
         /**
          * boolean value needed to make sure no other windows shows up because
          * {@code Platform.exit()} is async.
@@ -139,14 +140,14 @@ public class Main extends Application {
      * This methode creates a {@code WaitScreen}, connects {@code login} to it
      * AND calls {@code start(...)} of login.
      */
-    private WaitScreen createWaitScreen(Login login) throws Exception {
+    private WaitScreen createWaitScreen(Login login) throws IOException {
         WaitScreen waitScreen = new WaitScreen();
         waitScreen.start(new Stage());
         Stage loginStage = new Stage();
         loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 waitScreen.close();
-            } else if (login.userConfirmed()) {
+            } else if (!login.userAbborted()) {
                 waitScreen.show();
             } else {
                 Platform.exit();
@@ -184,12 +185,12 @@ public class Main extends Application {
 
                 menuStage.showingProperty().addListener(
                         (obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        waitScreen.close();
-                    } else {
-                        Platform.exit();
-                    }
-                });
+                            if (newVal) {
+                                waitScreen.close();
+                            } else {
+                                Platform.exit();
+                            }
+                        });
 
                 try {
                     new Menu(this).start(menuStage);
@@ -241,13 +242,13 @@ public class Main extends Application {
             }
 
             confirm.showOnce(() -> {
-                if (confirm.userConfirmed()) {
+                if (confirm.userAbborted()) {
+                    Platform.exit();
+                } else {
                     login.reset();
                     synchronized (this) {
                         notifyAll();
                     }
-                } else {
-                    Platform.exit();
                 }
             });
         });
@@ -324,7 +325,7 @@ public class Main extends Application {
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
                 .forEach(y -> memberBirthday.put(
-                        y, exserv.submit(() -> getBirthdayMember(y))));
+                y, exserv.submit(() -> getBirthdayMember(y))));
         memberNonContributionfree = exserv.submit(() -> member.get()
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
@@ -430,31 +431,72 @@ public class Main extends Application {
         }
     }
 
-    private void generateSepa(List<Member> memberToSelect,
-            Map<Integer, Double> contribution, SequenceType sequenceType) {
-        SepaForm sepaForm = new SepaForm(menuStage);
-        Optional<Originator> originator;
+    private void generateSepa(Future<List<Member>> memberToSelectFuture,
+            boolean useMemberContributions, SequenceType sequenceType) {
+        checkNull(individualContributions, memberToSelectFuture);
         try {
-            sepaForm.start(new Stage());
-            originator = sepaForm.getOriginator();
-        } catch (Exception ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-            originator = Optional.empty();
-        }
+            List<Member> memberToSelect = memberToSelectFuture.get();
 
-        if (originator.isPresent()) {
-            try {
-                Selection<Member> selection
-                        = new Selection<>(memberToSelect, menuStage);
-                selection.start(new Stage());
-                Optional<List<Member>> selectedMember
-                        = selection.getSelection();
+            Map<Integer, Double> contributions = new HashMap<>();
+            Optional<Map<Integer, Double>> optContributions
+                    = individualContributions.get();
+            boolean askForContribution
+                    = useMemberContributions && !optContributions.isPresent();
+            if (useMemberContributions) {
+                optContributions.ifPresent(map -> {
+                    contributions.putAll(map);
+                });
+            }
 
-                if (selectedMember.isPresent()) {
+            WizardPage<Optional<Originator>> sepaFormPage
+                    = new SepaForm(menuStage).getWizardPage();
+            sepaFormPage.setNextFunction(() -> "selection");
+            WizardPage<Optional<List<Member>>> selectionPage
+                    = new Selection<>(memberToSelect, menuStage)
+                            .getWizardPage();
+            selectionPage.setFinish(!askForContribution);
+            if (askForContribution) {
+                selectionPage.setNextFunction(() -> "contribution");
+            }
+            WizardPage<Optional<Double>> contributionPage
+                    = new Contribution(menuStage).getWizardPage();
+            contributionPage.setFinish(true);
+
+            Map<String, WizardPage<?>> pages = new HashMap<>();
+            pages.put(WizardPage.FIRST_PAGE_KEY, sepaFormPage);
+            pages.put("selection", selectionPage);
+            pages.put("contribution", contributionPage);
+            Wizard wizard = new Wizard(pages);
+            Stage wizardStage = new Stage();
+            wizardStage.initOwner(menuStage);
+            wizardStage.setResizable(false);
+            wizardStage.getIcons().add(DataProvider.DEFAULT_ICON);
+            wizard.start(wizardStage);
+            wizardStage.getScene().getStylesheets()
+                    .add(DataProvider.STYLESHEET_PATH);
+            wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) {
+                    Map<String, ?> results = wizard.getResults().get();
+                    List<Member> selectedMember
+                            = ((Optional<List<Member>>) results.get(
+                                    "selection"))
+                                    .get();
+                    if (askForContribution) {
+                        double contribution = ((Optional<Double>) results
+                                .get("contribution"))
+                                .get();
+                        selectedMember.stream().forEach(m -> contributions.put(
+                                m.getMembershipnumber(), contribution)
+                        );
+                    }
+                    Originator originator = ((Optional<Originator>) results
+                            .get(WizardPage.FIRST_PAGE_KEY))
+                            .get();
+
                     List<Member> invalidMember
                             = SepaPain00800302XMLGenerator.createXMLFile(
-                                    selectedMember.get(), contribution,
-                                    originator.get(), sequenceType,
+                                    memberToSelect, contributions,
+                                    originator, sequenceType,
                                     DataProvider.SAVE_PATH + "/Sepa.xml",
                                     DataProvider.getOrDefaultBoolean(
                                             ConfigKey.SEPA_USE_BOM, true));
@@ -466,16 +508,15 @@ public class Main extends Application {
                                 message + "\n"
                                 + DataProvider.getResourceValue(
                                         "haveBadAccountInformation"))
-                                .showOnceAndWait();
+                                .showOnce(null);
                     }
                 }
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }
+            });
+        } catch (InterruptedException | ExecutionException | IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            ConfirmDialog.createDialog(new Stage(), menuStage,
+                    DataProvider.getResourceValue("noSepaDebit"))
+                    .showOnceAndWait();
         }
     }
 
@@ -483,30 +524,7 @@ public class Main extends Application {
      * Asks for contribution and for member to debit from.
      */
     public void generateUniversalSepa() {
-        checkNull(member);
-        Contribution contribution = new Contribution(menuStage);
-        try {
-            contribution.start(new Stage());
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Optional<Double> optContribution = contribution.getContribution();
-        if (optContribution.isPresent()) {
-            Map<Integer, Double> contributions = new HashMap<>();
-            try {
-                member.get().stream().forEach(m -> {
-                    contributions.put(
-                            m.getMembershipnumber(), optContribution.get());
-                });
-                generateSepa(member.get(), contributions, SequenceType.OOFF);
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
-                ConfirmDialog.createDialog(new Stage(), menuStage,
-                        DataProvider.getResourceValue("noSepaDebit"))
-                        .showOnceAndWait();
-            }
-        }
+        generateSepa(member, false, SequenceType.FRST);
     }
 
     /**
@@ -514,40 +532,7 @@ public class Main extends Application {
      * shown) to debit from.
      */
     public void generateContributionSepa() {
-        checkNull(individualContributions, member, memberNonContributionfree);
-        try {
-            Optional<Map<Integer, Double>> optContributions
-                    = individualContributions.get();
-            if (optContributions.isPresent()) {
-                generateSepa(memberNonContributionfree.get(),
-                        optContributions.get(), SequenceType.RCUR);
-            } else {
-                Contribution contribution = new Contribution(menuStage);
-                try {
-                    contribution.start(new Stage());
-                } catch (Exception ex) {
-                    Logger.getLogger(Main.class.getName())
-                            .log(Level.SEVERE, null, ex);
-                }
-                Optional<Double> optContribution
-                        = contribution.getContribution();
-                if (optContribution.isPresent()) {
-                    Map<Integer, Double> contributions = new HashMap<>();
-                    for (Member m : member.get()) {
-                        contributions.put(m.getMembershipnumber(),
-                                optContribution.get());
-                    }
-                    generateSepa(memberNonContributionfree.get(),
-                            contributions, SequenceType.RCUR);
-                }
-            }
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
-            ConfirmDialog.createDialog(new Stage(), menuStage,
-                    DataProvider.getResourceValue("noSepaDebit"))
-                    .showOnceAndWait();
-        }
+        generateSepa(memberNonContributionfree, true, SequenceType.RCUR);
     }
 
     private String checkIbans() {
@@ -556,7 +541,7 @@ public class Main extends Application {
         try {
             badIban = member.get().parallelStream()
                     .filter(m -> !SepaPain00800302XMLGenerator
-                            .hasValidIban(m.getAccountHolder()))
+                    .hasValidIban(m.getAccountHolder()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName())
@@ -585,7 +570,7 @@ public class Main extends Application {
             String message = member.get().parallelStream()
                     .filter(m -> dateFunction.apply(m) == null)
                     .map(m -> m.toString()
-                            + ": \"" + dateFunction.apply(m) + "\"")
+                    + ": \"" + dateFunction.apply(m) + "\"")
                     .collect(Collectors.joining("\n"));
             return message.isEmpty() ? allCorrectMessage
                     : invalidDatesIntro + "\n" + message;

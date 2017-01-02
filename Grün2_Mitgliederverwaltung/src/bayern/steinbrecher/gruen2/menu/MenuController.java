@@ -55,22 +55,6 @@ public class MenuController extends Controller {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
-        /*List<Object[]> params = IntStream.rangeClosed(CURRENT_YEAR - 1, CURRENT_YEAR + 1)
-                .boxed()
-                .map(i -> new Object[]{i})
-                .collect(Collectors.toList());
-
-        List<String> values
-                = DataProvider.getResourceValues("ofBirthdayMember", params);
-        values.addAll(DataProvider.getResourceValues(
-                "groupedBirthdayMember", params));
-        Button[] buttons = new Button[]{generateAddressesBirthdayLastYear,
-            generateAddressesBirthdayThisYear,
-            generateAddressesBirthdayNextYear, generateBirthdayLastYearInfos,
-            generateBirthdayThisYearInfos, generateBirthdayNextYearInfos};
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setText(values.get(i));
-        }*/
     }
 
     /**

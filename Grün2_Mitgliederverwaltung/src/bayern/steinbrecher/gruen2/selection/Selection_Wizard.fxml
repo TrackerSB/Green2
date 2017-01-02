@@ -25,10 +25,6 @@
                 onAction="#selectNoOption" />
     </HBox>
     <HBox spacing="10">
-        <Button text="%ready"
-                defaultButton="true"
-                disable="${controller.nothingSelected}"
-                onAction="#select" />
         <Label text="%invalidOrMissingInput"
                visible="${controller.nothingSelected}"
                styleClass="warningLabel" />

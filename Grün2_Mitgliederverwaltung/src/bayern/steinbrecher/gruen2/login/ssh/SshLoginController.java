@@ -58,7 +58,9 @@ public class SshLoginController extends LoginController {
      */
     @Override
     public Optional<Map<LoginKey, String>> getLoginInformation() {
-        if (userConfirmed) {
+        if (userAbborted()) {
+            return Optional.empty();
+        } else {
             Map<LoginKey, String> loginInfo
                     = new HashMap<>(LoginKey.values().length);
             loginInfo.put(LoginKey.DATABASE_USERNAME,
@@ -69,6 +71,5 @@ public class SshLoginController extends LoginController {
             loginInfo.put(LoginKey.SSH_PASSWORD, sshPasswordField.getText());
             return Optional.of(loginInfo);
         }
-        return Optional.empty();
     }
 }

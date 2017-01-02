@@ -68,13 +68,13 @@ public class Menu extends View<MenuController> {
     }
 
     /**
-     * Not implemented. There´s no data to be confirmed by the user.
+     * Not implemented. There´s no data to be abborted by the user.
      *
      * @return Nothing.
      * @throws UnsupportedOperationException Always thrown.
      */
     @Override
-    public boolean userConfirmed() {
-        throw new UnsupportedOperationException("No data to confirm");
+    public boolean userAbborted() {
+        throw new UnsupportedOperationException("No data to abbort");
     }
 }

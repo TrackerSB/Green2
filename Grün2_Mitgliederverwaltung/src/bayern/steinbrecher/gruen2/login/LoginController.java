@@ -67,7 +67,6 @@ public abstract class LoginController extends CheckedController {
     private void login() {
         checkStage();
         if (isValid()) {
-            userConfirmed = true;
             stage.close();
         }
     }
