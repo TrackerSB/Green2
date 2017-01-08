@@ -18,9 +18,12 @@ package bayern.steinbrecher.gruen2.elements;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 
@@ -66,6 +69,8 @@ public class CheckedTextField extends TextField {
      */
     private final BooleanProperty toLongContent
             = new SimpleBooleanProperty(this, "toLongContent");
+    private final Property<ObservableBooleanValue> condition
+            = new SimpleObjectProperty<>(this, "condition");
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of
      * the following is true (as implemented by this class):
@@ -78,8 +83,8 @@ public class CheckedTextField extends TextField {
             = new SimpleBooleanProperty(this, "valid");
 
     /**
-     * Creates a new {@code CheckedTextField} with no initial content and a
-     * maximum column count of {@code Integer.MAX_VALUE}.
+     * Constructes a new {@code CheckedTextField} with an max input length of
+     * {@code Integer.MAX_VALUE} and no initial content.
      */
     public CheckedTextField() {
         this(Integer.MAX_VALUE);

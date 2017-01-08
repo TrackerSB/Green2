@@ -142,7 +142,7 @@ public class BirthdayGenerator {
      * @param m The member to check.
      * @param year The year to calculate his age at.
      * @return {@code true} only if {@code m} fits the configured criteria.
-     * @see DataProvider#AGE_FUNCTION
+     * @see DataProvider#ageFunction
      */
     public static boolean getsNotified(Member m, int year) {
         LocalDate birthday = m.getPerson().getBirthday();
@@ -150,7 +150,7 @@ public class BirthdayGenerator {
             return false;
         } else {
             int age = year - birthday.getYear();
-            return DataProvider.AGE_FUNCTION.apply(age);
+            return DataProvider.getProfile().getAgeFunction().apply(age);
         }
     }
 }

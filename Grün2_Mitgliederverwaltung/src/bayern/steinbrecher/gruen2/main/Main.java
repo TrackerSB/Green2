@@ -25,6 +25,7 @@ import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.login.LoginKey;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
+import bayern.steinbrecher.gruen2.elements.ProfileChoice;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
 import bayern.steinbrecher.gruen2.exception.AuthException;
@@ -79,6 +80,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private static final long SPLASHSCREEN_MILLIS = 2500;
+    private DataProvider profile;
     private Stage menuStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
@@ -93,6 +95,17 @@ public class Main extends Application {
      * Default constructor.
      */
     public Main() {
+        List<String> availableProfiles = DataProvider.getAvailableProfiles();
+        if (availableProfiles.size() == 1) {
+            profile = DataProvider.loadProfile(availableProfiles.get(0));
+        } else {
+            Optional<String> requestedProfile = ProfileChoice.askForProfile();
+            if (requestedProfile.isPresent()) {
+                profile = DataProvider.loadProfile(requestedProfile.get());
+            } else {
+                Platform.exit();
+            }
+        }
     }
 
     /**
@@ -116,7 +129,7 @@ public class Main extends Application {
     }
 
     private boolean checkConfigs() {
-        boolean valid = DataProvider.ALL_CONFIGURATIONS_SET;
+        boolean valid = profile.isAllConfigurationsSet();
         if (!valid) {
             ConfirmDialog.createDialog(new Stage(), null,
                     DataProvider.getResourceValue("badConfigs"))
@@ -128,7 +141,7 @@ public class Main extends Application {
 
     private Login createLogin() {
         Login login;
-        if (DataProvider.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
+        if (profile.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
             login = new SshLogin();
         } else {
             login = new DefaultLogin();
@@ -276,28 +289,28 @@ public class Main extends Application {
         if (loginInfos.isPresent()) {
             Map<LoginKey, String> loginValues = loginInfos.get();
             try {
-                if (DataProvider.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
+                if (profile.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
                     con = new SshConnection(
-                            DataProvider.getOrDefaultString(
+                            profile.getOrDefaultString(
                                     ConfigKey.SSH_HOST, "localhost"),
                             loginValues.get(LoginKey.SSH_USERNAME),
                             loginValues.get(LoginKey.SSH_PASSWORD),
-                            DataProvider.getOrDefaultString(
+                            profile.getOrDefaultString(
                                     ConfigKey.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            DataProvider.getOrDefaultString(
+                            profile.getOrDefaultString(
                                     ConfigKey.DATABASE_NAME, "dbname"),
-                            DataProvider.getOrDefaultCharset(
+                            profile.getOrDefaultCharset(
                                     ConfigKey.SSH_CHARSET,
                                     StandardCharsets.ISO_8859_1));
                 } else {
                     con = new DefaultConnection(
-                            DataProvider.getOrDefaultString(
+                            profile.getOrDefaultString(
                                     ConfigKey.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            DataProvider.getOrDefaultString(
+                            profile.getOrDefaultString(
                                     ConfigKey.DATABASE_NAME, "dbname"));
                 }
             } catch (UnknownHostException | AuthException ex) {
@@ -499,7 +512,7 @@ public class Main extends Application {
                                     memberToSelect, contributions,
                                     originator, sequenceType,
                                     DataProvider.SAVE_PATH + "/Sepa.xml",
-                                    DataProvider.getOrDefaultBoolean(
+                                    profile.getOrDefaultBoolean(
                                             ConfigKey.SEPA_USE_BOM, true));
                     String message = invalidMember.stream()
                             .map(m -> m.toString())

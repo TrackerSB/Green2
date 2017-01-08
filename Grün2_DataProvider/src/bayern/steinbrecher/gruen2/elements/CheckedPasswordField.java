@@ -30,8 +30,8 @@ import javafx.scene.AccessibleRole;
 public class CheckedPasswordField extends CheckedTextField {
 
     /**
-     * Constructes a new {@code CheckedPasswordField} with no maximum column
-     * count and no content.
+     * Constructes a new {@code CheckedPasswordField} with an max input length
+     * of {@code Integer.MAX_VALUE} and no initial content.
      */
     public CheckedPasswordField() {
         this(Integer.MAX_VALUE);
@@ -83,10 +83,10 @@ public class CheckedPasswordField extends CheckedTextField {
     public Object queryAccessibleAttribute(
             AccessibleAttribute attribute, Object... parameters) {
         switch (attribute) {
-        case TEXT:
-            return null;
-        default:
-            return super.queryAccessibleAttribute(attribute, parameters);
+            case TEXT:
+                return null;
+            default:
+                return super.queryAccessibleAttribute(attribute, parameters);
         }
     }
 

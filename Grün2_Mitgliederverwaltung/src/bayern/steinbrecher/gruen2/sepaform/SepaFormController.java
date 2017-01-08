@@ -123,13 +123,15 @@ public class SepaFormController extends CheckedController {
         valid.bind(((anyInputToLong.or(anyInputMissing)).not())
                 .and(executionDatePicker.validProperty()));
 
+        DataProvider profile = DataProvider.getProfile();
+
         try {
             originator = Originator.readOriginatorInfo(
-                    DataProvider.ORIGINATOR_INFO_PATH);
+                    profile.getOriginatorInfoPath());
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SepaFormController.class.getName())
                     .log(Level.INFO, null, ex);
-            originator = new Originator(DataProvider.ORIGINATOR_INFO_PATH);
+            originator = new Originator(profile.getOriginatorInfoPath());
         }
         creatorTextField.setText(originator.getCreator());
         creditorTextField.setText(originator.getCreditor());

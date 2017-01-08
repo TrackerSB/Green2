@@ -46,8 +46,9 @@ public class CheckedRegexTextField extends CheckedTextField {
             = new SimpleObjectProperty<>(this, "pattern");
 
     /**
-     * Creates a new {@code CheckedRegexTextField} with no initial content, a
-     * maximum column count of {@code Integer.MAX_VALUE} and an empty regex.
+     * Constructes a new {@code CheckedRegexTextField} without initial content,
+     * maximum column count of {@code Integer.MAX_VALUE} and a all accepting
+     * regex.
      */
     public CheckedRegexTextField() {
         this("");

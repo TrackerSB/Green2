@@ -28,6 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 
@@ -51,8 +54,13 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedTextField databaseNameTextField;
     @FXML
+    private CheckedTextField profileNameTextField;
+    @FXML
     private CheckedTextField birthdayExpressionTextField;
     private List<CheckedTextField> checkedTextFields = new ArrayList<>();
+    private DataProvider profile;
+    private BooleanProperty profileAlreadyExists
+            = new SimpleBooleanProperty(this, "profileAlreadyExists");
 
     /**
      * {@inheritDoc}
@@ -61,7 +69,21 @@ public class ConfigDialogController extends CheckedController {
     public void initialize(URL url, ResourceBundle rb) {
         checkedTextFields.addAll(Arrays.asList(sshHostTextField,
                 databaseHostTextField, databaseNameTextField,
-                birthdayExpressionTextField));
+                birthdayExpressionTextField, profileNameTextField));
+
+        profileNameTextField.textProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (stage != null) {
+                        stage.setTitle(DataProvider
+                                .getResourceValue("configureApplication")
+                                + ": " + newVal);
+                    }
+                    profileAlreadyExists.set(
+                            !profile.getProfileName().equals(newVal)
+                            && DataProvider.getAvailableProfiles()
+                                    .contains(newVal));
+                });
+
         anyInputMissing.bind(checkedTextFields.stream()
                 .map(ctf -> ctf.emptyProperty())
                 .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
@@ -73,23 +95,26 @@ public class ConfigDialogController extends CheckedController {
         valid.bind(checkedTextFields.stream()
                 .map(ctf -> ctf.validProperty())
                 .reduce(TRUE_BINDING, (bind, prop) -> bind.and(prop),
-                        BooleanBinding::and));
+                        BooleanBinding::and)
+                .and(profileAlreadyExistsProperty().not()));
 
         //Load settings
+        profile = DataProvider.getProfile();
         useSSHCheckBox.setSelected(
-                DataProvider.getOrDefaultBoolean(ConfigKey.USE_SSH, true));
+                profile.getOrDefaultBoolean(ConfigKey.USE_SSH, true));
         sshHostTextField.setText(
-                DataProvider.getOrDefaultString(ConfigKey.SSH_HOST, ""));
+                profile.getOrDefaultString(ConfigKey.SSH_HOST, ""));
         databaseHostTextField.setText(
-                DataProvider.getOrDefaultString(ConfigKey.DATABASE_HOST, ""));
+                profile.getOrDefaultString(ConfigKey.DATABASE_HOST, ""));
         databaseNameTextField.setText(
-                DataProvider.getOrDefaultString(ConfigKey.DATABASE_NAME, ""));
+                profile.getOrDefaultString(ConfigKey.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(
-                DataProvider.getOrDefaultString(
+                profile.getOrDefaultString(
                         ConfigKey.BIRTHDAY_EXPRESSION, ""));
+        profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(
-                DataProvider.getOrDefaultBoolean(ConfigKey.SEPA_USE_BOM, true));
-        sshCharsetTextField.setText(DataProvider.getOrDefaultString(
+                profile.getOrDefaultBoolean(ConfigKey.SEPA_USE_BOM, true));
+        sshCharsetTextField.setText(profile.getOrDefaultString(
                 ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1.name()));
     }
 
@@ -114,8 +139,31 @@ public class ConfigDialogController extends CheckedController {
                     + '\n'
                     + ConfigKey.SSH_CHARSET + DataProvider.VALUE_SEPARATOR
                     + sshCharsetTextField.getText();
-            IOStreamUtility.printContent(out, DataProvider.CONFIGFILE_PATH, false);
+            IOStreamUtility.printContent(
+                    out, profile.getConfigFilePath(), false);
+            profile.renameProfile(profileNameTextField.getText());
             stage.close();
         }
+    }
+
+    /**
+     * Returns the property containing a value indicating whether the current
+     * profile could be renamed to given profile.
+     *
+     * @return The property containing a value indicating whether the current
+     * profile could be renamed to given profile.
+     */
+    public ReadOnlyBooleanProperty profileAlreadyExistsProperty() {
+        return profileAlreadyExists;
+    }
+
+    /**
+     * Checks whether the current profile could be renamed to given profile.
+     *
+     * @return {@code true} only if the current profile could be renamed to
+     * given profile.
+     */
+    public boolean isProfileAlreadyExists() {
+        return profileAlreadyExists.get();
     }
 }

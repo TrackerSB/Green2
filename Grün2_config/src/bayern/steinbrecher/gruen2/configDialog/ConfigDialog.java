@@ -17,7 +17,11 @@
 package bayern.steinbrecher.gruen2.configDialog;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.elements.ProfileChoice;
 import java.io.IOException;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,22 +39,32 @@ public class ConfigDialog extends Application {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("ConfigDialog.fxml"));
-        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
-        Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+    public void start(Stage stage) {
+        ProfileChoice.askForProfile().ifPresent(profileName -> {
+            try {
+                DataProvider.loadProfile(profileName);
 
-        ConfigDialogController controller = fxmlLoader.getController();
-        controller.setStage(primaryStage);
+                FXMLLoader fxmlLoader = new FXMLLoader(
+                        getClass().getResource("ConfigDialog.fxml"));
+                fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+                Parent root = fxmlLoader.load();
+                root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
 
-        primaryStage.setResizable(false);
-        primaryStage.setTitle(
-                DataProvider.getResourceValue("configureApplication"));
-        primaryStage.getIcons().add(DataProvider.DEFAULT_ICON);
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
+                ConfigDialogController controller = fxmlLoader.getController();
+                controller.setStage(stage);
+
+                stage.setResizable(false);
+                stage.getIcons().add(DataProvider.DEFAULT_ICON);
+                stage.setScene(new Scene(root));
+                stage.setTitle(DataProvider
+                        .getResourceValue("configureApplication")
+                        + ": " + profileName);
+                stage.show();
+            } catch (IOException ex) {
+                Logger.getLogger(ConfigDialog.class.getName())
+                        .log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
     /**
