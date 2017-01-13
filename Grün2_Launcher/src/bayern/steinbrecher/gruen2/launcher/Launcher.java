@@ -21,6 +21,7 @@ import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
+import bayern.steinbrecher.gruen2.utility.ProgramCaller;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ZipUtility;
 import java.io.File;
@@ -101,16 +102,17 @@ public final class Launcher extends Application {
                 if (!localVersion.equalsIgnoreCase(onlineVersion)
                         && ChoiceDialog.askForUpdate()) {
                     serv = downloadAndInstall(onlineVersion);
-                    serv.setOnSucceeded(evt -> executeGruen2());
+                    serv.setOnSucceeded(evt -> ProgramCaller.startGrün2());
                 } else {
-                    executeGruen2();
+                    ProgramCaller.startGrün2();
                 }
             } else {
                 serv = downloadAndInstall(onlineVersion);
-                serv.setOnSucceeded(evt -> executeGruen2Config());
+                serv.setOnSucceeded(
+                        evt -> ProgramCaller.startGrün2ConfigDialog());
             }
         } else if (optLocalVersion.isPresent()) {
-            executeGruen2();
+            ProgramCaller.startGrün2();
         } else {
             throw new IllegalStateException("Grün2 is currently not installed "
                     + "and there´s no connection to install it.");
@@ -238,35 +240,6 @@ public final class Launcher extends Application {
         });
 
         return service;
-    }
-
-    private void executeGruen2() {
-        try {
-            new ProcessBuilder("java", "-jar",
-                    DataProvider.PROGRAMFOLDER_PATH_LOCAL
-                    + "/Grün2_Mitgliederverwaltung.jar")
-                    .start();
-            Platform.exit();
-
-        } catch (IOException ex) {
-            Logger.getLogger(Launcher.class
-                    .getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void executeGruen2Config() {
-        try {
-            new ProcessBuilder("java", "-jar",
-                    DataProvider.PROGRAMFOLDER_PATH_LOCAL + "/Grün2_config.jar")
-                    .start();
-            Platform.exit();
-
-        } catch (IOException ex) {
-            Logger.getLogger(Launcher.class
-                    .getName())
-                    .log(Level.SEVERE, null, ex);
-        }
     }
 
     /**
