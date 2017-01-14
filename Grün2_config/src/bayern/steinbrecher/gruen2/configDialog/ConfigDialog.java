@@ -19,7 +19,6 @@ package bayern.steinbrecher.gruen2.configDialog;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.elements.ProfileChoice;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -40,9 +39,9 @@ public class ConfigDialog extends Application {
      */
     @Override
     public void start(Stage stage) {
-        ProfileChoice.askForProfile().ifPresent(profileName -> {
+        ProfileChoice.askForProfile(true).ifPresent(profile -> {
             try {
-                DataProvider.loadProfile(profileName);
+                DataProvider.loadProfile(profile);
 
                 FXMLLoader fxmlLoader = new FXMLLoader(
                         getClass().getResource("ConfigDialog.fxml"));
@@ -53,12 +52,17 @@ public class ConfigDialog extends Application {
                 ConfigDialogController controller = fxmlLoader.getController();
                 controller.setStage(stage);
 
+                stage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                    if (!newVal && profile.isNewProfile()) {
+                        profile.deleteProfile();
+                    }
+                });
                 stage.setResizable(false);
                 stage.getIcons().add(DataProvider.DEFAULT_ICON);
                 stage.setScene(new Scene(root));
                 stage.setTitle(DataProvider
                         .getResourceValue("configureApplication")
-                        + ": " + profileName);
+                        + ": " + profile.getProfileName());
                 stage.show();
             } catch (IOException ex) {
                 Logger.getLogger(ConfigDialog.class.getName())

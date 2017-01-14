@@ -16,6 +16,8 @@
  */
 package bayern.steinbrecher.gruen2.data;
 
+import java.nio.charset.Charset;
+
 /**
  * Represents all options allowed to configure in gruen2.conf.
  *
@@ -25,32 +27,47 @@ public enum ConfigKey {
 
     /**
      * Indicating whether to use SSH or not. Write "Yes" to use SSH. ("Ja" is
-     * also accepted because of legacy.)
+     * also accepted because of legacy, but should not be used.)
      */
-    USE_SSH,
+    USE_SSH(Boolean.class),
     /**
      * The host for connecting over SSH.
      */
-    SSH_HOST,
+    SSH_HOST(String.class),
     /**
      * The host for connecting to the database.
      */
-    DATABASE_HOST,
+    DATABASE_HOST(String.class),
     /**
      * The name of the database to connect to.
      */
-    DATABASE_NAME,
+    DATABASE_NAME(String.class),
     /**
      * Indicates whether the generated SEPA is UTF-8 or "UTF-8 with BOM".
      */
-    SEPA_USE_BOM,
+    SEPA_USE_BOM(Boolean.class),
     /**
      * The expression to indicate which people get birthday notifications. Like
      * =50,=60,=70,=75,&gt;=80
      */
-    BIRTHDAY_EXPRESSION,
+    BIRTHDAY_EXPRESSION(String.class),
     /**
      * The charset used by the response of the ssh connection.
      */
-    SSH_CHARSET;
+    SSH_CHARSET(Charset.class);
+
+    private final Class<?> valueClass;
+
+    private ConfigKey(Class<?> valueClass) {
+        this.valueClass = valueClass;
+    }
+
+    /**
+     * Returns the class of the value this enum constant represents.
+     *
+     * @return The class of the value this enum constant represents.
+     */
+    public Class<?> getValueClass() {
+        return valueClass;
+    }
 }

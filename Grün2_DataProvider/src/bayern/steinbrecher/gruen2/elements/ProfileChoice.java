@@ -17,10 +17,16 @@
 package bayern.steinbrecher.gruen2.elements;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.Profile;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -36,25 +42,38 @@ import javafx.stage.Stage;
  */
 public class ProfileChoice extends Application {
 
-    private Optional<String> profileName = Optional.empty();
+    private static final String NEW_CONFIG_NAME
+            = DataProvider.getResourceValue("newConfigname");
+    private final boolean showNewButton;
+    private Optional<Profile> profile = Optional.empty();
     private boolean selected = false;
+    private boolean created = false;
+
+    public ProfileChoice(boolean showNewButton) {
+        this.showNewButton = showNewButton;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void start(Stage stage) {
+        List<Node> nodes = new ArrayList<>();
+
         Label choiceLabel
                 = new Label(DataProvider.getResourceValue("chooseProfile"));
+        nodes.add(choiceLabel);
 
         ListView<String> profileList = new ListView<>(FXCollections
-                .observableArrayList(DataProvider.getAvailableProfiles()));
+                .observableArrayList(Profile.getAvailableProfiles()));
+        nodes.add(profileList);
 
         Button select = new Button(DataProvider.getResourceValue("select"));
         select.setOnAction(evt -> {
             selected = true;
             stage.close();
         });
+        nodes.add(select);
 
         MultipleSelectionModel<String> selectionModel
                 = profileList.selectionModelProperty().get();
@@ -64,7 +83,17 @@ public class ProfileChoice extends Application {
                 });
         select.setDisable(selectionModel.isEmpty());
 
-        Scene scene = new Scene(new VBox(10, choiceLabel, profileList, select));
+        if (showNewButton) {
+            Button create = new Button(DataProvider.getResourceValue("create"));
+            create.setOnAction(evt -> {
+                created = true;
+                stage.close();
+            });
+            nodes.add(create);
+        }
+
+        Scene scene = new Scene(
+                new VBox(10, nodes.toArray(new Node[nodes.size()])));
         scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         stage.setScene(scene);
         stage.setResizable(false);
@@ -73,13 +102,23 @@ public class ProfileChoice extends Application {
         stage.showAndWait();
 
         if (selected) {
-            profileName = Optional.of(selectionModel.getSelectedItem());
+            profile = Optional.of(
+                    new Profile(selectionModel.getSelectedItem(), false));
+        } else if (created) {
+            String newConfigName = NEW_CONFIG_NAME;
+            List<String> availableProfiles = Profile.getAvailableProfiles();
+            Random random = new Random();
+            while (availableProfiles.contains(newConfigName)) {
+                newConfigName
+                        = NEW_CONFIG_NAME + " (" + random.nextInt(1000) + ")";
+            }
+            profile = Optional.of(new Profile(newConfigName, true));
         }
     }
 
-    public static Optional<String> askForProfile() {
-        ProfileChoice choice = new ProfileChoice();
+    public static Optional<Profile> askForProfile(boolean showNewButton) {
+        ProfileChoice choice = new ProfileChoice(showNewButton);
         choice.start(new Stage());
-        return choice.profileName;
+        return choice.profile;
     }
 }

@@ -18,6 +18,7 @@ package bayern.steinbrecher.gruen2.sepaform;
 
 import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.Profile;
 import bayern.steinbrecher.gruen2.elements.CheckedDatePicker;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.people.Originator;
@@ -123,7 +124,7 @@ public class SepaFormController extends CheckedController {
         valid.bind(((anyInputToLong.or(anyInputMissing)).not())
                 .and(executionDatePicker.validProperty()));
 
-        DataProvider profile = DataProvider.getProfile();
+        Profile profile = DataProvider.getProfile();
 
         try {
             originator = Originator.readOriginatorInfo(

@@ -22,6 +22,7 @@ import bayern.steinbrecher.gruen2.connection.SshConnection;
 import bayern.steinbrecher.gruen2.contribution.Contribution;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.Profile;
 import bayern.steinbrecher.gruen2.login.LoginKey;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
@@ -42,6 +43,7 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
+import bayern.steinbrecher.gruen2.utility.ProgramCaller;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
 import bayern.steinbrecher.wizard.Wizard;
@@ -80,7 +82,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private static final long SPLASHSCREEN_MILLIS = 2500;
-    private DataProvider profile;
+    private Profile profile;
     private Stage menuStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
@@ -95,11 +97,12 @@ public class Main extends Application {
      * Default constructor.
      */
     public Main() {
-        List<String> availableProfiles = DataProvider.getAvailableProfiles();
+        List<String> availableProfiles = Profile.getAvailableProfiles();
         if (availableProfiles.size() == 1) {
-            profile = DataProvider.loadProfile(availableProfiles.get(0));
+            profile = DataProvider.loadProfile(availableProfiles.get(0), false);
         } else {
-            Optional<String> requestedProfile = ProfileChoice.askForProfile();
+            Optional<Profile> requestedProfile
+                    = ProfileChoice.askForProfile(false);
             if (requestedProfile.isPresent()) {
                 profile = DataProvider.loadProfile(requestedProfile.get());
             } else {
@@ -131,17 +134,23 @@ public class Main extends Application {
     private boolean checkConfigs() {
         boolean valid = profile.isAllConfigurationsSet();
         if (!valid) {
-            ConfirmDialog.createDialog(new Stage(), null,
-                    DataProvider.getResourceValue("badConfigs"))
-                    .showOnceAndWait();
-            Platform.exit();
+            ConfirmDialog badConfigsDialog = ConfirmDialog.createDialog(
+                    new Stage(), null,
+                    DataProvider.getResourceValue("badConfigs"));
+            badConfigsDialog.showOnceAndWait();
+            badConfigsDialog.getConfirmed()
+                    .ifPresent(confirmed -> {
+                        if (confirmed) {
+                            ProgramCaller.startGrün2ConfigDialog();
+                        }
+                    });
         }
         return valid;
     }
 
     private Login createLogin() {
         Login login;
-        if (profile.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
+        if (profile.getOrDefault(ConfigKey.USE_SSH, true)) {
             login = new SshLogin();
         } else {
             login = new DefaultLogin();
@@ -289,29 +298,28 @@ public class Main extends Application {
         if (loginInfos.isPresent()) {
             Map<LoginKey, String> loginValues = loginInfos.get();
             try {
-                if (profile.getOrDefaultBoolean(ConfigKey.USE_SSH, true)) {
+                if (profile.getOrDefault(ConfigKey.USE_SSH, true)) {
                     con = new SshConnection(
-                            profile.getOrDefaultString(
+                            profile.getOrDefault(
                                     ConfigKey.SSH_HOST, "localhost"),
                             loginValues.get(LoginKey.SSH_USERNAME),
                             loginValues.get(LoginKey.SSH_PASSWORD),
-                            profile.getOrDefaultString(
+                            profile.getOrDefault(
                                     ConfigKey.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefaultString(
+                            profile.getOrDefault(
                                     ConfigKey.DATABASE_NAME, "dbname"),
-                            profile.getOrDefaultCharset(
-                                    ConfigKey.SSH_CHARSET,
+                            profile.getOrDefault(ConfigKey.SSH_CHARSET,
                                     StandardCharsets.ISO_8859_1));
                 } else {
                     con = new DefaultConnection(
-                            profile.getOrDefaultString(
-                                    ConfigKey.DATABASE_HOST, "localhost"),
+                            profile.getOrDefault(ConfigKey.DATABASE_HOST,
+                                    "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefaultString(
-                                    ConfigKey.DATABASE_NAME, "dbname"));
+                            profile.getOrDefault(ConfigKey.DATABASE_NAME,
+                                    "dbname"));
                 }
             } catch (UnknownHostException | AuthException ex) {
                 handleAuthException(login, waitScreen, ex);
@@ -512,7 +520,7 @@ public class Main extends Application {
                                     memberToSelect, contributions,
                                     originator, sequenceType,
                                     DataProvider.SAVE_PATH + "/Sepa.xml",
-                                    profile.getOrDefaultBoolean(
+                                    profile.getOrDefault(
                                             ConfigKey.SEPA_USE_BOM, true));
                     String message = invalidMember.stream()
                             .map(m -> m.toString())

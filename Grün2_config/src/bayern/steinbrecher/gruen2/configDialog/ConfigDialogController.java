@@ -19,8 +19,10 @@ package bayern.steinbrecher.gruen2.configDialog;
 import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.Profile;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
+import bayern.steinbrecher.gruen2.utility.ProgramCaller;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedTextField birthdayExpressionTextField;
     private List<CheckedTextField> checkedTextFields = new ArrayList<>();
-    private DataProvider profile;
+    private Profile profile;
     private BooleanProperty profileAlreadyExists
             = new SimpleBooleanProperty(this, "profileAlreadyExists");
 
@@ -80,7 +82,7 @@ public class ConfigDialogController extends CheckedController {
                     }
                     profileAlreadyExists.set(
                             !profile.getProfileName().equals(newVal)
-                            && DataProvider.getAvailableProfiles()
+                            && Profile.getAvailableProfiles()
                                     .contains(newVal));
                 });
 
@@ -96,25 +98,23 @@ public class ConfigDialogController extends CheckedController {
                 .map(ctf -> ctf.validProperty())
                 .reduce(TRUE_BINDING, (bind, prop) -> bind.and(prop),
                         BooleanBinding::and)
-                .and(profileAlreadyExistsProperty().not()));
+                .and(profileAlreadyExists.not()));
 
         //Load settings
         profile = DataProvider.getProfile();
         useSSHCheckBox.setSelected(
-                profile.getOrDefaultBoolean(ConfigKey.USE_SSH, true));
-        sshHostTextField.setText(
-                profile.getOrDefaultString(ConfigKey.SSH_HOST, ""));
+                profile.getOrDefault(ConfigKey.USE_SSH, true));
+        sshHostTextField.setText(profile.getOrDefault(ConfigKey.SSH_HOST, ""));
         databaseHostTextField.setText(
-                profile.getOrDefaultString(ConfigKey.DATABASE_HOST, ""));
+                profile.getOrDefault(ConfigKey.DATABASE_HOST, ""));
         databaseNameTextField.setText(
-                profile.getOrDefaultString(ConfigKey.DATABASE_NAME, ""));
+                profile.getOrDefault(ConfigKey.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(
-                profile.getOrDefaultString(
-                        ConfigKey.BIRTHDAY_EXPRESSION, ""));
+                profile.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(
-                profile.getOrDefaultBoolean(ConfigKey.SEPA_USE_BOM, true));
-        sshCharsetTextField.setText(profile.getOrDefaultString(
+                profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
+        sshCharsetTextField.setText(profile.getOrDefault(
                 ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1.name()));
     }
 
@@ -122,28 +122,16 @@ public class ConfigDialogController extends CheckedController {
     private void saveSettings() {
         checkStage();
         if (isValid()) {
-            String out = ConfigKey.USE_SSH + DataProvider.VALUE_SEPARATOR
-                    + (useSSHCheckBox.isSelected() ? "true" : "false") + '\n'
-                    + ConfigKey.SSH_HOST + DataProvider.VALUE_SEPARATOR
-                    + (useSSHCheckBox.isSelected()
-                    ? sshHostTextField.getText() : "noHost") + '\n'
-                    + ConfigKey.DATABASE_HOST + DataProvider.VALUE_SEPARATOR
-                    + databaseHostTextField.getText() + '\n'
-                    + ConfigKey.DATABASE_NAME + DataProvider.VALUE_SEPARATOR
-                    + databaseNameTextField.getText() + '\n'
-                    + ConfigKey.BIRTHDAY_EXPRESSION
-                    + DataProvider.VALUE_SEPARATOR
-                    + birthdayExpressionTextField.getText() + '\n'
-                    + ConfigKey.SEPA_USE_BOM + DataProvider.VALUE_SEPARATOR
-                    + (sepaWithBomCheckBox.isSelected() ? "true" : "false")
-                    + '\n'
-                    + ConfigKey.SSH_CHARSET + DataProvider.VALUE_SEPARATOR
-                    + sshCharsetTextField.getText();
-            IOStreamUtility.printContent(
-                    out, profile.getConfigFilePath(), false);
+            profile.saveSettings();
             profile.renameProfile(profileNameTextField.getText());
             stage.close();
         }
+    }
+
+    @FXML
+    private void saveSettingsAndContinue() {
+        saveSettings();
+        ProgramCaller.startGrün2();
     }
 
     /**

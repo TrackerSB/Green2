@@ -61,9 +61,6 @@ public class Contribution
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        stage.setOnCloseRequest(evt -> {
-            System.out.println("CLOSE REQUESTED");
-        });
 
         Parent root = loadFXML("Contribution.fxml");
         controller.setStage(stage);

@@ -18,23 +18,13 @@ package bayern.steinbrecher.gruen2.data;
 
 import bayern.steinbrecher.gruen2.utility.URLUtility;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.scene.image.Image;
 
 /**
@@ -50,11 +40,6 @@ public final class DataProvider {
     public static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle(
                     "bayern.steinbrecher.gruen2.data.language.language");
-    /**
-     * The symbol used to separate the config key on the left side and the value
-     * on the right side in gruen2.conf.
-     */
-    public static final String VALUE_SEPARATOR = ":";
     /**
      * The default icon for stages.
      */
@@ -133,37 +118,7 @@ public final class DataProvider {
      */
     public static final String GRUEN2_ZIP_URL
             = PROGRAMFOLDER_PATH_ONLINE + "/Gruen2.zip";
-    private static final String CONFIGFILE_FORMAT = ".conf";
-    private static final String ORIGINATORFILE_FORMAT = ".properties";
-    private static Optional<DataProvider> loadedProfile = Optional.empty();
-    /**
-     * The configurations found in gruen2.conf.
-     */
-    private final Map<ConfigKey, String> configurations;
-    /**
-     * {@code true} only if all allowed configurations are specified.
-     */
-    private final boolean allConfigurationsSet;
-    /**
-     * Representing a function for calculating whether a person with a specific
-     * age gets notified.
-     */
-    private final IntFunction<Boolean> ageFunction;
-    private final String profileName;
-    /**
-     * The path where the file containing information about the last valid
-     * inserted data about an originator of a SEPA direct debit. (There does
-     * need to be a file yet)
-     */
-    private final String originatorInfoPath;
-    /**
-     * The path to the configfile. (May not exist, yet)
-     */
-    private final String configFilePath;
-    /**
-     * The file to the configurations for Grün2.
-     */
-    private final File configFile;
+    private static Optional<Profile> loadedProfile = Optional.empty();
 
     static {
         //Create configDir if not existing
@@ -181,172 +136,9 @@ public final class DataProvider {
         }
     }
 
-    private void checkProfile() {
-        if (!configFile.exists()) {
-            throw new IllegalArgumentException(
-                    "Profile " + profileName + " does not exist");
-        }
-    }
-
-    private static Map<ConfigKey, String> readConfigs(File configFile) {
-        Map<ConfigKey, String> configurations = new HashMap<>();
-
-        String[] parts;
-        try (Scanner sc = new Scanner(configFile)) {
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine().trim();
-                parts = line.split(VALUE_SEPARATOR);
-                if (parts.length != 2) {
-                    Logger.getLogger(DataProvider.class.getName())
-                            .log(Level.WARNING, "\"{0}" + "\" has not exactly "
-                                    + "two elements. It remains ignored.",
-                                    line);
-                } else {
-                    configurations.put(ConfigKey.valueOf(
-                            parts[0].toUpperCase()), parts[1]);
-                }
-            }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(DataProvider.class.getName())
-                    .log(Level.SEVERE, null, ex);
-        }
-        return configurations;
-    }
-
-    private static IntFunction<Boolean> readAgeFunction(
-            String birthdayExpression) {
-        Set<IntFunction<Boolean>> ageFunctionParts = new HashSet<>();
-        for (String part : Arrays.asList(birthdayExpression.split(","))) {
-            if (part.isEmpty()) {
-                continue;
-            }
-            try {
-                switch (part.charAt(0)) {
-                    case '>':
-                        switch (part.charAt(1)) {
-                            case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age
-                                            >= new Integer(part.substring(2));
-                                });
-                                break;
-                            default:
-                                ageFunctionParts.add(age -> {
-                                    return age > new Integer(part.substring(1));
-                                });
-                        }
-                        break;
-                    case '<':
-                        switch (part.charAt(1)) {
-                            case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age
-                                            <= new Integer(part.substring(2));
-                                });
-                                break;
-                            default:
-                                ageFunctionParts.add(age -> {
-                                    return age < new Integer(part.substring(1));
-                                });
-                        }
-                        break;
-                    case '=':
-                        ageFunctionParts.add(age -> {
-                            return age == new Integer(part.substring(1));
-                        });
-                        break;
-                    default:
-                        Logger.getLogger(DataProvider.class.getName())
-                                .log(Level.WARNING, "{0} gets skipped", part);
-                }
-            } catch (NumberFormatException ex) {
-                Logger.getLogger(DataProvider.class.getName())
-                        .log(Level.WARNING, "{0} gets skipped", part);
-            }
-        }
-
-        if (ageFunctionParts.isEmpty()) {
-            return age -> false;
-        } else {
-            return age -> ageFunctionParts.parallelStream()
-                    .anyMatch(intFunc -> intFunc.apply(age));
-        }
-    }
-
-    /**
-     * Creates a {@code DataProvider} for given profile.
-     *
-     * @param profile The name of the profile.
-     */
-    private DataProvider(String profile) {
-        checkLoaded();
-        profileName = profile;
-        originatorInfoPath
-                = APP_DATA_PATH + "/" + profile + ORIGINATORFILE_FORMAT;
-        configFilePath = APP_DATA_PATH + "/" + profile + CONFIGFILE_FORMAT;
-        configFile = new File(configFilePath);
-        checkProfile();
-
-        configurations = readConfigs(configFile);
-        ageFunction = readAgeFunction(
-                getOrDefaultString(ConfigKey.BIRTHDAY_EXPRESSION, ""));
-        allConfigurationsSet
-                = configurations.size() == ConfigKey.values().length;
-    }
-
-    /**
-     * Returns the value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
-     *
-     * @param key The key to search for.
-     * @param defaultValue The value to return when {@code key} was not found.
-     * @return The value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
-     */
-    public String getOrDefaultString(
-            ConfigKey key, String defaultValue) {
-        return configurations.getOrDefault(key, defaultValue);
-    }
-
-    /**
-     * Returns the value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
-     *
-     * @param key The key to search for.
-     * @param defaultValue The value to return when {@code key} was not found.
-     * @return The value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
-     */
-    public boolean getOrDefaultBoolean(
-            ConfigKey key, boolean defaultValue) {
-        if (configurations.containsKey(key)) {
-            String value = configurations.get(key);
-            /*FIXME Legacy checking for old config files containing "ja" instead
-             * of "yes".
-             */
-            return value.equalsIgnoreCase("ja")
-                    || value.equalsIgnoreCase("true");
-        } else {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Returns the value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
-     *
-     * @param key The key to search for.
-     * @param defaultValue The value to return when {@code key} was not found.
-     * @return The value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
-     */
-    public Charset getOrDefaultCharset(
-            ConfigKey key, Charset defaultValue) {
-        if (configurations.containsKey(key)) {
-            return Charset.forName(configurations.get(key));
-        } else {
-            return defaultValue;
-        }
+    private DataProvider() {
+        throw new UnsupportedOperationException(
+                "Construction of an object not allowed.");
     }
 
     /**
@@ -390,7 +182,7 @@ public final class DataProvider {
      *
      * @return Returns the loaded profile.
      */
-    public static DataProvider getProfile() {
+    public static Profile getProfile() {
         if (loadedProfile.isPresent()) {
             return loadedProfile.get();
         } else {
@@ -398,87 +190,13 @@ public final class DataProvider {
         }
     }
 
-    public static DataProvider loadProfile(String profileName) {
-        DataProvider profile = new DataProvider(profileName);
+    public static Profile loadProfile(String profileName, boolean newProfile) {
+        return loadProfile(new Profile(profileName, newProfile));
+    }
+
+    public static Profile loadProfile(Profile profile) {
         loadedProfile = Optional.of(profile);
         return profile;
-    }
-
-    public static List<String> getAvailableProfiles() {
-        return Arrays.stream(new File(APP_DATA_PATH)
-                .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT)))
-                .map(s -> s.substring(0, s.lastIndexOf(".")))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Renames the profile if no other profile with name {@code newName} exists.
-     * If this profile already is named {@code newName} nothing happens.
-     *
-     * @param newName The new profile name.
-     */
-    public synchronized void renameProfile(String newName) {
-        if (!newName.equals(profileName)) {
-            String newConfigPath
-                    = APP_DATA_PATH + "/" + newName + CONFIGFILE_FORMAT;
-            configFile.renameTo(new File(newConfigPath));
-
-            String newOriginatorPath
-                    = APP_DATA_PATH + "/" + newName + ORIGINATORFILE_FORMAT;
-            new File(originatorInfoPath).renameTo(new File(newOriginatorPath));
-
-            loadedProfile = Optional.empty();
-            loadProfile(newName);
-        }
-    }
-
-    /**
-     * Check whether all configurations are set.
-     *
-     * @return {@code true} only if all configurations are set.
-     */
-    public boolean isAllConfigurationsSet() {
-        return allConfigurationsSet;
-    }
-
-    /**
-     * Returns the function for calculating whether a person of a certain age
-     * has to be notified.
-     *
-     * @return The function for calculating whether a person of a certain age
-     * has to be notified.
-     */
-    public IntFunction<Boolean> getAgeFunction() {
-        return ageFunction;
-    }
-
-    /**
-     * Returns the path of the file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not garanteed that this file exists.
-     *
-     * @return The path of the file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not garanteed that this file exists.
-     */
-    public String getOriginatorInfoPath() {
-        return originatorInfoPath;
-    }
-
-    /**
-     * Returns the path containing this configurations.
-     *
-     * @return The path containing this configurations.
-     */
-    public String getConfigFilePath() {
-        return configFilePath;
-    }
-
-    /**
-     * Returns the name of the loaded profile if any.
-     *
-     * @return The name of the loaded profile.
-     */
-    public String getProfileName() {
-        return profileName;
     }
 
     /**

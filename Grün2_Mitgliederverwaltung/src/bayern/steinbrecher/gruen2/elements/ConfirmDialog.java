@@ -19,6 +19,7 @@ package bayern.steinbrecher.gruen2.elements;
 import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Pos;
@@ -42,6 +43,7 @@ public class ConfirmDialog extends View<Controller> {
     private static final int MIN_HEIGHT = 100;
     private String message;
     private Window owner;
+    private Optional<Boolean> confirmed = Optional.empty();
 
     /**
      * Creates a new dialog showing {@code message} and a single button for
@@ -68,6 +70,7 @@ public class ConfirmDialog extends View<Controller> {
         Button okButton = new Button("OK");
         okButton.setDefaultButton(true);
         okButton.setOnAction(aevt -> {
+            confirmed = Optional.of(true);
             stage.close();
         });
 
@@ -80,6 +83,9 @@ public class ConfirmDialog extends View<Controller> {
 
         Scene scene = new Scene(dialogContent);
         scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        stage.setOnCloseRequest(evt -> {
+            confirmed = Optional.of(false);
+        });
         stage.setScene(scene);
         stage.setMinWidth(MIN_WIDTH);
         stage.setMinHeight(MIN_HEIGHT);
@@ -132,5 +138,28 @@ public class ConfirmDialog extends View<Controller> {
                 + DataProvider.getResourceValue("notReachable"), owner);
         dialog.initDialog(s);
         return dialog;
+    }
+
+    /**
+     * Checks whether the user confirmed the dialog.
+     *
+     * @return {@code Optional.empty()} only if the window was not closed using
+     * X or ok button. {@code Optional.of(true)} only if the user pressed ok
+     * button. {@code Optional.of(false)} otherwise.
+     */
+    public Optional<Boolean> getConfirmed() {
+        return confirmed;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean userAbborted() {
+        if (confirmed.isPresent()) {
+            return !confirmed.get();
+        } else {
+            throw new IllegalStateException("ConfirmDialog is still open.");
+        }
     }
 }
