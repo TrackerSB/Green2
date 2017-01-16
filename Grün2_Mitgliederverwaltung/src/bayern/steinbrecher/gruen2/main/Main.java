@@ -25,7 +25,6 @@ import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.Profile;
 import bayern.steinbrecher.gruen2.login.LoginKey;
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
-import bayern.steinbrecher.gruen2.elements.ConfirmDialog;
 import bayern.steinbrecher.gruen2.elements.ProfileChoice;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
@@ -43,6 +42,7 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
+import bayern.steinbrecher.gruen2.utility.DialogUtility;
 import bayern.steinbrecher.gruen2.utility.ProgramCaller;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
@@ -72,6 +72,8 @@ import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 /**
@@ -134,13 +136,10 @@ public class Main extends Application {
     private boolean checkConfigs() {
         boolean valid = profile.isAllConfigurationsSet();
         if (!valid) {
-            ConfirmDialog badConfigsDialog = ConfirmDialog.createDialog(
-                    new Stage(), null,
-                    DataProvider.getResourceValue("badConfigs"));
-            badConfigsDialog.showOnceAndWait();
-            badConfigsDialog.getConfirmed()
-                    .ifPresent(confirmed -> {
-                        if (confirmed) {
+            DialogUtility.createErrorAlert(
+                    DataProvider.getResourceValue("badConfigs"))
+                    .showAndWait().ifPresent(buttontype -> {
+                        if (buttontype == ButtonType.OK) {
                             ProgramCaller.startGrün2ConfigDialog();
                         }
                     });
@@ -194,10 +193,9 @@ public class Main extends Application {
                 try {
                     dbConnection.createTablesIfNeeded();
                 } catch (SchemeCreationException ex) {
-                    ConfirmDialog.createDialog(menuStage, null,
-                            DataProvider.getResourceValue(
-                                    "couldntCreateScheme"))
-                            .showOnceAndWait();
+                    DialogUtility.createErrorAlert(DataProvider.getResourceValue(
+                            "couldntCreateScheme"))
+                            .showAndWait();
                     Logger.getLogger(Main.class.getName())
                             .log(Level.SEVERE, null, ex);
                     Platform.exit();
@@ -243,36 +241,37 @@ public class Main extends Application {
             waitScreen.close();
 
             Stage s = new Stage();
-            ConfirmDialog confirm;
+            Alert dialog;
             if (cause instanceof ConnectException) {
-                confirm = ConfirmDialog.createDialog(s, null,
+                dialog = DialogUtility.createInfoAlert(
                         DataProvider.getResourceValue("checkConnection"));
             } else if (cause instanceof UnknownHostException) {
-                String message = cause.getMessage();
-                confirm = ConfirmDialog.createCheckConnectionDialog(
-                        message.substring(message.lastIndexOf(":") + 1).trim(),
-                        s, null);
+                dialog = DialogUtility.createStacktraceAlert(cause,
+                        DataProvider.getResourceValue("checkConnection"));
             } else if (cause instanceof AuthException) {
-                confirm = ConfirmDialog.createDialog(
-                        s, null, DataProvider.getResourceValue("checkInput"));
+                dialog = DialogUtility.createInfoAlert(
+                        DataProvider.getResourceValue("checkInput"));
             } else {
                 Logger.getLogger(Main.class.getName())
                         .log(Level.SEVERE, "Not action specified for: {0}",
                                 cause);
-                confirm = ConfirmDialog.createDialog(s, null,
+                dialog = DialogUtility.createErrorAlert(
                         DataProvider.getResourceValue("unexpectedAbbort"));
             }
 
-            confirm.showOnce(() -> {
-                if (confirm.userAbborted()) {
-                    Platform.exit();
-                } else {
-                    login.reset();
-                    synchronized (this) {
-                        notifyAll();
+            dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
+                if (!newVal) {
+                    if (dialog.getResult() == ButtonType.OK) {
+                        login.reset();
+                        synchronized (this) {
+                            notifyAll();
+                        }
+                    } else {
+                        Platform.exit();
                     }
                 }
             });
+            dialog.show();
         });
     }
 
@@ -374,9 +373,10 @@ public class Main extends Application {
         checkNull(nicknames);
         try {
             if (member.isEmpty()) {
-                ConfirmDialog.createDialog(new Stage(), menuStage,
-                        DataProvider.getResourceValue("noMemberForOutput"))
-                        .showOnceAndWait();
+                Alert alert = DialogUtility.createInfoAlert(
+                        DataProvider.getResourceValue("noMemberForOutput"));
+                alert.initOwner(menuStage);
+                alert.showAndWait();
             } else {
                 IOStreamUtility.printContent(
                         AddressGenerator.generateAddressData(
@@ -437,9 +437,10 @@ public class Main extends Application {
         try {
             List<Member> birthdayList = memberBirthday.get(year).get();
             if (birthdayList.isEmpty()) {
-                ConfirmDialog.createDialog(new Stage(), menuStage,
-                        DataProvider.getResourceValue("noMemberForOutput"))
-                        .showOnceAndWait();
+                Alert alert = DialogUtility.createInfoAlert(
+                        DataProvider.getResourceValue("noMemberForOutput"));
+                alert.initOwner(menuStage);
+                alert.showAndWait();
             } else {
                 IOStreamUtility.printContent(
                         BirthdayGenerator.createGroupedOutput(
@@ -526,19 +527,20 @@ public class Main extends Application {
                             .map(m -> m.toString())
                             .collect(Collectors.joining("\n"));
                     if (!message.isEmpty()) {
-                        ConfirmDialog.createDialog(new Stage(), menuStage,
-                                message + "\n"
-                                + DataProvider.getResourceValue(
-                                        "haveBadAccountInformation"))
-                                .showOnce(null);
+                        Alert alert = DialogUtility.createErrorAlert(message
+                                + "\n" + DataProvider.getResourceValue(
+                                        "haveBadAccountInformation"));
+                        alert.initOwner(menuStage);
+                        alert.show();
                     }
                 }
             });
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            ConfirmDialog.createDialog(new Stage(), menuStage,
-                    DataProvider.getResourceValue("noSepaDebit"))
-                    .showOnceAndWait();
+            Alert alert = DialogUtility.createErrorAlert(
+                    DataProvider.getResourceValue("noSepaDebit"));
+            alert.initOwner(menuStage);
+            alert.showAndWait();
         }
     }
 
@@ -617,8 +619,9 @@ public class Main extends Application {
                         DataProvider.getResourceValue("memberBadMandatSigned"),
                         DataProvider.getResourceValue(
                                 "allMandatSignedCorrect"));
-        ConfirmDialog.createDialog(new Stage(), menuStage, message)
-                .showOnceAndWait();
+        Alert alert = DialogUtility.createInfoAlert(message);
+        alert.initOwner(menuStage);
+        alert.showAndWait();
     }
 
     /**
