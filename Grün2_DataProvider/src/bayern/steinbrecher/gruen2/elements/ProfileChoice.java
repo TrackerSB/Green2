@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
@@ -44,14 +44,9 @@ public class ProfileChoice extends Application {
 
     private static final String NEW_CONFIG_NAME
             = DataProvider.getResourceValue("newConfigname");
-    private final boolean showNewButton;
     private Optional<Profile> profile = Optional.empty();
     private boolean selected = false;
     private boolean created = false;
-
-    public ProfileChoice(boolean showNewButton) {
-        this.showNewButton = showNewButton;
-    }
 
     /**
      * {@inheritDoc}
@@ -83,14 +78,12 @@ public class ProfileChoice extends Application {
                 });
         select.setDisable(selectionModel.isEmpty());
 
-        if (showNewButton) {
-            Button create = new Button(DataProvider.getResourceValue("create"));
-            create.setOnAction(evt -> {
-                created = true;
-                stage.close();
-            });
-            nodes.add(create);
-        }
+        Button create = new Button(DataProvider.getResourceValue("create"));
+        create.setOnAction(evt -> {
+            created = true;
+            stage.close();
+        });
+        nodes.add(create);
 
         Scene scene = new Scene(
                 new VBox(10, nodes.toArray(new Node[nodes.size()])));
@@ -116,9 +109,29 @@ public class ProfileChoice extends Application {
         }
     }
 
+    /**
+     * Creates a dialog for selecting a profile. This method blocks untilt the
+     * dialog is closed.
+     *
+     * @param showNewButton {@code true} only if to show a "new" button to the
+     * user. When {@code false} a simple {@code ChoiceDialog} is used; a
+     * {@code ListView} otherwise.
+     * @return An {@code Optional} which contains the selected profile if any.
+     */
     public static Optional<Profile> askForProfile(boolean showNewButton) {
-        ProfileChoice choice = new ProfileChoice(showNewButton);
-        choice.start(new Stage());
-        return choice.profile;
+        if (showNewButton) {
+            ProfileChoice choice = new ProfileChoice();
+            choice.start(new Stage());
+            return choice.profile;
+        } else {
+            Optional<String> profileName
+                    = new ChoiceDialog<>(null, Profile.getAvailableProfiles())
+                            .showAndWait();
+            if (profileName.isPresent()) {
+                return Optional.of(new Profile(profileName.get(), false));
+            } else {
+                return Optional.empty();
+            }
+        }
     }
 }

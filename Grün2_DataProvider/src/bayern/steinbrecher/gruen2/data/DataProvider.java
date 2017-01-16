@@ -129,13 +129,6 @@ public final class DataProvider {
         return loadedProfile.isPresent();
     }
 
-    private static void checkLoaded() {
-        if (isLoaded()) {
-            throw new UnsupportedOperationException(
-                    "There is already a profile loaded.");
-        }
-    }
-
     private DataProvider() {
         throw new UnsupportedOperationException(
                 "Construction of an object not allowed.");
