@@ -5,19 +5,57 @@
 <?import javafx.scene.layout.*?>
 <?import bayern.steinbrecher.gruen2.elements.*?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="bayern.steinbrecher.gruen2.login.ssh.SshLoginController">
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="bayern.steinbrecher.gruen2.login.ssh.SshLoginController">
     <!-- This checkbox needs to be out of order because of referencing its id -->
-    <CheckBox focusTraversable="false" text="%allowEmptyFields" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+    <CheckBox fx:id="allowEmptyFieldsCheckbox"
+              focusTraversable="false"
+              text="%allowEmptyFields"
+              GridPane.rowIndex="5"
+              GridPane.columnIndex="0" />
     
-    <Label text="%sshUsername" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-    <CheckedTextField fx:id="sshUsernameField" promptText="%sshUsername" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-    <Label text="%sshPassword" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <CheckedPasswordField fx:id="sshPasswordField" promptText="%sshPassword" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-    <Label text="%databaseUsername" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-    <CheckedTextField fx:id="databaseUsernameField" promptText="%databaseUsername" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Label text="%databasePassword" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-    <CheckedPasswordField fx:id="databasePasswordField" promptText="%databasePassword" checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <Label text="%sshUsername"
+           GridPane.rowIndex="0"
+           GridPane.columnIndex="0" />
+    <CheckedTextField fx:id="sshUsernameField"
+                      promptText="%sshUsername"
+                      checked="${!allowEmptyFieldsCheckbox.selected}"
+                      GridPane.rowIndex="0"
+                      GridPane.columnIndex="1" />
+    <Label text="%sshPassword"
+           GridPane.rowIndex="1"
+           GridPane.columnIndex="0" />
+    <CheckedPasswordField fx:id="sshPasswordField"
+                          promptText="%sshPassword"
+                          checked="${!allowEmptyFieldsCheckbox.selected}"
+                          GridPane.rowIndex="1"
+                          GridPane.columnIndex="1" />
+    <Label text="%databaseUsername"
+           GridPane.rowIndex="2"
+           GridPane.columnIndex="0" />
+    <CheckedTextField fx:id="databaseUsernameField"
+                      promptText="%databaseUsername"
+                      checked="${!allowEmptyFieldsCheckbox.selected}"
+                      GridPane.rowIndex="2"
+                      GridPane.columnIndex="1" />
+    <Label text="%databasePassword"
+           GridPane.rowIndex="3"
+           GridPane.columnIndex="0" />
+    <CheckedPasswordField fx:id="databasePasswordField"
+                          promptText="%databasePassword"
+                          checked="${!allowEmptyFieldsCheckbox.selected}"
+                          GridPane.rowIndex="3"
+                          GridPane.columnIndex="1" />
     
-    <Label text="%invalidOrMissingInput" visible="${!controller.valid}" styleClass="warningLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-    <Button defaultButton="true" text="%login" disable="${!controller.valid}" onAction="#login" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+    <Label text="%invalidOrMissingInput"
+           visible="${!controller.valid}"
+           styleClass="warningLabel"
+           GridPane.rowIndex="5"
+           GridPane.columnIndex="1" />
+    <Button defaultButton="true"
+            text="%login"
+            disable="${!controller.valid}"
+            onAction="#login"
+            GridPane.rowIndex="6"
+            GridPane.columnIndex="0" />
 </GridPane>
