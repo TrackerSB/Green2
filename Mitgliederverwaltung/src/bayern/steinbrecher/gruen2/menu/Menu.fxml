@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import bayern.steinbrecher.gruen2.elements.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      spacing="10"
+      fx:controller="bayern.steinbrecher.gruen2.menu.MenuController">
+    <HBox spacing="10">
+        <Label text="%year" />
+        <CheckedIntegerSpinner fx:id="yearSpinner"
+                               min="0"
+                               max="5000"
+                               amountToStepBy="1"
+                               editable="true" />
+        <Label visible="${!yearSpinner.valid}"
+               text="%invalidOrMissingInput"
+               styleClass="warningLabel" />
+    </HBox>
+    <HBox spacing="10">
+        <VBox spacing="10">
+            <Label text="%allAboutSepa"
+                   styleClass="heading" />
+            <Button fx:id="generateContribution"
+                    onAction="#generateContributionSepa"
+                    text="%contributions" />
+            <Button fx:id="generateUniversalSepa"
+                    onAction="#generateUniversalSepa"
+                    text="%arbitrarySepaDirectDebit" />
+            <Button fx:id="checkData"
+                    onAction="#checkData"
+                    text="%checkData" />
+        </VBox>
+        <VBox spacing="10">
+            <Label text="%getAddressesForWord"
+                   styleClass="heading" />
+            <Button fx:id="generateAllAddresses"
+                    onAction="#generateAddressesAll"
+                    text="%ofAllMember" />
+            <Button fx:id="generateAddressesBirthday"
+                    onAction="#generateAddressesBirthday"
+                    text="%birthdayExpression"
+                    disable="${!yearSpinner.valid}" />
+        </VBox>
+        <VBox spacing="10">
+            <Label text="%getInformations"
+                   styleClass="heading" />
+            <Button fx:id="generateBirthdayInfos"
+                    onAction="#generateBirthdayInfos"
+                    text="%groupedBirthdayMember"
+                    disable="${!yearSpinner.valid}" />
+        </VBox>
+    </HBox>
+</VBox>

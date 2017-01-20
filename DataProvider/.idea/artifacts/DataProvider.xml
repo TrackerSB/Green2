@@ -13,6 +13,7 @@
           <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
         </element>
       </element>
+      <element id="library" level="application" name="Wizard" />
     </root>
   </artifact>
 </component>
