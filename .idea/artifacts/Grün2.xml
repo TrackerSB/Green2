@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact name="Grün2">
+    <output-path>$PROJECT_DIR$/out/artifacts/Grün2</output-path>
+    <root id="root">
+      <element id="dir-copy" path="$PROJECT_DIR$/Installationszubehör" />
+      <element id="artifact" artifact-name="Mitgliederverwaltung" />
+      <element id="artifact" artifact-name="ConfigurationDialog" />
+      <element id="artifact" artifact-name="Launcher" />
+    </root>
+  </artifact>
+</component>

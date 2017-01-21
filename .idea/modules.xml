@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ConfigurationDialog/ConfigurationDialog.iml" filepath="$PROJECT_DIR$/ConfigurationDialog/ConfigurationDialog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataProvider/DataProvider.iml" filepath="$PROJECT_DIR$/DataProvider/DataProvider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Launcher/Launcher.iml" filepath="$PROJECT_DIR$/Launcher/Launcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Mitgliederverwaltung/Mitgliederverwaltung.iml" filepath="$PROJECT_DIR$/Mitgliederverwaltung/Mitgliederverwaltung.iml" />
+    </modules>
+  </component>
+</project>

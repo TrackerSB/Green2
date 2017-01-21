@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact name="DataProvider">
+    <output-path>$PROJECT_DIR$/out/artifacts/DataProvider</output-path>
+    <root id="root">
+      <element id="library" level="application" name="Wizard" />
+      <element id="archive" name="DataProvider.jar">
+        <element id="module-output" name="DataProvider" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/DataProvider/META-INF/MANIFEST.MF" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
