@@ -18,22 +18,19 @@ package bayern.steinbrecher.gruen2.elements;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.Profile;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Represents a dialog for choosing the profile to use.
@@ -44,7 +41,7 @@ public class ProfileChoice extends Application {
 
     private static final String NEW_CONFIG_NAME
             = DataProvider.getResourceValue("newConfigname");
-    private Optional<Profile> profile = Optional.empty();
+    private Profile profile;
     private boolean selected = false;
     private boolean created = false;
 
@@ -95,8 +92,7 @@ public class ProfileChoice extends Application {
         stage.showAndWait();
 
         if (selected) {
-            profile = Optional.of(
-                    new Profile(selectionModel.getSelectedItem(), false));
+            profile = new Profile(selectionModel.getSelectedItem(), false);
         } else if (created) {
             String newConfigName = NEW_CONFIG_NAME;
             List<String> availableProfiles = Profile.getAvailableProfiles();
@@ -105,7 +101,7 @@ public class ProfileChoice extends Application {
                 newConfigName
                         = NEW_CONFIG_NAME + " (" + random.nextInt(1000) + ")";
             }
-            profile = Optional.of(new Profile(newConfigName, true));
+            profile = new Profile(newConfigName, true);
         }
     }
 
@@ -122,7 +118,7 @@ public class ProfileChoice extends Application {
         if (showNewButton) {
             ProfileChoice choice = new ProfileChoice();
             choice.start(new Stage());
-            return choice.profile;
+            return Optional.ofNullable(choice.profile);
         } else {
             Optional<String> profileName
                     = new ChoiceDialog<>(null, Profile.getAvailableProfiles())

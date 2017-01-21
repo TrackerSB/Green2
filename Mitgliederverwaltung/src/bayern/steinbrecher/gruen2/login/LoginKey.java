@@ -39,5 +39,5 @@ public enum LoginKey {
     /**
      * Database password.
      */
-    DATABASE_PASSWORD;
+    DATABASE_PASSWORD
 }

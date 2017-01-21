@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
+<?import bayern.steinbrecher.gruen2.elements.CheckedPasswordField?>
+<?import bayern.steinbrecher.gruen2.elements.CheckedTextField?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import bayern.steinbrecher.gruen2.elements.*?>
-
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="bayern.steinbrecher.gruen2.login.ssh.SshLoginController">
     <!-- This checkbox needs to be out of order because of referencing its id -->

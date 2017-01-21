@@ -58,7 +58,7 @@ public enum ConfigKey {
 
     private final Class<?> valueClass;
 
-    private ConfigKey(Class<?> valueClass) {
+    ConfigKey(Class<?> valueClass) {
         this.valueClass = valueClass;
     }
 

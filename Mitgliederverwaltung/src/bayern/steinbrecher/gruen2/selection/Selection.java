@@ -19,15 +19,16 @@ package bayern.steinbrecher.gruen2.selection;
 import bayern.steinbrecher.gruen2.WizardableView;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.wizard.WizardPage;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 /**
  * Represents a selection dialog.
@@ -71,9 +72,9 @@ public class Selection<T extends Comparable<T>>
      * {@inheritDoc}
      */
     @Override
-    protected <T extends Parent> T loadFXML(String resource)
+    protected <P extends Parent> P loadFXML(String resource)
             throws IOException {
-        T root = super.loadFXML(resource);
+        P root = super.loadFXML(resource);
         controller.setOptions(options);
         return root;
     }

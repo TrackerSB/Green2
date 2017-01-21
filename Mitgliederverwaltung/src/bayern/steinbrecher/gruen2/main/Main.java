@@ -23,8 +23,6 @@ import bayern.steinbrecher.gruen2.contribution.Contribution;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.Profile;
-import bayern.steinbrecher.gruen2.login.LoginKey;
-import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.ProfileChoice;
 import bayern.steinbrecher.gruen2.elements.Splashscreen;
 import bayern.steinbrecher.gruen2.elements.WaitScreen;
@@ -35,6 +33,7 @@ import bayern.steinbrecher.gruen2.generator.BirthdayGenerator;
 import bayern.steinbrecher.gruen2.generator.sepa.SepaPain00800302XMLGenerator;
 import bayern.steinbrecher.gruen2.generator.sepa.SequenceType;
 import bayern.steinbrecher.gruen2.login.Login;
+import bayern.steinbrecher.gruen2.login.LoginKey;
 import bayern.steinbrecher.gruen2.login.ssh.SshLogin;
 import bayern.steinbrecher.gruen2.login.standard.DefaultLogin;
 import bayern.steinbrecher.gruen2.menu.Menu;
@@ -42,24 +41,22 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
-import bayern.steinbrecher.gruen2.utility.DialogUtility;
-import bayern.steinbrecher.gruen2.utility.ProgramCaller;
-import bayern.steinbrecher.gruen2.utility.ServiceFactory;
-import bayern.steinbrecher.gruen2.utility.ThreadUtility;
+import bayern.steinbrecher.gruen2.utility.*;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,12 +66,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
 
 /**
  * Represents the entry of the hole application.
@@ -120,7 +111,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         menuStage = primaryStage;
         Platform.setImplicitExit(false);
-        /**
+        /*
          * boolean value needed to make sure no other windows shows up because
          * {@code Platform.exit()} is async.
          */

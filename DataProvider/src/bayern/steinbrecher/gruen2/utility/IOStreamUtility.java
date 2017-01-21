@@ -16,12 +16,7 @@
  */
 package bayern.steinbrecher.gruen2.utility;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
@@ -67,8 +62,7 @@ public final class IOStreamUtility {
         try (ReadableByteChannel rbc = Channels.newChannel(inputStream)) {
             ByteBuffer byteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
             CharBuffer charBuffer;
-            int bytesRead;
-            while ((bytesRead = rbc.read(byteBuffer)) != -1) {
+            while (rbc.read(byteBuffer) != -1) {
                 byteBuffer.flip();
                 charBuffer = charset.decode(byteBuffer);
                 output.append(charBuffer);

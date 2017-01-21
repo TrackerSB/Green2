@@ -22,21 +22,18 @@ import bayern.steinbrecher.gruen2.data.Profile;
 import bayern.steinbrecher.gruen2.elements.CheckedDatePicker;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.people.Originator;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.BooleanExpression;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.BooleanBinding;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 
 /**
  * Represents Controller for SepaForm.fxml.
@@ -113,12 +110,12 @@ public class SepaFormController extends CheckedController {
                 purposeTextField, messageIdTextField, pmtInfIdTextField);
 
         anyInputToLong.bind(checkedTextFields.stream()
-                .map(ctf -> ctf.toLongProperty())
-                .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
+                .map(CheckedTextField::toLongProperty)
+                .reduce(FALSE_BINDING, BooleanExpression::or,
                         BooleanBinding::or));
         anyInputMissing.bind(checkedTextFields.stream()
-                .map(ctf -> ctf.emptyProperty())
-                .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
+                .map(CheckedTextField::emptyProperty)
+                .reduce(FALSE_BINDING, BooleanExpression::or,
                         BooleanBinding::or)
                 .or(executionDatePicker.emptyProperty()));
         valid.bind(((anyInputToLong.or(anyInputMissing)).not())

@@ -18,7 +18,6 @@ package bayern.steinbrecher.gruen2;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.ThreadUtility;
-import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -27,6 +26,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 /**
  * Represents the base implementation of all other windows.
@@ -64,12 +65,12 @@ public abstract class View<T extends Controller> extends Application {
         }
     }
 
-    protected <T extends Parent> T loadFXML(String resource)
+    protected <P extends Parent> P loadFXML(String resource)
             throws IOException {
         FXMLLoader fxmlLoader
                 = new FXMLLoader(getClass().getResource(resource));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
-        T root = fxmlLoader.load();
+        P root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         controller = fxmlLoader.getController();
         return root;

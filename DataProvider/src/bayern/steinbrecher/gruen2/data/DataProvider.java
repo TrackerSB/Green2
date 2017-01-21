@@ -17,15 +17,15 @@
 package bayern.steinbrecher.gruen2.data;
 
 import bayern.steinbrecher.gruen2.utility.URLUtility;
+import javafx.scene.image.Image;
+
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.image.Image;
 
 /**
  * Delivers access to diffrent application wide usefull paths, icons, etc.
@@ -118,7 +118,7 @@ public final class DataProvider {
      */
     public static final String GRUEN2_ZIP_URL
             = PROGRAMFOLDER_PATH_ONLINE + "/Gruen2.zip";
-    private static Optional<Profile> loadedProfile = Optional.empty();
+    private static Profile loadedProfile;
 
     static {
         //Create configDir if not existing
@@ -126,7 +126,7 @@ public final class DataProvider {
     }
 
     private static boolean isLoaded() {
-        return loadedProfile.isPresent();
+        return loadedProfile != null;
     }
 
     private DataProvider() {
@@ -176,8 +176,8 @@ public final class DataProvider {
      * @return Returns the loaded profile.
      */
     public static Profile getProfile() {
-        if (loadedProfile.isPresent()) {
-            return loadedProfile.get();
+        if (isLoaded()) {
+            return loadedProfile;
         } else {
             throw new IllegalStateException("No profile loaded yet.");
         }
@@ -188,7 +188,7 @@ public final class DataProvider {
     }
 
     public static Profile loadProfile(Profile profile) {
-        loadedProfile = Optional.of(profile);
+        loadedProfile = profile;
         return profile;
     }
 
@@ -203,6 +203,6 @@ public final class DataProvider {
         /**
          * Representing any Linux operating system.
          */
-        LINUX;
+        LINUX
     }
 }

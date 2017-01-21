@@ -20,11 +20,7 @@ import bayern.steinbrecher.gruen2.exception.AuthException;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -69,7 +65,7 @@ public final class DefaultConnection extends DBConnection {
             if (!databaseHost.endsWith("/")) {
                 databaseHost += "/";
             }
-            connection = (Connection) DriverManager.getConnection(
+            connection = DriverManager.getConnection(
                     DRIVER_PROTOCOL + databaseHost
                     + databaseName + "?verifyServerCertificate=false"
                     + "&useSSL=true&zeroDateTimeBehavior=convertToNull",

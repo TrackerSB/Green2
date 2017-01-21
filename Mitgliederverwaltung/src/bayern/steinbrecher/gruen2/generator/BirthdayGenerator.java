@@ -17,8 +17,10 @@
 package bayern.steinbrecher.gruen2.generator;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
+import bayern.steinbrecher.gruen2.data.Profile;
 import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Person;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -68,8 +70,8 @@ public class BirthdayGenerator {
      * year {@code year}.
      *
      * @param member The member to print.
-     * @param year The year in which the age of the given member has to be
-     * calculated.
+     * @param year   The year in which the age of the given member has to be
+     *               calculated.
      * @return A string representing the hole content of a CSV file.
      */
     public static String createGroupedOutput(List<Member> member, int year) {
@@ -110,28 +112,28 @@ public class BirthdayGenerator {
      * Appends all member of {@code currentAgeActive} and
      * {@code currentAgePassiv} to {@code output} if the lists are not empty.
      *
-     * @param output The {@code StringBuilder} to append the output to.
-     * @param currentAge The age of the member in the given lists.
-     * @param currentAgeActive The list of active member which are
-     * {@code currentAge} years old.
+     * @param output            The {@code StringBuilder} to append the output to.
+     * @param currentAge        The age of the member in the given lists.
+     * @param currentAgeActive  The list of active member which are
+     *                          {@code currentAge} years old.
      * @param currentAgePassive The list of passiv member which are
-     * {@code currentAge} years old.
+     *                          {@code currentAge} years old.
      */
     private static void tryAppendMember(StringBuilder output, int currentAge,
-            List<Member> currentAgeActive, List<Member> currentAgePassive) {
+                                        List<Member> currentAgeActive, List<Member> currentAgePassive) {
         if (!currentAgeActive.isEmpty() || !currentAgePassive.isEmpty()) {
             output.append("\n\n").append(currentAge).append("ter Geburtstag\n");
             if (!currentAgeActive.isEmpty()) {
                 output.append("Aktiv:\n")
                         .append("Vorname;Nachname;Geburtstag\n")
                         .append(currentAgeActive.stream().map(PRINT_LINE)
-                                .reduce(String::concat).get());
+                                .reduce("", String::concat));
             }
             if (!currentAgePassive.isEmpty()) {
                 output.append("Passiv:\n")
                         .append("Vorname;Nachname;Geburtstag\n")
                         .append(currentAgePassive.stream().map(PRINT_LINE)
-                                .reduce(String::concat).get());
+                                .reduce("", String::concat));
             }
         }
     }
@@ -139,10 +141,10 @@ public class BirthdayGenerator {
     /**
      * Checks whether the given member fits the configured birthday criteria.
      *
-     * @param m The member to check.
+     * @param m    The member to check.
      * @param year The year to calculate his age at.
      * @return {@code true} only if {@code m} fits the configured criteria.
-     * @see DataProvider#ageFunction
+     * @see Profile#getAgeFunction()
      */
     public static boolean getsNotified(Member m, int year) {
         LocalDate birthday = m.getPerson().getBirthday();

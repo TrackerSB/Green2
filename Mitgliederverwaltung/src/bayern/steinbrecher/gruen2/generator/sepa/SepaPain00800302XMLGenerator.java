@@ -16,13 +16,13 @@
  */
 package bayern.steinbrecher.gruen2.generator.sepa;
 
-import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.people.AccountHolder;
 import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
+import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
+
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;

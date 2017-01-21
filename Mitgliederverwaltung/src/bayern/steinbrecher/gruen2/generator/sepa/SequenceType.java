@@ -37,5 +37,5 @@ public enum SequenceType {
     /**
      * Final dd sequence.
      */
-    FNAL;
+    FNAL
 }

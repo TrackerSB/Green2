@@ -128,11 +128,7 @@ public class Member implements Comparable<Member> {
         if (comp == this) {
             return true;
         }
-        if (comp instanceof Member) {
-            return this.membershipnumber == ((Member) comp).membershipnumber;
-        } else {
-            return false;
-        }
+        return comp instanceof Member && this.membershipnumber == ((Member) comp).membershipnumber;
     }
 
     /**
