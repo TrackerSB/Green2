@@ -18,28 +18,8 @@ package bayern.steinbrecher.gruen2.launcher;
 
 import bayern.steinbrecher.gruen2.data.Collector;
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import bayern.steinbrecher.gruen2.utility.VersionHandler;
 import bayern.steinbrecher.gruen2.elements.ChoiceDialog;
-import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
-import bayern.steinbrecher.gruen2.utility.ProgramCaller;
-import bayern.steinbrecher.gruen2.utility.ServiceFactory;
-import bayern.steinbrecher.gruen2.utility.ZipUtility;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import bayern.steinbrecher.gruen2.utility.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
@@ -48,6 +28,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Installs Grün2 and checks for updates. (This application needs to be
@@ -66,15 +61,10 @@ public final class Launcher extends Application {
     private LauncherController controller;
 
     static {
-        try (Scanner sc = new Scanner(
-                new URL(DataProvider.CHARSET_PATH_ONLINE).openStream())) {
+        try (Scanner sc = new Scanner(new URL(DataProvider.CHARSET_PATH_ONLINE).openStream())) {
             ZIP_CHARSET = Charset.forName(sc.nextLine());
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -99,8 +89,7 @@ public final class Launcher extends Application {
             String onlineVersion = optOnlineVersion.get();
             if (optLocalVersion.isPresent()) {
                 String localVersion = optLocalVersion.get();
-                if (!localVersion.equalsIgnoreCase(onlineVersion)
-                        && ChoiceDialog.askForUpdate()) {
+                if (!localVersion.equalsIgnoreCase(onlineVersion) && ChoiceDialog.askForUpdate()) {
                     serv = downloadAndInstall(onlineVersion);
                     serv.setOnSucceeded(evt -> ProgramCaller.startGrün2());
                 } else {
@@ -108,20 +97,17 @@ public final class Launcher extends Application {
                 }
             } else {
                 serv = downloadAndInstall(onlineVersion);
-                serv.setOnSucceeded(
-                        evt -> ProgramCaller.startGrün2ConfigDialog());
+                serv.setOnSucceeded(evt -> ProgramCaller.startGrün2ConfigDialog());
             }
         } else if (optLocalVersion.isPresent()) {
             ProgramCaller.startGrün2();
         } else {
-            throw new IllegalStateException("Grün2 is currently not installed "
-                    + "and there´s no connection to install it.");
+            throw new IllegalStateException(
+                    "Grün2 is currently not installed and there´s no connection to install it.");
         }
 
         if (serv != null) {
-            serv.setOnFailed(evt -> {
-                Platform.exit();
-            });
+            serv.setOnFailed(evt -> Platform.exit());
             showProgressWindow();
             serv.start();
         }
@@ -129,47 +115,37 @@ public final class Launcher extends Application {
 
     private void showProgressWindow() {
         try {
-            FXMLLoader fxmlLoader
-                    = new FXMLLoader(getClass().getResource("Launcher.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Launcher.fxml"));
             fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
             Parent root = fxmlLoader.load();
             root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
             controller = fxmlLoader.getController();
             stage.setScene(new Scene(root));
             stage.setResizable(false);
-            stage.setTitle(
-                    DataProvider.getResourceValue("downloadNewVersion"));
+            stage.setTitle(DataProvider.getResourceValue("downloadNewVersion"));
             stage.initStyle(StageStyle.UTILITY);
             stage.show();
         } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.WARNING, null, ex);
+            Logger.getLogger(Launcher.class.getName()).log(Level.WARNING, null, ex);
         }
     }
 
     private File download() throws IOException {
-        File tempFile
-                = Files.createTempFile(null, ".zip", new FileAttribute<?>[0])
-                        .toFile();
-        URLConnection downloadConnection = new URL(DataProvider.GRUEN2_ZIP_URL)
-                .openConnection();
-        long fileSize = Long.parseLong(
-                downloadConnection.getHeaderField("Content-Length"));
+        File tempFile = Files.createTempFile(null, ".zip").toFile();
+        URLConnection downloadConnection = new URL(DataProvider.GRUEN2_ZIP_URL).openConnection();
+        long fileSize = Long.parseLong(downloadConnection.getHeaderField("Content-Length"));
         long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
 
         IOStreamUtility.transfer(downloadConnection.getInputStream(),
                 new FileOutputStream(tempFile), fileSize, bytesPerLoop, () -> {
                     if (controller != null) {
-                        Platform.runLater(() -> {
-                            controller.incPercentage(DOWNLOAD_STEPS);
-                        });
+                        Platform.runLater(() -> controller.incPercentage(DOWNLOAD_STEPS));
                     }
                 });
         return tempFile;
     }
 
-    private Process install(File downloadedDir)
-            throws IOException, InterruptedException {
+    private Process install(File downloadedDir) throws IOException, InterruptedException {
         String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
         switch (DataProvider.CURRENT_OS) {
@@ -178,8 +154,7 @@ public final class Launcher extends Application {
                 break;
             case LINUX:
             default:
-                command = new String[]{"chmod", "a+x", dirPath + "/install.sh",
-                    dirPath + "/uninstall.sh"};
+                command = new String[]{"chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh"};
                 new ProcessBuilder(command).start().waitFor();
 
                 command = new String[]{"sh", dirPath + "/install.sh"};
@@ -192,13 +167,11 @@ public final class Launcher extends Application {
      * Returns a service which downloads and installs Grün2.
      */
     private Service<Void> downloadAndInstall(String newVersion) {
-        Service<Void> service = ServiceFactory.createService(() -> {
+        return ServiceFactory.createService(() -> {
             try {
                 File tempFile = download();
 
-                File tempDir = Files.createTempDirectory(
-                        null, new FileAttribute<?>[0])
-                        .toFile();
+                File tempDir = Files.createTempDirectory(null).toFile();
 
                 ZipUtility.unzip(tempFile, tempDir, ZIP_CHARSET);
                 tempFile.delete();
@@ -218,14 +191,11 @@ public final class Launcher extends Application {
 
                 String errorMessage;
                 try (InputStream errorStream = installer.getErrorStream()) {
-                    errorMessage = IOStreamUtility.readAll(
-                            errorStream, Charset.defaultCharset());
+                    errorMessage = IOStreamUtility.readAll(errorStream, Charset.defaultCharset());
                 }
                 if (!errorMessage.isEmpty()) {
                     Logger.getLogger(Launcher.class.getName())
-                            .log(Level.WARNING,
-                                    "The installer got follwing error:\n{0}",
-                                    errorMessage);
+                            .log(Level.WARNING, "The installer got follwing error:\n{0}", errorMessage);
                 }
 
                 if (gotInstalled) {
@@ -233,13 +203,10 @@ public final class Launcher extends Application {
                     Collector.sendData();
                 }
             } catch (InterruptedException | IOException ex) {
-                Logger.getLogger(Launcher.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }
             return null;
         });
-
-        return service;
     }
 
     /**

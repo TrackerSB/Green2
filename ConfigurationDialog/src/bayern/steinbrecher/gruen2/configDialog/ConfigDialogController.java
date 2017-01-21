@@ -20,21 +20,22 @@ import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.Profile;
-import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.utility.ProgramCaller;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.BooleanExpression;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 
 /**
  * Controller of the dialog for configuring Grün2.
@@ -61,61 +62,45 @@ public class ConfigDialogController extends CheckedController {
     private CheckedTextField birthdayExpressionTextField;
     private List<CheckedTextField> checkedTextFields = new ArrayList<>();
     private Profile profile;
-    private BooleanProperty profileAlreadyExists
-            = new SimpleBooleanProperty(this, "profileAlreadyExists");
+    private BooleanProperty profileAlreadyExists = new SimpleBooleanProperty(this, "profileAlreadyExists");
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        checkedTextFields.addAll(Arrays.asList(sshHostTextField,
-                databaseHostTextField, databaseNameTextField,
+        checkedTextFields.addAll(Arrays.asList(sshHostTextField, databaseHostTextField, databaseNameTextField,
                 birthdayExpressionTextField, profileNameTextField));
 
-        profileNameTextField.textProperty()
-                .addListener((obs, oldVal, newVal) -> {
-                    if (stage != null) {
-                        stage.setTitle(DataProvider
-                                .getResourceValue("configureApplication")
-                                + ": " + newVal);
-                    }
-                    profileAlreadyExists.set(
-                            !profile.getProfileName().equals(newVal)
-                            && Profile.getAvailableProfiles()
-                                    .contains(newVal));
-                });
+        profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (stage != null) {
+                stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + newVal);
+            }
+            profileAlreadyExists.set(!profile.getProfileName().equals(newVal)
+                    && Profile.getAvailableProfiles().contains(newVal));
+        });
 
         anyInputMissing.bind(checkedTextFields.stream()
-                .map(ctf -> ctf.emptyProperty())
-                .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
-                        BooleanBinding::or));
+                .map(CheckedTextField::emptyProperty)
+                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
         anyInputToLong.bind(checkedTextFields.stream()
-                .map(ctf -> ctf.toLongProperty())
-                .reduce(FALSE_BINDING, (bind, prop) -> bind.or(prop),
-                        BooleanBinding::or));
+                .map(CheckedTextField::toLongProperty)
+                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
         valid.bind(checkedTextFields.stream()
-                .map(ctf -> ctf.validProperty())
-                .reduce(TRUE_BINDING, (bind, prop) -> bind.and(prop),
-                        BooleanBinding::and)
+                .map(CheckedTextField::validProperty)
+                .reduce(TRUE_BINDING, BooleanExpression::and, BooleanBinding::and)
                 .and(profileAlreadyExists.not()));
 
         //Load settings
         profile = DataProvider.getProfile();
-        useSSHCheckBox.setSelected(
-                profile.getOrDefault(ConfigKey.USE_SSH, true));
+        useSSHCheckBox.setSelected(profile.getOrDefault(ConfigKey.USE_SSH, true));
         sshHostTextField.setText(profile.getOrDefault(ConfigKey.SSH_HOST, ""));
-        databaseHostTextField.setText(
-                profile.getOrDefault(ConfigKey.DATABASE_HOST, ""));
-        databaseNameTextField.setText(
-                profile.getOrDefault(ConfigKey.DATABASE_NAME, ""));
-        birthdayExpressionTextField.setText(
-                profile.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
+        databaseHostTextField.setText(profile.getOrDefault(ConfigKey.DATABASE_HOST, ""));
+        databaseNameTextField.setText(profile.getOrDefault(ConfigKey.DATABASE_NAME, ""));
+        birthdayExpressionTextField.setText(profile.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
-        sepaWithBomCheckBox.setSelected(
-                profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
-        sshCharsetTextField.setText(profile.getOrDefault(
-                ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1.name()));
+        sepaWithBomCheckBox.setSelected(profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
+        sshCharsetTextField.setText(profile.getOrDefault(ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1.name()));
     }
 
     @FXML

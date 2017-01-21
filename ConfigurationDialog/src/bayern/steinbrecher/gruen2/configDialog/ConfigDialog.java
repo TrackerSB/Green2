@@ -18,14 +18,15 @@ package bayern.steinbrecher.gruen2.configDialog;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.elements.ProfileChoice;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a dialog for configuring Grün2.
@@ -43,8 +44,7 @@ public class ConfigDialog extends Application {
             try {
                 DataProvider.loadProfile(profile);
 
-                FXMLLoader fxmlLoader = new FXMLLoader(
-                        getClass().getResource("ConfigDialog.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfigDialog.fxml"));
                 fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
                 Parent root = fxmlLoader.load();
                 root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
@@ -60,13 +60,10 @@ public class ConfigDialog extends Application {
                 stage.setResizable(false);
                 stage.getIcons().add(DataProvider.DEFAULT_ICON);
                 stage.setScene(new Scene(root));
-                stage.setTitle(DataProvider
-                        .getResourceValue("configureApplication")
-                        + ": " + profile.getProfileName());
+                stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + profile.getProfileName());
                 stage.show();
             } catch (IOException ex) {
-                Logger.getLogger(ConfigDialog.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                Logger.getLogger(ConfigDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

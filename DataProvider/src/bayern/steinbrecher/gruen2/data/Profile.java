@@ -17,26 +17,21 @@
 package bayern.steinbrecher.gruen2.data;
 
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.function.IntFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.function.IntFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Contains all settings of a profile.
@@ -288,8 +283,7 @@ public class Profile {
     public static List<String> getAvailableProfiles() {
         return Arrays.stream(new File(DataProvider.APP_DATA_PATH)
                 .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT)))
-                .map(s -> s.substring(
-                0, s.length() - CONFIGFILE_FORMAT.length()))
+                .map(s -> s.substring(0, s.length() - CONFIGFILE_FORMAT.length()))
                 .collect(Collectors.toList());
     }
 
@@ -313,8 +307,7 @@ public class Profile {
                 /* FIXME Legacy checking for old config files containing "ja"
                  * instead of "yes".
                  */
-                return (T) Boolean.valueOf(value.equalsIgnoreCase("ja")
-                        || value.equalsIgnoreCase("true"));
+                return (T) Boolean.valueOf(value.equalsIgnoreCase("ja") || value.equalsIgnoreCase("true"));
             } else if (defaultValue instanceof Charset) {
                 return (T) Charset.forName(configurations.get(key));
             } else {
