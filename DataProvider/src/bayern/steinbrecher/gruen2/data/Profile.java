@@ -375,6 +375,11 @@ public class Profile {
         return profileName.get();
     }
 
+    /**
+     * Checks whether this profile is marked as new profile.
+     *
+     * @return {@code true} only if this profile is marked as new.
+     */
     public boolean isNewProfile() {
         checkDeleted();
         return newProfile;
