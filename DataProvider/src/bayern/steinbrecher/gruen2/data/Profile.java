@@ -227,11 +227,7 @@ public class Profile {
         newProfile = false;
 
         String out = Arrays.stream(ConfigKey.values())
-                .map(configKey -> {
-                    String s = generateLine(configKey);
-                    System.out.println(s);
-                    return s;
-                })
+                .map(this::generateLine)
                 .collect(Collectors.joining("\n"));
         IOStreamUtility.printContent(out, configFilePath.get(), false);
     }
@@ -319,6 +315,9 @@ public class Profile {
      */
     public <T> void set(ConfigKey key, T value) {
         //FIXME Wait for JDK 9 in order to use generic enums
+        if (!key.isValid(value)) {
+            throw new IllegalArgumentException("The given value is not valid for the given key");
+        }
         configurations.put(key, value.toString());
     }
 
@@ -346,10 +345,10 @@ public class Profile {
 
     /**
      * Returns the path of the file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not garanteed that this file exists.
+     * Debits. NOTE: It is not guaranteed that this file exists.
      *
      * @return The path of the file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not garanteed that this file exists.
+     * Debits. NOTE: It is not guaranteed that this file exists.
      */
     public String getOriginatorInfoPath() {
         checkDeleted();

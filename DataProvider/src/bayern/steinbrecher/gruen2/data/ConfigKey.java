@@ -17,9 +17,10 @@
 package bayern.steinbrecher.gruen2.data;
 
 import java.nio.charset.Charset;
+import java.util.regex.Pattern;
 
 /**
- * Represents all options allowed to configure in gruen2.conf.
+ * Represents all options allowed to configure in Grün2.
  *
  * @author Stefan Huber
  */
@@ -29,33 +30,98 @@ public enum ConfigKey {
      * Indicating whether to use SSH or not. Write "Yes" to use SSH. ("Ja" is
      * also accepted because of legacy, but should not be used.)
      */
-    USE_SSH(Boolean.class),
+    USE_SSH(Boolean.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && value != null;
+        }
+    },
     /**
      * The host for connecting over SSH.
      */
-    SSH_HOST(String.class),
+    SSH_HOST(String.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
+        }
+    },
     /**
      * The host for connecting to the database.
      */
-    DATABASE_HOST(String.class),
+    DATABASE_HOST(String.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
+        }
+    },
     /**
      * The name of the database to connect to.
      */
-    DATABASE_NAME(String.class),
+    DATABASE_NAME(String.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
+        }
+    },
     /**
      * Indicates whether the generated SEPA is UTF-8 or "UTF-8 with BOM".
      */
-    SEPA_USE_BOM(Boolean.class),
+    SEPA_USE_BOM(Boolean.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && value != null;
+        }
+    },
     /**
      * The expression to indicate which people get birthday notifications. Like
      * =50,=60,=70,=75,&gt;=80
      */
-    BIRTHDAY_EXPRESSION(String.class),
+    BIRTHDAY_EXPRESSION(String.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && BIRTHDAY_PATTERN.matcher((String) value).matches();
+        }
+    },
     /**
      * The charset used by the response of the ssh connection.
      */
-    SSH_CHARSET(Charset.class);
+    SSH_CHARSET(Charset.class) {
+        /**
+         * Checks whether the given value represents a supported {@code Charset}.
+         *
+         * @param value The value to check.
+         * @return {@code true} only if {@code value} represents a supported {@code Charset}.
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && Charset.isSupported((String) value);
+        }
+    };
 
+    /**
+     * The regex to check against the value containing the birthday expression.
+     */
+    public static final Pattern BIRTHDAY_PATTERN
+            = Pattern.compile("((>=?)|(<=?)|=)[1-9]\\d*(,((>=?)|(<=?)|=)[1-9]\\d*)*");
+    //FIXME Move pattern into enum constant allowed?
     private final Class<?> valueClass;
 
     ConfigKey(Class<?> valueClass) {
@@ -67,7 +133,18 @@ public enum ConfigKey {
      *
      * @return The class of the value this enum constant represents.
      */
+    @Deprecated
     public Class<?> getValueClass() {
+        //FIXME Need to wait until Java 9 arrives
         return valueClass;
     }
+
+    /**
+     * Checks whether the given value is valid for this ConfigKey.
+     *
+     * @param value The value to check.
+     * @param <T>   The type of the value.
+     * @return {@code true} only if this value is valid for this ConfigKey.
+     */
+    public abstract <T> boolean isValid(T value);
 }

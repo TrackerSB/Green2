@@ -94,8 +94,7 @@ public class Main extends Application {
         if (availableProfiles.size() == 1) {
             profile = DataProvider.loadProfile(availableProfiles.get(0), false);
         } else {
-            Optional<Profile> requestedProfile
-                    = ProfileChoice.askForProfile(false);
+            Optional<Profile> requestedProfile = ProfileChoice.askForProfile(false);
             if (requestedProfile.isPresent()) {
                 profile = DataProvider.loadProfile(requestedProfile.get());
             } else {

@@ -20,6 +20,7 @@ import bayern.steinbrecher.gruen2.CheckedController;
 import bayern.steinbrecher.gruen2.data.ConfigKey;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.data.Profile;
+import bayern.steinbrecher.gruen2.elements.CheckedRegexTextField;
 import bayern.steinbrecher.gruen2.elements.CheckedTextField;
 import bayern.steinbrecher.gruen2.utility.ProgramCaller;
 import javafx.beans.binding.BooleanBinding;
@@ -59,7 +60,7 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedTextField profileNameTextField;
     @FXML
-    private CheckedTextField birthdayExpressionTextField;
+    private CheckedRegexTextField birthdayExpressionTextField;
     private List<CheckedTextField> checkedTextFields = new ArrayList<>();
     private Profile profile;
     private BooleanProperty profileAlreadyExists = new SimpleBooleanProperty(this, "profileAlreadyExists");
@@ -72,6 +73,7 @@ public class ConfigDialogController extends CheckedController {
         checkedTextFields.addAll(Arrays.asList(sshHostTextField, databaseHostTextField, databaseNameTextField,
                 birthdayExpressionTextField, profileNameTextField));
 
+        birthdayExpressionTextField.setRegex(ConfigKey.BIRTHDAY_PATTERN.pattern());
         profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (stage != null) {
                 stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + newVal);
