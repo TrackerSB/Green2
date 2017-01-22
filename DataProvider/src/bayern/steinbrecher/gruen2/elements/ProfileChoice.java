@@ -24,6 +24,7 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -52,38 +53,48 @@ public class ProfileChoice extends Application {
     public void start(Stage stage) {
         List<Node> nodes = new ArrayList<>();
 
-        Label choiceLabel
-                = new Label(DataProvider.getResourceValue("chooseProfile"));
+        Label choiceLabel = new Label(DataProvider.getResourceValue("chooseProfile"));
         nodes.add(choiceLabel);
 
-        ListView<String> profileList = new ListView<>(FXCollections
-                .observableArrayList(Profile.getAvailableProfiles()));
+        ListView<String> profileList
+                = new ListView<>(FXCollections.observableArrayList(Profile.getAvailableProfiles()));
         nodes.add(profileList);
+
+        MultipleSelectionModel<String> selectionModel = profileList.selectionModelProperty().get();
 
         Button select = new Button(DataProvider.getResourceValue("select"));
         select.setOnAction(evt -> {
             selected = true;
             stage.close();
         });
+        select.setDisable(selectionModel.isEmpty());
         nodes.add(select);
 
-        MultipleSelectionModel<String> selectionModel
-                = profileList.selectionModelProperty().get();
-        selectionModel.getSelectedItems().addListener(
-                (Change<? extends String> c) -> {
-                    select.setDisable(c.getList().isEmpty());
-                });
-        select.setDisable(selectionModel.isEmpty());
+        Button delete = new Button(DataProvider.getResourceValue("delete"));
+        delete.setOnAction(evt -> {
+            String selectedProfile = selectionModel.getSelectedItem();
+            new Profile(selectedProfile, false).deleteProfile();
+            profileList.getItems().remove(selectedProfile);
+            if(selectionModel.getSelectedIndex() < profileList.getItems().size() - 1){
+                selectionModel.selectNext();
+            }
+        });
+        delete.setDisable(selectionModel.isEmpty());
+
+        selectionModel.getSelectedItems().addListener((Change<? extends String> c) -> {
+            boolean nothingSelected = c.getList().isEmpty();
+            select.setDisable(nothingSelected);
+            delete.setDisable(nothingSelected);
+        });
 
         Button create = new Button(DataProvider.getResourceValue("create"));
         create.setOnAction(evt -> {
             created = true;
             stage.close();
         });
-        nodes.add(create);
+        nodes.add(new HBox(10, create, delete));
 
-        Scene scene = new Scene(
-                new VBox(10, nodes.toArray(new Node[nodes.size()])));
+        Scene scene = new Scene(new VBox(10, nodes.toArray(new Node[nodes.size()])));
         scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         stage.setScene(scene);
         stage.setResizable(false);
@@ -98,8 +109,7 @@ public class ProfileChoice extends Application {
             List<String> availableProfiles = Profile.getAvailableProfiles();
             Random random = new Random();
             while (availableProfiles.contains(newConfigName)) {
-                newConfigName
-                        = NEW_CONFIG_NAME + " (" + random.nextInt(1000) + ")";
+                newConfigName = NEW_CONFIG_NAME + " (" + random.nextInt(1000) + ")";
             }
             profile = new Profile(newConfigName, true);
         }
@@ -110,8 +120,8 @@ public class ProfileChoice extends Application {
      * dialog is closed.
      *
      * @param showNewButton {@code true} only if to show a "new" button to the
-     * user. When {@code false} a simple {@code ChoiceDialog} is used; a
-     * {@code ListView} otherwise.
+     *                      user. When {@code false} a simple {@code ChoiceDialog} is used; a
+     *                      {@code ListView} otherwise.
      * @return An {@code Optional} which contains the selected profile if any.
      */
     public static Optional<Profile> askForProfile(boolean showNewButton) {
@@ -120,9 +130,8 @@ public class ProfileChoice extends Application {
             choice.start(new Stage());
             return Optional.ofNullable(choice.profile);
         } else {
-            Optional<String> profileName
-                    = new ChoiceDialog<>(null, Profile.getAvailableProfiles())
-                            .showAndWait();
+            Optional<String> profileName = new ChoiceDialog<>(null, Profile.getAvailableProfiles())
+                    .showAndWait();
             if (profileName.isPresent()) {
                 return Optional.of(new Profile(profileName.get(), false));
             } else {

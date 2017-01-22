@@ -130,18 +130,16 @@ public final class IOStreamUtility {
      * @param withBom Only if {@code true} it adds '\uFEFF' to the beginning of
      * the file.
      */
-    public static void printContent(String content, String pathToFile,
-            boolean withBom) {
-        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(pathToFile), "UTF-8"))) {
+    public static void printContent(String content, String pathToFile, boolean withBom) {
+        try (BufferedWriter bw
+                     = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathToFile), "UTF-8"))) {
             //To make no UTF-8 without BOM but with BOM (Big Endian).
             if (withBom) {
                 bw.append('\uFEFF');
             }
             bw.append(content);
         } catch (IOException ex) {
-            Logger.getLogger(IOStreamUtility.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(IOStreamUtility.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

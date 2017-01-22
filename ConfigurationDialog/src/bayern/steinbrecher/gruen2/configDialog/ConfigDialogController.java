@@ -105,10 +105,18 @@ public class ConfigDialogController extends CheckedController {
 
     @FXML
     private void saveSettings() {
+        //FIXME Think about whether to "bind" values to ConfigKeys
         checkStage();
         if (isValid()) {
-            profile.saveSettings();
+            profile.set(ConfigKey.USE_SSH, useSSHCheckBox.isSelected());
+            profile.set(ConfigKey.SSH_HOST, sshHostTextField.getText());
+            profile.set(ConfigKey.DATABASE_HOST, databaseHostTextField.getText());
+            profile.set(ConfigKey.DATABASE_NAME, databaseNameTextField.getText());
+            profile.set(ConfigKey.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getText());
             profile.renameProfile(profileNameTextField.getText());
+            profile.set(ConfigKey.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());
+            profile.set(ConfigKey.SSH_CHARSET, sshCharsetTextField.getText());
+            profile.saveSettings();
             stage.close();
         }
     }

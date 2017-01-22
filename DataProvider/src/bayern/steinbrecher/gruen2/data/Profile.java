@@ -17,11 +17,14 @@
 package bayern.steinbrecher.gruen2.data;
 
 import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,7 +53,7 @@ public class Profile {
     /**
      * The configurations found in gruen2.conf.
      */
-    private Map<ConfigKey, String> configurations;
+    private ObservableMap<ConfigKey, String> configurations = FXCollections.observableHashMap();
     /**
      * {@code true} only if all allowed configurations are specified.
      */
@@ -69,18 +72,18 @@ public class Profile {
      */
     private StringExpression originatorInfoPath
             = new SimpleStringProperty(DataProvider.APP_DATA_PATH)
-                    .concat("/")
-                    .concat(profileName)
-                    .concat(ORIGINATORFILE_FORMAT);
+            .concat("/")
+            .concat(profileName)
+            .concat(ORIGINATORFILE_FORMAT);
     private Property<File> originatorInfoFile = new SimpleObjectProperty<>();
     /**
      * The path to the configfile. (May not exist, yet)
      */
     private StringExpression configFilePath
             = new SimpleStringProperty(DataProvider.APP_DATA_PATH)
-                    .concat("/")
-                    .concat(profileName)
-                    .concat(CONFIGFILE_FORMAT);
+            .concat("/")
+            .concat(profileName)
+            .concat(CONFIGFILE_FORMAT);
     /**
      * The file to the configurations for Grün2.
      */
@@ -88,19 +91,15 @@ public class Profile {
     private boolean deleted = false;
 
     public Profile(String profileName, boolean newProfile) {
+        configurations.addListener((InvalidationListener) listener -> {
+            allConfigurationsSet = configurations.size() >= ConfigKey.values().length;
+        });
         configFile.addListener((obs, oldVal, newVal) -> {
-            configurations = readConfigs(newVal);
-            ageFunction = readAgeFunction(configurations.getOrDefault(
-                    ConfigKey.BIRTHDAY_EXPRESSION, ""));
-            allConfigurationsSet
-                    = configurations.size() == ConfigKey.values().length;
+            configurations.putAll(readConfigs(newVal));
+            ageFunction = readAgeFunction(configurations.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
         });
-        configFilePath.addListener((obs, oldVal, newVal) -> {
-            configFile.setValue(new File(newVal));
-        });
-        originatorInfoPath.addListener((obs, oldVal, newVal) -> {
-            originatorInfoFile.setValue(new File(newVal));
-        });
+        configFilePath.addListener((obs, oldVal, newVal) -> configFile.setValue(new File(newVal)));
+        originatorInfoPath.addListener((obs, oldVal, newVal) -> originatorInfoFile.setValue(new File(newVal)));
 
         this.profileName.setValue(profileName);
         this.newProfile = newProfile;
@@ -109,12 +108,11 @@ public class Profile {
         try {
             configFile.getValue().createNewFile();
         } catch (IOException ex) {
-            Logger.getLogger(Profile.class.getName())
-                    .log(Level.WARNING, null, ex);
+            Logger.getLogger(Profile.class.getName()).log(Level.WARNING, null, ex);
         }
     }
 
-    private static Map<ConfigKey, String> readConfigs(File configFile) {
+    private static ObservableMap<ConfigKey, String> readConfigs(File configFile) {
         Map<ConfigKey, String> configurations = new HashMap<>();
 
         String[] parts;
@@ -124,72 +122,55 @@ public class Profile {
                 parts = line.split(VALUE_SEPARATOR);
                 if (parts.length != 2) {
                     Logger.getLogger(DataProvider.class.getName())
-                            .log(Level.WARNING, "\"{0}" + "\" has not exactly "
-                                    + "two elements. It remains ignored.",
-                                    line);
+                            .log(Level.WARNING, "\"{0}\" has not exactly two elements. It remains ignored.", line);
                 } else {
-                    configurations.put(ConfigKey.valueOf(
-                            parts[0].toUpperCase()), parts[1]);
+                    configurations.put(ConfigKey.valueOf(parts[0].toUpperCase()), parts[1]);
                 }
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DataProvider.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return configurations;
+        return FXCollections.observableMap(configurations);
     }
 
-    private static IntFunction<Boolean> readAgeFunction(
-            String birthdayExpression) {
-        Set<IntFunction<Boolean>> ageFunctionParts = new HashSet<>();
-        for (String part : Arrays.asList(birthdayExpression.split(","))) {
-            if (part.isEmpty()) {
-                continue;
-            }
-            try {
-                switch (part.charAt(0)) {
-                    case '>':
-                        switch (part.charAt(1)) {
+    private static IntFunction<Boolean> readAgeFunction(String birthdayExpression) {
+        Set<IntFunction<Boolean>> ageFunctionParts = Arrays.stream(birthdayExpression.split(","))
+                .filter(s -> !s.isEmpty())
+                .map(part -> {
+                    IntFunction<Boolean> functionPart = age -> false;
+                    try {
+                        switch (part.charAt(0)) {
+                            case '>':
+                                switch (part.charAt(1)) {
+                                    case '=':
+                                        functionPart = age -> age >= new Integer(part.substring(2));
+                                        break;
+                                    default:
+                                        functionPart = age -> age > new Integer(part.substring(1));
+                                }
+                                break;
+                            case '<':
+                                switch (part.charAt(1)) {
+                                    case '=':
+                                        functionPart = age -> age <= new Integer(part.substring(2));
+                                        break;
+                                    default:
+                                        functionPart = age -> age < new Integer(part.substring(1));
+                                }
+                                break;
                             case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age
-                                            >= new Integer(part.substring(2));
-                                });
+                                functionPart = age -> age == new Integer(part.substring(1));
                                 break;
                             default:
-                                ageFunctionParts.add(age -> {
-                                    return age > new Integer(part.substring(1));
-                                });
+                                Logger.getLogger(DataProvider.class.getName())
+                                        .log(Level.WARNING, "{0} gets skipped", part);
                         }
-                        break;
-                    case '<':
-                        switch (part.charAt(1)) {
-                            case '=':
-                                ageFunctionParts.add(age -> {
-                                    return age
-                                            <= new Integer(part.substring(2));
-                                });
-                                break;
-                            default:
-                                ageFunctionParts.add(age -> {
-                                    return age < new Integer(part.substring(1));
-                                });
-                        }
-                        break;
-                    case '=':
-                        ageFunctionParts.add(age -> {
-                            return age == new Integer(part.substring(1));
-                        });
-                        break;
-                    default:
-                        Logger.getLogger(DataProvider.class.getName())
-                                .log(Level.WARNING, "{0} gets skipped", part);
-                }
-            } catch (NumberFormatException ex) {
-                Logger.getLogger(DataProvider.class.getName())
-                        .log(Level.WARNING, "{0} gets skipped", part);
-            }
-        }
+                    } catch (NumberFormatException ex) {
+                        Logger.getLogger(Profile.class.getName()).log(Level.WARNING, "{0} gets skipped", part);
+                    }
+                    return functionPart;
+                })
+                .collect(Collectors.toSet());
 
         if (ageFunctionParts.isEmpty()) {
             return age -> false;
@@ -240,8 +221,17 @@ public class Profile {
      * Writes the current settings into configuration file.
      */
     public void saveSettings() {
+        if (!isAllConfigurationsSet()) {
+            throw new IllegalStateException("You have to set all configurations first");
+        }
+        newProfile = false;
+
         String out = Arrays.stream(ConfigKey.values())
-                .map(key -> generateLine(key))
+                .map(configKey -> {
+                    String s = generateLine(configKey);
+                    System.out.println(s);
+                    return s;
+                })
                 .collect(Collectors.joining("\n"));
         IOStreamUtility.printContent(out, configFilePath.get(), false);
     }
@@ -266,7 +256,7 @@ public class Profile {
             if (newConfigFile.exists() || newOriginatorFile.exists()) {
                 throw new IllegalArgumentException(
                         "Can't rename profile. Profile \""
-                        + newName + "\" already exists.");
+                                + newName + "\" already exists.");
             }
             configFile.getValue().renameTo(newConfigFile);
             originatorInfoFile.getValue().renameTo(newOriginatorFile);
@@ -291,8 +281,8 @@ public class Profile {
      * Returns the value belonging to key {@code key} or {@code defaultValue} if
      * {@code key} could not be found or is not specified.
      *
-     * @param <T> The type of the value {@code key} holds.
-     * @param key The key to search for.
+     * @param <T>          The type of the value {@code key} holds.
+     * @param key          The key to search for.
      * @param defaultValue The value to return when {@code key} was not found.
      * @return The value belonging to key {@code key} or {@code defaultValue} if
      * {@code key} could not be found or is not specified.
@@ -318,6 +308,18 @@ public class Profile {
         } else {
             return defaultValue;
         }
+    }
+
+    /**
+     * Sets a configuration.
+     *
+     * @param key   The key of the configuration to set.
+     * @param value The value to set for {@code key}.
+     * @param <T>   The type of the value.
+     */
+    public <T> void set(ConfigKey key, T value) {
+        //FIXME Wait for JDK 9 in order to use generic enums
+        configurations.put(key, value.toString());
     }
 
     /**

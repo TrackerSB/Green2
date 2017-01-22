@@ -17,8 +17,6 @@
 package bayern.steinbrecher.gruen2.utility;
 
 import bayern.steinbrecher.gruen2.data.DataProvider;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -26,6 +24,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Provides functions for creating different dialogs.
@@ -57,15 +58,13 @@ public class DialogUtility {
         return alert;
     }
 
-    private static Alert createAlert(Alert.AlertType type, String message,
-            String header) {
+    private static Alert createAlert(Alert.AlertType type, String message, String header) {
         Alert alert = createAlert(type, message);
         alert.setHeaderText(header);
         return alert;
     }
 
-    private static Alert createAlert(Alert.AlertType type, String message,
-            String header, String title) {
+    private static Alert createAlert(Alert.AlertType type, String message, String header, String title) {
         Alert alert = createAlert(type, message, header);
         alert.setTitle(title);
         return alert;
@@ -85,7 +84,7 @@ public class DialogUtility {
      * Crates an error alert.
      *
      * @param message The message to display.
-     * @param header The header to show.
+     * @param header  The header to show.
      * @return The created alert.
      */
     public static Alert createErrorAlert(String message, String header) {
@@ -96,18 +95,16 @@ public class DialogUtility {
      * Crates an error alert.
      *
      * @param message The message to display.
-     * @param header The header to show.
-     * @param title The title of the window.
+     * @param header  The header to show.
+     * @param title   The title of the window.
      * @return The created alert.
      */
-    public static Alert createErrorAlert(String message, String header,
-            String title) {
+    public static Alert createErrorAlert(String message, String header, String title) {
         return createAlert(Alert.AlertType.ERROR, message, header, title);
     }
 
     private static Alert addStracktrace(Alert alert, Exception ex) {
-        String stacktraceResourceBundle
-                = DataProvider.getResourceValue("stacktraceLabel");
+        String stacktraceResourceBundle = DataProvider.getResourceValue("stacktraceLabel");
         alert.setHeaderText(stacktraceResourceBundle);
         Label stacktraceLabel = new Label(stacktraceResourceBundle);
 
@@ -142,7 +139,7 @@ public class DialogUtility {
     /**
      * Crates an error alert showing a stacktrace of an exception.
      *
-     * @param ex The exception to show.
+     * @param ex    The exception to show.
      * @param title The title of the window.
      * @return The created alert.
      */
@@ -166,7 +163,7 @@ public class DialogUtility {
      * Crates a warning alert.
      *
      * @param message The message to display.
-     * @param header The header to show.
+     * @param header  The header to show.
      * @return The created alert.
      */
     public static Alert createWarningAlert(String message, String header) {
@@ -177,12 +174,12 @@ public class DialogUtility {
      * Crates a warning alert.
      *
      * @param message The message to display.
-     * @param header The header to show.
-     * @param title The title of the window.
+     * @param header  The header to show.
+     * @param title   The title of the window.
      * @return The created alert.
      */
     public static Alert createWarningAlert(String message, String header,
-            String title) {
+                                           String title) {
         return createAlert(Alert.AlertType.WARNING, message, header, title);
     }
 
@@ -200,7 +197,7 @@ public class DialogUtility {
      * Crates an information alert.
      *
      * @param message The message to display.
-     * @param header The header to show.
+     * @param header  The header to show.
      * @return The created alert.
      */
     public static Alert createInfoAlert(String message, String header) {
@@ -211,12 +208,11 @@ public class DialogUtility {
      * Crates an information alert.
      *
      * @param message The message to display.
-     * @param header The header to show.
-     * @param title The title of the window.
+     * @param header  The header to show.
+     * @param title   The title of the window.
      * @return The created alert.
      */
-    public static Alert createInfoAlert(String message, String header,
-            String title) {
+    public static Alert createInfoAlert(String message, String header, String title) {
         return createAlert(Alert.AlertType.INFORMATION, message, header, title);
     }
 }

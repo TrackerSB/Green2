@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Version=1.0
-Name=Configure Grün2
-Name[de]=Grün2 konfigurieren
-Exec=/usr/bin/xdg-open /opt/Grün2_Mitgliederverwaltung/Grün2_config.jar
-Icon=/opt/Grün2_Mitgliederverwaltung/icon.png
-Categories=Office;Java;
