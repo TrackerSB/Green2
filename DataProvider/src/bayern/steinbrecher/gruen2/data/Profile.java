@@ -134,7 +134,8 @@ public class Profile {
                 } else {
                     ConfigKey key = ConfigKey.valueOf(parts[0].toUpperCase());
                     Property<String> value = new SimpleObjectProperty<>(parts[1]);
-                    if (key.isValid(value.getValue())) {
+                    //FIXME Remove getValueFromString when Java 9 is released.
+                    if (key.isValid(key.getValueFromString(value.getValue()))) {
                         configurations.put(key, value);
                     } else {
                         Logger.getLogger(Profile.class.getName())

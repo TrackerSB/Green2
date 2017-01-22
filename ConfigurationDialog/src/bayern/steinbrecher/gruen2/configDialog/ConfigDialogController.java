@@ -32,6 +32,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,7 +103,7 @@ public class ConfigDialogController extends CheckedController {
         birthdayExpressionTextField.setText(profile.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
-        sshCharsetTextField.setText(profile.getOrDefault(ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1.name()));
+        sshCharsetTextField.setText(profile.getOrDefault(ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
     }
 
     @FXML
@@ -117,7 +118,7 @@ public class ConfigDialogController extends CheckedController {
             profile.set(ConfigKey.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getText());
             profile.renameProfile(profileNameTextField.getText());
             profile.set(ConfigKey.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());
-            profile.set(ConfigKey.SSH_CHARSET, sshCharsetTextField.getText());
+            profile.set(ConfigKey.SSH_CHARSET, Charset.forName(sshCharsetTextField.getText()));
             profile.saveSettings();
             stage.close();
         }

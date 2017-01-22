@@ -117,7 +117,8 @@ public enum ConfigKey {
         @Override
         public <T> boolean isValid(T value) {
             //FIXME Need to wait until Java 9 arrives
-            return (getValueClass().isInstance(value)) && Charset.isSupported((String) value);
+            //FIXME Second operand of && is redundant. Charset.forName(..) already checks support...
+            return (getValueClass().isInstance(value)) && Charset.isSupported(((Charset) value).name());
         }
     };
 
@@ -166,7 +167,7 @@ public enum ConfigKey {
             throw new IllegalArgumentException("value must not be null");
         }
         if (value instanceof Boolean) {
-            return (boolean) value ? "yes" : "no";
+            return (Boolean) value ? "yes" : "no";
         } else if (value instanceof String) {
             return (String) value;
         } else if (value instanceof Charset) {
