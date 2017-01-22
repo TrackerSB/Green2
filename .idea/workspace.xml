@@ -15,9 +15,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../../bashscript/createPdfMakefile.sh" afterPath="$PROJECT_DIR$/../../../bashscript/createPdfMakefile.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
@@ -95,7 +94,7 @@
         <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="674">
-              <caret line="144" column="39" lean-forward="false" selection-start-line="144" selection-start-column="39" selection-end-line="144" selection-end-column="39" />
+              <caret line="195" column="39" lean-forward="false" selection-start-line="195" selection-start-column="39" selection-end-line="195" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -104,9 +103,11 @@
       <file leaf-file-name="Profile.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="899">
-              <caret line="378" column="60" lean-forward="true" selection-start-line="378" selection-start-column="60" selection-end-line="378" selection-end-column="60" />
-              <folding />
+            <state relative-caret-position="555">
+              <caret line="52" column="61" lean-forward="false" selection-start-line="52" selection-start-column="61" selection-end-line="52" selection-end-column="61" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -370,7 +371,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
     <property name="SearchEverywhereHistoryKey" value="search &#9;ACTION&#9;StructuralSearchPlugin.StructuralSearchAction&#10;Main&#9;FILE&#9;file://C:/Users/Stefan Huber/myPrograms/java/Trachtenverein/Grün2/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java&#10;inspector&#9;ACTION&#9;PropertyInspectorActions&#10;parameter hints&#9;ACTION&#9;ToggleInlineHintsAction&#10;ProfileC&#9;PSI&#9;JAVA://bayern.steinbrecher.gruen2.elements.ProfileChoice&#10;DataProvider&#9;FILE&#9;file://C:/Users/Stefan Huber/myPrograms/java/Trachtenverein/Grün2/DataProvider/src/bayern/steinbrecher/gruen2/data/DataProvider.java&#10;refactor&#9;ACTION&#9;Refactorings.QuickListPopupAction&#10;line separator&#9;ACTION&#9;ChangeLineSeparators&#10;imports&#9;ACTION&#9;OptimizeImports&#10;reformat &#9;ACTION&#9;ShowReformatFileDialog&#10;parameter name hints&#9;ACTION&#9;ToggleInlineHintsAction" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
@@ -779,7 +780,7 @@
       <workItem from="1485067592594" duration="8268000" />
       <workItem from="1485080634322" duration="4554000" />
       <workItem from="1485090142571" duration="387000" />
-      <workItem from="1485098728264" duration="552000" />
+      <workItem from="1485098728264" duration="4908000" />
     </task>
     <task id="LOCAL-00001" summary="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare.">
       <created>1485075857953</created>
@@ -788,11 +789,25 @@
       <option name="project" value="LOCAL" />
       <updated>1485075857953</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added some JavaDoc">
+      <created>1485099303563</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1485099303563</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Improved make clean of createPdfMakefile.sh">
+      <created>1485099330126</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1485099330126</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24482000" />
+    <option name="totallyTimeSpent" value="28838000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -855,7 +870,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Nailcare. (According to inspector of IntelliJ)" />
     <MESSAGE value="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare." />
-    <option name="LAST_COMMIT_MESSAGE" value="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare." />
+    <MESSAGE value="Added some JavaDoc" />
+    <MESSAGE value="Improved make clean of createPdfMakefile.sh" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved make clean of createPdfMakefile.sh" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -869,13 +886,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java</url>
-          <line>204</line>
-          <properties />
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java</url>
-          <line>248</line>
+          <line>250</line>
           <properties />
           <option name="timeStamp" value="9" />
         </line-breakpoint>
@@ -889,14 +900,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/net/URL.java" />
-    <entry file="file://$PROJECT_DIR$/Launcher/META-INF/MANIFEST.MF">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
@@ -1230,7 +1233,26 @@
         <state relative-caret-position="465">
           <caret line="46" column="0" lean-forward="false" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/beans/property/ObjectPropertyBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="472">
+          <caret line="138" column="16" lean-forward="false" selection-start-line="138" selection-start-column="16" selection-end-line="138" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/beans/property/ObjectProperty.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="67" column="16" lean-forward="false" selection-start-line="67" selection-start-column="16" selection-end-line="67" selection-end-column="16" />
+          <folding>
+            <element signature="e#1733#1734#0" expanded="false" />
+            <element signature="e#1755#1756#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1238,16 +1260,18 @@
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="674">
-          <caret line="144" column="39" lean-forward="false" selection-start-line="144" selection-start-column="39" selection-end-line="144" selection-end-column="39" />
+          <caret line="195" column="39" lean-forward="false" selection-start-line="195" selection-start-column="39" selection-end-line="195" selection-end-column="39" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="899">
-          <caret line="378" column="60" lean-forward="true" selection-start-line="378" selection-start-column="60" selection-end-line="378" selection-end-column="60" />
-          <folding />
+        <state relative-caret-position="555">
+          <caret line="52" column="61" lean-forward="false" selection-start-line="52" selection-start-column="61" selection-end-line="52" selection-end-column="61" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

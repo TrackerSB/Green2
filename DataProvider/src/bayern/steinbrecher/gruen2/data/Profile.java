@@ -20,6 +20,7 @@ import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -30,7 +31,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,7 +59,8 @@ public class Profile {
     /**
      * The configurations found in gruen2.conf.
      */
-    private ObservableMap<ConfigKey, String> configurations = FXCollections.observableHashMap();
+    //FIXME Java 9: Replace Property<String> with Property<?>
+    private ObservableMap<ConfigKey, Property<String>> configurations = FXCollections.observableHashMap();
     /**
      * {@code true} only if all allowed configurations are specified.
      */
@@ -96,7 +103,8 @@ public class Profile {
         });
         configFile.addListener((obs, oldVal, newVal) -> {
             configurations.putAll(readConfigs(newVal));
-            ageFunction = readAgeFunction(configurations.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
+            ageFunction = readAgeFunction(configurations.getOrDefault(
+                    ConfigKey.BIRTHDAY_EXPRESSION, new SimpleStringProperty("")).getValue());
         });
         configFilePath.addListener((obs, oldVal, newVal) -> configFile.setValue(new File(newVal)));
         originatorInfoPath.addListener((obs, oldVal, newVal) -> originatorInfoFile.setValue(new File(newVal)));
@@ -112,8 +120,8 @@ public class Profile {
         }
     }
 
-    private static ObservableMap<ConfigKey, String> readConfigs(File configFile) {
-        Map<ConfigKey, String> configurations = new HashMap<>();
+    private static ObservableMap<ConfigKey, Property<String>> readConfigs(File configFile) {
+        Map<ConfigKey, Property<String>> configurations = new HashMap<>();
 
         String[] parts;
         try (Scanner sc = new Scanner(configFile)) {
@@ -124,7 +132,14 @@ public class Profile {
                     Logger.getLogger(DataProvider.class.getName())
                             .log(Level.WARNING, "\"{0}\" has not exactly two elements. It remains ignored.", line);
                 } else {
-                    configurations.put(ConfigKey.valueOf(parts[0].toUpperCase()), parts[1]);
+                    ConfigKey key = ConfigKey.valueOf(parts[0].toUpperCase());
+                    Property<String> value = new SimpleObjectProperty<>(parts[1]);
+                    if (key.isValid(value.getValue())) {
+                        configurations.put(key, value);
+                    } else {
+                        Logger.getLogger(Profile.class.getName())
+                                .log(Level.WARNING, key + " has an invalid value. It is skipped.");
+                    }
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -201,20 +216,7 @@ public class Profile {
     }
 
     private String generateLine(ConfigKey key) {
-        String out = key.name() + VALUE_SEPARATOR;
-        Class<?> valueClass = key.getValueClass();
-        if (valueClass == Boolean.class) {
-            out += configurations.get(key)
-                    .equalsIgnoreCase("true") ? "true" : "false";
-        } else if (valueClass == String.class) {
-            out += configurations.get(key);
-        } else if (valueClass == Charset.class) {
-            out += configurations.get(key);
-        } else {
-            throw new UnsupportedOperationException(
-                    "Type \"" + valueClass + "\" not supported.");
-        }
-        return out + "\n";
+        return key.name() + VALUE_SEPARATOR + key.getStringFromValue(configurations.get(key).getValue()) + "\n";
     }
 
     /**
@@ -285,17 +287,18 @@ public class Profile {
      */
     public <T> T getOrDefault(ConfigKey key, T defaultValue) {
         //FIXME Wait for JDK 9 in order to use generic enums
+        if (!key.getValueClass().isAssignableFrom(defaultValue.getClass())) {
+            throw new IllegalArgumentException("Type of defaultValue and the type of the value key represents have to "
+                    + "be the same. (Still waiting for generic enums to fix this... :-( )");
+        }
         if (configurations.containsKey(key)) {
-            String value = configurations.get(key);
+            String value = (String) configurations.get(key).getValue();
             if (defaultValue instanceof String) {
                 return (T) value;
             } else if (defaultValue instanceof Boolean) {
-                /* FIXME Legacy checking for old config files containing "ja"
-                 * instead of "yes".
-                 */
                 return (T) Boolean.valueOf(value.equalsIgnoreCase("ja") || value.equalsIgnoreCase("true"));
             } else if (defaultValue instanceof Charset) {
-                return (T) Charset.forName(configurations.get(key));
+                return (T) Charset.forName(value);
             } else {
                 throw new UnsupportedOperationException("Type \""
                         + defaultValue.getClass().getSimpleName()
@@ -304,6 +307,17 @@ public class Profile {
         } else {
             return defaultValue;
         }
+    }
+
+    /**
+     * Returns the property holding the value of {@code key} or {@code null} if there's no entry (yet) for {@code key}.
+     *
+     * @param key The key to search for.
+     * @return The property holding the value of {@code key} or {@code null} if there's no entry (yet) for {@code key}.
+     */
+    public ReadOnlyProperty<String> getProperty(ConfigKey key) {
+        //FIXME Wait for JDK 9 in order to use generic enums
+        return configurations.get(key);
     }
 
     /**
@@ -318,7 +332,8 @@ public class Profile {
         if (!key.isValid(value)) {
             throw new IllegalArgumentException("The given value is not valid for the given key");
         }
-        configurations.put(key, value.toString());
+        configurations.putIfAbsent(key, new SimpleObjectProperty<>());
+        configurations.get(key).setValue(value.toString());
     }
 
     /**

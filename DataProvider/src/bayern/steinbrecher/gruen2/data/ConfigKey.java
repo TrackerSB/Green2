@@ -60,6 +60,7 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
+            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
         }
     },
@@ -72,6 +73,7 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
+            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
         }
     },
@@ -84,6 +86,7 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
+            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && value != null;
         }
     },
@@ -97,6 +100,7 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
+            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && BIRTHDAY_PATTERN.matcher((String) value).matches();
         }
     },
@@ -112,6 +116,7 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
+            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && Charset.isSupported((String) value);
         }
     };
@@ -147,4 +152,50 @@ public enum ConfigKey {
      * @return {@code true} only if this value is valid for this ConfigKey.
      */
     public abstract <T> boolean isValid(T value);
+
+    /**
+     * Returns a String representation of value according to the type of the value the ConfigKey holds.
+     *
+     * @param value The value to convert.
+     * @param <T>   The type of the value the ConfigKey holds.
+     * @return The String representation.
+     */
+    public <T> String getStringFromValue(T value) {
+        //FIXME Need to wait until Java 9 arrives
+        if (value == null) {
+            throw new IllegalArgumentException("value must not be null");
+        }
+        if (value instanceof Boolean) {
+            return (boolean) value ? "yes" : "no";
+        } else if (value instanceof String) {
+            return (String) value;
+        } else if (value instanceof Charset) {
+            return ((Charset) value).name();
+        } else {
+            throw new UnsupportedOperationException(value.getClass().getSimpleName() + " is not supported.");
+        }
+    }
+
+    /**
+     * Returns a value of the type this ConfigKey holds converting it from {@code value}. NOTE: It does NOT imply that the valid is a valid value to be used as value of a ConfigKey.
+     *
+     * @param value The String representation to convert.
+     * @param <T>   The type of the value the ConfigKey holds.
+     * @return The converted value.
+     */
+    public <T> T getValueFromString(String value) {
+        //FIXME Need to wait until Java 9 arrives
+        if (value == null) {
+            throw new IllegalArgumentException("value must not be null");
+        }
+        if (Boolean.class.isAssignableFrom(valueClass)) {
+            return (T) valueClass.cast(value.equalsIgnoreCase("yes"));
+        } else if (String.class.isAssignableFrom(valueClass)) {
+            return (T) valueClass.cast(value);
+        } else if (Charset.class.isAssignableFrom(valueClass)) {
+            return (T) valueClass.cast(Charset.forName(value));
+        } else {
+            throw new UnsupportedOperationException(value.getClass().getSimpleName() + " is not supported.");
+        }
+    }
 }
