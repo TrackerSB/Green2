@@ -13,15 +13,8 @@
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialogController.java" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialogController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/IOStreamUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/IOStreamUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/SshConnection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/SshConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -94,27 +87,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java">
+      <file leaf-file-name="ProfileChoice.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="561" column="43" lean-forward="true" selection-start-line="561" selection-start-column="43" selection-end-line="561" selection-end-column="43" />
+            <state relative-caret-position="432">
+              <caret line="114" column="46" lean-forward="true" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DialogUtility.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="163">
-              <caret line="43" column="25" lean-forward="false" selection-start-line="43" selection-start-column="25" selection-end-line="43" selection-end-column="25" />
-              <folding>
-                <element signature="e#1761#1762#0" expanded="true" />
-                <element signature="e#1816#1817#0" expanded="true" />
-                <element signature="e#6228#6229#0" expanded="true" />
-                <element signature="e#6300#6301#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -181,12 +159,12 @@
         <option value="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/SshConnection.java" />
         <option value="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/IOStreamUtility.java" />
         <option value="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialogController.java" />
-        <option value="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" />
         <option value="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties" />
-        <option value="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" />
         <option value="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java" />
         <option value="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java" />
         <option value="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java" />
+        <option value="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" />
+        <option value="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" />
       </list>
     </option>
   </component>
@@ -198,8 +176,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="width" value="1920" />
-    <option name="height" value="1044" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -254,9 +234,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -265,56 +242,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Mitgliederverwaltung" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Grün2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Mitgliederverwaltung" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gruen2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Grün2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Mitgliederverwaltung" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gruen2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="menu" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Grün2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="DataProvider" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -355,7 +282,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="utility" />
+              <option name="myItemId" value="elements" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -439,6 +366,9 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -454,11 +384,11 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="js.eslint.eslintPackage" value="" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../MyLibraries/out/artifacts/Wizard/Wizard.jar!/" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
-    <property name="SearchEverywhereHistoryKey" value="profile&#9;FILE&#9;file:///home/stefan/myPrograms/java/Trachtenverein/Grün2/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java&#10;line separator&#9;ACTION&#9;ChangeLineSeparators&#10;search &#9;ACTION&#9;StructuralSearchPlugin.StructuralSearchAction&#10;Main&#9;FILE&#9;file://C:/Users/Stefan Huber/myPrograms/java/Trachtenverein/Grün2/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java&#10;inspector&#9;ACTION&#9;PropertyInspectorActions&#10;parameter hints&#9;ACTION&#9;ToggleInlineHintsAction&#10;ProfileC&#9;PSI&#9;JAVA://bayern.steinbrecher.gruen2.elements.ProfileChoice&#10;DataProvider&#9;FILE&#9;file://C:/Users/Stefan Huber/myPrograms/java/Trachtenverein/Grün2/DataProvider/src/bayern/steinbrecher/gruen2/data/DataProvider.java&#10;refactor&#9;ACTION&#9;Refactorings.QuickListPopupAction&#10;imports&#9;ACTION&#9;OptimizeImports&#10;reformat &#9;ACTION&#9;ShowReformatFileDialog&#10;parameter name hints&#9;ACTION&#9;ToggleInlineHintsAction" />
+    <property name="settings.editor.selected.configurable" value="settings.github" />
+    <property name="SearchEverywhereHistoryKey" value="github&#9;ACTION&#9;Github.Open.In.Browser&#10;profile&#9;PSI&#9;JAVA://bayern.steinbrecher.gruen2.data.Profile&#10;line separator&#9;ACTION&#9;ChangeLineSeparators&#10;search &#9;ACTION&#9;StructuralSearchPlugin.StructuralSearchAction&#10;Main&#9;FILE&#9;file://C:/Users/Stefan Huber/myPrograms/java/Trachtenverein/Grün2/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java&#10;inspector&#9;ACTION&#9;PropertyInspectorActions&#10;parameter hints&#9;ACTION&#9;ToggleInlineHintsAction&#10;ProfileC&#9;PSI&#9;JAVA://bayern.steinbrecher.gruen2.elements.ProfileChoice&#10;DataProvider&#9;FILE&#9;file://C:/Users/Stefan Huber/myPrograms/java/Trachtenverein/Grün2/DataProvider/src/bayern/steinbrecher/gruen2/data/DataProvider.java&#10;refactor&#9;ACTION&#9;Refactorings.QuickListPopupAction&#10;imports&#9;ACTION&#9;OptimizeImports&#10;reformat &#9;ACTION&#9;ShowReformatFileDialog&#10;parameter name hints&#9;ACTION&#9;ToggleInlineHintsAction" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="GenerateAntBuildDialog.backupFiles" value="true" />
@@ -468,7 +398,7 @@
     <property name="Repository.Attach.Sources" value="true" />
     <property name="last.edited.regexp" value="=90,=1000" />
   </component>
-  <component name="RunManager" selected="Application.Mitgliederverwaltung">
+  <component name="RunManager" selected="Application.ConfigurationDialog">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -556,6 +486,25 @@
       <method />
     </configuration>
     <configuration default="true" type="Cold Fusion runner description" factoryName="Cold Fusion" custom_browser="" web_path="">
+      <method />
+    </configuration>
+    <configuration default="true" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="myFilePath" />
+      <option name="GLUE" />
+      <option name="myNameFilter" />
+      <option name="myGeneratedName" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="FlashRunConfigurationType" factoryName="Flash App">
@@ -741,6 +690,34 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
       <node-interpreter>project</node-interpreter>
       <node-options />
@@ -868,6 +845,7 @@
       <workItem from="1485167510442" duration="2272000" />
       <workItem from="1485176014166" duration="7335000" />
       <workItem from="1485183539163" duration="389000" />
+      <workItem from="1485207276527" duration="1261000" />
     </task>
     <task id="LOCAL-00001" summary="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare.">
       <created>1485075857953</created>
@@ -915,7 +893,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="44618000" />
+    <option name="totallyTimeSpent" value="45879000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -927,32 +905,32 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1044" extended-state="6" />
-    <editor active="false" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32747254" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32683983" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32747254" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32683983" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2457265" sideWeight="0.6032907" order="7" side_tool="true" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24840085" sideWeight="0.60714287" order="7" side_tool="true" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2457265" sideWeight="0.39670932" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24840085" sideWeight="0.39285713" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3989011" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.49134198" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3989011" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -986,8 +964,10 @@
     <MESSAGE value="Further improvements (and preparations for genric enums) to handling of ConfigKeys." />
     <MESSAGE value="Bugfixes of Runtime errors because of last commit. I would have seen it already on compile time if there were generic enums already..." />
     <MESSAGE value="Improved width of rows." />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved width of rows." />
+    <MESSAGE value="Improved behaviour of deleteDialog of ProfileChoice according to default buttons." />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved behaviour of deleteDialog of ProfileChoice according to default buttons." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1221,13 +1201,7 @@
     </entry>
     <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/beans/property/ObjectPropertyBase.java" />
     <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/beans/property/ObjectProperty.java" />
-    <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/fxml/FXMLLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="380" column="74" lean-forward="false" selection-start-line="380" selection-start-column="45" selection-end-line="380" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/fxml/FXMLLoader.java" />
     <entry file="file://$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
@@ -1238,28 +1212,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/Map.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="472">
-          <caret line="211" column="6" lean-forward="false" selection-start-line="211" selection-start-column="6" selection-end-line="211" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/Map.java" />
     <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaFormController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1380">
           <caret line="129" column="64" lean-forward="false" selection-start-line="129" selection-start-column="64" selection-end-line="129" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4335">
-          <caret line="304" column="47" lean-forward="false" selection-start-line="304" selection-start-column="47" selection-end-line="304" selection-end-column="47" />
-          <folding>
-            <element signature="e#0#15956#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1332,30 +1289,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/scene/layout/Region.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="732" column="22" lean-forward="false" selection-start-line="732" selection-start-column="22" selection-end-line="732" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/scene/layout/Region.java" />
     <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/MenuController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="95" column="20" lean-forward="false" selection-start-line="95" selection-start-column="20" selection-end-line="95" selection-end-column="20" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="171" column="70" lean-forward="false" selection-start-line="171" selection-start-column="70" selection-end-line="171" selection-end-column="70" />
-          <folding>
-            <element signature="e#6054#6055#0" expanded="true" />
-            <element signature="e#6105#6106#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1369,16 +1308,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties">
-      <provider editor-type-id="ResourceBundle">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="726">
-          <caret line="85" column="8" lean-forward="false" selection-start-line="85" selection-start-column="8" selection-end-line="85" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -1389,22 +1318,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="561" column="43" lean-forward="true" selection-start-line="561" selection-start-column="43" selection-end-line="561" selection-end-column="43" />
+        <state relative-caret-position="564">
+          <caret line="561" column="43" lean-forward="false" selection-start-line="561" selection-start-column="43" selection-end-line="561" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="43" column="25" lean-forward="false" selection-start-line="43" selection-start-column="25" selection-end-line="43" selection-end-column="25" />
-          <folding>
-            <element signature="e#1761#1762#0" expanded="true" />
-            <element signature="e#1816#1817#0" expanded="true" />
-            <element signature="e#6228#6229#0" expanded="true" />
-            <element signature="e#6300#6301#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="571">
+          <caret line="158" column="28" lean-forward="false" selection-start-line="158" selection-start-column="28" selection-end-line="158" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1474">
+          <caret line="304" column="47" lean-forward="false" selection-start-line="304" selection-start-column="47" selection-end-line="304" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties">
+      <provider editor-type-id="ResourceBundle">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="683">
+          <caret line="82" column="52" lean-forward="false" selection-start-line="82" selection-start-column="52" selection-end-line="82" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="114" column="46" lean-forward="true" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1463,11 +1414,12 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>DataProvider</last-edited>
+          <last-edited>ConfigurationDialog</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.6" />
               </list>
             </option>
           </splitter-proportions>

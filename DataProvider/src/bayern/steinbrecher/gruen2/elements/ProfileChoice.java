@@ -110,7 +110,12 @@ public class ProfileChoice extends Application {
 
     private void askForDeleteProfile(String profileName) {
         String message = MessageFormat.format(DataProvider.getResourceValue("reallyDelete"), profileName);
-        DialogUtility.createAlert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO).showAndWait()
+        Alert confirmation
+                = DialogUtility.createAlert(Alert.AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.NO);
+        DialogPane dialogPane = confirmation.getDialogPane();
+        ((Button) dialogPane.lookupButton(ButtonType.YES)).setDefaultButton(false);
+        ((Button) dialogPane.lookupButton(ButtonType.NO)).setDefaultButton(true);
+        confirmation.showAndWait()
                 .ifPresent(buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         int rowIndexOfDeletedRow = -1;
