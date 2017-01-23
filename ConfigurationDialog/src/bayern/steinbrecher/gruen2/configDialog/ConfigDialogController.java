@@ -95,6 +95,7 @@ public class ConfigDialogController extends CheckedController {
                 .and(profileAlreadyExists.not()));
 
         //Load settings
+        //FIXME Think about whether to "bind" values to ConfigKeys
         profile = DataProvider.getProfile();
         useSSHCheckBox.setSelected(profile.getOrDefault(ConfigKey.USE_SSH, true));
         sshHostTextField.setText(profile.getOrDefault(ConfigKey.SSH_HOST, ""));
@@ -108,7 +109,6 @@ public class ConfigDialogController extends CheckedController {
 
     @FXML
     private void saveSettings() {
-        //FIXME Think about whether to "bind" values to ConfigKeys
         checkStage();
         if (isValid()) {
             profile.set(ConfigKey.USE_SSH, useSSHCheckBox.isSelected());

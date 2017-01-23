@@ -558,9 +558,8 @@ public class Main extends Application {
                 + "\n\n"
                 + checkDates(m -> m.getAccountHolder().getMandatSigned(),
                 DataProvider.getResourceValue("memberBadMandatSigned"),
-                DataProvider.getResourceValue(
-                        "allMandatSignedCorrect"));
-        Alert alert = DialogUtility.createInfoAlert(message);
+                DataProvider.getResourceValue("allMandatSignedCorrect"));
+        Alert alert = DialogUtility.createMessageAlert(message);
         alert.initOwner(menuStage);
         alert.showAndWait();
     }

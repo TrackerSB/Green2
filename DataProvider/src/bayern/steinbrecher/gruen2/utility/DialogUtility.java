@@ -19,6 +19,7 @@ package bayern.steinbrecher.gruen2.utility;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -40,15 +41,17 @@ public class DialogUtility {
                 "Construction of an object not allowed.");
     }
 
-    private static Alert createAlert(Alert.AlertType type) {
-        Alert alert = new Alert(type);
-
+    private static Alert addStyleAndIcon(Alert alert) {
         Scene scene = alert.getDialogPane().getScene();
         scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         Stage stage = (Stage) scene.getWindow();
         stage.getIcons().add(DataProvider.DEFAULT_ICON);
 
         return alert;
+    }
+
+    private static Alert createAlert(Alert.AlertType type) {
+        return addStyleAndIcon(new Alert(type));
     }
 
     private static Alert createAlert(Alert.AlertType type, String message) {
@@ -178,8 +181,7 @@ public class DialogUtility {
      * @param title   The title of the window.
      * @return The created alert.
      */
-    public static Alert createWarningAlert(String message, String header,
-                                           String title) {
+    public static Alert createWarningAlert(String message, String header, String title) {
         return createAlert(Alert.AlertType.WARNING, message, header, title);
     }
 
@@ -214,5 +216,70 @@ public class DialogUtility {
      */
     public static Alert createInfoAlert(String message, String header, String title) {
         return createAlert(Alert.AlertType.INFORMATION, message, header, title);
+    }
+
+    private static Alert addMessageTextArea(Alert alert, String message) {
+        TextArea stacktraceArea = new TextArea(message);
+        stacktraceArea.setEditable(false);
+
+        GridPane grid = new GridPane(); //TODO GridPane really needed?
+        grid.addColumn(0, stacktraceArea);
+        GridPane.setHgrow(stacktraceArea, Priority.ALWAYS);
+        GridPane.setVgrow(stacktraceArea, Priority.ALWAYS);
+
+        alert.setWidth(500); //FIXME Resize correctly
+        alert.setHeight(350);
+        alert.getDialogPane().setExpandableContent(grid);
+
+        return alert;
+    }
+
+    /**
+     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     *
+     * @param message The message to display.
+     * @return The created alert.
+     */
+    public static Alert createMessageAlert(String message) {
+        return addMessageTextArea(createAlert(Alert.AlertType.INFORMATION), message);
+    }
+
+    /**
+     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     *
+     * @param message The message to display.
+     * @param header  The header to show.
+     * @return The created alert.
+     */
+    public static Alert createMessageAlert(String message, String header) {
+        Alert messageAlert = createMessageAlert(message);
+        messageAlert.setHeaderText(header);
+        return messageAlert;
+    }
+
+    /**
+     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     *
+     * @param message The message to display.
+     * @param header  The header to show.
+     * @param title   The title of the window.
+     * @return The created alert.
+     */
+    public static Alert createMessageAlert(String message, String header, String title) {
+        Alert messageAlert = createMessageAlert(message, header);
+        messageAlert.setTitle(title);
+        return messageAlert;
+    }
+
+    /**
+     * Creates an alert with given type, given message, given buttons and with default stylesheet and icon.
+     *
+     * @param type    The type of the alert.
+     * @param message The message to display.
+     * @param buttons The buttons to show.
+     * @return The created alert.
+     */
+    public static Alert createAlert(Alert.AlertType type, String message, ButtonType... buttons) {
+        return addStyleAndIcon(new Alert(type, message, buttons));
     }
 }

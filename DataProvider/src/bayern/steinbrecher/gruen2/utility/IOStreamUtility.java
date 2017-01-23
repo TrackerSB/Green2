@@ -16,7 +16,12 @@
  */
 package bayern.steinbrecher.gruen2.utility;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
@@ -48,15 +53,14 @@ public final class IOStreamUtility {
      * {@code charset}.
      *
      * @param inputStream The {@code InputStream} to read.
-     * @param charset The charset to use for decoding the {@code InputStream}.
+     * @param charset     The charset to use for decoding the {@code InputStream}.
      * @return The content of the given {@code InputStream}. It never returns
      * {@code null}.
      * @throws IOException Thrown if an {@code IOException} is thrown by
-     * {@code InputStream::read}.
+     *                     {@code InputStream::read}.
      * @see InputStream#read()
      */
-    public static String readAll(InputStream inputStream, Charset charset)
-            throws IOException {
+    public static String readAll(InputStream inputStream, Charset charset) throws IOException {
         StringBuilder output = new StringBuilder();
 
         try (ReadableByteChannel rbc = Channels.newChannel(inputStream)) {
@@ -87,8 +91,7 @@ public final class IOStreamUtility {
                 osw.write(buffer, 0, bytesRead);
             }
         } catch (IOException ex) {
-            Logger.getLogger(IOStreamUtility.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(IOStreamUtility.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -97,18 +100,17 @@ public final class IOStreamUtility {
      * file. It loops over {@code inputStream} transfering {@code bytesPerLoop}
      * bytes per loop.
      *
-     * @param inputStream The stream to read from.
+     * @param inputStream  The stream to read from.
      * @param outputStream The stream of the file to write to.
-     * @param size The size of the {@code inputStream}.
+     * @param size         The size of the {@code inputStream}.
      * @param bytesPerLoop The amount of bytes to transfer per loop.
-     * @param callback A method to call on every loop. {@code null} for no
-     * callback.
+     * @param callback     A method to call on every loop. {@code null} for no
+     *                     callback.
      */
-    public static void transfer(InputStream inputStream,
-            FileOutputStream outputStream, long size, long bytesPerLoop,
-            Runnable callback) {
+    public static void transfer(InputStream inputStream, FileOutputStream outputStream, long size, long bytesPerLoop,
+                                Runnable callback) {
         try (ReadableByteChannel inChannel = Channels.newChannel(inputStream);
-                FileChannel outChannel = outputStream.getChannel()) {
+             FileChannel outChannel = outputStream.getChannel()) {
             for (long offset = 0; offset < size; offset += bytesPerLoop) {
                 outChannel.transferFrom(inChannel, offset, bytesPerLoop);
                 if (callback != null) {
@@ -116,8 +118,7 @@ public final class IOStreamUtility {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(IOStreamUtility.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(IOStreamUtility.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -125,10 +126,10 @@ public final class IOStreamUtility {
      * Overrides the hole content of {@code pathToFile} with {@code content}. If
      * {@code pathToFile} doesn´t exist it creates one.
      *
-     * @param content The content to be written into the file.
+     * @param content    The content to be written into the file.
      * @param pathToFile The file to write in.
-     * @param withBom Only if {@code true} it adds '\uFEFF' to the beginning of
-     * the file.
+     * @param withBom    Only if {@code true} it adds '\uFEFF' to the beginning of
+     *                   the file.
      */
     public static void printContent(String content, String pathToFile, boolean withBom) {
         try (BufferedWriter bw

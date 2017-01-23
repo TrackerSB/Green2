@@ -20,8 +20,6 @@ import bayern.steinbrecher.gruen2.Controller;
 import bayern.steinbrecher.gruen2.View;
 import bayern.steinbrecher.gruen2.data.DataProvider;
 import bayern.steinbrecher.gruen2.utility.ServiceFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
@@ -29,6 +27,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a splashscreen.
@@ -52,6 +53,7 @@ public class Splashscreen extends View<Controller> {
         Scene scene = new Scene(root);
         scene.setFill(null);
         stage.setScene(scene);
+        stage.setTitle(DataProvider.getResourceValue("startingApplication"));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.getIcons().add(DataProvider.DEFAULT_ICON);
