@@ -11,10 +11,8 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
+    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="Improved behaviour of deleteDialog of ProfileChoice according to default buttons.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -90,8 +88,8 @@
       <file leaf-file-name="ProfileChoice.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="114" column="46" lean-forward="true" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
+            <state relative-caret-position="619">
+              <caret line="125" column="29" lean-forward="true" selection-start-line="125" selection-start-column="29" selection-end-line="125" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -845,7 +843,7 @@
       <workItem from="1485167510442" duration="2272000" />
       <workItem from="1485176014166" duration="7335000" />
       <workItem from="1485183539163" duration="389000" />
-      <workItem from="1485207276527" duration="1261000" />
+      <workItem from="1485207276527" duration="1299000" />
     </task>
     <task id="LOCAL-00001" summary="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare.">
       <created>1485075857953</created>
@@ -893,7 +891,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="45879000" />
+    <option name="totallyTimeSpent" value="45917000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -1353,8 +1351,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="114" column="46" lean-forward="true" selection-start-line="114" selection-start-column="46" selection-end-line="114" selection-end-column="46" />
+        <state relative-caret-position="619">
+          <caret line="125" column="29" lean-forward="true" selection-start-line="125" selection-start-column="29" selection-end-line="125" selection-end-column="29" />
           <folding />
         </state>
       </provider>
