@@ -21,9 +21,14 @@ import bayern.steinbrecher.gruen2.data.Profile;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -56,11 +61,16 @@ public class ProfileChoice extends Application {
         Label choiceLabel = new Label(DataProvider.getResourceValue("chooseProfile"));
         nodes.add(choiceLabel);
 
-        ListView<String> profileList
-                = new ListView<>(FXCollections.observableArrayList(Profile.getAvailableProfiles()));
+        List<String> profiles = Profile.getAvailableProfiles();
+        ObservableList<HBox> rows = FXCollections.observableArrayList();
+        for (String profileName : profiles) {
+            HBox row = new HBox(5, new Label(profileName), new Button("Edit"), new Button("delete"));
+            rows.add(row);
+        }
+        ListView<HBox> profileList = new ListView<>(rows);
         nodes.add(profileList);
 
-        MultipleSelectionModel<String> selectionModel = profileList.selectionModelProperty().get();
+        MultipleSelectionModel<HBox> selectionModel = profileList.selectionModelProperty().get();
 
         Button select = new Button(DataProvider.getResourceValue("select"));
         select.setOnAction(evt -> {
@@ -72,16 +82,17 @@ public class ProfileChoice extends Application {
 
         Button delete = new Button(DataProvider.getResourceValue("delete"));
         delete.setOnAction(evt -> {
-            String selectedProfile = selectionModel.getSelectedItem();
+            HBox row = selectionModel.getSelectedItem();
+            String selectedProfile = ((Label) row.getChildren().get(0)).getText(); //TODO Guaranteed that the label is first?
             new Profile(selectedProfile, false).deleteProfile();
-            profileList.getItems().remove(selectedProfile);
-            if(selectionModel.getSelectedIndex() < profileList.getItems().size() - 1){
+            profileList.getItems().remove(row);
+            if (selectionModel.getSelectedIndex() < profileList.getItems().size() - 1) {
                 selectionModel.selectNext();
             }
         });
         delete.setDisable(selectionModel.isEmpty());
 
-        selectionModel.getSelectedItems().addListener((Change<? extends String> c) -> {
+        selectionModel.getSelectedItems().addListener((Change<? extends HBox> c) -> {
             boolean nothingSelected = c.getList().isEmpty();
             select.setDisable(nothingSelected);
             delete.setDisable(nothingSelected);
@@ -100,10 +111,18 @@ public class ProfileChoice extends Application {
         stage.setResizable(false);
         stage.setTitle(DataProvider.getResourceValue("chooseProfile"));
         stage.getIcons().add(DataProvider.DEFAULT_ICON);
+
+        //FIXME Find workaround for calculating sizes without showing stage
+        stage.show();
+        stage.close();
+
+        double maxRowWidth = rows.stream().mapToDouble(HBox::getWidth).max().getAsDouble();
+        profileList.setMinWidth(maxRowWidth);
+
         stage.showAndWait();
 
         if (selected) {
-            profile = new Profile(selectionModel.getSelectedItem(), false);
+            profile = new Profile(((Label) selectionModel.getSelectedItem().getChildren().get(0)).getText(), false); //TODO Guaranteed that the label is first?
         } else if (created) {
             String newConfigName = NEW_CONFIG_NAME;
             List<String> availableProfiles = Profile.getAvailableProfiles();
