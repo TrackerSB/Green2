@@ -41,7 +41,11 @@ import bayern.steinbrecher.gruen2.people.Member;
 import bayern.steinbrecher.gruen2.people.Originator;
 import bayern.steinbrecher.gruen2.selection.Selection;
 import bayern.steinbrecher.gruen2.sepaform.SepaForm;
-import bayern.steinbrecher.gruen2.utility.*;
+import bayern.steinbrecher.gruen2.utility.DialogUtility;
+import bayern.steinbrecher.gruen2.utility.IOStreamUtility;
+import bayern.steinbrecher.gruen2.utility.ProgramCaller;
+import bayern.steinbrecher.gruen2.utility.ServiceFactory;
+import bayern.steinbrecher.gruen2.utility.ThreadUtility;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
 import javafx.application.Application;
@@ -56,7 +60,13 @@ import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,8 +89,7 @@ public class Main extends Application {
     private Stage menuStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
-    private final Map<Integer, Future<List<Member>>> memberBirthday
-            = new HashMap<>(3);
+    private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
     private Future<List<Member>> memberNonContributionfree;
     private Future<Map<String, String>> nicknames;
     private Future<Optional<Map<Integer, Double>>> individualContributions;
@@ -126,9 +135,8 @@ public class Main extends Application {
     private boolean checkConfigs() {
         boolean valid = profile.isAllConfigurationsSet();
         if (!valid) {
-            DialogUtility.createErrorAlert(
-                    DataProvider.getResourceValue("badConfigs"))
-                    .showAndWait().ifPresent(buttontype -> {
+            DialogUtility.createErrorAlert(DataProvider.getResourceValue("badConfigs")).showAndWait()
+                    .ifPresent(buttontype -> {
                         if (buttontype == ButtonType.OK) {
                             ProgramCaller.startGrün2ConfigDialog();
                         }
@@ -168,26 +176,20 @@ public class Main extends Application {
         return waitScreen;
     }
 
-    private Service<Optional<DBConnection>> createConnectionService(
-            Login login, WaitScreen waitScreen) {
-        Service<Optional<DBConnection>> connectionService
-                = ServiceFactory.createService(() -> {
-                    return getConnection(login, waitScreen);
-                });
+    private Service<Optional<DBConnection>> createConnectionService(Login login, WaitScreen waitScreen) {
+        Service<Optional<DBConnection>> connectionService = ServiceFactory.createService(() -> {
+            return getConnection(login, waitScreen);
+        });
 
         connectionService.setOnSucceeded(wse -> {
-            Optional<DBConnection> optDBConnection
-                    = connectionService.getValue();
+            Optional<DBConnection> optDBConnection = connectionService.getValue();
             if (optDBConnection.isPresent()) {
                 dbConnection = optDBConnection.get();
                 try {
                     dbConnection.createTablesIfNeeded();
                 } catch (SchemeCreationException ex) {
-                    DialogUtility.createErrorAlert(DataProvider.getResourceValue(
-                            "couldntCreateScheme"))
-                            .showAndWait();
-                    Logger.getLogger(Main.class.getName())
-                            .log(Level.SEVERE, null, ex);
+                    DialogUtility.createErrorAlert(DataProvider.getResourceValue("couldntCreateScheme")).showAndWait();
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.exit();
                 }
 
@@ -205,8 +207,7 @@ public class Main extends Application {
                 try {
                     new Menu(this).start(menuStage);
                 } catch (Exception ex) {
-                    Logger.getLogger(Main.class.getName())
-                            .log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -225,28 +226,21 @@ public class Main extends Application {
         exserv.shutdownNow();
     }
 
-    private void handleAuthException(Login login, WaitScreen waitScreen,
-            Exception cause) {
+    private void handleAuthException(Login login, WaitScreen waitScreen, Exception cause) {
         Platform.runLater(() -> {
             waitScreen.close();
 
             Stage s = new Stage();
             Alert dialog;
             if (cause instanceof ConnectException) {
-                dialog = DialogUtility.createInfoAlert(
-                        DataProvider.getResourceValue("checkConnection"));
+                dialog = DialogUtility.createInfoAlert(DataProvider.getResourceValue("checkConnection"));
             } else if (cause instanceof UnknownHostException) {
-                dialog = DialogUtility.createStacktraceAlert(cause,
-                        DataProvider.getResourceValue("checkConnection"));
+                dialog = DialogUtility.createStacktraceAlert(cause, DataProvider.getResourceValue("checkConnection"));
             } else if (cause instanceof AuthException) {
-                dialog = DialogUtility.createInfoAlert(
-                        DataProvider.getResourceValue("checkInput"));
+                dialog = DialogUtility.createInfoAlert(DataProvider.getResourceValue("checkInput"));
             } else {
-                Logger.getLogger(Main.class.getName())
-                        .log(Level.SEVERE, "Not action specified for: {0}",
-                                cause);
-                dialog = DialogUtility.createErrorAlert(
-                        DataProvider.getResourceValue("unexpectedAbbort"));
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Not action specified for: {0}", cause);
+                dialog = DialogUtility.createErrorAlert(DataProvider.getResourceValue("unexpectedAbbort"));
             }
 
             dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
@@ -271,44 +265,36 @@ public class Main extends Application {
      * JavaFX Application Thread. E.g. use
      * {@code ServiceFactory.createService(...)}.
      *
-     * @param login The loginframe used to ask the user.
+     * @param login      The loginframe used to ask the user.
      * @param waitScreen The waitscreen to show when trying to connect to the
-     * server.
+     *                   server.
      * @return {@code Optional.empty()} only if the connection could not be
      * established. E.g. the user closed the window or the configured connection
      * is not reachable.
      */
-    private Optional<DBConnection> getConnection(
-            Login login, WaitScreen waitScreen) {
+    private Optional<DBConnection> getConnection(Login login, WaitScreen waitScreen) {
         DBConnection con = null;
 
-        Optional<Map<LoginKey, String>> loginInfos
-                = login.getLoginInformation();
+        Optional<Map<LoginKey, String>> loginInfos = login.getLoginInformation();
         if (loginInfos.isPresent()) {
             Map<LoginKey, String> loginValues = loginInfos.get();
             try {
                 if (profile.getOrDefault(ConfigKey.USE_SSH, true)) {
                     con = new SshConnection(
-                            profile.getOrDefault(
-                                    ConfigKey.SSH_HOST, "localhost"),
+                            profile.getOrDefault(ConfigKey.SSH_HOST, "localhost"),
                             loginValues.get(LoginKey.SSH_USERNAME),
                             loginValues.get(LoginKey.SSH_PASSWORD),
-                            profile.getOrDefault(
-                                    ConfigKey.DATABASE_HOST, "localhost"),
+                            profile.getOrDefault(ConfigKey.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefault(
-                                    ConfigKey.DATABASE_NAME, "dbname"),
-                            profile.getOrDefault(ConfigKey.SSH_CHARSET,
-                                    StandardCharsets.ISO_8859_1));
+                            profile.getOrDefault(ConfigKey.DATABASE_NAME, "dbname"),
+                            profile.getOrDefault(ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1));
                 } else {
                     con = new DefaultConnection(
-                            profile.getOrDefault(ConfigKey.DATABASE_HOST,
-                                    "localhost"),
+                            profile.getOrDefault(ConfigKey.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefault(ConfigKey.DATABASE_NAME,
-                                    "dbname"));
+                            profile.getOrDefault(ConfigKey.DATABASE_NAME, "dbname"));
                 }
             } catch (UnknownHostException | AuthException ex) {
                 handleAuthException(login, waitScreen, ex);
@@ -334,15 +320,13 @@ public class Main extends Application {
         member = exserv.submit(() -> dbConnection.getAllMember());
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
-                .forEach(y -> memberBirthday.put(
-                y, exserv.submit(() -> getBirthdayMember(y))));
+                .forEach(y -> memberBirthday.put(y, exserv.submit(() -> getBirthdayMember(y))));
         memberNonContributionfree = exserv.submit(() -> member.get()
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
                 .collect(Collectors.toList()));
         nicknames = exserv.submit(() -> dbConnection.getAllNicknames());
-        individualContributions = exserv.submit(
-                () -> dbConnection.readIndividualContributions());
+        individualContributions = exserv.submit(() -> dbConnection.readIndividualContributions());
     }
 
     /**
@@ -354,8 +338,7 @@ public class Main extends Application {
      */
     private void checkNull(Object... obj) {
         if (Arrays.stream(obj).anyMatch(Objects::isNull)) {
-            throw new IllegalStateException(
-                    "You have to call start(...) first");
+            throw new IllegalStateException("You have to call start(...) first");
         }
     }
 
@@ -363,14 +346,12 @@ public class Main extends Application {
         checkNull(nicknames);
         try {
             if (member.isEmpty()) {
-                Alert alert = DialogUtility.createInfoAlert(
-                        DataProvider.getResourceValue("noMemberForOutput"));
+                Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"));
                 alert.initOwner(menuStage);
                 alert.showAndWait();
             } else {
                 IOStreamUtility.printContent(
-                        AddressGenerator.generateAddressData(
-                                member, nicknames.get()), filename, true);
+                        AddressGenerator.generateAddressData(member, nicknames.get()), filename, true);
             }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -385,8 +366,7 @@ public class Main extends Application {
     public void generateAddressesAll() {
         checkNull(member);
         try {
-            generateAddresses(member.get(),
-                    DataProvider.SAVE_PATH + "/Serienbrief_alle.csv");
+            generateAddresses(member.get(), DataProvider.SAVE_PATH + "/Serienbrief_alle.csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -402,12 +382,10 @@ public class Main extends Application {
      */
     public void generateAddressesBirthday(int year) {
         checkNull(memberBirthday);
-        memberBirthday.putIfAbsent(
-                year, exserv.submit(() -> getBirthdayMember(year)));
+        memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             generateAddresses(memberBirthday.get(year).get(),
-                    DataProvider.SAVE_PATH
-                    + "/Serienbrief_Geburtstag_" + year + ".csv");
+                    DataProvider.SAVE_PATH + "/Serienbrief_Geburtstag_" + year + ".csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -427,52 +405,40 @@ public class Main extends Application {
         try {
             List<Member> birthdayList = memberBirthday.get(year).get();
             if (birthdayList.isEmpty()) {
-                Alert alert = DialogUtility.createInfoAlert(
-                        DataProvider.getResourceValue("noMemberForOutput"));
+                Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"));
                 alert.initOwner(menuStage);
                 alert.showAndWait();
             } else {
-                IOStreamUtility.printContent(
-                        BirthdayGenerator.createGroupedOutput(
-                                birthdayList, year),
-                        DataProvider.SAVE_PATH
-                        + "/Geburtstag_" + year + ".csv", true);
+                IOStreamUtility.printContent(BirthdayGenerator.createGroupedOutput(birthdayList, year),
+                        DataProvider.SAVE_PATH + "/Geburtstag_" + year + ".csv", true);
             }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void generateSepa(Future<List<Member>> memberToSelectFuture,
-            boolean useMemberContributions, SequenceType sequenceType) {
+    private void generateSepa(Future<List<Member>> memberToSelectFuture, boolean useMemberContributions,
+                              SequenceType sequenceType) {
         checkNull(individualContributions, memberToSelectFuture);
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
 
             Map<Integer, Double> contributions = new HashMap<>();
-            Optional<Map<Integer, Double>> optContributions
-                    = individualContributions.get();
-            boolean askForContribution = !useMemberContributions
-                    || (useMemberContributions
-                    && !optContributions.isPresent());
+            Optional<Map<Integer, Double>> optContributions = individualContributions.get();
+            boolean askForContribution = !(useMemberContributions && optContributions.isPresent());
             if (useMemberContributions) {
-                optContributions.ifPresent(map -> {
-                    contributions.putAll(map);
-                });
+                optContributions.ifPresent(contributions::putAll);
             }
 
-            WizardPage<Optional<Originator>> sepaFormPage
-                    = new SepaForm(menuStage).getWizardPage();
+            WizardPage<Optional<Originator>> sepaFormPage = new SepaForm(menuStage).getWizardPage();
             sepaFormPage.setNextFunction(() -> "selection");
             WizardPage<Optional<List<Member>>> selectionPage
-                    = new Selection<>(memberToSelect, menuStage)
-                            .getWizardPage();
+                    = new Selection<>(memberToSelect, menuStage).getWizardPage();
             selectionPage.setFinish(!askForContribution);
             if (askForContribution) {
                 selectionPage.setNextFunction(() -> "contribution");
             }
-            WizardPage<Optional<Double>> contributionPage
-                    = new Contribution(menuStage).getWizardPage();
+            WizardPage<Optional<Double>> contributionPage = new Contribution(menuStage).getWizardPage();
             contributionPage.setFinish(true);
 
             Map<String, WizardPage<?>> pages = new HashMap<>();
@@ -485,41 +451,27 @@ public class Main extends Application {
             wizardStage.setResizable(false);
             wizardStage.getIcons().add(DataProvider.DEFAULT_ICON);
             wizard.start(wizardStage);
-            wizardStage.getScene().getStylesheets()
-                    .add(DataProvider.STYLESHEET_PATH);
+            wizardStage.getScene().getStylesheets().add(DataProvider.STYLESHEET_PATH);
             wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     Map<String, ?> results = wizard.getResults().get();
-                    List<Member> selectedMember
-                            = ((Optional<List<Member>>) results.get(
-                                    "selection"))
-                                    .get();
+                    List<Member> selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
                     if (askForContribution) {
-                        double contribution = ((Optional<Double>) results
-                                .get("contribution"))
-                                .get();
-                        selectedMember.stream().forEach(m -> contributions.put(
-                                m.getMembershipnumber(), contribution)
-                        );
+                        double contribution = ((Optional<Double>) results.get("contribution")).get();
+                        selectedMember.forEach(m -> contributions.put(m.getMembershipnumber(), contribution));
                     }
-                    Originator originator = ((Optional<Originator>) results
-                            .get(WizardPage.FIRST_PAGE_KEY))
-                            .get();
+                    Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
                     List<Member> invalidMember
-                            = SepaPain00800302XMLGenerator.createXMLFile(
-                                    memberToSelect, contributions,
-                                    originator, sequenceType,
-                                    DataProvider.SAVE_PATH + "/Sepa.xml",
-                                    profile.getOrDefault(
-                                            ConfigKey.SEPA_USE_BOM, true));
+                            = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, contributions, originator,
+                            sequenceType, DataProvider.SAVE_PATH + "/Sepa.xml",
+                            profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
                     String message = invalidMember.stream()
-                            .map(m -> m.toString())
+                            .map(Member::toString)
                             .collect(Collectors.joining("\n"));
                     if (!message.isEmpty()) {
-                        Alert alert = DialogUtility.createErrorAlert(message
-                                + "\n" + DataProvider.getResourceValue(
-                                        "haveBadAccountInformation"));
+                        Alert alert = DialogUtility.createErrorAlert(message + "\n"
+                                + DataProvider.getResourceValue("haveBadAccountInformation"));
                         alert.initOwner(menuStage);
                         alert.show();
                     }
@@ -527,8 +479,7 @@ public class Main extends Application {
             });
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            Alert alert = DialogUtility.createErrorAlert(
-                    DataProvider.getResourceValue("noSepaDebit"));
+            Alert alert = DialogUtility.createErrorAlert(DataProvider.getResourceValue("noSepaDebit"));
             alert.initOwner(menuStage);
             alert.showAndWait();
         }
@@ -555,7 +506,7 @@ public class Main extends Application {
         try {
             badIban = member.get().parallelStream()
                     .filter(m -> !SepaPain00800302XMLGenerator
-                    .hasValidIban(m.getAccountHolder()))
+                            .hasValidIban(m.getAccountHolder()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName())
@@ -579,12 +530,12 @@ public class Main extends Application {
     }
 
     private String checkDates(Function<Member, LocalDate> dateFunction,
-            String invalidDatesIntro, String allCorrectMessage) {
+                              String invalidDatesIntro, String allCorrectMessage) {
         try {
             String message = member.get().parallelStream()
                     .filter(m -> dateFunction.apply(m) == null)
                     .map(m -> m.toString()
-                    + ": \"" + dateFunction.apply(m) + "\"")
+                            + ": \"" + dateFunction.apply(m) + "\"")
                     .collect(Collectors.joining("\n"));
             return message.isEmpty() ? allCorrectMessage
                     : invalidDatesIntro + "\n" + message;
@@ -602,13 +553,13 @@ public class Main extends Application {
         checkNull(member);
         String message = checkIbans() + "\n\n"
                 + checkDates(m -> m.getPerson().getBirthday(),
-                        DataProvider.getResourceValue("memberBadBirthday"),
-                        DataProvider.getResourceValue("allBirthdaysCorrect"))
+                DataProvider.getResourceValue("memberBadBirthday"),
+                DataProvider.getResourceValue("allBirthdaysCorrect"))
                 + "\n\n"
                 + checkDates(m -> m.getAccountHolder().getMandatSigned(),
-                        DataProvider.getResourceValue("memberBadMandatSigned"),
-                        DataProvider.getResourceValue(
-                                "allMandatSignedCorrect"));
+                DataProvider.getResourceValue("memberBadMandatSigned"),
+                DataProvider.getResourceValue(
+                        "allMandatSignedCorrect"));
         Alert alert = DialogUtility.createInfoAlert(message);
         alert.initOwner(menuStage);
         alert.showAndWait();

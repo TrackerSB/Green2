@@ -195,7 +195,7 @@ public abstract class DBConnection implements AutoCloseable {
                     = execQuery("SELECT * FROM " + table + " WHERE 0;")
                             .get(0);
             return headings.stream()
-                    .map(s -> s.toLowerCase())
+                    .map(String::toLowerCase)
                     .anyMatch(s -> s.equalsIgnoreCase(column));
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName())

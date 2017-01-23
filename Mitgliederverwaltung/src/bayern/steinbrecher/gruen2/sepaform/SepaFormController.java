@@ -31,7 +31,12 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,12 +96,10 @@ public class SepaFormController extends CheckedController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         String maxCharCount = DataProvider.getResourceValue("maxCharCount");
-        initiatingPartyLabel.setText(
-                DataProvider.getResourceValue("nameOfInitiatingParty") + "\n"
+        initiatingPartyLabel.setText(DataProvider.getResourceValue("nameOfInitiatingParty") + "\n"
                 + MessageFormat.format(
-                        maxCharCount, getMaxCharNameInitiatingParty()));
-        pmtInfIdLabel.setText(
-                DataProvider.getResourceValue("pmtInfId") + "\n"
+                maxCharCount, getMaxCharNameInitiatingParty()));
+        pmtInfIdLabel.setText(DataProvider.getResourceValue("pmtInfId") + "\n"
                 + MessageFormat.format(maxCharCount, getMaxCharPmtInfId()));
 
         String uniqueForDays = DataProvider.getResourceValue("uniqueForDays");
@@ -111,12 +114,10 @@ public class SepaFormController extends CheckedController {
 
         anyInputToLong.bind(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)
-                .reduce(FALSE_BINDING, BooleanExpression::or,
-                        BooleanBinding::or));
+                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
         anyInputMissing.bind(checkedTextFields.stream()
                 .map(CheckedTextField::emptyProperty)
-                .reduce(FALSE_BINDING, BooleanExpression::or,
-                        BooleanBinding::or)
+                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or)
                 .or(executionDatePicker.emptyProperty()));
         valid.bind(((anyInputToLong.or(anyInputMissing)).not())
                 .and(executionDatePicker.validProperty()));
@@ -124,13 +125,12 @@ public class SepaFormController extends CheckedController {
         Profile profile = DataProvider.getProfile();
 
         try {
-            originator = Originator.readOriginatorInfo(
-                    profile.getOriginatorInfoPath());
+            originator = Originator.readOriginatorInfo(profile.getOriginatorInfoPath());
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(SepaFormController.class.getName())
-                    .log(Level.INFO, null, ex);
+            Logger.getLogger(SepaFormController.class.getName()).log(Level.INFO, null, ex);
             originator = new Originator(profile.getOriginatorInfoPath());
         }
+        //TODO May directly bind it
         creatorTextField.setText(originator.getCreator());
         creditorTextField.setText(originator.getCreditor());
         ibanTextField.setText(originator.getIban());

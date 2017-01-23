@@ -301,8 +301,7 @@ public class Profile {
             } else if (defaultValue instanceof Charset) {
                 return (T) Charset.forName(value);
             } else {
-                throw new UnsupportedOperationException("Type \""
-                        + defaultValue.getClass().getSimpleName()
+                throw new UnsupportedOperationException("Type \"" + defaultValue.getClass().getSimpleName()
                         + "\" not supported.");
             }
         } else {
