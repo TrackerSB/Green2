@@ -1,10 +1,17 @@
 /*
  * Copyright (c) 2017. Stefan Huber
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package bayern.steinbrecher.gruen2.main;
 
@@ -336,17 +343,17 @@ public class Main extends Application {
 
     private void generateAddresses(List<Member> member, String filename) {
         checkNull(nicknames);
-        try {
-            if (member.isEmpty()) {
-                Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"));
-                alert.initOwner(menuStage);
-                alert.showAndWait();
-            } else {
+        if (member.isEmpty()) {
+            Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"));
+            alert.initOwner(menuStage);
+            alert.showAndWait();
+        } else {
+            try {
                 IOStreamUtility.printContent(
                         AddressGenerator.generateAddressData(member, nicknames.get()), filename, true);
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -440,6 +447,7 @@ public class Main extends Application {
             Wizard wizard = new Wizard(pages);
             Stage wizardStage = new Stage();
             wizardStage.initOwner(menuStage);
+            wizardStage.setTitle(DataProvider.getResourceValue("generateSepa"));
             wizardStage.setResizable(false);
             wizardStage.getIcons().add(DataProvider.DEFAULT_ICON);
             wizard.start(wizardStage);
@@ -497,12 +505,10 @@ public class Main extends Application {
         List<Member> badIban = new ArrayList<>();
         try {
             badIban = member.get().parallelStream()
-                    .filter(m -> !SepaPain00800302XMLGenerator
-                            .hasValidIban(m.getAccountHolder()))
+                    .filter(m -> !SepaPain00800302XMLGenerator.hasValidIban(m.getAccountHolder()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (badIban.isEmpty()) {
             return DataProvider.getResourceValue("correctIbans");
@@ -511,23 +517,19 @@ public class Main extends Application {
             String message = badIban.stream()
                     .map(m -> {
                         String iban = m.getAccountHolder().getIban();
-                        return m + ": \""
-                                + (iban.isEmpty() ? noIban : iban)
-                                + "\"";
+                        return m + ": \"" + (iban.isEmpty() ? noIban : iban) + "\"";
                     })
                     .collect(Collectors.joining("\n"));
-            return DataProvider.getResourceValue("memberBadIban") + "\n"
-                    + message;
+            return DataProvider.getResourceValue("memberBadIban") + "\n" + message;
         }
     }
 
-    private String checkDates(Function<Member, LocalDate> dateFunction,
-                              String invalidDatesIntro, String allCorrectMessage) {
+    private String checkDates(Function<Member, LocalDate> dateFunction, String invalidDatesIntro,
+                              String allCorrectMessage) {
         try {
             String message = member.get().parallelStream()
                     .filter(m -> dateFunction.apply(m) == null)
-                    .map(m -> m.toString()
-                            + ": \"" + dateFunction.apply(m) + "\"")
+                    .map(m -> m.toString() + ": \"" + dateFunction.apply(m) + "\"")
                     .collect(Collectors.joining("\n"));
             return message.isEmpty() ? allCorrectMessage
                     : invalidDatesIntro + "\n" + message;
