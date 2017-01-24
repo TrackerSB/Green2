@@ -16,7 +16,7 @@ import javafx.scene.control.DatePicker;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
+import java.time.format.FormatStyle;
 
 /**
  * Represents a DatePicker which sets a css class attribute when it is empty or
@@ -30,19 +30,17 @@ public class CheckedDatePicker extends DatePicker {
      * The css class added when the inserted date is no valid date.
      */
     public static final String CSS_CLASS_INVALID_DATE = "invalidDate";
-    private static final DateTimeFormatter DATE_TIME_FORMAT
-            = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY);
+    private static final DateTimeFormatter DATE_TIME_FORMAT_SHORT
+            = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+    private static final DateTimeFormatter DATE_TIME_FORMAT_MEDIUM
+            = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
     /**
      * BooleanProperty indicating whether the currently inserted date is valid.
      */
-    private final BooleanProperty valid
-            = new SimpleBooleanProperty(this, "valid");
-    private final BooleanProperty empty
-            = new SimpleBooleanProperty(this, "empty");
-    private final BooleanProperty forceFuture
-            = new SimpleBooleanProperty(this, "forceFuture", false);
-    private final BooleanProperty invalidPastDate
-            = new SimpleBooleanProperty(this, "invalidPastDate");
+    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
+    private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
+    private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
+    private final BooleanProperty invalidPastDate = new SimpleBooleanProperty(this, "invalidPastDate");
 
     /**
      * Constructes {@code CheckedDatePicker} without initial date and
@@ -89,13 +87,18 @@ public class CheckedDatePicker extends DatePicker {
         valid.set(true);
 
         getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
+            LocalDate newDate = null;
             try {
-                LocalDate newDate = LocalDate.parse(newVal, DATE_TIME_FORMAT);
-                valid.set(!this.forceFuture.get() || (this.forceFuture.get()
-                        && newDate.isAfter(LocalDate.now())));
+                newDate = LocalDate.parse(newVal, DATE_TIME_FORMAT_SHORT);
             } catch (DateTimeParseException ex) {
-                valid.set(false);
+                //FIXME Try not to use DateTimeParseException for control flow
+                try {
+                    newDate = LocalDate.parse(newVal, DATE_TIME_FORMAT_MEDIUM);
+                } catch (DateTimeParseException ignored) {
+                }
             }
+            valid.set(newDate != null
+                    && (!this.forceFuture.get() || (this.forceFuture.get() && newDate.isAfter(LocalDate.now()))));
         });
 
         invalidPastDate.bind(this.forceFuture.not().or(valid));

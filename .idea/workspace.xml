@@ -21,110 +21,8 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/Launcher_SingleJar.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/Launcher_SingleJar.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/Mitgliederverwaltung.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/Mitgliederverwaltung.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.fxml" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.java" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialogController.java" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialogController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/package-info.java" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/dataprovider.properties" afterPath="$PROJECT_DIR$/DataProvider/dataprovider.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/dataprovider.xml" afterPath="$PROJECT_DIR$/DataProvider/dataprovider.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/module_dataprovider.xml" afterPath="$PROJECT_DIR$/DataProvider/module_dataprovider.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/CheckedController.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/CheckedController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/Controller.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/Controller.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/View.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/View.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableController.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableView.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/DataProvider.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/DataProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/styles.css" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/styles.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDatePicker.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDatePicker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDoubleSpinner.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDoubleSpinner.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedIntegerSpinner.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedIntegerSpinner.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedPasswordField.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedPasswordField.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedRegexTextField.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedRegexTextField.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedTextField.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedTextField.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/IOStreamUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/IOStreamUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ProgramCaller.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ProgramCaller.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ServiceFactory.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ServiceFactory.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ThreadUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ThreadUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/URLUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/URLUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ZipUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ZipUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/Collector.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/Collector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/ChoiceDialog.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/ChoiceDialog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.fxml" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/LauncherController.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/LauncherController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/VersionHandler.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/VersionHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DBConnection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DBConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DefaultConnection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DefaultConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/SshConnection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/SshConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/ContributionController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/ContributionController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution_Wizard.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution_Wizard.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/WaitScreen.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/WaitScreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/AuthException.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/AuthException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/SchemeCreationException.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/SchemeCreationException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/AddressGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/AddressGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/BirthdayGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/BirthdayGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/MemberGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/MemberGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SepaPain00800302XMLGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SepaPain00800302XMLGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SequenceType.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SequenceType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/Login.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/Login.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginKey.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginKey.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLoginController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLoginController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLoginController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLoginController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/MenuController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/MenuController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/AccountHolder.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/AccountHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Address.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Address.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Member.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Member.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Originator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Originator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Person.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Person.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/SelectionController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/SelectionController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection_Wizard.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection_Wizard.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaFormController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaFormController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm_Wizard.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm_Wizard.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/package-info.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -200,7 +98,7 @@
       <file leaf-file-name="ProfileChoice.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
+            <state relative-caret-position="374">
               <caret line="49" column="36" lean-forward="false" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
               <folding />
             </state>
@@ -210,9 +108,16 @@
       <file leaf-file-name="ConfigKey.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
+            <state relative-caret-position="51">
               <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-              <folding />
+              <folding>
+                <element signature="e#0#7281#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#1604#1605#0" expanded="false" />
+                <element signature="e#1687#1688#0" expanded="false" />
+                <element signature="e#4647#4648#0" expanded="false" />
+                <element signature="e#4691#4692#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -220,10 +125,10 @@
       <file leaf-file-name="CheckedDatePicker.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDatePicker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="40" column="55" lean-forward="false" selection-start-line="40" selection-start-column="55" selection-end-line="40" selection-end-column="55" />
+            <state relative-caret-position="561">
+              <caret line="90" column="17" lean-forward="true" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
               <folding>
-                <element signature="e#0#7570#0" expanded="true" />
+                <element signature="e#0#7944#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -316,8 +221,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="width" value="1920" />
-    <option name="height" value="1044" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -373,9 +280,58 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Grün2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mitgliederverwaltung" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Grün2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mitgliederverwaltung" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gruen2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Grün2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Mitgliederverwaltung" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gruen2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sepaform" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="Grün2" />
@@ -448,9 +404,66 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Grün2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DataProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gruen2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="language" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Grün2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DataProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gruen2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="language" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Resource Bundle 'language'" />
+              <option name="myItemType" value="com.intellij.lang.properties.projectView.ResourceBundleNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -480,7 +493,7 @@
     <property name="Repository.Attach.Sources" value="true" />
     <property name="last.edited.regexp" value="=90,=1000" />
   </component>
-  <component name="RunManager" selected="Application.ConfigurationDialog">
+  <component name="RunManager" selected="Application.Mitgliederverwaltung">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -882,7 +895,10 @@
       <workItem from="1485183539163" duration="389000" />
       <workItem from="1485207276527" duration="1299000" />
       <workItem from="1485208786175" duration="688000" />
-      <workItem from="1485248255344" duration="2223000" />
+      <workItem from="1485248255344" duration="2309000" />
+      <workItem from="1485270877387" duration="964000" />
+      <workItem from="1485271965146" duration="1233000" />
+      <workItem from="1485273386111" duration="620000" />
     </task>
     <task id="LOCAL-00001" summary="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare.">
       <created>1485075857953</created>
@@ -930,7 +946,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48828000" />
+    <option name="totallyTimeSpent" value="51731000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -942,12 +958,13 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1044" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32683983" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -959,15 +976,13 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2542735" sideWeight="0.6142857" order="7" side_tool="true" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26226014" sideWeight="0.62770563" order="7" side_tool="true" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Dynamic Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2542735" sideWeight="0.3857143" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26226014" sideWeight="0.37229437" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3989011" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3982684" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.49134198" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -976,13 +991,14 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection Results" active="true" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32857144" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Dynamic Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32683983" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" x="92" y="92" width="1736" height="856" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24466951" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1029,13 +1045,12 @@
           <option name="timeStamp" value="20" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="21" />
+      <option name="time" value="23" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
-        <watch expression="key.isValid(key.getValueFromString(value.getValue()))" language="JAVA" />
-        <watch expression="profileList.getWidth()" language="JAVA" />
-        <watch expression="alert.getDialogPane().getStylesheets()" language="JAVA" />
+        <watch expression="LocalDate.now()" language="JAVA" />
+        <watch expression="newDate.isAfter(LocalDate.now())" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
@@ -1044,95 +1059,54 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="30" lean-forward="false" selection-start-line="11" selection-start-column="30" selection-end-line="11" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="61" column="52" lean-forward="false" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Member.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="130" column="8" lean-forward="false" selection-start-line="130" selection-start-column="8" selection-end-line="130" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/URLUtility.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="75" column="10" lean-forward="false" selection-start-line="75" selection-start-column="10" selection-end-line="78" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
           <caret line="20" column="27" lean-forward="false" selection-start-line="20" selection-start-column="27" selection-end-line="20" selection-end-column="27" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.fxml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
           <caret line="22" column="37" lean-forward="false" selection-start-line="22" selection-start-column="37" selection-end-line="22" selection-end-column="37" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection_Wizard.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection_Wizard.fxml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="26" column="29" lean-forward="false" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.fxml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
           <caret line="9" column="21" lean-forward="false" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.fxml">
       <provider editor-type-id="JavaFX-Scene-Builder">
         <state />
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.fxml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="23" column="11" lean-forward="true" selection-start-line="23" selection-start-column="11" selection-end-line="23" selection-end-column="11" />
         </state>
+      </provider>
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/dataprovider.properties">
@@ -1188,13 +1162,13 @@
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/stream/ReferencePipeline.java" />
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/javafx-src.zip!/javafx/collections/FXCollections.java" />
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties">
-      <provider selected="true" editor-type-id="ResourceBundle">
-        <state />
-      </provider>
       <provider editor-type-id="text-editor">
         <state relative-caret-position="-255">
           <caret line="20" column="42" lean-forward="false" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
         </state>
+      </provider>
+      <provider selected="true" editor-type-id="ResourceBundle">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/CheckedController.java">
@@ -1214,26 +1188,26 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
           <caret line="22" column="34" lean-forward="false" selection-start-line="22" selection-start-column="34" selection-end-line="22" selection-end-column="34" />
         </state>
+      </provider>
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
       </provider>
     </entry>
     <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/beans/property/ObjectPropertyBase.java" />
     <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/beans/property/ObjectProperty.java" />
     <entry file="jar:///usr/lib/jvm/java-8-oracle/javafx-src.zip!/javafx/fxml/FXMLLoader.java" />
     <entry file="file://$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
           <caret line="22" column="32" lean-forward="false" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
         </state>
+      </provider>
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
       </provider>
     </entry>
     <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/Map.java" />
@@ -1307,16 +1281,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties">
-      <provider editor-type-id="ResourceBundle">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="84" column="8" lean-forward="false" selection-start-line="84" selection-start-column="8" selection-end-line="84" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -1349,26 +1313,19 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties">
-      <provider editor-type-id="ResourceBundle">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="683">
           <caret line="82" column="52" lean-forward="false" selection-start-line="82" selection-start-column="52" selection-end-line="82" selection-end-column="52" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Test.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="17" lean-forward="false" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
-          <folding />
-        </state>
+      <provider editor-type-id="ResourceBundle">
+        <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Test.java" />
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
+        <state relative-caret-position="374">
           <caret line="49" column="36" lean-forward="false" selection-start-line="49" selection-start-column="36" selection-end-line="49" selection-end-column="36" />
           <folding />
         </state>
@@ -1376,18 +1333,76 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
+        <state relative-caret-position="51">
           <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#7281#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1604#1605#0" expanded="false" />
+            <element signature="e#1687#1688#0" expanded="false" />
+            <element signature="e#4647#4648#0" expanded="false" />
+            <element signature="e#4691#4692#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/time/LocalDate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="1904" column="19" lean-forward="false" selection-start-line="1904" selection-start-column="19" selection-end-line="1904" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/javafx-src.zip!/javafx/scene/control/TextField.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="89" column="0" lean-forward="false" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/javafx-src.zip!/javafx/scene/control/TextInputControl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="567" column="6" lean-forward="true" selection-start-line="567" selection-start-column="6" selection-end-line="567" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="1428">
+          <caret line="84" column="8" lean-forward="false" selection-start-line="84" selection-start-column="8" selection-end-line="84" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="ResourceBundle">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm_Wizard.fxml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/time/format/FormatStyle.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="74" column="12" lean-forward="false" selection-start-line="74" selection-start-column="12" selection-end-line="74" selection-end-column="12" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDatePicker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="40" column="55" lean-forward="false" selection-start-line="40" selection-start-column="55" selection-end-line="40" selection-end-column="55" />
+        <state relative-caret-position="561">
+          <caret line="90" column="17" lean-forward="true" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
           <folding>
-            <element signature="e#0#7570#0" expanded="true" />
+            <element signature="e#0#7944#0" expanded="true" />
           </folding>
         </state>
       </provider>
