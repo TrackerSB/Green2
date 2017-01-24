@@ -11,120 +11,8 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="Improved handling of localized dates.">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/copyright/GPLv3.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../../../148705-essential-collection/license_icons.pdf" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/copyright/Grün2.xml" afterPath="$PROJECT_DIR$/.idea/copyright/MIT.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/icon.png" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/resources/logo.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/splashscreen.png" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/resources/splashscreen.png" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/styles.css" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/resources/styles.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../MyLibraries/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../../MyLibraries/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../MyLibraries/Wizard/src/bayern/steinbrecher/wizard/Wizard.java" afterPath="$PROJECT_DIR$/../../MyLibraries/Wizard/src/bayern/steinbrecher/wizard/Wizard.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
+    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.fxml" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.java" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialogController.java" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/ConfigDialogController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/package-info.java" afterPath="$PROJECT_DIR$/ConfigurationDialog/src/bayern/steinbrecher/gruen2/configDialog/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/dataprovider.properties" afterPath="$PROJECT_DIR$/DataProvider/dataprovider.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/dataprovider.xml" afterPath="$PROJECT_DIR$/DataProvider/dataprovider.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/module_dataprovider.xml" afterPath="$PROJECT_DIR$/DataProvider/module_dataprovider.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/CheckedController.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/CheckedController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/Controller.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/Controller.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/View.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/View.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableController.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableView.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/WizardableView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/ConfigKey.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/DataProvider.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/DataProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/Profile.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/language_de.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/language/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/data/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDatePicker.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDatePicker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDoubleSpinner.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedDoubleSpinner.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedIntegerSpinner.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedIntegerSpinner.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedPasswordField.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedPasswordField.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedRegexTextField.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedRegexTextField.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedTextField.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/CheckedTextField.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/ProfileChoice.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/elements/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/DialogUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/IOStreamUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/IOStreamUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ProgramCaller.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ProgramCaller.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ServiceFactory.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ServiceFactory.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ThreadUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ThreadUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/URLUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/URLUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ZipUtility.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/ZipUtility.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/package-info.java" afterPath="$PROJECT_DIR$/DataProvider/src/bayern/steinbrecher/gruen2/utility/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/Collector.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/Collector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/data/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/ChoiceDialog.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/ChoiceDialog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/elements/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.fxml" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/Launcher.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/LauncherController.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/LauncherController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/launcher/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/VersionHandler.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/VersionHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/package-info.java" afterPath="$PROJECT_DIR$/Launcher/src/bayern/steinbrecher/gruen2/utility/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DBConnection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DBConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DefaultConnection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/DefaultConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/SshConnection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/SshConnection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/connection/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/ContributionController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/ContributionController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution_Wizard.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/Contribution_Wizard.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/contribution/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/Splashscreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/WaitScreen.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/WaitScreen.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/elements/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/AuthException.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/AuthException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/SchemeCreationException.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/SchemeCreationException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/exception/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/AddressGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/AddressGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/BirthdayGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/BirthdayGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/MemberGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/MemberGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SepaPain00800302XMLGenerator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SepaPain00800302XMLGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SequenceType.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/SequenceType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/generator/sepa/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/Login.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/Login.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginKey.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/LoginKey.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLogin.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLoginController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/SshLoginController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/ssh/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLogin.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLoginController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/DefaultLoginController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/login/standard/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/main/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/Menu.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/MenuController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/MenuController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/menu/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/AccountHolder.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/AccountHolder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Address.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Address.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Member.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Member.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Originator.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Originator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Person.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/Person.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/people/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/SelectionController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/SelectionController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection_Wizard.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/Selection_Wizard.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/selection/package-info.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaFormController.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaFormController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm_Wizard.fxml" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/SepaForm_Wizard.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/package-info.java" afterPath="$PROJECT_DIR$/Mitgliederverwaltung/src/bayern/steinbrecher/gruen2/sepaform/package-info.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -1040,7 +928,7 @@
       <workItem from="1485270877387" duration="964000" />
       <workItem from="1485271965146" duration="1233000" />
       <workItem from="1485273386111" duration="2797000" />
-      <workItem from="1485276989815" duration="623000" />
+      <workItem from="1485276989815" duration="732000" />
     </task>
     <task id="LOCAL-00001" summary="Improvements according to reading ageFunction and saving configs; added delete button. Some nailcare.">
       <created>1485075857953</created>
@@ -1098,11 +986,18 @@
       <option name="project" value="LOCAL" />
       <updated>1485274024505</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Improved license header (not included text file yet); moved icons; nailcare.">
+      <created>1485277702729</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1485277702729</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="54531000" />
+    <option name="totallyTimeSpent" value="54640000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -1177,7 +1072,8 @@
     <MESSAGE value="Improved behaviour of deleteDialog of ProfileChoice according to default buttons." />
     <MESSAGE value="Updated copyrights and added licences." />
     <MESSAGE value="Improved handling of localized dates." />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved handling of localized dates." />
+    <MESSAGE value="Improved license header (not included text file yet); moved icons; nailcare." />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved license header (not included text file yet); moved icons; nailcare." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
