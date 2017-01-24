@@ -1,29 +1,22 @@
 /*
- * Copyright (C) 2016 Stefan Huber
+ * Copyright (c) 2017. Stefan Huber
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package bayern.steinbrecher.gruen2.elements;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.DatePicker;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.DatePicker;
 
 /**
  * Represents a DatePicker which sets a css class attribute when it is empty or
@@ -63,7 +56,7 @@ public class CheckedDatePicker extends DatePicker {
      * Constructes a {@code CheckedDatePicker} with no initial date inserted.
      *
      * @param forceFuture {@code true} indicates a date can only be valid if it
-     * is not in the past and not today.
+     *                    is not in the past and not today.
      */
     public CheckedDatePicker(boolean forceFuture) {
         this(null, forceFuture);
@@ -73,9 +66,9 @@ public class CheckedDatePicker extends DatePicker {
      * Constructes a {@code CheckedDatePicker} with {@code locale} as initial
      * date.
      *
-     * @param locale The initial date.
+     * @param locale      The initial date.
      * @param forceFuture {@code true} indicates a date can only be valid if it
-     * is not in the past and not today.
+     *                    is not in the past and not today.
      */
     public CheckedDatePicker(LocalDate locale, boolean forceFuture) {
         super(locale);
@@ -180,7 +173,7 @@ public class CheckedDatePicker extends DatePicker {
      * be in the future to be valid.
      *
      * @param forceFuture {@code true} only if the inserted date has to be in
-     * the future to be valid.
+     *                    the future to be valid.
      */
     public void setForceFuture(boolean forceFuture) {
         this.forceFuture.set(forceFuture);

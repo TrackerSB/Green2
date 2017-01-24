@@ -19,6 +19,9 @@
         <element id="directory" name="META-INF">
           <element id="file-copy" path="$PROJECT_DIR$/Launcher/META-INF/MANIFEST.MF" />
         </element>
+        <element id="directory" name="licences">
+          <element id="file-copy" path="$PROJECT_DIR$/../../../148705-essential-collection/license_icons.pdf" />
+        </element>
       </element>
     </root>
   </artifact>

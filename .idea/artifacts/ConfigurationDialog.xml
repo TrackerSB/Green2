@@ -18,6 +18,9 @@
       <element id="directory" name="lib">
         <element id="artifact" artifact-name="DataProvider" />
       </element>
+      <element id="directory" name="licences">
+        <element id="file-copy" path="$PROJECT_DIR$/../../../148705-essential-collection/license_icons.pdf" />
+      </element>
     </root>
   </artifact>
 </component>
