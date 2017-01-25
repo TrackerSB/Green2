@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Version=1.0
-Name=Uninstall Grün2
-Name[de]=Grün2 deinstallieren
-Exec=/bin/bash /opt/Grün2_Mitgliederverwaltung/uninstall.sh
-Icon=/opt/Grün2_Mitgliederverwaltung/icon.png
-Categories=Office;Java;

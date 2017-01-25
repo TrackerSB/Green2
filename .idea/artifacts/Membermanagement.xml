@@ -1,0 +1,29 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="Membermanagement">
+    <output-path>$PROJECT_DIR$/out/artifacts/Membermanagement</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="bayern.steinbrecher.green2.main.Main" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="Membermanagement.jar">
+        <element id="module-output" name="Membermanagement" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/Launcher/META-INF/MANIFEST.MF" />
+        </element>
+      </element>
+      <element id="directory" name="lib">
+        <element id="artifact" artifact-name="DataProvider" />
+      </element>
+      <element id="directory" name="licences">
+        <element id="file-copy" path="$PROJECT_DIR$/../../../148705-essential-collection/license_icons.pdf" />
+      </element>
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2017. Stefan Huber
+  ~ This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<?import bayern.steinbrecher.green2.elements.CheckedIntegerSpinner?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      spacing="10"
+      fx:controller="bayern.steinbrecher.green2.menu.MenuController">
+    <HBox spacing="10">
+        <Label text="%year"/>
+        <CheckedIntegerSpinner fx:id="yearSpinner"
+                               min="0"
+                               max="5000"
+                               amountToStepBy="1"
+                               editable="true"/>
+        <Label visible="${!yearSpinner.valid}"
+               text="%invalidOrMissingInput"
+               styleClass="warningLabel"/>
+    </HBox>
+    <HBox spacing="10">
+        <VBox spacing="10">
+            <Label text="%allAboutSepa"
+                   styleClass="heading"/>
+            <Button fx:id="generateContribution"
+                    onAction="#generateContributionSepa"
+                    text="%contributions"/>
+            <Button fx:id="generateUniversalSepa"
+                    onAction="#generateUniversalSepa"
+                    text="%arbitrarySepaDirectDebit"/>
+            <Button fx:id="checkData"
+                    onAction="#checkData"
+                    text="%checkData"/>
+        </VBox>
+        <VBox spacing="10">
+            <Label text="%getAddressesForWord"
+                   styleClass="heading"/>
+            <Button fx:id="generateAllAddresses"
+                    onAction="#generateAddressesAll"
+                    text="%ofAllMember"/>
+            <Button fx:id="generateAddressesBirthday"
+                    onAction="#generateAddressesBirthday"
+                    text="%birthdayExpression"
+                    disable="${!yearSpinner.valid}"/>
+        </VBox>
+        <VBox spacing="10">
+            <Label text="%getInformations"
+                   styleClass="heading"/>
+            <Button fx:id="generateBirthdayInfos"
+                    onAction="#generateBirthdayInfos"
+                    text="%groupedBirthdayMember"
+                    disable="${!yearSpinner.valid}"/>
+        </VBox>
+    </HBox>
+</VBox>

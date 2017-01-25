@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2017. Stefan Huber
+  ~ This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<?import bayern.steinbrecher.green2.elements.CheckedDatePicker?>
+<?import bayern.steinbrecher.green2.elements.CheckedTextField?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="bayern.steinbrecher.green2.sepaform.SepaFormController">
+    <Label fx:id="initiatingPartyLabel"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="0"/>
+    <CheckedTextField fx:id="creatorTextField"
+                      maxColumnCount="${controller.maxCharNameInitiatingParty}"
+                      promptText="%nameOfInitiatingParty"
+                      GridPane.columnIndex="1"
+                      GridPane.rowIndex="0"/>
+    <Label text="%accountHolder"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="1"/>
+    <CheckedTextField fx:id="creditorTextField"
+                      promptText="%accountHolder"
+                      GridPane.columnIndex="1"
+                      GridPane.rowIndex="1"/>
+    <Label text="%iban"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="2"/>
+    <CheckedTextField fx:id="ibanTextField"
+                      promptText="%iban"
+                      GridPane.columnIndex="1"
+                      GridPane.rowIndex="2"/>
+    <Label text="%bic"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="3"/>
+    <CheckedTextField fx:id="bicTextField"
+                      promptText="%bic"
+                      GridPane.columnIndex="1"
+                      GridPane.rowIndex="3"/>
+    <Label text="%trusterId"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="4"/>
+    <CheckedTextField fx:id="trusterIdTextField"
+                      promptText="%trusterId"
+                      GridPane.columnIndex="1"
+                      GridPane.rowIndex="4"/>
+    <Label text="%purpose"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="5"/>
+    <CheckedTextField fx:id="purposeTextField"
+                      promptText="%purpose"
+                      GridPane.columnIndex="1"
+                      GridPane.rowIndex="5"/>
+    <Label text="%executionDate"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="6"/>
+    <CheckedDatePicker fx:id="executionDatePicker"
+                       promptText="%executionDate"
+                       forceFuture="true"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="6"/>
+    <Label fx:id="messageIdLabel"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="7"/>
+    <HBox spacing="5"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="7">
+        <CheckedTextField fx:id="messageIdTextField"
+                          promptText="%messageId"
+                          maxColumnCount="${controller.maxCharMessageId}"/>
+        <Button text="%generate"
+                onAction="#generateMessageId"/>
+    </HBox>
+    <Label fx:id="pmtInfIdLabel"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="8"/>
+    <CheckedTextField fx:id="pmtInfIdTextField"
+                      promptText="%pmtInfId"
+                      maxColumnCount="${controller.maxCharPmtInfId}"
+                      GridPane.columnIndex="1"
+                      GridPane.rowIndex="8"/>
+
+    <Label text="%inputToLong"
+           styleClass="warningLabel"
+           visible="${controller.anyInputToLong}"
+           GridPane.columnIndex="1"
+           GridPane.rowIndex="9"/>
+    <Label text="%missingInput"
+           styleClass="warningLabel"
+           visible="${controller.anyInputMissing}"
+           GridPane.columnIndex="1"
+           GridPane.rowIndex="10"/>
+    <Label text="%pastExecutionDate"
+           styleClass="warningLabel"
+           visible="${!executionDatePicker.invalidPastDate}"
+           GridPane.columnIndex="1"
+           GridPane.rowIndex="11"/>
+</GridPane>

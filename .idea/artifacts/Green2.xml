@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact name="Green2">
+    <output-path>$PROJECT_DIR$/out/artifacts/Green2</output-path>
+    <root id="root">
+      <element id="artifact" artifact-name="Membermanagement" />
+      <element id="artifact" artifact-name="ConfigurationDialog" />
+      <element id="artifact" artifact-name="Launcher" />
+      <element id="directory" name="licences">
+        <element id="file-copy" path="$PROJECT_DIR$/../../../148705-essential-collection/license/license_icons.pdf" />
+      </element>
+      <element id="dir-copy" path="$PROJECT_DIR$/Installationattachments" />
+    </root>
+  </artifact>
+</component>
