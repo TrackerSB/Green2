@@ -340,8 +340,7 @@ public class Main extends Application {
     private void generateAddresses(List<Member> member, String filename) {
         checkNull(nicknames);
         if (member.isEmpty()) {
-            Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"));
-            alert.initOwner(menuStage);
+            Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"), menuStage);
             alert.showAndWait();
         } else {
             try {
@@ -400,8 +399,8 @@ public class Main extends Application {
         try {
             List<Member> birthdayList = memberBirthday.get(year).get();
             if (birthdayList.isEmpty()) {
-                Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"));
-                alert.initOwner(menuStage);
+                Alert alert = DialogUtility.createInfoAlert(
+                        DataProvider.getResourceValue("noMemberForOutput"), menuStage);
                 alert.showAndWait();
             } else {
                 IOStreamUtility.printContent(BirthdayGenerator.createGroupedOutput(birthdayList, year),
@@ -467,16 +466,14 @@ public class Main extends Application {
                             .collect(Collectors.joining("\n"));
                     if (!message.isEmpty()) {
                         Alert alert = DialogUtility.createErrorAlert(message + "\n"
-                                + DataProvider.getResourceValue("haveBadAccountInformation"));
-                        alert.initOwner(menuStage);
+                                + DataProvider.getResourceValue("haveBadAccountInformation"), menuStage);
                         alert.show();
                     }
                 }
             });
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            Alert alert = DialogUtility.createErrorAlert(DataProvider.getResourceValue("noSepaDebit"));
-            alert.initOwner(menuStage);
+            Alert alert = DialogUtility.createErrorAlert(DataProvider.getResourceValue("noSepaDebit"), menuStage);
             alert.showAndWait();
         }
     }
@@ -549,8 +546,7 @@ public class Main extends Application {
                 + checkDates(m -> m.getAccountHolder().getMandatSigned(),
                 DataProvider.getResourceValue("memberBadMandatSigned"),
                 DataProvider.getResourceValue("allMandatSignedCorrect"));
-        Alert alert = DialogUtility.createMessageAlert(message);
-        alert.initOwner(menuStage);
+        Alert alert = DialogUtility.createMessageAlert(message, menuStage);
         alert.showAndWait();
     }
 

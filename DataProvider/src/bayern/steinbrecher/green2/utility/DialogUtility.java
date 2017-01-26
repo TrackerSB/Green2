@@ -16,20 +16,21 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * Provides functions for creating different dialogs.
+ * Provides functions for creating different dialogs. NOTE: There are some functions like initOwner(...) which may
+ * override the stylesheet which is set in these methods. So you should use the {@code owner} parameter if needed.
  *
  * @author Stefan Huber
  */
 public class DialogUtility {
 
     private DialogUtility() {
-        throw new UnsupportedOperationException(
-                "Construction of an object not allowed.");
+        throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
 
     private static Alert addStyleAndIcon(Alert alert) {
@@ -45,8 +46,21 @@ public class DialogUtility {
         return addStyleAndIcon(new Alert(type));
     }
 
+    private static Alert createAlert(Alert.AlertType type, Window owner) {
+        Alert alert = new Alert(type);
+        alert.initOwner(owner);
+        return addStyleAndIcon(alert);
+    }
+
     private static Alert createAlert(Alert.AlertType type, String message) {
         Alert alert = createAlert(type);
+        alert.setContentText(message);
+
+        return alert;
+    }
+
+    private static Alert createAlert(Alert.AlertType type, String message, Window owner) {
+        Alert alert = createAlert(type, owner);
         alert.setContentText(message);
 
         return alert;
@@ -72,6 +86,17 @@ public class DialogUtility {
      */
     public static Alert createErrorAlert(String message) {
         return createAlert(Alert.AlertType.ERROR, message);
+    }
+
+    /**
+     * Crates an error alert.
+     *
+     * @param message The message to display.
+     * @param owner   The owner of this alert.
+     * @return The created alert.
+     */
+    public static Alert createErrorAlert(String message, Window owner) {
+        return createAlert(Alert.AlertType.ERROR, message, owner);
     }
 
     /**
@@ -190,6 +215,17 @@ public class DialogUtility {
      * Crates an information alert.
      *
      * @param message The message to display.
+     * @param owner   The owner of the alert.
+     * @return The created alert.
+     */
+    public static Alert createInfoAlert(String message, Window owner) {
+        return createAlert(Alert.AlertType.INFORMATION, message, owner);
+    }
+
+    /**
+     * Crates an information alert.
+     *
+     * @param message The message to display.
      * @param header  The header to show.
      * @return The created alert.
      */
@@ -210,13 +246,13 @@ public class DialogUtility {
     }
 
     private static Alert addMessageTextArea(Alert alert, String message) {
-        TextArea stacktraceArea = new TextArea(message);
-        stacktraceArea.setEditable(false);
+        TextArea messageArea = new TextArea(message);
+        messageArea.setEditable(false);
 
         GridPane grid = new GridPane();
-        grid.addColumn(0, stacktraceArea);
-        GridPane.setHgrow(stacktraceArea, Priority.ALWAYS);
-        GridPane.setVgrow(stacktraceArea, Priority.ALWAYS);
+        grid.addColumn(0, messageArea);
+        GridPane.setHgrow(messageArea, Priority.ALWAYS);
+        GridPane.setVgrow(messageArea, Priority.ALWAYS);
 
         alert.setWidth(500); //FIXME Resize correctly
         alert.setHeight(350);
@@ -235,6 +271,17 @@ public class DialogUtility {
      */
     public static Alert createMessageAlert(String message) {
         return addMessageTextArea(createAlert(Alert.AlertType.INFORMATION), message);
+    }
+
+    /**
+     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     *
+     * @param message The message to display.
+     * @param owner   The owner of the alert.
+     * @return The created alert.
+     */
+    public static Alert createMessageAlert(String message, Window owner) {
+        return addMessageTextArea(createAlert(Alert.AlertType.INFORMATION, owner), message);
     }
 
     /**
