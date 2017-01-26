@@ -138,8 +138,6 @@ public class DialogUtility {
         GridPane.setHgrow(stacktraceArea, Priority.ALWAYS);
         GridPane.setVgrow(stacktraceArea, Priority.ALWAYS);
 
-        alert.setWidth(500);
-        alert.setHeight(350);
         alert.getDialogPane().setExpandableContent(grid);
 
         return alert;
@@ -254,8 +252,6 @@ public class DialogUtility {
         GridPane.setHgrow(messageArea, Priority.ALWAYS);
         GridPane.setVgrow(messageArea, Priority.ALWAYS);
 
-        alert.setWidth(500); //FIXME Resize correctly
-        alert.setHeight(350);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.setExpandableContent(grid);
         dialogPane.setExpanded(true);
