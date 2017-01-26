@@ -38,7 +38,7 @@ public class Splashscreen extends View<Controller> {
 
         Pane root = new Pane();
         ImageView imageView = new ImageView();
-        imageView.setImage((Locale.getDefault().equals(Locale.GERMAN)
+        imageView.setImage((Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage())
                 ? DataProvider.ImageSet.SPLASHSCREEN_DE : DataProvider.ImageSet.SPLASHSCREEN_EN).get());
         root.getChildren().add(imageView);
 
