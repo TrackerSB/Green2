@@ -3,3 +3,9 @@
 **/dist/*
 **/bin/*
 *.class
+**/workspace.xml
+.idea/inspectionProfiles/
+Launcher/.idea/artifacts/
+Launcher/.idea/inspectionProfiles/
+Membermanagement/.idea/inspectionProfiles/
+out/
