@@ -3,6 +3,7 @@
  * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/.
  */
+
 package bayern.steinbrecher.green2.data;
 
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
@@ -101,11 +102,20 @@ public class Profile {
         this.profileName.setValue(profileName);
         this.newProfile = newProfile;
 
-        checkProfile();
-        try {
-            configFile.getValue().createNewFile();
-        } catch (IOException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.WARNING, null, ex);
+        if (newProfile) {
+            try {
+                if (configFile.getValue().exists()) {
+                    throw new ProfileRenamingException("Profile " + profileName + " already exists");
+                } else if (!configFile.getValue().createNewFile()) {
+                    throw new ProfileRenamingException("Profile could not be created.");
+                }
+            } catch (IOException ex) {
+                throw new ProfileRenamingException("New profile could not be created.", ex);
+            }
+        } else {
+            if (!configFile.getValue().exists()) {
+                throw new ProfileRenamingException("Profile " + profileName + " does not exist");
+            }
         }
     }
 
@@ -185,20 +195,6 @@ public class Profile {
         }
     }
 
-    private void checkProfile() {
-        if (newProfile) {
-            if (configFile.getValue().exists()) {
-                throw new IllegalArgumentException(
-                        "Profile " + profileName.get() + " already exists");
-            }
-        } else {
-            if (!configFile.getValue().exists()) {
-                throw new IllegalArgumentException(
-                        "Profile " + profileName.get() + " does not exist");
-            }
-        }
-    }
-
     private void checkDeleted() {
         if (deleted) {
             throw new IllegalStateException("Profile was deleted.");
@@ -234,20 +230,29 @@ public class Profile {
     public synchronized void renameProfile(String newName) {
         checkDeleted();
         if (!newName.equals(profileName.get())) {
-            String newConfigPath = DataProvider.APP_DATA_PATH
-                    + "/" + newName + CONFIGFILE_FORMAT;
+            String oldConfigPath = configFilePath.get();
+            File oldConfigFile = configFile.getValue();
+            String newConfigPath = DataProvider.APP_DATA_PATH + "/" + newName + CONFIGFILE_FORMAT;
             File newConfigFile = new File(newConfigPath);
-            String newOriginatorPath = DataProvider.APP_DATA_PATH
-                    + "/" + newName + ORIGINATORFILE_FORMAT;
+
+            String newOriginatorPath = DataProvider.APP_DATA_PATH + "/" + newName + ORIGINATORFILE_FORMAT;
             File newOriginatorFile = new File(newOriginatorPath);
 
             if (newConfigFile.exists() || newOriginatorFile.exists()) {
-                throw new IllegalArgumentException(
-                        "Can't rename profile. Profile \""
-                                + newName + "\" already exists.");
+                throw new ProfileRenamingException("Can't rename profile. Profile \"" + newName + "\" already exists.");
             }
-            configFile.getValue().renameTo(newConfigFile);
-            originatorInfoFile.getValue().renameTo(newOriginatorFile);
+            if (configFile.getValue().renameTo(newConfigFile)) {
+                File originatorInfoFileValue = originatorInfoFile.getValue();
+                if (originatorInfoFileValue.exists() && !originatorInfoFileValue.renameTo(newOriginatorFile)) {
+                    configFile.getValue().renameTo(oldConfigFile);
+                    throw new ProfileRenamingException(
+                            "Renaming the profile was undone. Originator settings couldn't be renamed.");
+                }
+            } else {
+                throw new ProfileRenamingException("Profile couldn't be renamed.");
+            }
+
+            profileName.set(newName);
         }
     }
 
