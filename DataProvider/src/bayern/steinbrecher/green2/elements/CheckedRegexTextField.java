@@ -29,12 +29,9 @@ public class CheckedRegexTextField extends CheckedTextField {
      * content of this text field does not match the current regex.
      */
     public static final String CSS_CLASS_REGEX_NO_MATCH = "unmatchRegex";
-    private StringProperty regex
-            = new SimpleStringProperty(this, "regex");
-    private BooleanProperty regexValid
-            = new SimpleBooleanProperty(this, "regexValid");
-    private ObjectProperty<Pattern> pattern
-            = new SimpleObjectProperty<>(this, "pattern");
+    private StringProperty regex = new SimpleStringProperty(this, "regex");
+    private BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
+    private ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
 
     /**
      * Constructes a new {@code CheckedRegexTextField} without initial content,
@@ -76,19 +73,12 @@ public class CheckedRegexTextField extends CheckedTextField {
      * @param text           The initial content.
      * @param regex          The regex for validating the input.
      */
-    public CheckedRegexTextField(int maxColumnCount, String text,
-                                 String regex) {
+    public CheckedRegexTextField(int maxColumnCount, String text, String regex) {
         super(maxColumnCount, text);
-        this.regex.addListener((obs, oldVal, newVal) -> {
-            pattern.set(Pattern.compile(newVal));
-        });
+        this.regex.addListener((obs, oldVal, newVal) -> pattern.set(Pattern.compile(newVal)));
         this.regex.set(regex);
-        textProperty().addListener((obs, oldVal, newVal) -> {
-            regexValid.set(pattern.get().matcher(newVal).matches());
-        });
-        pattern.addListener((obs, oldVal, newVal) -> {
-            regexValid.set(newVal.matcher(this.regex.get()).matches());
-        });
+        textProperty().addListener((obs, oldVal, newVal) -> regexValid.set(pattern.get().matcher(newVal).matches()));
+        pattern.addListener((obs, oldVal, newVal) -> regexValid.set(newVal.matcher(this.regex.get()).matches()));
         valid.bind(regexValid);
         valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {

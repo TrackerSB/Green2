@@ -23,8 +23,7 @@ public class Address {
      * @param postcode    The postal code.
      * @param place       The village/town.
      */
-    public Address(String street, String housenumber, String postcode,
-                   String place) {
+    public Address(String street, String housenumber, String postcode, String place) {
         this.street = street;
         this.housenumber = housenumber;
         this.postcode = postcode;

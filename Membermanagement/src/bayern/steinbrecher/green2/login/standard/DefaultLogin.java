@@ -29,8 +29,7 @@ public class DefaultLogin extends Login {
     public void start(Stage stage) throws IOException {
         this.stage = stage;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass()
-                .getResource("DefaultLogin.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DefaultLogin.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);

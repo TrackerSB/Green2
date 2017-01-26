@@ -42,25 +42,20 @@ public class CheckedTextField extends TextField {
     /**
      * Represents the maximum column count.
      */
-    private IntegerProperty maxColumnCount
-            = new SimpleIntegerProperty(this, "maxColumnCount");
+    private IntegerProperty maxColumnCount = new SimpleIntegerProperty(this, "maxColumnCount");
     /**
      * Holds {@code true} only if the content has to be checked.
      */
-    private final BooleanProperty checked
-            = new SimpleBooleanProperty(this, "checked", true);
+    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
     /**
      * Holds {@code true} only if the text field is empty.
      */
-    private final BooleanProperty emptyContent
-            = new SimpleBooleanProperty(this, "emptyContent");
+    private final BooleanProperty emptyContent = new SimpleBooleanProperty(this, "emptyContent");
     /**
      * Holds {@code true} only if the text of the text field is too long.
      */
-    private final BooleanProperty toLongContent
-            = new SimpleBooleanProperty(this, "toLongContent");
-    private final Property<ObservableBooleanValue> condition
-            = new SimpleObjectProperty<>(this, "condition");
+    private final BooleanProperty toLongContent = new SimpleBooleanProperty(this, "toLongContent");
+    private final Property<ObservableBooleanValue> condition = new SimpleObjectProperty<>(this, "condition");
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of
      * the following is true (as implemented by this class):
@@ -69,8 +64,7 @@ public class CheckedTextField extends TextField {
      * <li>It is not empty and the content is not too long</li>
      * </ol>
      */
-    protected final BooleanProperty valid
-            = new SimpleBooleanProperty(this, "valid");
+    protected final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
 
     /**
      * Constructes a new {@code CheckedTextField} with an max input length of
@@ -114,18 +108,15 @@ public class CheckedTextField extends TextField {
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         textProperty().addListener((obs, oldVal, newVal) -> {
-            toLongContent.set(newVal != null
-                    && newVal.length() > maxColumnCount.get());
+            toLongContent.set(newVal != null && newVal.length() > maxColumnCount.get());
         });
         maxColumnCount.addListener((obs, oldVal, newVal) -> {
-            toLongContent.setValue(
-                    textProperty().get().length() > newVal.intValue());
+            toLongContent.setValue(textProperty().get().length() > newVal.intValue());
         });
         valid.bind(toLongContent.or(emptyContent).and(checked).not());
         valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {
-                getStyleClass().removeAll(
-                        CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT);
+                getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT);
             } else {
                 if (emptyContent.get()) {
                     getStyleClass().add(CSS_CLASS_NO_CONTENT);
@@ -162,8 +153,7 @@ public class CheckedTextField extends TextField {
      */
     public void setMaxColumnCount(int maxColumnCount) {
         if (maxColumnCount < 1) {
-            throw new IllegalArgumentException(
-                    "maxColumnCount must be at least 1");
+            throw new IllegalArgumentException("maxColumnCount must be at least 1");
         }
         this.maxColumnCount.set(maxColumnCount);
     }

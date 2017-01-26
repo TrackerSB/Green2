@@ -70,8 +70,7 @@ public class CheckedPasswordField extends CheckedTextField {
      * {@inheritDoc}
      */
     @Override
-    public Object queryAccessibleAttribute(
-            AccessibleAttribute attribute, Object... parameters) {
+    public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
         switch (attribute) {
             case TEXT:
                 return null;
@@ -102,8 +101,7 @@ public class CheckedPasswordField extends CheckedTextField {
          * @param checkedPasswordField The passwordfield to mask.
          * @param behavior             The behavior for masking the passwordfield.
          */
-        public PasswordFieldSkin(CheckedPasswordField checkedPasswordField,
-                                 PasswordFieldBehavior behavior) {
+        public PasswordFieldSkin(CheckedPasswordField checkedPasswordField, PasswordFieldBehavior behavior) {
             super(checkedPasswordField, behavior);
         }
 

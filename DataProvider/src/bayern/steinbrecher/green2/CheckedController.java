@@ -37,10 +37,8 @@ public abstract class CheckedController extends WizardableController {
             return true;
         }
     };
-    protected final BooleanProperty anyInputToLong
-            = new SimpleBooleanProperty(this, "anyInputToLong");
-    protected final BooleanProperty anyInputMissing
-            = new SimpleBooleanProperty(this, "anyInputMissing");
+    protected final BooleanProperty anyInputToLong = new SimpleBooleanProperty(this, "anyInputToLong");
+    protected final BooleanProperty anyInputMissing = new SimpleBooleanProperty(this, "anyInputMissing");
 
     /**
      * Returns the property reprsenting a boolean value indicating whether any

@@ -22,8 +22,7 @@ public final class ThreadUtility {
      * Prohibit construction.
      */
     private ThreadUtility() {
-        throw new UnsupportedOperationException(
-                "Construction of an object not allowed.");
+        throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
 
     /**
@@ -41,8 +40,7 @@ public final class ThreadUtility {
                     monitor.wait();
                 }
             } catch (InterruptedException ex1) {
-                Logger.getLogger(ThreadUtility.class.getName())
-                        .log(Level.WARNING, null, ex1);
+                Logger.getLogger(ThreadUtility.class.getName()).log(Level.WARNING, null, ex1);
             }
         }
     }

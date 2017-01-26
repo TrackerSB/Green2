@@ -9,6 +9,7 @@ package bayern.steinbrecher.green2.login;
 import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.elements.CheckedTextField;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
 
 import java.util.Arrays;
@@ -38,17 +39,15 @@ public abstract class LoginController extends CheckedController {
     protected void initProperties(CheckedTextField... fields) {
         textInputFields = Arrays.asList(fields);
         anyInputMissing.bind(textInputFields.stream()
-                .map(tif -> tif.emptyProperty())
-                .reduce(TRUE_BINDING, (bind, prop) -> bind.or(prop),
-                        BooleanBinding::or));
+                .map(CheckedTextField::emptyProperty)
+                .reduce(TRUE_BINDING, BooleanExpression::or, BooleanBinding::or));
         anyInputToLong.bind(textInputFields.stream()
-                .map(tif -> tif.toLongProperty())
-                .reduce(TRUE_BINDING, (bind, prop) -> bind.or(prop),
+                .map(CheckedTextField::toLongProperty)
+                .reduce(TRUE_BINDING, BooleanExpression::or,
                         BooleanBinding::or));
         valid.bind(textInputFields.stream()
-                .map(tif -> tif.validProperty())
-                .reduce(TRUE_BINDING, (bind, prop) -> bind.and(prop),
-                        BooleanBinding::and));
+                .map(CheckedTextField::validProperty)
+                .reduce(TRUE_BINDING, BooleanExpression::and, BooleanBinding::and));
     }
 
     /**

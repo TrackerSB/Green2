@@ -29,8 +29,7 @@ public class MemberGenerator {
      * Prohibit construction.
      */
     private MemberGenerator() {
-        throw new UnsupportedOperationException(
-                "Construction of an object is not allowed.");
+        throw new UnsupportedOperationException("Construction of an object is not allowed.");
     }
 
     /**
@@ -41,8 +40,7 @@ public class MemberGenerator {
      *                    member. First row has to contain the headings.
      * @return The resulting list of member.
      */
-    public static List<Member> generateMemberList(
-            List<List<String>> queryResult) {
+    public static List<Member> generateMemberList(List<List<String>> queryResult) {
         List<String> labels = queryResult.get(0).stream()
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
@@ -78,36 +76,29 @@ public class MemberGenerator {
                 }
             } catch (DateTimeParseException ex) {
                 Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.WARNING, row.get(birthdayIndex)
-                                + " is invalid birthdaydate", ex);
+                        .log(Level.WARNING, row.get(birthdayIndex) + " is invalid birthdaydate", ex);
             }
             LocalDate mandatsigned = null;
             try {
                 String mandatSignedString = row.get(mandatCreatedIndex);
                 if (mandatSignedString == null) {
-                    throw new DateTimeParseException(
-                            "Can´t parse null", "null", 0);
+                    throw new DateTimeParseException("Can´t parse null", "null", 0);
                 } else {
                     mandatsigned = LocalDate.parse(mandatSignedString);
                 }
             } catch (DateTimeParseException ex) {
                 Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.WARNING, row.get(birthdayIndex)
-                                + " is invalid mandatSignedDate", ex);
+                        .log(Level.WARNING, row.get(birthdayIndex) + " is invalid mandatSignedDate", ex);
             }
             boolean isMale = row.get(isMaleIndex).equalsIgnoreCase("1");
             boolean isActive = row.get(isActiveIndex).equalsIgnoreCase("1");
-            boolean isContributionfree
-                    = row.get(isContributionfreeIndex).equalsIgnoreCase("1");
+            boolean isContributionfree = row.get(isContributionfreeIndex).equalsIgnoreCase("1");
             int membershipnumber = 0;
             try {
-                membershipnumber
-                        = Integer.parseInt(row.get(membershipnumberIndex));
+                membershipnumber = Integer.parseInt(row.get(membershipnumberIndex));
             } catch (NumberFormatException ex) {
                 Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.SEVERE, "Could not parse "
-                                + row.get(membershipnumberIndex)
-                                + " as a number", ex);
+                        .log(Level.SEVERE, "Could not parse " + row.get(membershipnumberIndex) + " as a number", ex);
             }
             String accountholderPrename = row.get(accountholderPrenameIndex);
             if (accountholderPrename.isEmpty()) {
@@ -119,18 +110,13 @@ public class MemberGenerator {
             }
 
             //Connect attributes
-            Person p = new Person(row.get(prenameIndex), row.get(lastnameIndex),
-                    row.get(titleIndex), birthday, isMale);
+            Person p = new Person(row.get(prenameIndex), row.get(lastnameIndex), row.get(titleIndex), birthday, isMale);
             //FIXME MandatChanged has not to be always false
-            AccountHolder ah = new AccountHolder(row.get(ibanIndex),
-                    row.get(bicIndex), mandatsigned, false,
-                    accountholderPrename, accountholderLastname,
-                    row.get(titleIndex), birthday, isMale);
-            Address ad = new Address(row.get(streetIndex),
-                    row.get(housenumberIndex), row.get(postcodeIndex),
+            AccountHolder ah = new AccountHolder(row.get(ibanIndex), row.get(bicIndex), mandatsigned, false,
+                    accountholderPrename, accountholderLastname, row.get(titleIndex), birthday, isMale);
+            Address ad = new Address(row.get(streetIndex), row.get(housenumberIndex), row.get(postcodeIndex),
                     row.get(placeIndex));
-            return new Member(
-                    membershipnumber, p, ad, ah, isActive, isContributionfree);
+            return new Member(membershipnumber, p, ad, ah, isActive, isContributionfree);
         }).collect(Collectors.toList());
     }
 }

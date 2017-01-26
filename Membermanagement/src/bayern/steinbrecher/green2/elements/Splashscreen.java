@@ -62,8 +62,7 @@ public class Splashscreen extends View<Controller> {
             try {
                 Thread.sleep(millis);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Splashscreen.class.getName())
-                        .log(Level.WARNING, null, ex);
+                Logger.getLogger(Splashscreen.class.getName()).log(Level.WARNING, null, ex);
             }
             Platform.runLater(() -> stage.close());
             return null;
@@ -85,8 +84,7 @@ public class Splashscreen extends View<Controller> {
             s.start(stage);
             s.showSplashscreen(millis);
         } catch (Exception ex) {
-            Logger.getLogger(Splashscreen.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Splashscreen.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

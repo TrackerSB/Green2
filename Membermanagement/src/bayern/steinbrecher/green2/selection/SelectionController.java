@@ -70,7 +70,7 @@ public class SelectionController<T extends Comparable<T>>
 
         optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
-            newVal.stream().forEach(op -> {
+            newVal.forEach(op -> {
                 CheckBox newItem = new CheckBox(op.toString());
                 newItem.selectedProperty().addListener(selectionChange);
                 optionsListView.getItems().add(newItem);
@@ -98,13 +98,12 @@ public class SelectionController<T extends Comparable<T>>
 
     @FXML
     private void selectAllOptions() {
-        optionsListView.getItems().stream().forEach(cb -> cb.setSelected(true));
+        optionsListView.getItems().forEach(cb -> cb.setSelected(true));
     }
 
     @FXML
     private void selectNoOption() {
-        optionsListView.getItems().stream()
-                .forEach(cb -> cb.setSelected(false));
+        optionsListView.getItems().forEach(cb -> cb.setSelected(false));
     }
 
     /**

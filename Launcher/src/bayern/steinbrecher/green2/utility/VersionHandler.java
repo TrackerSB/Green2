@@ -34,13 +34,11 @@ public class VersionHandler {
      */
     public static Optional<String> readOnlineVersion() {
         try {
-            URL onlineVersionUrl
-                    = new URL(DataProvider.VERSIONFILE_PATH_ONLINE);
+            URL onlineVersionUrl = new URL(DataProvider.VERSIONFILE_PATH_ONLINE);
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
             return Optional.of(sc.nextLine());
         } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         }
         return Optional.empty();
     }
@@ -58,8 +56,7 @@ public class VersionHandler {
             try (Scanner sc = new Scanner(localVersionfile)) {
                 return Optional.of(sc.nextLine());
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(VersionHandler.class.getName())
-                        .log(Level.INFO, null, ex);
+                Logger.getLogger(VersionHandler.class.getName()).log(Level.INFO, null, ex);
             }
         }
         return Optional.empty();
@@ -72,7 +69,6 @@ public class VersionHandler {
      */
     public static void updateLocalVersion(String newVersion) {
         new File(DataProvider.APP_DATA_PATH).mkdir();
-        IOStreamUtility.printContent(newVersion,
-                DataProvider.VERSIONFILE_PATH_LOCAL, false);
+        IOStreamUtility.printContent(newVersion, DataProvider.VERSIONFILE_PATH_LOCAL, false);
     }
 }

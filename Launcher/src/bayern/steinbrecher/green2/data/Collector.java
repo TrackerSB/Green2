@@ -45,33 +45,29 @@ public final class Collector {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     static {
-        Optional<String> resolvedURL = URLUtility.resolveURL(
-                "https://traunviertler-traunwalchen.de/php/collector.php");
+        Optional<String> resolvedURL = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/php/collector.php");
         resolvedURL.ifPresent(url -> {
             try {
                 POST_URL = new URL(url);
                 preparedToSend = true;
             } catch (MalformedURLException ex) {
-                Logger.getLogger(Collector.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
 
     private Collector() {
-        throw new UnsupportedOperationException(
-                "Construction of an object is not allowed.");
+        throw new UnsupportedOperationException("Construction of an object is not allowed.");
     }
 
     private static String generateDataString() {
         List<String> parameters = new ArrayList<>(DataParams.values().length);
         for (DataParams dp : DataParams.values()) {
             try {
-                parameters.add(URLEncoder.encode(dp.toString(), "UTF-8") + "="
-                        + URLEncoder.encode(dp.getValue(), "UTF-8"));
+                parameters.add(URLEncoder.encode(
+                        dp.toString(), "UTF-8") + "=" + URLEncoder.encode(dp.getValue(), "UTF-8"));
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(Collector.class.getName())
-                        .log(Level.INFO, dp + " skipped on sending.", ex);
+                Logger.getLogger(Collector.class.getName()).log(Level.INFO, dp + " skipped on sending.", ex);
             }
         }
         return parameters.stream().collect(Collectors.joining("&"));
@@ -86,8 +82,7 @@ public final class Collector {
         boolean wasSent = false;
         if (preparedToSend) {
             try {
-                HttpsURLConnection connection
-                        = (HttpsURLConnection) POST_URL.openConnection();
+                HttpsURLConnection connection = (HttpsURLConnection) POST_URL.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
@@ -95,10 +90,8 @@ public final class Collector {
 
                 String values = generateDataString();
 
-                connection.setRequestProperty("Content-Type",
-                        "application/x-www-form-urlencoded");
-                connection.setRequestProperty("Content-Length",
-                        String.valueOf(values.length()));
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestProperty("Content-Length", String.valueOf(values.length()));
 
                 try (OutputStreamWriter writer = new OutputStreamWriter(
                         connection.getOutputStream(), CHARSET)) {
@@ -112,14 +105,12 @@ public final class Collector {
                     response = IOStreamUtility.readAll(inputStream, CHARSET);
                 }
                 if (!response.isEmpty()) {
-                    Logger.getLogger(Collector.class.getName())
-                            .log(Level.INFO, response);
+                    Logger.getLogger(Collector.class.getName()).log(Level.INFO, response);
                 }
 
                 connection.disconnect();
             } catch (IOException ex) {
-                Logger.getLogger(Collector.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return wasSent;
@@ -133,18 +124,14 @@ public final class Collector {
             @Override
             public String getValue() {
                 try {
-                    byte[] mac = NetworkInterface.getByInetAddress(
-                            InetAddress.getLocalHost())
-                            .getHardwareAddress();
+                    byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress();
                     StringBuilder macString = new StringBuilder();
                     for (int i = 0; i < mac.length; i++) {
-                        macString.append(String.format("%02X%s", mac[i],
-                                (i < mac.length - 1) ? "-" : ""));
+                        macString.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
                     }
                     return macString.toString();
                 } catch (SocketException | UnknownHostException ex) {
-                    Logger.getLogger(Collector.class.getName())
-                            .log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return null;
             }
@@ -156,8 +143,7 @@ public final class Collector {
             @Override
             public String getValue() {
                 Calendar today = GregorianCalendar.getInstance();
-                return today.get(Calendar.YEAR) + "-"
-                        + (today.get(Calendar.MONTH) + 1) + "-"
+                return today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
                         + today.get(Calendar.DAY_OF_MONTH);
             }
         },

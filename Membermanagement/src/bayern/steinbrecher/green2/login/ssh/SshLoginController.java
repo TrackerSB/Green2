@@ -40,8 +40,7 @@ public class SshLoginController extends LoginController {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        initProperties(sshUsernameField, sshPasswordField,
-                databaseUsernameField, databasePasswordField);
+        initProperties(sshUsernameField, sshPasswordField, databaseUsernameField, databasePasswordField);
     }
 
     /**
@@ -52,12 +51,9 @@ public class SshLoginController extends LoginController {
         if (userAbborted()) {
             return Optional.empty();
         } else {
-            Map<LoginKey, String> loginInfo
-                    = new HashMap<>(LoginKey.values().length);
-            loginInfo.put(LoginKey.DATABASE_USERNAME,
-                    databaseUsernameField.getText());
-            loginInfo.put(LoginKey.DATABASE_PASSWORD,
-                    databasePasswordField.getText());
+            Map<LoginKey, String> loginInfo = new HashMap<>(LoginKey.values().length);
+            loginInfo.put(LoginKey.DATABASE_USERNAME, databaseUsernameField.getText());
+            loginInfo.put(LoginKey.DATABASE_PASSWORD, databasePasswordField.getText());
             loginInfo.put(LoginKey.SSH_USERNAME, sshUsernameField.getText());
             loginInfo.put(LoginKey.SSH_PASSWORD, sshPasswordField.getText());
             return Optional.of(loginInfo);

@@ -27,8 +27,7 @@ public class AddressGenerator {
      * Prohibit construction of an object.
      */
     private AddressGenerator() {
-        throw new UnsupportedOperationException(
-                "Construction of an object not supported");
+        throw new UnsupportedOperationException("Construction of an object not supported");
     }
 
     /**
@@ -40,11 +39,9 @@ public class AddressGenerator {
      * @param nicknames The nicknames to use for addresses.
      * @return The content for the output CSV file.
      */
-    public static String generateAddressData(List<Member> member,
-                                             Map<String, String> nicknames) {
+    public static String generateAddressData(List<Member> member, Map<String, String> nicknames) {
         if (member.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Can't create output when member is empty.");
+            throw new IllegalArgumentException("Can't create output when member is empty.");
         }
         List<String> salutations = createSalutations(member, nicknames);
         return createOutput(member, salutations);
@@ -59,13 +56,11 @@ public class AddressGenerator {
      *                  salutations.
      * @return A list with apropriate salutations.
      */
-    private static List<String> createSalutations(
-            List<Member> member, Map<String, String> nicknames) {
+    private static List<String> createSalutations(List<Member> member, Map<String, String> nicknames) {
         List<String> addresses = new ArrayList<>(member.size());
-        member.stream().forEach(m -> {
+        member.forEach(m -> {
             String address = m.getPerson().isMale() ? "Lieber " : "Liebe ";
-            address += nicknames.getOrDefault(
-                    m.getPerson().getPrename(), m.getPerson().getPrename());
+            address += nicknames.getOrDefault(m.getPerson().getPrename(), m.getPerson().getPrename());
             addresses.add(address);
         });
         assert addresses.size() == member.size();
@@ -82,10 +77,8 @@ public class AddressGenerator {
      *                    member.
      * @return A String representing the output.
      */
-    private static String createOutput(List<Member> member,
-                                       List<String> salutations) {
-        StringBuilder output = new StringBuilder("Vorname;Nachname;Strasse;"
-                + "Hausnummer;PLZ;Ort;Geburtstag;Anrede\n");
+    private static String createOutput(List<Member> member, List<String> salutations) {
+        StringBuilder output = new StringBuilder("Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Geburtstag;Anrede\n");
         for (int i = 0; i < member.size(); i++) {
             Person currentPerson = member.get(i).getPerson();
             Address currentAddress = member.get(i).getHome();

@@ -42,16 +42,14 @@ public class BirthdayGenerator {
      */
     private static final Function<Member, String> PRINT_LINE = m -> {
         Person p = m.getPerson();
-        return p.getPrename() + ';' + p.getLastname() + ';'
-                + p.getBirthday() + '\n';
+        return p.getPrename() + ';' + p.getLastname() + ';' + p.getBirthday() + '\n';
     };
 
     /**
      * Prohibit construction of an object.
      */
     private BirthdayGenerator() {
-        throw new UnsupportedOperationException(
-                "Construction of an object not allowed.");
+        throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
 
     /**
@@ -66,22 +64,18 @@ public class BirthdayGenerator {
      */
     public static String createGroupedOutput(List<Member> member, int year) {
         if (member.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Can't create output when member is empty.");
+            throw new IllegalArgumentException("Can't create output when member is empty.");
         }
 
         member.sort(SORTING);
 
-        StringBuilder output = new StringBuilder(
-                "Geburtstage " + year);
+        StringBuilder output = new StringBuilder("Geburtstage " + year);
         List<Member> currentActive = new ArrayList<>();
         List<Member> currentPassive = new ArrayList<>();
-        int currentAge = year
-                - member.get(0).getPerson().getBirthday().getYear();
+        int currentAge = year - member.get(0).getPerson().getBirthday().getYear();
         for (Member m : member) {
             if (year - m.getPerson().getBirthday().getYear() != currentAge) {
-                tryAppendMember(output, currentAge,
-                        currentActive, currentPassive);
+                tryAppendMember(output, currentAge, currentActive, currentPassive);
                 currentActive.clear();
                 currentPassive.clear();
                 currentAge = year - m.getPerson().getBirthday().getYear();
@@ -109,21 +103,19 @@ public class BirthdayGenerator {
      * @param currentAgePassive The list of passiv member which are
      *                          {@code currentAge} years old.
      */
-    private static void tryAppendMember(StringBuilder output, int currentAge,
-                                        List<Member> currentAgeActive, List<Member> currentAgePassive) {
+    private static void tryAppendMember(StringBuilder output, int currentAge, List<Member> currentAgeActive,
+                                        List<Member> currentAgePassive) {
         if (!currentAgeActive.isEmpty() || !currentAgePassive.isEmpty()) {
             output.append("\n\n").append(currentAge).append("ter Geburtstag\n");
             if (!currentAgeActive.isEmpty()) {
                 output.append("Aktiv:\n")
                         .append("Vorname;Nachname;Geburtstag\n")
-                        .append(currentAgeActive.stream().map(PRINT_LINE)
-                                .reduce("", String::concat));
+                        .append(currentAgeActive.stream().map(PRINT_LINE).reduce("", String::concat));
             }
             if (!currentAgePassive.isEmpty()) {
                 output.append("Passiv:\n")
                         .append("Vorname;Nachname;Geburtstag\n")
-                        .append(currentAgePassive.stream().map(PRINT_LINE)
-                                .reduce("", String::concat));
+                        .append(currentAgePassive.stream().map(PRINT_LINE).reduce("", String::concat));
             }
         }
     }

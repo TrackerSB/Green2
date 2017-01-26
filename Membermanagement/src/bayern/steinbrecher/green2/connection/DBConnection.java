@@ -34,11 +34,9 @@ public abstract class DBConnection implements AutoCloseable {
      * table.
      */
     public static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
-            Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel",
-                    "istmaennlich", "istaktiv", "geburtstag", "strasse",
-                    "hausnummer", "plz", "ort", "istbeitragsfrei", "iban",
-                    "bic", "kontoinhabervorname", "kontoinhabernachname",
-                    "mandaterstellt"));
+            Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel", "istmaennlich", "istaktiv", "geburtstag",
+                    "strasse", "hausnummer", "plz", "ort", "istbeitragsfrei", "iban", "bic", "kontoinhabervorname",
+                    "kontoinhabernachname", "mandaterstellt"));
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream().collect(Collectors.joining(","));
     private static final String EXIST_TEST
@@ -89,8 +87,7 @@ public abstract class DBConnection implements AutoCloseable {
      * First dimension rows; second columns.
      * @throws SQLException Thrown if the sql code is invalid.
      */
-    public abstract List<List<String>> execQuery(String sqlCode)
-            throws SQLException;
+    public abstract List<List<String>> execQuery(String sqlCode) throws SQLException;
 
     /**
      * Executes a command like INSERT INTO, UPDATE or CREATE.
@@ -130,8 +127,7 @@ public abstract class DBConnection implements AutoCloseable {
                 execUpdate(CREATE_MITGLIEDER);
                 execUpdate(CREATE_SPITZNAMEN);
             } catch (SQLException ex) {
-                throw new SchemeCreationException(
-                        "Could not create database tables", ex);
+                throw new SchemeCreationException("Could not create database tables", ex);
             }
         }
     }
@@ -144,8 +140,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public List<Member> getAllMember() {
         try {
-            return MemberGenerator.generateMemberList(
-                    execQuery(QUERY_ALL_MEMBER));
+            return MemberGenerator.generateMemberList(execQuery(QUERY_ALL_MEMBER));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
@@ -158,13 +153,10 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public Map<String, String> getAllNicknames() {
         try {
-            List<List<String>> queriedNicknames
-                    = execQuery(QUERY_ALL_NICKNAMES);
+            List<List<String>> queriedNicknames = execQuery(QUERY_ALL_NICKNAMES);
 
             Map<String, String> mappedNicknames = new HashMap<>();
-            queriedNicknames.parallelStream().skip(1).forEach(row -> {
-                mappedNicknames.put(row.get(0), row.get(1));
-            });
+            queriedNicknames.parallelStream().skip(1).forEach(row -> mappedNicknames.put(row.get(0), row.get(1)));
             return mappedNicknames;
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
@@ -182,15 +174,12 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean checkColumn(String table, String column) {
         try {
-            List<String> headings
-                    = execQuery("SELECT * FROM " + table + " WHERE 0;")
-                    .get(0);
+            List<String> headings = execQuery("SELECT * FROM " + table + " WHERE 0;").get(0);
             return headings.stream()
                     .map(String::toLowerCase)
                     .anyMatch(s -> s.equalsIgnoreCase(column));
         } catch (SQLException ex) {
-            Logger.getLogger(DBConnection.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
@@ -208,15 +197,11 @@ public abstract class DBConnection implements AutoCloseable {
                 Map<Integer, Double> contributions = new HashMap<>();
                 result.parallelStream()
                         .skip(1)
-                        .forEach(row -> {
-                            contributions.put(Integer.parseInt(row.get(0)),
-                                    Double.parseDouble(
-                                            row.get(1).replaceAll(",", ".")));
-                        });
+                        .forEach(row -> contributions.put(
+                                Integer.parseInt(row.get(0)), Double.parseDouble(row.get(1).replaceAll(",", "."))));
                 return Optional.of(contributions);
             } catch (SQLException ex) {
-                Logger.getLogger(Menu.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return Optional.empty();

@@ -14,8 +14,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -30,8 +28,7 @@ public final class ZipUtility {
     private static final Charset JAR_ICO_PNG_CHARSET = StandardCharsets.ISO_8859_1;
 
     private ZipUtility() {
-        throw new UnsupportedOperationException(
-                "Constructtion of an object not allowed.");
+        throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
 
     /**
@@ -44,11 +41,9 @@ public final class ZipUtility {
      * @throws IOException Thrown only if no temporary directory could be
      *                     created.
      */
-    public static void unzip(File zippedFile, File outputDir, Charset charset)
-            throws IOException {
+    public static void unzip(File zippedFile, File outputDir, Charset charset) throws IOException {
         String outDirPath = outputDir.getAbsolutePath();
-        try (ZipInputStream zis = new ZipInputStream(
-                new FileInputStream(zippedFile), charset);
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zippedFile), charset);
              InputStreamReader isr = new InputStreamReader(zis, charset);
              InputStreamReader isrVBS = new InputStreamReader(zis, VBS_CHARSET);
              InputStreamReader isrLatin = new InputStreamReader(zis, JAR_ICO_PNG_CHARSET)) {
@@ -59,18 +54,13 @@ public final class ZipUtility {
                 String zipEntryName = zipEntry.getName();
                 jar = zipEntryName.endsWith(".jar") || zipEntryName.endsWith(".ico") || zipEntryName.endsWith(".png");
                 vbs = zipEntryName.endsWith(".vbs");
-                File unzippedFile
-                        = new File(outDirPath + "/" + zipEntryName);
+                File unzippedFile = new File(outDirPath + "/" + zipEntryName);
                 unzippedFile.getParentFile().mkdirs();
-                try (OutputStreamWriter osw = new OutputStreamWriter(
-                        new FileOutputStream(unzippedFile),
+                try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(unzippedFile),
                         vbs ? VBS_CHARSET : (jar ? JAR_ICO_PNG_CHARSET : charset))) {
                     IOStreamUtility.transfer(vbs ? isrVBS : (jar ? isrLatin : isr), osw);
                 }
             }
-        } catch (Exception ex) {
-            Logger.getLogger(ZipUtility.class.getName())
-                    .log(Level.SEVERE, null, ex);
         }
     }
 }

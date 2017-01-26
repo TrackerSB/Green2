@@ -26,8 +26,7 @@ import java.util.logging.Logger;
  * @param <T> The type of the attributes being able to selct.
  * @author Stefan Huber
  */
-public class Selection<T extends Comparable<T>>
-        extends WizardableView<Optional<List<T>>, SelectionController<T>> {
+public class Selection<T extends Comparable<T>> extends WizardableView<Optional<List<T>>, SelectionController<T>> {
 
     private final List<T> options;
     private Stage owner;

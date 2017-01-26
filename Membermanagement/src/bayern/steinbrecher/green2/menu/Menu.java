@@ -40,8 +40,7 @@ public class Menu extends View<MenuController> {
     public void start(Stage stage) throws Exception {
         this.stage = stage;
 
-        FXMLLoader fxmlLoader
-                = new FXMLLoader(getClass().getResource("Menu.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Menu.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);

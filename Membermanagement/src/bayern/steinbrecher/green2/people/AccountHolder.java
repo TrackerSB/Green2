@@ -33,9 +33,8 @@ public class AccountHolder extends Person {
      * @param birthday         The birthday date of the account holder.
      * @param isMale           {@code true} only if the account holder is male.
      */
-    public AccountHolder(String iban, String bic, LocalDate mandatSigned,
-                         boolean hasMandatChanged, String prename, String lastname,
-                         String title, LocalDate birthday, boolean isMale) {
+    public AccountHolder(String iban, String bic, LocalDate mandatSigned, boolean hasMandatChanged, String prename,
+                         String lastname, String title, LocalDate birthday, boolean isMale) {
         super(prename, lastname, title, birthday, isMale);
         this.iban = iban;
         this.bic = bic;

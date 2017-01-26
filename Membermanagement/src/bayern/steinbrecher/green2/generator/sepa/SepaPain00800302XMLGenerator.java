@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
  */
 public final class SepaPain00800302XMLGenerator {
 
-    private static final SimpleDateFormat SDF
-            = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     /**
      * Length of coutrycoude (CC);
      */
@@ -52,8 +51,7 @@ public final class SepaPain00800302XMLGenerator {
      * Prohibit construction of an object.
      */
     private SepaPain00800302XMLGenerator() {
-        throw new UnsupportedOperationException(
-                "Construction of an object not supported.");
+        throw new UnsupportedOperationException("Construction of an object not supported.");
     }
 
     /**
@@ -75,21 +73,16 @@ public final class SepaPain00800302XMLGenerator {
         }
 
         //Check the checksum
-        int posAlphabetFirstChar
-                = ((int) iban.charAt(0)) - SEPA_SHIFT_ASCII_ALPHABET;
-        int posAlphabetSecondChar
-                = ((int) iban.charAt(1)) - SEPA_SHIFT_ASCII_ALPHABET;
-        if (iban.length() < SEPA_MIN_LENGT
-                || posAlphabetFirstChar < SEPA_SHIFT_COUTRYCODE
+        int posAlphabetFirstChar = ((int) iban.charAt(0)) - SEPA_SHIFT_ASCII_ALPHABET;
+        int posAlphabetSecondChar = ((int) iban.charAt(1)) - SEPA_SHIFT_ASCII_ALPHABET;
+        if (iban.length() < SEPA_MIN_LENGT || posAlphabetFirstChar < SEPA_SHIFT_COUTRYCODE
                 || posAlphabetSecondChar < SEPA_SHIFT_COUTRYCODE) {
             return false;
         }
 
         iban = iban.substring(SEPA_CC_CHECKSUM_LENGTH) + posAlphabetFirstChar
-                + posAlphabetSecondChar
-                + iban.substring(2, SEPA_CC_CHECKSUM_LENGTH);
-        return new BigInteger(iban).mod(
-                BigInteger.valueOf(SEPA_CHECKSUM_MODULO))
+                + posAlphabetSecondChar + iban.substring(2, SEPA_CC_CHECKSUM_LENGTH);
+        return new BigInteger(iban).mod(BigInteger.valueOf(SEPA_CHECKSUM_MODULO))
                 .equals(BigInteger.ONE);
     }
 
@@ -113,19 +106,16 @@ public final class SepaPain00800302XMLGenerator {
                                              SequenceType sequenceType, String outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
         List<Member> missingContribution = member.stream()
-                .filter(m -> !contributions.containsKey(
-                        m.getMembershipnumber()))
+                .filter(m -> !contributions.containsKey(m.getMembershipnumber()))
                 .collect(Collectors.toList());
         if (missingContribution.isEmpty()) {
             IOStreamUtility.printContent(
-                    createXML(member, originator, contributions, sequenceType),
-                    outputfile, sepaWithBom);
+                    createXML(member, originator, contributions, sequenceType), outputfile, sepaWithBom);
             return invalidMember;
         } else {
             throw new IllegalArgumentException(missingContribution.stream()
                     .map(Member::toString)
-                    .collect(Collectors.joining("\n",
-                            "Missing contributions for valid members:\n", "")));
+                    .collect(Collectors.joining("\n", "Missing contributions for valid members:\n", "")));
         }
     }
 
@@ -147,14 +137,12 @@ public final class SepaPain00800302XMLGenerator {
             }
             if (!ah.hasBic()) {
                 valid = false;
-                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                        .log(Level.WARNING, "{0} has no BIC", m);
+                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName()).log(Level.WARNING, "{0} has no BIC", m);
             }
             if (ah.getMandatSigned() == null) {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                        .log(Level.WARNING, "{0} has a bad \"MandatErstellt\"",
-                                m);
+                        .log(Level.WARNING, "{0} has a bad \"MandatErstellt\"", m);
             }
             if (!valid) {
                 invalidMember.add(m);
@@ -172,8 +160,8 @@ public final class SepaPain00800302XMLGenerator {
      * @param contributions The mapping of membershipnumbers to contributions.
      * @return The {@code String} representing the xml file content.
      */
-    private static String createXML(List<Member> member, Originator originator,
-                                    Map<Integer, Double> contributions, SequenceType sequenceType) {
+    private static String createXML(List<Member> member, Originator originator, Map<Integer, Double> contributions,
+                                    SequenceType sequenceType) {
         int numberOfTransactions = member.size();
         double controlSum = member.parallelStream()
                 .mapToDouble(m -> contributions.get(m.getMembershipnumber()))

@@ -84,56 +84,39 @@ public class WaitScreen extends View<Controller> {
             IntStream.range(0, HORIZONTAL_COUNT - shorten)
                     .parallel()
                     .forEach(column -> {
-                        double xCoo
-                                = column * DIAMETER + (shorten + 1) * RADIUS;
-                        Polygon p = createHexagon(
-                                new Point2D(xCoo, yCoo), RADIUS);
+                        double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
+                        Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
                         p.setOpacity(START_OPACITY);
                         p.setFill(Color.FORESTGREEN);
 
-                        RotateTransition rt1
-                                = new RotateTransition(DURATION_ANIMATION, p);
+                        RotateTransition rt1 = new RotateTransition(DURATION_ANIMATION, p);
                         rt1.setByAngle(ANGLE / 2);
-                        FadeTransition ft11 = new FadeTransition(
-                                DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft11 = new FadeTransition(DURATION_ANIMATION_HALF, p);
                         ft11.setFromValue(START_OPACITY);
                         ft11.setToValue(CENTER_OPACITY);
-                        FadeTransition ft12 = new FadeTransition(
-                                DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft12 = new FadeTransition(DURATION_ANIMATION_HALF, p);
                         ft12.setFromValue(CENTER_OPACITY);
                         ft12.setToValue(START_OPACITY);
-                        SequentialTransition st1
-                                = new SequentialTransition(ft11, ft12);
-                        ParallelTransition plt1
-                                = new ParallelTransition(rt1, st1);
+                        SequentialTransition st1 = new SequentialTransition(ft11, ft12);
+                        ParallelTransition plt1 = new ParallelTransition(rt1, st1);
 
-                        PauseTransition pt1
-                                = new PauseTransition(DURATION_PAUSE);
+                        PauseTransition pt1 = new PauseTransition(DURATION_PAUSE);
 
-                        RotateTransition rt2
-                                = new RotateTransition(DURATION_ANIMATION, p);
+                        RotateTransition rt2 = new RotateTransition(DURATION_ANIMATION, p);
                         rt2.setByAngle(ANGLE / 2);
-                        FadeTransition ft21 = new FadeTransition(
-                                DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft21 = new FadeTransition(DURATION_ANIMATION_HALF, p);
                         ft21.setFromValue(START_OPACITY);
                         ft21.setToValue(CENTER_OPACITY);
-                        FadeTransition ft22 = new FadeTransition(
-                                DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft22 = new FadeTransition(DURATION_ANIMATION_HALF, p);
                         ft22.setFromValue(START_OPACITY);
                         ft22.setToValue(CENTER_OPACITY);
-                        SequentialTransition st2
-                                = new SequentialTransition(ft11, ft12);
-                        ParallelTransition plt2
-                                = new ParallelTransition(rt2, st2);
+                        SequentialTransition st2 = new SequentialTransition(ft11, ft12);
+                        ParallelTransition plt2 = new ParallelTransition(rt2, st2);
 
-                        PauseTransition pt2
-                                = new PauseTransition(DURATION_PAUSE);
+                        PauseTransition pt2 = new PauseTransition(DURATION_PAUSE);
 
-                        SequentialTransition sequence
-                                = new SequentialTransition(
-                                plt1, pt1, plt2, pt2);
-                        sequence.setDelay(
-                                Duration.millis((column + row) * DELAY));
+                        SequentialTransition sequence = new SequentialTransition(plt1, pt1, plt2, pt2);
+                        sequence.setDelay(Duration.millis((column + row) * DELAY));
                         sequence.setCycleCount(Animation.INDEFINITE);
 
                         synchronized (root) {
@@ -147,8 +130,7 @@ public class WaitScreen extends View<Controller> {
 
         overallTransition.play();
 
-        Scene scene = new Scene(root, HORIZONTAL_COUNT * DIAMETER,
-                VERTICAL_COUNT * DIAMETER);
+        Scene scene = new Scene(root, HORIZONTAL_COUNT * DIAMETER, VERTICAL_COUNT * DIAMETER);
         scene.setFill(null);
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -196,7 +178,6 @@ public class WaitScreen extends View<Controller> {
      */
     @Override
     public BooleanBinding wouldShowBinding() {
-        throw new UnsupportedOperationException(
-                "WaitScreen does not use showOnceAndWait()");
+        throw new UnsupportedOperationException("WaitScreen does not use showOnceAndWait()");
     }
 }

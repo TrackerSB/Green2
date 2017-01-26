@@ -36,8 +36,7 @@ public class Member implements Comparable<Member> {
      * @param isContributionfree {@code true} only if this member does not have
      *                           to pay contribution.
      */
-    public Member(int membershipnumber, Person person, Address home,
-                  AccountHolder accountHolder, boolean isActive,
+    public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder, boolean isActive,
                   boolean isContributionfree) {
         COLLATOR.setStrength(Collator.SECONDARY);
         this.membershipnumber = membershipnumber;

@@ -42,8 +42,7 @@ public abstract class Controller implements Initializable {
      */
     protected void checkStage() {
         if (stage == null) {
-            throw new IllegalStateException(
-                    "You have to call setStage(...) first");
+            throw new IllegalStateException("You have to call setStage(...) first");
         }
     }
 

@@ -30,8 +30,7 @@ public class ChoiceDialog extends Application {
      */
     @Override
     public void start(Stage stage) {
-        Label message
-                = new Label(DataProvider.getResourceValue("installUpdates"));
+        Label message = new Label(DataProvider.getResourceValue("installUpdates"));
 
         Button yesButton = new Button(DataProvider.getResourceValue("yes"));
         yesButton.setDefaultButton(true);

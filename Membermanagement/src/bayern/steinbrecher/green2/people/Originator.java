@@ -72,8 +72,7 @@ public class Originator {
      * @throws java.io.FileNotFoundException Thrown if the file could not be
      *                                       found.
      */
-    public static Originator readOriginatorInfo(String filename)
-            throws FileNotFoundException {
+    public static Originator readOriginatorInfo(String filename) throws FileNotFoundException {
         Originator e = new Originator(filename);
         e.readOriginatorInfo();
         return e;

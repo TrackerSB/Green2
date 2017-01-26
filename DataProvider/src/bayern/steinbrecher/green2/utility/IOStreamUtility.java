@@ -34,8 +34,7 @@ public final class IOStreamUtility {
      * Default constructor.
      */
     private IOStreamUtility() {
-        throw new UnsupportedOperationException(
-                "Construction of a new object is not allowed.");
+        throw new UnsupportedOperationException("Construction of a new object is not allowed.");
     }
 
     /**

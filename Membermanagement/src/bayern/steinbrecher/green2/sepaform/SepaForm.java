@@ -25,8 +25,7 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class SepaForm
-        extends WizardableView<Optional<Originator>, SepaFormController> {
+public class SepaForm extends WizardableView<Optional<Originator>, SepaFormController> {
 
     private Stage owner;
 

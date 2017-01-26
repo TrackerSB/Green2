@@ -32,10 +32,8 @@ public abstract class View<T extends Controller> extends Application {
      * classes.
      */
     protected Stage stage = null;
-    private final BooleanProperty gotShownProperty
-            = new SimpleBooleanProperty(this, "gotShown", false);
-    private final BooleanProperty gotClosedProperty
-            = new SimpleBooleanProperty(this, "gotClosed", false);
+    private final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
+    private final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
     private final BooleanBinding wouldShowProperty = gotShownProperty.not();
     protected T controller;
 
@@ -55,10 +53,8 @@ public abstract class View<T extends Controller> extends Application {
         }
     }
 
-    protected <P extends Parent> P loadFXML(String resource)
-            throws IOException {
-        FXMLLoader fxmlLoader
-                = new FXMLLoader(getClass().getResource(resource));
+    protected <P extends Parent> P loadFXML(String resource) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);

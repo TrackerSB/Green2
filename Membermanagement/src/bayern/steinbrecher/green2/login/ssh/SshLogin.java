@@ -29,8 +29,7 @@ public class SshLogin extends Login {
     public void start(Stage stage) throws IOException {
         this.stage = stage;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass()
-                .getResource("SshLogin.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SshLogin.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);

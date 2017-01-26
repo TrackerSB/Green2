@@ -24,8 +24,7 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class Contribution
-        extends WizardableView<Optional<Double>, ContributionController> {
+public class Contribution extends WizardableView<Optional<Double>, ContributionController> {
 
     private Stage owner;
 
@@ -86,12 +85,9 @@ public class Contribution
     public WizardPage<Optional<Double>> getWizardPage() {
         try {
             Pane root = loadFXML("Contribution_Wizard.fxml");
-            return new WizardPage<>(root, null, false,
-                    () -> controller.getContribution(),
-                    controller.validProperty());
+            return new WizardPage<>(root, null, false, () -> controller.getContribution(), controller.validProperty());
         } catch (IOException ex) {
-            Logger.getLogger(Contribution.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Contribution.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

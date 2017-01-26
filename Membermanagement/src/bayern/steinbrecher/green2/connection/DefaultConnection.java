@@ -51,26 +51,20 @@ public final class DefaultConnection extends DBConnection {
      *                              wrong.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      */
-    public DefaultConnection(String databaseHost, String databaseUsername,
-                             String databasePasswd, String databaseName)
+    public DefaultConnection(String databaseHost, String databaseUsername, String databasePasswd, String databaseName)
             throws AuthException, UnknownHostException {
         try {
             Class.forName(DRIVER);
             if (!databaseHost.endsWith("/")) {
                 databaseHost += "/";
             }
-            connection = DriverManager.getConnection(
-                    DRIVER_PROTOCOL + databaseHost
-                            + databaseName + "?verifyServerCertificate=false"
-                            + "&useSSL=true&zeroDateTimeBehavior=convertToNull",
-                    databaseUsername,
-                    databasePasswd);
+            connection = DriverManager.getConnection(DRIVER_PROTOCOL + databaseHost + databaseName
+                            + "?verifyServerCertificate=false" + "&useSSL=true&zeroDateTimeBehavior=convertToNull",
+                    databaseUsername, databasePasswd);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Connection.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(DefaultConnection.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(DefaultConnection.class.getName()).log(Level.SEVERE, null, ex);
             if (ex instanceof CommunicationsException) {
                 throw new UnknownHostException(ex.getMessage());
             } else {
@@ -84,14 +78,12 @@ public final class DefaultConnection extends DBConnection {
      */
     @Override
     public List<List<String>> execQuery(String sqlCode) throws SQLException {
-        try (PreparedStatement preparedStatement
-                     = connection.prepareStatement(sqlCode)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCode)) {
             ResultSet resultset = preparedStatement.executeQuery();
 
             List<List<String>> resultTable = new ArrayList<>();
             List<String> labels = new ArrayList<>();
-            for (int i = 1; i <= resultset.getMetaData()
-                    .getColumnCount(); i++) {
+            for (int i = 1; i <= resultset.getMetaData().getColumnCount(); i++) {
                 labels.add(resultset.getMetaData().getColumnLabel(i));
             }
             resultTable.add(labels);
@@ -113,8 +105,7 @@ public final class DefaultConnection extends DBConnection {
      */
     @Override
     public void execUpdate(String sqlCode) throws SQLException {
-        try (PreparedStatement preparedStatement
-                     = connection.prepareStatement(sqlCode)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlCode)) {
             preparedStatement.executeUpdate();
         }
     }
@@ -127,8 +118,7 @@ public final class DefaultConnection extends DBConnection {
         try {
             connection.close();
         } catch (SQLException ex) {
-            Logger.getLogger(Connection.class.getName())
-                    .log(Level.WARNING, null, ex);
+            Logger.getLogger(Connection.class.getName()).log(Level.WARNING, null, ex);
         }
     }
 }

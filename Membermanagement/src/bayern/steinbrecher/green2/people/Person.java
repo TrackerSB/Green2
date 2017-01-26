@@ -28,8 +28,7 @@ public class Person {
      * @param birthday The birthday date of the person.
      * @param male     {@code true} only if the person is male.
      */
-    public Person(String prename, String lastname, String title,
-                  LocalDate birthday, boolean male) {
+    public Person(String prename, String lastname, String title, LocalDate birthday, boolean male) {
         this.prename = prename;
         this.lastname = lastname;
         this.title = title;

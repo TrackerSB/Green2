@@ -49,28 +49,25 @@ public class CheckedIntegerSpinner extends Spinner<Integer> {
         super(min, max, initialValue, amountToStepBy);
 
         SpinnerValueFactory.IntegerSpinnerValueFactory factory
-                = new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                min, max, initialValue, amountToStepBy);
+                = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, initialValue, amountToStepBy);
         setValueFactory(factory);
-        getEditor().textProperty()
-                .addListener((obs, oldVal, newVal) -> {
-                    try {
-                        int parsed = Integer.parseInt(
-                                newVal.replace(',', '.'));
-                        factory.setValue(parsed);
-                        validProperty.set(true);
-                    } catch (NumberFormatException ex) {
-                        validProperty.set(false);
-                    }
+        getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
+            try {
+                int parsed = Integer.parseInt(newVal.replace(',', '.'));
+                factory.setValue(parsed);
+                validProperty.set(true);
+            } catch (NumberFormatException ex) {
+                validProperty.set(false);
+            }
 
-                    if (!validProperty.get()) {
-                        if (!getStyleClass().contains(CSS_CLASS_INVALID)) {
-                            getStyleClass().add(CSS_CLASS_INVALID);
-                        }
-                    } else {
-                        getStyleClass().remove(CSS_CLASS_INVALID);
-                    }
-                });
+            if (!validProperty.get()) {
+                if (!getStyleClass().contains(CSS_CLASS_INVALID)) {
+                    getStyleClass().add(CSS_CLASS_INVALID);
+                }
+            } else {
+                getStyleClass().remove(CSS_CLASS_INVALID);
+            }
+        });
     }
 
     /**
