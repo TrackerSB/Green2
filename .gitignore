@@ -8,4 +8,4 @@ Launcher/.idea/artifacts/
 Launcher/.idea/inspectionProfiles/
 Membermanagement/.idea/inspectionProfiles/
 out/
-**/workspace.xml
+**/.idea/workspace.xml
