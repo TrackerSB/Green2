@@ -182,7 +182,7 @@ public final class DataProvider {
          */
         SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true);
 
-        private static final String BASIC_ICON_DIR_PATH = "bayern/steinbrecher/green2/data/resources/";
+        private static final String BASIC_ICON_DIR_PATH = "/";
         private Image image;
 
         ImageSet(String filename) {

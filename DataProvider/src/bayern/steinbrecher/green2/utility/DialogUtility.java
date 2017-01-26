@@ -10,6 +10,7 @@ import bayern.steinbrecher.green2.data.DataProvider;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -212,14 +213,16 @@ public class DialogUtility {
         TextArea stacktraceArea = new TextArea(message);
         stacktraceArea.setEditable(false);
 
-        GridPane grid = new GridPane(); //TODO GridPane really needed?
+        GridPane grid = new GridPane();
         grid.addColumn(0, stacktraceArea);
         GridPane.setHgrow(stacktraceArea, Priority.ALWAYS);
         GridPane.setVgrow(stacktraceArea, Priority.ALWAYS);
 
         alert.setWidth(500); //FIXME Resize correctly
         alert.setHeight(350);
-        alert.getDialogPane().setExpandableContent(grid);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setExpandableContent(grid);
+        dialogPane.setExpanded(true);
 
         return alert;
     }

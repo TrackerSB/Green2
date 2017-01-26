@@ -15,18 +15,36 @@
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="bayern.steinbrecher.green2.login.standard.DefaultLoginController">
     <!-- This checkbox needs to be out of order because of referencing its id -->
-    <CheckBox focusTraversable="false" text="%allowEmptyFields" fx:id="allowEmptyFieldsCheckbox" GridPane.rowIndex="5"/>
+    <CheckBox fx:id="allowEmptyFieldsCheckbox"
+              text="%allowEmptyFields"
+              GridPane.rowIndex="5"/>
 
-    <Label text="%databaseUsername" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <CheckedTextField fx:id="databaseUsernameField" promptText="%databaseUsername"
-                      checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-    <Label text="%databasePassword" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-    <CheckedPasswordField fx:id="databasePasswordField" promptText="%databasePassword"
-                          checked="${!allowEmptyFieldsCheckbox.selected}" GridPane.columnIndex="1"
-                          GridPane.rowIndex="3"/>
+    <Label text="%databaseUsername"
+           GridPane.rowIndex="2"
+           GridPane.columnIndex="0"/>
+    <CheckedTextField fx:id="databaseUsernameField"
+                      promptText="%databaseUsername"
+                      checked="${!allowEmptyFieldsCheckbox.selected}"
+                      GridPane.rowIndex="2"
+                      GridPane.columnIndex="1"/>
+    <Label text="%databasePassword"
+           GridPane.rowIndex="3"
+           GridPane.columnIndex="0"/>
+    <CheckedPasswordField fx:id="databasePasswordField"
+                          promptText="%databasePassword"
+                          checked="${!allowEmptyFieldsCheckbox.selected}"
+                          GridPane.rowIndex="3"
+                          GridPane.columnIndex="1"/>
 
-    <Label text="%invalidOrMissingInput" styleClass="warningLabel" visible="${!controller.valid}"
-           GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-    <Button defaultButton="true" text="Login" onAction="#login" disable="${!controller.valid}" GridPane.columnIndex="0"
-            GridPane.rowIndex="6"/>
+    <Label text="%invalidOrMissingInput"
+           styleClass="warningLabel"
+           visible="${!controller.valid}"
+           GridPane.rowIndex="5"
+           GridPane.columnIndex="1"/>
+    <Button defaultButton="true"
+            text="Login"
+            onAction="#login"
+            disable="${!controller.valid}"
+            GridPane.rowIndex="6"
+            GridPane.columnIndex="0"/>
 </GridPane>

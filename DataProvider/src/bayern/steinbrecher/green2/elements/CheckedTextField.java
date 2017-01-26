@@ -96,10 +96,7 @@ public class CheckedTextField extends TextField {
         setAccessibleRole(AccessibleRole.TEXT_FIELD);
         initProperties();
 
-        //Validate properties
         setMaxColumnCount(maxColumnCount);
-        setText(text + " extended"); //FIXME Find a workaround
-        setText(text);
     }
 
     /**
@@ -107,12 +104,7 @@ public class CheckedTextField extends TextField {
      */
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
-        textProperty().addListener((obs, oldVal, newVal) -> {
-            toLongContent.set(newVal != null && newVal.length() > maxColumnCount.get());
-        });
-        maxColumnCount.addListener((obs, oldVal, newVal) -> {
-            toLongContent.setValue(textProperty().get().length() > newVal.intValue());
-        });
+        toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
         valid.bind(toLongContent.or(emptyContent).and(checked).not());
         valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {

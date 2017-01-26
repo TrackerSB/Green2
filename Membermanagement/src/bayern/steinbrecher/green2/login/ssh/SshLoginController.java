@@ -24,7 +24,6 @@ import java.util.ResourceBundle;
  * @author Stefan Huber
  */
 public class SshLoginController extends LoginController {
-//TODO don´t use focusTraversable
 
     @FXML
     private CheckedTextField sshUsernameField;

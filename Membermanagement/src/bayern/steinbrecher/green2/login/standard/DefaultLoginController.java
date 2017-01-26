@@ -24,7 +24,6 @@ import java.util.ResourceBundle;
  * @author Stefan Huber
  */
 public class DefaultLoginController extends LoginController {
-//TODO don´t use focusTraversable
 
     @FXML
     private CheckedTextField databaseUsernameField;

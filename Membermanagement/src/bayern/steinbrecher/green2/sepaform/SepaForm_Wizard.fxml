@@ -96,7 +96,7 @@
            GridPane.rowIndex="10"/>
     <Label text="%pastExecutionDate"
            styleClass="warningLabel"
-           visible="${!executionDatePicker.invalidPastDate}"
+           visible="${executionDatePicker.invalidPastDate}"
            GridPane.columnIndex="1"
            GridPane.rowIndex="11"/>
 </GridPane>

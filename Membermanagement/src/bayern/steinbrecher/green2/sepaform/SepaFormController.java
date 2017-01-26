@@ -120,7 +120,6 @@ public class SepaFormController extends CheckedController {
             Logger.getLogger(SepaFormController.class.getName()).log(Level.INFO, null, ex);
             originator = new Originator(profile.getOriginatorInfoPath());
         }
-        //TODO May directly bind it
         creatorTextField.setText(originator.getCreator());
         creditorTextField.setText(originator.getCreditor());
         ibanTextField.setText(originator.getIban());

@@ -6,6 +6,9 @@
 
 package bayern.steinbrecher.green2.elements;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -80,31 +83,28 @@ public class CheckedDatePicker extends DatePicker {
             }
         });
 
-        //Initiate ChangeListener
-        valid.set(false); //FIXME Find a workaround
-        valid.set(true);
-
-        getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
+        ObjectBinding<LocalDate> executionDateBinding = Bindings.createObjectBinding(() -> {
+            String dateToParse = getEditor().textProperty().get();
             LocalDate newDate = null;
             try {
-                newDate = LocalDate.parse(newVal, DATE_TIME_FORMAT_SHORT);
+                newDate = LocalDate.parse(dateToParse, DATE_TIME_FORMAT_SHORT);
             } catch (DateTimeParseException ex) {
                 //FIXME Try not to use DateTimeParseException for control flow
                 try {
-                    newDate = LocalDate.parse(newVal, DATE_TIME_FORMAT_MEDIUM);
+                    newDate = LocalDate.parse(dateToParse, DATE_TIME_FORMAT_MEDIUM);
                 } catch (DateTimeParseException ignored) {
                 }
             }
-            valid.set(newDate != null
-                    && (!this.forceFuture.get() || (this.forceFuture.get() && newDate.isAfter(LocalDate.now()))));
-        });
+            return newDate;
+        }, getEditor().textProperty());
 
-        invalidPastDate.bind(this.forceFuture.not().or(valid));
+        BooleanBinding executionDateInFuture = Bindings.createBooleanBinding(() -> {
+            LocalDate executionDate = executionDateBinding.get();
+            return executionDate != null && executionDate.isAfter(LocalDate.now());
+        }, executionDateBinding);
 
-        //Initiate ChangeListener
-        String oldText = getEditor().getText();
-        getEditor().setText(oldText + " extended"); //FIXME Find a workaround
-        getEditor().setText(oldText);
+        valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()));
+        invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
     }
 
     /**

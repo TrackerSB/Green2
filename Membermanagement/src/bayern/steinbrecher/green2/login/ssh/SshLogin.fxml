@@ -16,7 +16,6 @@
           fx:controller="bayern.steinbrecher.green2.login.ssh.SshLoginController">
     <!-- This checkbox needs to be out of order because of referencing its id -->
     <CheckBox fx:id="allowEmptyFieldsCheckbox"
-              focusTraversable="false"
               text="%allowEmptyFields"
               GridPane.rowIndex="5"
               GridPane.columnIndex="0"/>

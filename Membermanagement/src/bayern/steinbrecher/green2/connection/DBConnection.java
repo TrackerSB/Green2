@@ -39,8 +39,7 @@ public abstract class DBConnection implements AutoCloseable {
                     "kontoinhabernachname", "mandaterstellt"));
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream().collect(Collectors.joining(","));
-    private static final String EXIST_TEST
-            = "SELECT 1 FROM Mitglieder, Spitznamen;";
+    private static final String EXIST_TEST = "SELECT 1 FROM Mitglieder, Spitznamen;";
     private static final String CREATE_MITGLIEDER = "CREATE TABLE Mitglieder ("
             + "Mitgliedsnummer INTEGER PRIMARY KEY,"
             + "Titel VARCHAR(255) NOT NULL,"
