@@ -67,7 +67,7 @@ public class CheckedTextField extends TextField {
     protected final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
 
     /**
-     * Constructes a new {@code CheckedTextField} with an max input length of
+     * Constructs a new {@code CheckedTextField} with an max input length of
      * {@code Integer.MAX_VALUE} and no initial content.
      */
     public CheckedTextField() {
@@ -85,7 +85,7 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Constructes a new {@code CheckedTextField} with an max input length of
+     * Constructs a new {@code CheckedTextField} with an max input length of
      * {@code maxColumnCount} and {@code text} as initial content.
      *
      * @param maxColumnCount The initial max input length.
@@ -118,6 +118,18 @@ public class CheckedTextField extends TextField {
                 }
             }
         });
+
+        //FIXME Don't call listener explicitly
+        if (valid.get()) {
+            getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT);
+        } else {
+            if (emptyContent.get()) {
+                getStyleClass().add(CSS_CLASS_NO_CONTENT);
+            }
+            if (toLongContent.get()) {
+                getStyleClass().add(CSS_CLASS_TOO_LONG_CONTENT);
+            }
+        }
     }
 
     /**
