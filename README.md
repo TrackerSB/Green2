@@ -1,5 +1,5 @@
 # Green2
-A client for creating serial letters and Sepa Direct Debits. The main audience of this project are associations.
+A client for creating serial letters, Sepa Direct Debits, etc.
 
 ## Main audience
 * People working voluntary for associations
