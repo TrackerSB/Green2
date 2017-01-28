@@ -9,6 +9,10 @@ A client for creating serial letters, Sepa Direct Debits, etc.
 2. Exactly matched to the needs of the people which are using it
 3. Security of the sensitive data (This tool is using a database which may be located in some network)
 
+## Considered goals
+* English language support (Since all people using Green2 are speaking german, there´s no need to support english as well. Nevertheless a big part of the application is already available in english)
+For considered goals search the issues for "considered" label.
+
 ## Why?
 The reason for introducing such a client is providing a simple tool making it for people working voluntary for associations easier to do their daily job. They want to generate Sepa Direct Debits for contributions and other stuff, addresses of member (very useful for serial letters), and lists (and also addresses) of people having a certain configureable birthdays in a certain year.
 
