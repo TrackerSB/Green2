@@ -16,4 +16,4 @@ The reason for introducing such a client is providing a simple tool making it fo
 The next step what´s done next, which feature is added or whatever is in first instance depending on the people using it. They just say something like "Wouldn´t it be great if..." And that´s the next goal!
 
 ## Current goals
-Currently people are happy about the features already included so some other improvments to the crrent features are made.
+Currently people seem to be happy about the features already included so some other improvments to the current features are made.
