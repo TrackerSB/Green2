@@ -37,7 +37,7 @@ import java.io.StringWriter;
  *
  * @author Stefan Huber
  */
-public class DialogUtility {
+public final class DialogUtility {
 
     private DialogUtility() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");

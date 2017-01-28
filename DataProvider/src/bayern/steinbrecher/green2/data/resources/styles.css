@@ -1,7 +1,17 @@
 /*
  * Copyright (c) 2017. Stefan Huber
- * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
- * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/.
+ * This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -9,22 +19,32 @@
 */
 
 * {
+    /* CSS variables only working for colors. But may extended in future releases */
     -fx-main-color: forestgreen; /*#228B22*/
     -fx-main-error-color: red;
     -fx-main-radius: 3px;
+    -fx-main-font-size: 12px;
 }
 
 .root {
     -fx-background-color: white;
     -fx-focus-color: -fx-main-color;
-    -fx-padding: 10px;
     -fx-hgap: 5px;
     -fx-vgap: 10px;
     -fx-default-button: -fx-focus-color;
+    -fx-font-size: 12px;
 }
 
 .button:hover {
     -fx-font-color: white;
+}
+
+.combo-box-popup  > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected{
+    -fx-background-color: -fx-main-color;
+}
+
+.combo-box-popup  > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:hover{
+    -fx-background-color: derive(-fx-main-color, 30%);
 }
 
 .date-picker, .text-field {
@@ -43,12 +63,20 @@
 }
 
 .emptyTextField:focused, .toLongContent:focused, .invalidDate:focused,
-.invalidSpinnerValue:focused {
+.invalidSpinnerValue:focused, .unmatchRegex:focused {
     -fx-border-color: transparent;
 }
 
 .warningLabel {
     -fx-text-fill: -fx-main-error-color;
+    -fx-font-weight: bold;
+}
+
+.progress-bar {
+    -fx-accent: -fx-main-color;
+}
+
+.heading {
     -fx-font-weight: bold;
 }
 
@@ -78,7 +106,7 @@
 
 .date-picker-popup > .calendar-grid {
     -fx-background-color: white;
-    -fx-background-image: url("resources/icon.png");
+    -fx-background-image: url("/logo.png");
     -fx-background-size: 70% 70%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: bottom right;
@@ -118,12 +146,4 @@
 
 .date-picker-popup > * > .today {
     -fx-background-color: rgba(50, 50, 255, 0.5);
-}
-
-.progress-bar {
-    -fx-accent: -fx-main-color;
-}
-
-.heading {
-    -fx-font-weight: bold;
 }

@@ -59,9 +59,6 @@ public class ProfileChoice extends Application {
 
         Label choiceLabel = new Label(DataProvider.getResourceValue("chooseProfile"));
 
-        profilePane.setHgap(10);
-        profilePane.setVgap(10);
-
         int currentRowIndex = 0;
         List<String> profiles = Profile.getAvailableProfiles();
         profiles.sort(String::compareTo);
@@ -83,7 +80,7 @@ public class ProfileChoice extends Application {
             stage.close();
         });
 
-        Scene scene = new Scene(new VBox(10, choiceLabel, profilePane, create));
+        Scene scene = new Scene(new VBox(choiceLabel, profilePane, create));
         scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         stage.setScene(scene);
         stage.setResizable(false);
