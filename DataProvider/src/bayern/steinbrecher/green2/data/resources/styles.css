@@ -29,6 +29,7 @@
 .root {
     -fx-background-color: white;
     -fx-focus-color: -fx-main-color;
+    -fx-padding: 5px 10px;
     -fx-hgap: 5px;
     -fx-vgap: 10px;
     -fx-default-button: -fx-focus-color;
@@ -39,12 +40,16 @@
     -fx-font-color: white;
 }
 
-.combo-box-popup  > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected{
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
     -fx-background-color: -fx-main-color;
 }
 
-.combo-box-popup  > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:hover{
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:hover {
     -fx-background-color: derive(-fx-main-color, 30%);
+}
+
+.dialog-pane{
+    -fx-padding: 0px;
 }
 
 .date-picker, .text-field {
