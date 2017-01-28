@@ -11,6 +11,7 @@ A client for creating serial letters, Sepa Direct Debits, etc.
 
 ## Considered goals
 * English language support (Since all people using Green2 are speaking german, there´s no need to support english as well. Nevertheless a big part of the application is already available in english)
+
 For considered goals search the issues for "considered" label.
 
 ## Why?
