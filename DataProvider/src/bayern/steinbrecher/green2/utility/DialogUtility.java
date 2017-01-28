@@ -132,10 +132,8 @@ public final class DialogUtility {
         return createAlert(Alert.AlertType.ERROR, message, header, title);
     }
 
-    private static Alert addStracktrace(Alert alert, Exception ex) {
-        String stacktraceResourceBundle = DataProvider.getResourceValue("stacktraceLabel");
-        alert.setHeaderText(stacktraceResourceBundle);
-        Label stacktraceLabel = new Label(stacktraceResourceBundle);
+    private static Alert addStacktrace(Alert alert, Exception ex) {
+        Label stacktraceLabel = new Label(DataProvider.getResourceValue("stacktraceLabel"));
 
         StringWriter stacktrace = new StringWriter();
         PrintWriter stacktracePw = new PrintWriter(stacktrace);
@@ -160,19 +158,19 @@ public final class DialogUtility {
      * @return The created alert.
      */
     public static Alert createStacktraceAlert(Exception ex) {
-        return addStracktrace(createAlert(Alert.AlertType.ERROR), ex);
+        return addStacktrace(createAlert(Alert.AlertType.ERROR), ex);
     }
 
     /**
      * Crates an error alert showing a stacktrace of an exception.
      *
      * @param ex    The exception to show.
-     * @param title The title of the window.
+     * @param header The title of the window.
      * @return The created alert.
      */
-    public static Alert createStacktraceAlert(Exception ex, String title) {
+    public static Alert createStacktraceAlert(Exception ex, String header) {
         Alert alert = createStacktraceAlert(ex);
-        alert.setTitle(title);
+        alert.setHeaderText(header);
         return alert;
     }
 

@@ -233,9 +233,6 @@ public class Main extends Application {
 
     private void handleAuthException(Login login, WaitScreen waitScreen, Exception cause) {
         Platform.runLater(() -> {
-            waitScreen.close();
-
-            Stage s = new Stage();
             Alert dialog;
             if (cause instanceof ConnectException) {
                 dialog = DialogUtility.createInfoAlert(DataProvider.getResourceValue("checkConnection"));
@@ -245,7 +242,7 @@ public class Main extends Application {
                 dialog = DialogUtility.createInfoAlert(DataProvider.getResourceValue("checkInput"));
             } else {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Not action specified for: {0}", cause);
-                dialog = DialogUtility.createErrorAlert(DataProvider.getResourceValue("unexpectedAbbort"));
+                dialog = DialogUtility.createErrorAlert(DataProvider.getResourceValue("unexpectedAbort"));
             }
 
             dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
@@ -260,6 +257,8 @@ public class Main extends Application {
                     }
                 }
             });
+
+            waitScreen.close();
             dialog.show();
         });
     }
