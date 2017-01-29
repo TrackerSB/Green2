@@ -161,7 +161,7 @@ public class Main extends Application {
     }
 
     /*
-     * This methode creates a {@code WaitScreen}, connects {@code login} to it
+     * This method creates a {@code WaitScreen}, connects {@code login} to it
      * AND calls {@code start(...)} of login.
      */
     private WaitScreen createWaitScreen(Login login) throws IOException {

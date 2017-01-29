@@ -51,10 +51,10 @@ public abstract class CheckedController extends WizardableController {
     protected final BooleanProperty anyInputMissing = new SimpleBooleanProperty(this, "anyInputMissing");
 
     /**
-     * Returns the property reprsenting a boolean value indicating whether any
+     * Returns the property representing a boolean value indicating whether any
      * input is to long.
      *
-     * @return The property reprsenting a boolean value indicating whether any
+     * @return The property representing a boolean value indicating whether any
      * input is to long.
      */
     public ReadOnlyBooleanProperty anyInputToLongProperty() {
@@ -71,10 +71,10 @@ public abstract class CheckedController extends WizardableController {
     }
 
     /**
-     * Returns the property reprsenting a boolean value indicating whether any
+     * Returns the property representing a boolean value indicating whether any
      * input is missing.
      *
-     * @return The property reprsenting a boolean value indicating whether any
+     * @return The property representing a boolean value indicating whether any
      * input is missing.
      */
     public ReadOnlyBooleanProperty anyInputMissingProperty() {
@@ -91,10 +91,10 @@ public abstract class CheckedController extends WizardableController {
     }
 
     /**
-     * Returns the property reprsenting a boolean value indicating whether all
+     * Returns the property representing a boolean value indicating whether all
      * input is valid.
      *
-     * @return The property reprsenting a boolean value indicating whether all
+     * @return The property representing a boolean value indicating whether all
      * input is valid.
      */
     public ReadOnlyBooleanProperty validProperty() {

@@ -54,7 +54,7 @@ public class CheckedDatePicker extends DatePicker {
     private final BooleanProperty invalidPastDate = new SimpleBooleanProperty(this, "invalidPastDate");
 
     /**
-     * Constructes {@code CheckedDatePicker} without initial date and
+     * Constructs {@code CheckedDatePicker} without initial date and
      * {@code forceFuture} set to {@code false}.
      */
     public CheckedDatePicker() {
@@ -62,7 +62,7 @@ public class CheckedDatePicker extends DatePicker {
     }
 
     /**
-     * Constructes a {@code CheckedDatePicker} with no initial date inserted.
+     * Constructs a {@code CheckedDatePicker} with no initial date inserted.
      *
      * @param forceFuture {@code true} indicates a date can only be valid if it
      *                    is not in the past and not today.
@@ -72,7 +72,7 @@ public class CheckedDatePicker extends DatePicker {
     }
 
     /**
-     * Constructes a {@code CheckedDatePicker} with {@code locale} as initial
+     * Constructs a {@code CheckedDatePicker} with {@code locale} as initial
      * date.
      *
      * @param locale      The initial date.
