@@ -31,10 +31,10 @@ import javafx.scene.control.Label;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -48,8 +48,6 @@ import java.util.logging.Logger;
  */
 public class SepaFormController extends CheckedController {
 
-    private static final SimpleDateFormat YEAR_MONTH_DAY
-            = new SimpleDateFormat("yyyy-MM-dd");
     private static final int UNIQUE_DAYS_PMTINFID = 15;
     /**
      * The maximum length of the message id.
@@ -144,7 +142,7 @@ public class SepaFormController extends CheckedController {
 
     @FXML
     private void generateMessageId() {
-        messageIdTextField.setText(YEAR_MONTH_DAY.format(new Date()) + " "
+        messageIdTextField.setText(DateTimeFormatter.ISO_DATE.format(LocalDate.now()) + " "
                 + DataProvider.getResourceValue("contributions_sepaChars") + " "
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
