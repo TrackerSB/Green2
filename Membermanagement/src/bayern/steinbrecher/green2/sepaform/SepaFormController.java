@@ -207,10 +207,10 @@ public class SepaFormController extends CheckedController {
     }
 
     /**
-     * Returns the constant {@code MAX_CHAR_NAME_OF_INITATING_PARTY}. Only
+     * Returns the constant {@code MAX_CHAR_NAME_OF_INITIATING_PARTY}. Only
      * needed for use in FXML.
      *
-     * @return The constant {@code MAX_CHAR_NAME_OF_INITATING_PARTY}.
+     * @return The constant {@code MAX_CHAR_NAME_OF_INITIATING_PARTY}.
      */
     public int getMaxCharNameInitiatingParty() {
         return MAX_CHAR_NAME_OF_INITIATING_PARTY;
