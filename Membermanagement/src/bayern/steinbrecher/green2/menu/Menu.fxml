@@ -56,7 +56,6 @@
                     text="%ofAllMember"/>
             <Button fx:id="generateAddressesBirthday"
                     onAction="#generateAddressesBirthday"
-                    text="%birthdayExpression"
                     disable="${!yearSpinner.valid}"/>
         </VBox>
         <VBox spacing="10">
@@ -64,7 +63,6 @@
                    styleClass="heading"/>
             <Button fx:id="generateBirthdayInfos"
                     onAction="#generateBirthdayInfos"
-                    text="%groupedBirthdayMember"
                     disable="${!yearSpinner.valid}"/>
         </VBox>
     </HBox>

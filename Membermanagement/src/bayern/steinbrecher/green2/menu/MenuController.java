@@ -17,8 +17,12 @@
 package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.Controller;
+import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.elements.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.main.Main;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -55,7 +59,21 @@ public class MenuController extends Controller {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        StringBinding yearBinding = Bindings.createStringBinding(() -> {
+            String year = "?";
+            if (yearSpinner.isValid()) {
+                year = yearSpinner.getValue().toString();
+            }
+            return year;
+        }, yearSpinner.validProperty(), yearSpinner.valueProperty());
+        generateBirthdayInfos.textProperty().bind(
+                new SimpleStringProperty(DataProvider.getResourceValue("groupedBirthdayMember") + " ")
+                        .concat(yearBinding));
+        generateAddressesBirthday.textProperty().bind(
+                new SimpleStringProperty(DataProvider.getResourceValue("birthdayExpression") + " ")
+                        .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
+
     }
 
     /**
