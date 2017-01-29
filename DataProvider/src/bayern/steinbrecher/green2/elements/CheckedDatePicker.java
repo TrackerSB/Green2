@@ -16,6 +16,7 @@
 
 package bayern.steinbrecher.green2.elements;
 
+import bayern.steinbrecher.green2.utility.ElementsUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
@@ -40,7 +41,7 @@ public class CheckedDatePicker extends DatePicker {
     /**
      * The css class added when the inserted date is no valid date.
      */
-    public static final String CSS_CLASS_INVALID_DATE = "invalidDate";
+    public static final String INVALID_DATE_CSS_CLASS = "invalidDate";
     private static final DateTimeFormatter DATE_TIME_FORMAT_SHORT
             = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
     private static final DateTimeFormatter DATE_TIME_FORMAT_MEDIUM
@@ -85,13 +86,7 @@ public class CheckedDatePicker extends DatePicker {
 
         empty.bind(getEditor().textProperty().isEmpty());
 
-        valid.addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                getStyleClass().remove(CSS_CLASS_INVALID_DATE);
-            } else if (!getStyleClass().contains(CSS_CLASS_INVALID_DATE)) {
-                getStyleClass().add(CSS_CLASS_INVALID_DATE);
-            }
-        });
+        ElementsUtility.addCssClassIf(this, valid.not(), INVALID_DATE_CSS_CLASS);
 
         ObjectBinding<LocalDate> executionDateBinding = Bindings.createObjectBinding(() -> {
             String dateToParse = getEditor().textProperty().get();
@@ -113,7 +108,10 @@ public class CheckedDatePicker extends DatePicker {
             return executionDate != null && executionDate.isAfter(LocalDate.now());
         }, executionDateBinding);
 
-        valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()));
+        valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()));
+        valid.addListener((observable, oldValue, newValue) -> {
+            System.out.println("bla");
+        });
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
     }
 

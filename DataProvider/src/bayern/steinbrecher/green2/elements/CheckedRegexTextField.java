@@ -16,6 +16,8 @@
 
 package bayern.steinbrecher.green2.elements;
 
+import bayern.steinbrecher.green2.utility.ElementsUtility;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -85,18 +87,13 @@ public class CheckedRegexTextField extends CheckedTextField {
      */
     public CheckedRegexTextField(int maxColumnCount, String text, String regex) {
         super(maxColumnCount, text);
-        this.regex.addListener((obs, oldVal, newVal) -> pattern.set(Pattern.compile(newVal)));
         this.regex.set(regex);
-        textProperty().addListener((obs, oldVal, newVal) -> regexValid.set(pattern.get().matcher(newVal).matches()));
-        pattern.addListener((obs, oldVal, newVal) -> regexValid.set(newVal.matcher(this.regex.get()).matches()));
-        /*valid.bind(regexValid);
-        valid.addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                getStyleClass().remove(CSS_CLASS_REGEX_NO_MATCH);
-            } else if (!regexValid.get()) {
-                getStyleClass().add(CSS_CLASS_REGEX_NO_MATCH);
-            }
-        });*/
+        pattern.bind(Bindings.createObjectBinding(() -> Pattern.compile(this.regex.get()), this.regex));
+        regexValid.bind(Bindings.createBooleanBinding(() -> {
+            return pattern.get().matcher(textProperty().get()).matches();
+        }, pattern, textProperty()));
+        addValidCondition(regexValid);
+        ElementsUtility.addCssClassIf(this, validProperty(), CSS_CLASS_REGEX_NO_MATCH);
     }
 
     /**

@@ -17,15 +17,21 @@
 package bayern.steinbrecher.green2.elements.sepa;
 
 import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
+import bayern.steinbrecher.green2.utility.ElementsUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@code CheckedTextField} specialized for IBANs. (CSS class {@code IBAN_CSS_CLASS} is added)
+ * Represents a {@code CheckedTextField} specialized for IBANs. CSS class {@code IBAN_CSS_CLASS} is added. If the IBAN is invalid also {@code INVALID_IBAN_CSS_CLASS} is added.
  *
  * @author Stefan Huber
  */
 public final class IbanTextField extends CheckedRegexTextField {
     public static final String IBAN_CSS_CLASS = "ibanTextField";
+    public static final String INVALID_IBAN_CSS_CLASS = "invalidIban";
+    private BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
 
     /**
      * Constructs an {@code IbanTextField} with no initial content.
@@ -41,7 +47,9 @@ public final class IbanTextField extends CheckedRegexTextField {
      */
     public IbanTextField(String text) {
         super(SepaUtility.MAX_CHAR_IBAN, text, SepaUtility.IBAN_REGEX);
-        //validCondition.bind(Bindings.createBooleanBinding(() -> SepaUtility.isValidIban(getText()), textProperty()));
+        ibanValid.bind(Bindings.createBooleanBinding(() -> SepaUtility.isValidIban(getText()), textProperty()));
+        ElementsUtility.addCssClassIf(this, ibanValid.not(), INVALID_IBAN_CSS_CLASS);
+        addValidCondition(ibanValid);
         getStyleClass().add(IBAN_CSS_CLASS);
     }
 }

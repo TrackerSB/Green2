@@ -17,10 +17,6 @@
 package bayern.steinbrecher.green2.elements;
 
 import javafx.beans.NamedArg;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
 /**
@@ -29,21 +25,18 @@ import javafx.scene.control.SpinnerValueFactory;
  *
  * @author Stefan Huber
  */
-public class CheckedDoubleSpinner extends Spinner<Double> {
+public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
+
+    private static final ParseFunction<Double> parseFunction = value -> {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException ex) {
+            throw new ParseException(ex);
+        }
+    };
 
     /**
-     * Css class attribute indicating that the current value of a
-     * {@code CheckedDoubleSpinner} is not valid.
-     */
-    public static final String CSS_CLASS_INVALID = "invalidSpinnerValue";
-    /**
-     * {@code BooleanProperty} indicating whether the current value is valid.
-     */
-    private BooleanProperty validProperty
-            = new SimpleBooleanProperty(this, "valid", true);
-
-    /**
-     * Constructes a new {@code CheckedDoubleSpinner}.
+     * Constructs a new {@code CheckedDoubleSpinner}.
      *
      * @param min            The minimum allowed value.
      * @param max            The maximum allowed value.
@@ -56,47 +49,6 @@ public class CheckedDoubleSpinner extends Spinner<Double> {
                                 @NamedArg("max") double max,
                                 @NamedArg("initialValue") double initialValue,
                                 @NamedArg("amountToStepBy") double amountToStepBy) {
-        super(min, max, initialValue, amountToStepBy);
-
-        SpinnerValueFactory.DoubleSpinnerValueFactory factory
-                = new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max, initialValue, amountToStepBy);
-        setValueFactory(factory);
-        getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            try {
-                double parsed = Double.parseDouble(newVal.replace(',', '.'));
-                factory.setValue(parsed);
-                validProperty.set(true);
-            } catch (NumberFormatException ex) {
-                validProperty.set(false);
-            }
-
-            if (!validProperty.get()) {
-                if (!getStyleClass().contains(CSS_CLASS_INVALID)) {
-                    getStyleClass().add(CSS_CLASS_INVALID);
-                }
-            } else {
-                getStyleClass().remove(CSS_CLASS_INVALID);
-            }
-        });
-    }
-
-    /**
-     * Returns the {@code BooleanProperty} representing whether the current
-     * value is valid or not.
-     *
-     * @return The {@code BooleanProperty} representing whether the current
-     * value is valid or not.
-     */
-    public ReadOnlyBooleanProperty validProperty() {
-        return validProperty;
-    }
-
-    /**
-     * Checks whether the currently inserted value is valid.
-     *
-     * @return {@code true} only if the current value is valid.
-     */
-    public boolean isValid() {
-        return validProperty.get();
+        super(new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max, initialValue, amountToStepBy), parseFunction);
     }
 }

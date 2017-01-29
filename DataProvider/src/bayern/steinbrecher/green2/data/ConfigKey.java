@@ -126,7 +126,7 @@ public enum ConfigKey {
      * The regex to check against the value containing the birthday expression.
      */
     public static final Pattern BIRTHDAY_PATTERN
-            = Pattern.compile("((>=?)|(<=?)|=)[1-9]\\d*(,((>=?)|(<=?)|=)[1-9]\\d*)*");
+            = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
     //FIXME Move pattern into enum constant allowed?
     private final Class<?> valueClass;
 

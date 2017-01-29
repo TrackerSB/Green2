@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.CheckedTextField;
+import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
@@ -75,6 +76,12 @@ public class ConfigDialogController extends CheckedController {
                 birthdayExpressionTextField, profileNameTextField));
 
         birthdayExpressionTextField.setRegex(ConfigKey.BIRTHDAY_PATTERN.pattern());
+        birthdayExpressionTextField.regexValidProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("regexValid changed");
+        });
+        birthdayExpressionTextField.validProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("valid changed");
+        });
         profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (stage != null) {
                 stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + newVal);
@@ -85,13 +92,13 @@ public class ConfigDialogController extends CheckedController {
 
         anyInputMissing.bind(checkedTextFields.stream()
                 .map(CheckedTextField::emptyProperty)
-                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
+                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
         anyInputToLong.bind(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)
-                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
+                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
         valid.bind(checkedTextFields.stream()
                 .map(CheckedTextField::validProperty)
-                .reduce(TRUE_BINDING, BooleanExpression::and, BooleanBinding::and)
+                .reduce(BindingUtility.TRUE_BINDING, BooleanExpression::and, BooleanBinding::and)
                 .and(profileAlreadyExists.not()));
 
         //Load settings

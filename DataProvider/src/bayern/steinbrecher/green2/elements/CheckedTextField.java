@@ -16,6 +16,7 @@
 
 package bayern.steinbrecher.green2.elements;
 
+import bayern.steinbrecher.green2.utility.BindingUtility;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -57,15 +58,7 @@ public class CheckedTextField extends TextField {
     /**
      * Holds the string representation of the css class attribute added when the content of the TextField is invalid.
      */
-    public static final String CSS_CLASS_INVALID = "invalidContent";/**
-     * Used as identity for sequence of or bindings connected with AND.
-     */
-    private static final BooleanBinding TRUE_BINDING = new BooleanBinding() {
-                @Override
-                protected boolean computeValue() {
-                    return true;
-                }
-            };
+    public static final String CSS_CLASS_INVALID = "invalidContent";
     /**
      * Represents the maximum column count.
      */
@@ -278,6 +271,10 @@ public class CheckedTextField extends TextField {
         return valid.get();
     }
 
+    private void updateValidConditions() {
+        validCondition.bind(BindingUtility.reduceAnd(validConditions.stream()));
+    }
+
     /**
      * Adds the given condition and binds it to {@code validProperty}.
      *
@@ -285,6 +282,18 @@ public class CheckedTextField extends TextField {
      */
     protected void addValidCondition(ObservableBooleanValue condition) {
         validConditions.add(condition);
-        //validCondition.bind(validConditions.stream().reduce(TRUE_BINDING, BooleanExpression::and));
+        updateValidConditions();
+    }
+
+    /**
+     * Removes the given element. The element will be compared according to {@code equals(...)}.
+     *
+     * @param condition The condition to remove.
+     * @return {@code true} only if any element was removed.
+     */
+    protected boolean removeValidCondition(ObservableBooleanValue condition) {
+        boolean removedElement = validConditions.remove(condition);
+        updateValidConditions();
+        return removedElement;
     }
 }
