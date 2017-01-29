@@ -77,9 +77,9 @@
     <Label fx:id="messageIdLabel"
            GridPane.columnIndex="0"
            GridPane.rowIndex="7"/>
-    <HBox spacing="5"
-          GridPane.columnIndex="1"
+    <HBox GridPane.columnIndex="1"
           GridPane.rowIndex="7">
+        <!-- Which characters are supported by Sepa is taken from http://www.sepaforcorporates.com/sepa-implementation/valid-xml-characters-sepa-payments/ -->
         <CheckedRegexTextField fx:id="messageIdTextField"
                                regex="([a-zA-Z0-9]|/| |-|\?|:|\(|\)|\.|,|'|\+)*"
                                promptText="%messageId"

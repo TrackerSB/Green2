@@ -30,10 +30,13 @@
     -fx-background-color: white;
     -fx-focus-color: -fx-main-color;
     -fx-padding: 5px 10px;
-    -fx-hgap: 5px;
-    -fx-vgap: 10px;
     -fx-default-button: -fx-focus-color;
     -fx-font-size: 12px;
+}
+
+.root, .wizard-content{
+    -fx-hgap: 5px;
+    -fx-vgap: 10px;
 }
 
 .button:hover {

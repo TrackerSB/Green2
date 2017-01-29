@@ -96,20 +96,17 @@ public class SepaFormController extends CheckedController {
     public void initialize(URL location, ResourceBundle resources) {
         String maxCharCount = DataProvider.getResourceValue("maxCharCount");
         initiatingPartyLabel.setText(DataProvider.getResourceValue("nameOfInitiatingParty") + "\n"
-                + MessageFormat.format(
-                maxCharCount, getMaxCharNameInitiatingParty()));
+                + MessageFormat.format(maxCharCount, MAX_CHAR_NAME_OF_INITIATING_PARTY));
         pmtInfIdLabel.setText(DataProvider.getResourceValue("pmtInfId") + "\n"
-                + MessageFormat.format(maxCharCount, getMaxCharPmtInfId()));
+                + MessageFormat.format(maxCharCount, MAX_CHAR_PMTINFID));
 
         String uniqueForDays = DataProvider.getResourceValue("uniqueForDays");
         messageIdLabel.setText(DataProvider.getResourceValue("messageId") + "\n"
-                + MessageFormat.format(maxCharCount, getMaxCharMessageId())
-                + "\n"
+                + MessageFormat.format(maxCharCount, MAX_CHAR_MESSAGE_ID) + "\n"
                 + MessageFormat.format(uniqueForDays, UNIQUE_DAYS_PMTINFID));
 
-        checkedTextFields = Arrays.asList(creatorTextField, creditorTextField,
-                ibanTextField, bicTextField, trusterIdTextField,
-                purposeTextField, messageIdTextField, pmtInfIdTextField);
+        checkedTextFields = Arrays.asList(creatorTextField, creditorTextField, ibanTextField, bicTextField,
+                trusterIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
 
         anyInputToLong.bind(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)
@@ -118,8 +115,10 @@ public class SepaFormController extends CheckedController {
                 .map(CheckedTextField::emptyProperty)
                 .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or)
                 .or(executionDatePicker.emptyProperty()));
-        valid.bind(((anyInputToLong.or(anyInputMissing)).not())
-                .and(executionDatePicker.validProperty()));
+        valid.bind(executionDatePicker.validProperty()
+                .and(checkedTextFields.stream()
+                        .map(CheckedTextField::validProperty)
+                        .reduce(TRUE_BINDING, BooleanExpression::and, BooleanExpression::and)));
 
         Profile profile = DataProvider.getProfile();
 
