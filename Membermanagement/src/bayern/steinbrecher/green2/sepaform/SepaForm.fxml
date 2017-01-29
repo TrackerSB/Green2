@@ -17,6 +17,7 @@
   -->
 
 <?import bayern.steinbrecher.green2.elements.CheckedDatePicker?>
+<?import bayern.steinbrecher.green2.elements.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.CheckedTextField?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -79,9 +80,10 @@
     <HBox spacing="5"
           GridPane.columnIndex="1"
           GridPane.rowIndex="7">
-        <CheckedTextField fx:id="messageIdTextField"
-                          promptText="%messageId"
-                          maxColumnCount="${controller.maxCharMessageId}"/>
+        <CheckedRegexTextField fx:id="messageIdTextField"
+                               regex="([a-zA-Z0-9]|/| |-|\?|:|\(|\)|\.|,|'|\+)*"
+                               promptText="%messageId"
+                               maxColumnCount="${controller.maxCharMessageId}"/>
         <Button text="%generate"
                 onAction="#generateMessageId"/>
     </HBox>

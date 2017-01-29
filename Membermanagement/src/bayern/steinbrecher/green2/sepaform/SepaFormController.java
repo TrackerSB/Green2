@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
+import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import javafx.beans.binding.BooleanBinding;
@@ -77,7 +78,7 @@ public class SepaFormController extends CheckedController {
     @FXML
     private CheckedTextField purposeTextField;
     @FXML
-    private CheckedTextField messageIdTextField;
+    private CheckedRegexTextField messageIdTextField;
     @FXML
     private CheckedTextField pmtInfIdTextField;
     private List<CheckedTextField> checkedTextFields;
@@ -144,7 +145,7 @@ public class SepaFormController extends CheckedController {
     @FXML
     private void generateMessageId() {
         messageIdTextField.setText(YEAR_MONTH_DAY.format(new Date()) + " "
-                + DataProvider.getResourceValue("contributions") + " "
+                + DataProvider.getResourceValue("contributions_sepaChars") + " "
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
 
