@@ -22,3 +22,6 @@ The next step what´s done next, which feature is added or whatever is in first 
 
 ## Current goals
 Currently people seem to be happy about the features already included so some other improvments to the current features are made.
+
+## Coding conventions
+The coding conventions are exactly Java coding conventions [(http://www.oracle.com/technetwork/java/codeconventions-150003.pdf)](http://www.oracle.com/technetwork/java/codeconventions-150003.pdf) but the recommended maximum line length mentioned in section 4.1 is extended to 120 characters.
