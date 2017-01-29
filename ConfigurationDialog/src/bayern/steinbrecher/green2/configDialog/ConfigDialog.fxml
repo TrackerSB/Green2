@@ -97,7 +97,6 @@
             GridPane.columnIndex="0"/>
     <Button disable="${!controller.valid}"
             text="%saveAndContinue"
-            defaultButton="true"
             onAction="#saveSettingsAndContinue"
             GridPane.rowIndex="9"
             GridPane.columnIndex="1"/>

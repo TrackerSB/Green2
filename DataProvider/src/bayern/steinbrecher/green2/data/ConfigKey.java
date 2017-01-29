@@ -48,7 +48,7 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
+            return (getValueClass().isInstance(value)) && value != null;
         }
     },
     /**
@@ -61,7 +61,7 @@ public enum ConfigKey {
         @Override
         public <T> boolean isValid(T value) {
             //FIXME Need to wait until Java 9 arrives
-            return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
+            return (getValueClass().isInstance(value)) && value != null;
         }
     },
     /**
@@ -74,7 +74,7 @@ public enum ConfigKey {
         @Override
         public <T> boolean isValid(T value) {
             //FIXME Need to wait until Java 9 arrives
-            return (getValueClass().isInstance(value)) && !((String) value).isEmpty();
+            return (getValueClass().isInstance(value)) && value != null;
         }
     },
     /**
