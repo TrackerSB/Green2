@@ -18,7 +18,6 @@ package bayern.steinbrecher.green2.utility;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
-import javafx.beans.value.ObservableBooleanValue;
 
 import java.util.stream.Stream;
 
@@ -52,7 +51,23 @@ public final class BindingUtility {
         }
     };
 
-    public static ObservableBooleanValue reduceOr(Stream<Boolean> observableValues){
+    /**
+     * Reduces given stream concatenating the elements of the given stream using {@code or}.
+     *
+     * @param observableValues The stream which elements to concatenate.
+     * @return The resulting {@code BooleanExpression}.
+     */
+    public static BooleanExpression reduceOr(Stream<BooleanExpression> observableValues) {
         return observableValues.reduce(FALSE_BINDING, BooleanExpression::or);
+    }
+
+    /**
+     * Reduces given stream concatenating the elements of the given stream using {@code or}.
+     *
+     * @param observableValues The stream which elements to concatenate.
+     * @return The resulting {@code BooleanExpression}.
+     */
+    public static BooleanExpression reduceAnd(Stream<BooleanExpression> observableValues) {
+        return observableValues.reduce(FALSE_BINDING, BooleanExpression::and);
     }
 }
