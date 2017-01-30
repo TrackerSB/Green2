@@ -29,24 +29,6 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public abstract class CheckedController extends WizardableController {
 
-    /**
-     * Used as identity for sequence of or bindings connected with OR.
-     */
-    protected static final BooleanBinding FALSE_BINDING = new BooleanBinding() {
-        @Override
-        protected boolean computeValue() {
-            return false;
-        }
-    };
-    /**
-     * Used as identity for sequence of or bindings connected with AND.
-     */
-    protected static final BooleanBinding TRUE_BINDING = new BooleanBinding() {
-        @Override
-        protected boolean computeValue() {
-            return true;
-        }
-    };
     protected final BooleanProperty anyInputToLong = new SimpleBooleanProperty(this, "anyInputToLong");
     protected final BooleanProperty anyInputMissing = new SimpleBooleanProperty(this, "anyInputMissing");
 

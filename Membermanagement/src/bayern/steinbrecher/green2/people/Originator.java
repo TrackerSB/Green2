@@ -16,6 +16,8 @@
 
 package bayern.steinbrecher.green2.people;
 
+import bayern.steinbrecher.green2.utility.SepaUtility;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +44,7 @@ public class Originator {
             creditor,
             iban,
             bic,
-            trusterId,
+            creditorId,
             pmtInfId,
             purpose,
             filename;
@@ -63,7 +65,7 @@ public class Originator {
     private LocalDate executionDate;
 
     /**
-     * Constructes a new originator which has owns the attributes specified in
+     * Constructs a new originator which has owns the attributes specified in
      * {@code filename}. HINT: Attributes are only set after calling
      * {@code readOriginatorInfo()}.
      *
@@ -74,7 +76,7 @@ public class Originator {
     }
 
     /**
-     * Constructes a new originator out of the attributes specified in
+     * Constructs a new originator out of the attributes specified in
      * {@code filename}.
      *
      * @param filename The file to read from.
@@ -179,6 +181,9 @@ public class Originator {
      * @param msgId The new message id.
      */
     public void setMsgId(String msgId) {
+        if (!SepaUtility.isValidMessageId(msgId)) {
+            throw new IllegalArgumentException("\"" + msgId + "\" no valid message id.");
+        }
         this.msgId = msgId;
     }
 
@@ -215,6 +220,9 @@ public class Originator {
      * @param iban The new IBAN.
      */
     public void setIban(String iban) {
+        if (!SepaUtility.isValidIban(iban)) {
+            throw new IllegalArgumentException("\"" + iban + "\" is no valid iban.");
+        }
         this.iban = iban;
     }
 
@@ -241,17 +249,20 @@ public class Originator {
      *
      * @return The truster id.
      */
-    public String getTrusterId() {
-        return trusterId;
+    public String getCreditorId() {
+        return creditorId;
     }
 
     /**
      * Sets a new truster id.
      *
-     * @param trusterId The new truster id.
+     * @param creditorId The new truster id.
      */
-    public void setTrusterId(String trusterId) {
-        this.trusterId = trusterId;
+    public void setCreditorId(String creditorId) {
+        if (!SepaUtility.isValidCreditorId(iban)) {
+            throw new IllegalArgumentException("\"" + creditorId + "\" is no valid creditor id.");
+        }
+        this.creditorId = creditorId;
     }
 
     /**

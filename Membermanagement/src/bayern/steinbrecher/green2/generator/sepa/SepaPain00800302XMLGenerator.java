@@ -20,16 +20,14 @@ import bayern.steinbrecher.green2.people.AccountHolder;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
+import bayern.steinbrecher.green2.utility.SepaUtility;
 
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -39,61 +37,11 @@ import java.util.stream.Collectors;
  */
 public final class SepaPain00800302XMLGenerator {
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    /**
-     * Length of coutrycoude (CC);
-     */
-    private static final int SEPA_CC_LENGTH = 2;
-    /**
-     * Length of coutrycoude (CC) and checksum together.
-     */
-    private static final int SEPA_CC_CHECKSUM_LENGTH = SEPA_CC_LENGTH + 2;
-    private static final int SEPA_MIN_LENGT = SEPA_CC_CHECKSUM_LENGTH + 1;
-    private static final int SEPA_SHIFT_ASCII_ALPHABET = 55;
-    /**
-     * A=10, B=11, C=12 etc.
-     */
-    private static final int SEPA_SHIFT_COUTRYCODE = 10;
-    private static final int SEPA_CHECKSUM_MODULO = 97;
-    private static final Pattern SEPA_PATTERN = Pattern.compile("[A-Z]{2}\\d+");
-
     /**
      * Prohibit construction of an object.
      */
     private SepaPain00800302XMLGenerator() {
         throw new UnsupportedOperationException("Construction of an object not supported.");
-    }
-
-    /**
-     * Checks whether the IBAN of the given member has a valid checksum.
-     *
-     * @param ah The account holder whose IBAN to check.
-     * @return {@code true }, only if members IBAN has a valid checksum.
-     */
-    public static boolean hasValidIban(AccountHolder ah) {
-        if (!ah.hasIban()) {
-            return false;
-        }
-
-        String iban = ah.getIban().replace(" ", "");
-
-        //Check whether it CAN be a valid IBAN
-        if (!SEPA_PATTERN.matcher(iban).matches()) {
-            return false;
-        }
-
-        //Check the checksum
-        int posAlphabetFirstChar = ((int) iban.charAt(0)) - SEPA_SHIFT_ASCII_ALPHABET;
-        int posAlphabetSecondChar = ((int) iban.charAt(1)) - SEPA_SHIFT_ASCII_ALPHABET;
-        if (iban.length() < SEPA_MIN_LENGT || posAlphabetFirstChar < SEPA_SHIFT_COUTRYCODE
-                || posAlphabetSecondChar < SEPA_SHIFT_COUTRYCODE) {
-            return false;
-        }
-
-        iban = iban.substring(SEPA_CC_CHECKSUM_LENGTH) + posAlphabetFirstChar
-                + posAlphabetSecondChar + iban.substring(2, SEPA_CC_CHECKSUM_LENGTH);
-        return new BigInteger(iban).mod(BigInteger.valueOf(SEPA_CHECKSUM_MODULO))
-                .equals(BigInteger.ONE);
     }
 
     /**
@@ -111,9 +59,9 @@ public final class SepaPain00800302XMLGenerator {
      * @return A list containing member which are not included in the
      * outputfile. These are member which have no iban or no bic.
      */
-    public static List<Member> createXMLFile(List<Member> member,
-                                             Map<Integer, Double> contributions, Originator originator,
-                                             SequenceType sequenceType, String outputfile, boolean sepaWithBom) {
+    public static List<Member> createXMLFile(List<Member> member, Map<Integer, Double> contributions,
+                                             Originator originator, SequenceType sequenceType, String outputfile,
+                                             boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
         List<Member> missingContribution = member.stream()
                 .filter(m -> !contributions.containsKey(m.getMembershipnumber()))
@@ -140,7 +88,7 @@ public final class SepaPain00800302XMLGenerator {
         member.parallelStream().forEach(m -> {
             boolean valid = true;
             AccountHolder ah = m.getAccountHolder();
-            if (!hasValidIban(ah)) {
+            if (!(ah.hasIban() && SepaUtility.isValidIban(ah.getIban()))) {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
                         .log(Level.WARNING, "{0} has an invalid IBAN", m);
@@ -182,18 +130,16 @@ public final class SepaPain00800302XMLGenerator {
 
         //The beginning containing originators data.
         output.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-                .append("<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:")
-                .append("pain.008.003.02\" xmlns:xsi")
-                .append("=\"http://www.w3.org/2001/XMLSchema-instance\" ")
-                .append("xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:")
-                .append("pain.008.003.02 pain.008.003.02.xsd\">\n")
+                .append("<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.003.02\" ")
+                .append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation")
+                .append("=\"urn:iso:std:iso:20022:tech:xsd:pain.008.003.02 pain.008.003.02.xsd\">\n")
                 .append(" <CstmrDrctDbtInitn>\n")
                 .append("   <GrpHdr>\n")
                 .append("     <MsgId>")
                 .append(originator.getMsgId())
                 .append("</MsgId>\n")
                 .append("     <CreDtTm>")
-                .append(SDF.format(new Date()))
+                .append(SepaUtility.getSepaDate(new Date()))
                 .append("</CreDtTm>\n")
                 .append("     <NbOfTxs>")
                 .append(numberOfTransactions)
@@ -255,7 +201,7 @@ public final class SepaPain00800302XMLGenerator {
                 .append("         <PrvtId>\n")
                 .append("           <Othr>\n")
                 .append("             <Id>")
-                .append(originator.getTrusterId())
+                .append(originator.getCreditorId())
                 .append("</Id>\n")
                 .append("             <SchmeNm>\n")
                 .append("               <Prtry>SEPA</Prtry>\n")

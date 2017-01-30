@@ -16,6 +16,7 @@
 
 package bayern.steinbrecher.green2.elements;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -27,13 +28,17 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents text fields that detect whether their input text is longer than a
  * given maximum column count. These text fields do not stop users from entering
  * too long text. On the one hand they can tell you whether the input is too
  * long, on the other hand they set {@code CSS_CLASS_TOO_LONG_CONTENT} when the
  * content is too long and {@code CSS_CLASS_NO_CONTENT} when there´s no content
- * as one of their css classes.
+ * as one of their css classes if checked is set to {@code true}.
+ * If any condition is false, {@code CSS_CLASS_INVALID} is set.
  *
  * @author Stefan Huber
  */
@@ -49,6 +54,18 @@ public class CheckedTextField extends TextField {
      * there´s no content in this field.
      */
     public static final String CSS_CLASS_NO_CONTENT = "emptyTextField";
+    /**
+     * Holds the string representation of the css class attribute added when the content of the TextField is invalid.
+     */
+    public static final String CSS_CLASS_INVALID = "invalidContent";/**
+     * Used as identity for sequence of or bindings connected with AND.
+     */
+    private static final BooleanBinding TRUE_BINDING = new BooleanBinding() {
+                @Override
+                protected boolean computeValue() {
+                    return true;
+                }
+            };
     /**
      * Represents the maximum column count.
      */
@@ -74,7 +91,9 @@ public class CheckedTextField extends TextField {
      * <li>It is not empty and the content is not too long</li>
      * </ol>
      */
-    protected final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
+    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
+    private final List<ObservableBooleanValue> validConditions = new ArrayList<>();
+    private final BooleanProperty validCondition = new SimpleBooleanProperty(true);
 
     /**
      * Constructs a new {@code CheckedTextField} with an max input length of
@@ -85,7 +104,7 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Constructes a new {@code CheckedTextField} with an max input length of
+     * Constructs a new {@code CheckedTextField} with an max input length of
      * {@code maxColumnCount} and no initial content.
      *
      * @param maxColumnCount The initial max input length.
@@ -115,29 +134,29 @@ public class CheckedTextField extends TextField {
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
-        valid.bind(toLongContent.or(emptyContent).and(checked).not());
+        valid.bind((toLongContent.or(emptyContent).and(checked).not()).and(validCondition));
         valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {
-                getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT);
+                getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
             } else {
                 if (emptyContent.get()) {
-                    getStyleClass().add(CSS_CLASS_NO_CONTENT);
+                    getStyleClass().addAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_INVALID);
                 }
                 if (toLongContent.get()) {
-                    getStyleClass().add(CSS_CLASS_TOO_LONG_CONTENT);
+                    getStyleClass().addAll(CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
                 }
             }
         });
 
         //FIXME Don't call listener explicitly
         if (valid.get()) {
-            getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT);
+            getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
         } else {
             if (emptyContent.get()) {
-                getStyleClass().add(CSS_CLASS_NO_CONTENT);
+                getStyleClass().addAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_INVALID);
             }
             if (toLongContent.get()) {
-                getStyleClass().add(CSS_CLASS_TOO_LONG_CONTENT);
+                getStyleClass().addAll(CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
             }
         }
     }
@@ -257,5 +276,15 @@ public class CheckedTextField extends TextField {
      */
     public boolean isValid() {
         return valid.get();
+    }
+
+    /**
+     * Adds the given condition and binds it to {@code validProperty}.
+     *
+     * @param condition The condition to add.
+     */
+    protected void addValidCondition(ObservableBooleanValue condition) {
+        validConditions.add(condition);
+        //validCondition.bind(validConditions.stream().reduce(TRUE_BINDING, BooleanExpression::and));
     }
 }

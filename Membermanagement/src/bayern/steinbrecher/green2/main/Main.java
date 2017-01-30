@@ -44,6 +44,7 @@ import bayern.steinbrecher.green2.sepaform.SepaForm;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
+import bayern.steinbrecher.green2.utility.SepaUtility;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
 import bayern.steinbrecher.wizard.Wizard;
@@ -507,7 +508,8 @@ public class Main extends Application {
         List<Member> badIban = new ArrayList<>();
         try {
             badIban = member.get().parallelStream()
-                    .filter(m -> !SepaPain00800302XMLGenerator.hasValidIban(m.getAccountHolder()))
+                    .filter(m -> m.getAccountHolder().hasIban())
+                    .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);

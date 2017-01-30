@@ -17,8 +17,8 @@
   -->
 
 <?import bayern.steinbrecher.green2.elements.CheckedDatePicker?>
-<?import bayern.steinbrecher.green2.elements.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.CheckedTextField?>
+<?import bayern.steinbrecher.green2.elements.sepa.IbanTextField?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
@@ -27,7 +27,6 @@
            GridPane.columnIndex="0"
            GridPane.rowIndex="0"/>
     <CheckedTextField fx:id="creatorTextField"
-                      maxColumnCount="${controller.maxCharNameInitiatingParty}"
                       promptText="%nameOfInitiatingParty"
                       GridPane.columnIndex="1"
                       GridPane.rowIndex="0"/>
@@ -41,10 +40,10 @@
     <Label text="%iban"
            GridPane.columnIndex="0"
            GridPane.rowIndex="2"/>
-    <CheckedTextField fx:id="ibanTextField"
-                      promptText="%iban"
-                      GridPane.columnIndex="1"
-                      GridPane.rowIndex="2"/>
+    <IbanTextField fx:id="ibanTextField"
+                   promptText="%iban"
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="2"/>
     <Label text="%bic"
            GridPane.columnIndex="0"
            GridPane.rowIndex="3"/>
@@ -52,11 +51,11 @@
                       promptText="%bic"
                       GridPane.columnIndex="1"
                       GridPane.rowIndex="3"/>
-    <Label text="%trusterId"
+    <Label text="%creditorId"
            GridPane.columnIndex="0"
            GridPane.rowIndex="4"/>
-    <CheckedTextField fx:id="trusterIdTextField"
-                      promptText="%trusterId"
+    <CheckedTextField fx:id="creditorIdTextField"
+                      promptText="%creditorId"
                       GridPane.columnIndex="1"
                       GridPane.rowIndex="4"/>
     <Label text="%purpose"
@@ -79,11 +78,8 @@
            GridPane.rowIndex="7"/>
     <HBox GridPane.columnIndex="1"
           GridPane.rowIndex="7">
-        <!-- Which characters are supported by Sepa is taken from http://www.sepaforcorporates.com/sepa-implementation/valid-xml-characters-sepa-payments/ -->
-        <CheckedRegexTextField fx:id="messageIdTextField"
-                               regex="([a-zA-Z0-9]|/| |-|\?|:|\(|\)|\.|,|'|\+)*"
-                               promptText="%messageId"
-                               maxColumnCount="${controller.maxCharMessageId}"/>
+        <CheckedTextField fx:id="messageIdTextField"
+                               promptText="%messageId"/>
         <Button text="%generate"
                 onAction="#generateMessageId"/>
     </HBox>
@@ -92,7 +88,6 @@
            GridPane.rowIndex="8"/>
     <CheckedTextField fx:id="pmtInfIdTextField"
                       promptText="%pmtInfId"
-                      maxColumnCount="${controller.maxCharPmtInfId}"
                       GridPane.columnIndex="1"
                       GridPane.rowIndex="8"/>
 

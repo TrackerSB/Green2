@@ -20,9 +20,10 @@ import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
-import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
+import bayern.steinbrecher.green2.utility.BindingUtility;
+import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
@@ -48,20 +49,6 @@ import java.util.logging.Logger;
  */
 public class SepaFormController extends CheckedController {
 
-    private static final int UNIQUE_DAYS_PMTINFID = 15;
-    /**
-     * The maximum length of the message id.
-     */
-    public static final int MAX_CHAR_MESSAGE_ID = 35;
-    /**
-     * The maximum length of payment information id (PmtInfId).
-     */
-    public static final int MAX_CHAR_PMTINFID = 35;
-    /**
-     * The maximum length of the name of the party creating the SEPA Direct
-     * Debit.
-     */
-    public static final int MAX_CHAR_NAME_OF_INITIATING_PARTY = 70;
     private Originator originator;
     @FXML
     private CheckedTextField creatorTextField;
@@ -72,11 +59,11 @@ public class SepaFormController extends CheckedController {
     @FXML
     private CheckedTextField bicTextField;
     @FXML
-    private CheckedTextField trusterIdTextField;
+    private CheckedTextField creditorIdTextField;
     @FXML
     private CheckedTextField purposeTextField;
     @FXML
-    private CheckedRegexTextField messageIdTextField;
+    private CheckedTextField messageIdTextField;
     @FXML
     private CheckedTextField pmtInfIdTextField;
     private List<CheckedTextField> checkedTextFields;
@@ -96,29 +83,35 @@ public class SepaFormController extends CheckedController {
     public void initialize(URL location, ResourceBundle resources) {
         String maxCharCount = DataProvider.getResourceValue("maxCharCount");
         initiatingPartyLabel.setText(DataProvider.getResourceValue("nameOfInitiatingParty") + "\n"
-                + MessageFormat.format(maxCharCount, MAX_CHAR_NAME_OF_INITIATING_PARTY));
+                + MessageFormat.format(maxCharCount, SepaUtility.MAX_CHAR_NAME_OF_INITIATING_PARTY));
         pmtInfIdLabel.setText(DataProvider.getResourceValue("pmtInfId") + "\n"
-                + MessageFormat.format(maxCharCount, MAX_CHAR_PMTINFID));
+                + MessageFormat.format(maxCharCount, SepaUtility.MAX_CHAR_PMTINFID));
 
         String uniqueForDays = DataProvider.getResourceValue("uniqueForDays");
         messageIdLabel.setText(DataProvider.getResourceValue("messageId") + "\n"
-                + MessageFormat.format(maxCharCount, MAX_CHAR_MESSAGE_ID) + "\n"
-                + MessageFormat.format(uniqueForDays, UNIQUE_DAYS_PMTINFID));
+                + MessageFormat.format(maxCharCount, SepaUtility.MAX_CHAR_MESSAGE_ID) + "\n"
+                + MessageFormat.format(uniqueForDays, SepaUtility.UNIQUE_DAYS_PMTINFID));
 
         checkedTextFields = Arrays.asList(creatorTextField, creditorTextField, ibanTextField, bicTextField,
-                trusterIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
+                creditorIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
+
+        pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
+        creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_OF_INITIATING_PARTY);
+        messageIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_MESSAGE_ID);
+        /*messageIdTextField.setValidCondition(Bindings.createBooleanBinding(
+                () -> SepaUtility.isValidMessageId(messageIdTextField.getText()), messageIdTextField.textProperty()));*/
 
         anyInputToLong.bind(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)
-                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
+                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
         anyInputMissing.bind(checkedTextFields.stream()
                 .map(CheckedTextField::emptyProperty)
-                .reduce(FALSE_BINDING, BooleanExpression::or, BooleanBinding::or)
+                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or)
                 .or(executionDatePicker.emptyProperty()));
         valid.bind(executionDatePicker.validProperty()
                 .and(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty)
-                        .reduce(TRUE_BINDING, BooleanExpression::and, BooleanExpression::and)));
+                        .reduce(BindingUtility.TRUE_BINDING, BooleanExpression::and, BooleanExpression::and)));
 
         Profile profile = DataProvider.getProfile();
 
@@ -132,7 +125,7 @@ public class SepaFormController extends CheckedController {
         creditorTextField.setText(originator.getCreditor());
         ibanTextField.setText(originator.getIban());
         bicTextField.setText(originator.getBic());
-        trusterIdTextField.setText(originator.getTrusterId());
+        creditorIdTextField.setText(originator.getCreditorId());
         purposeTextField.setText(originator.getPurpose());
         messageIdTextField.setText(originator.getMsgId());
         pmtInfIdTextField.setText(originator.getPmtInfId());
@@ -152,7 +145,7 @@ public class SepaFormController extends CheckedController {
             originator.setCreditor(creditorTextField.getText());
             originator.setIban(ibanTextField.getText());
             originator.setBic(bicTextField.getText());
-            originator.setTrusterId(trusterIdTextField.getText());
+            originator.setCreditorId(creditorIdTextField.getText());
             originator.setPurpose(purposeTextField.getText());
             originator.setMsgId(messageIdTextField.getText());
             originator.setPmtInfId(pmtInfIdTextField.getText());
@@ -183,35 +176,5 @@ public class SepaFormController extends CheckedController {
             saveOriginator();
             return Optional.of(originator);
         }
-    }
-
-    /**
-     * Returns the constant {@code MAX_CHAR_MESSAGE_ID}. Only needed for use in
-     * FXML.
-     *
-     * @return The constant {@code MAX_CHAR_MESSAGE_ID}.
-     */
-    public int getMaxCharMessageId() {
-        return MAX_CHAR_MESSAGE_ID;
-    }
-
-    /**
-     * Returns the constant {@code MAX_CHAR_PMTINFID}. Only needed for use in
-     * FXML.
-     *
-     * @return The constant {@code MAX_CHAR_PMTINFID}.
-     */
-    public int getMaxCharPmtInfId() {
-        return MAX_CHAR_PMTINFID;
-    }
-
-    /**
-     * Returns the constant {@code MAX_CHAR_NAME_OF_INITIATING_PARTY}. Only
-     * needed for use in FXML.
-     *
-     * @return The constant {@code MAX_CHAR_NAME_OF_INITIATING_PARTY}.
-     */
-    public int getMaxCharNameInitiatingParty() {
-        return MAX_CHAR_NAME_OF_INITIATING_PARTY;
     }
 }

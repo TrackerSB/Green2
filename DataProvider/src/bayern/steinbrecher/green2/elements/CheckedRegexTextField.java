@@ -44,7 +44,7 @@ public class CheckedRegexTextField extends CheckedTextField {
     private ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
 
     /**
-     * Constructes a new {@code CheckedRegexTextField} without initial content,
+     * Constructs a new {@code CheckedRegexTextField} without initial content,
      * maximum column count of {@code Integer.MAX_VALUE} and a all accepting
      * regex.
      */
@@ -64,7 +64,7 @@ public class CheckedRegexTextField extends CheckedTextField {
     }
 
     /**
-     * Constructes a new {@code CheckedRegexTextField} with an max input length
+     * Constructs a new {@code CheckedRegexTextField} with an max input length
      * of {@code maxColumnCount}, no initial content and regex {@code regex}.
      *
      * @param maxColumnCount The initial max input length.
@@ -75,7 +75,7 @@ public class CheckedRegexTextField extends CheckedTextField {
     }
 
     /**
-     * Constructes a new {@code CheckedRegexTextField} with an max input length
+     * Constructs a new {@code CheckedRegexTextField} with an max input length
      * of {@code maxColumnCount}, {@code text} as initial content and regex
      * {@code regex}.
      *
@@ -89,14 +89,14 @@ public class CheckedRegexTextField extends CheckedTextField {
         this.regex.set(regex);
         textProperty().addListener((obs, oldVal, newVal) -> regexValid.set(pattern.get().matcher(newVal).matches()));
         pattern.addListener((obs, oldVal, newVal) -> regexValid.set(newVal.matcher(this.regex.get()).matches()));
-        valid.bind(regexValid);
+        /*valid.bind(regexValid);
         valid.addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 getStyleClass().remove(CSS_CLASS_REGEX_NO_MATCH);
             } else if (!regexValid.get()) {
                 getStyleClass().add(CSS_CLASS_REGEX_NO_MATCH);
             }
-        });
+        });*/
     }
 
     /**
