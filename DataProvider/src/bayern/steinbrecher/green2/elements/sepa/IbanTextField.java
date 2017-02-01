@@ -48,8 +48,11 @@ public final class IbanTextField extends CheckedRegexTextField {
     public IbanTextField(String text) {
         super(SepaUtility.MAX_CHAR_IBAN, text, SepaUtility.IBAN_REGEX);
         ibanValid.bind(Bindings.createBooleanBinding(() -> SepaUtility.isValidIban(getText()), textProperty()));
-        ElementsUtility.addCssClassIf(this, ibanValid.not(), INVALID_IBAN_CSS_CLASS);
+        ibanValid.addListener((observable, oldValue, newValue) -> {
+            System.out.println("Iban is vaild: " + newValue);
+        });
         addValidCondition(ibanValid);
         getStyleClass().add(IBAN_CSS_CLASS);
+        ElementsUtility.addCssClassIf(this, ibanValid.not(), INVALID_IBAN_CSS_CLASS);
     }
 }

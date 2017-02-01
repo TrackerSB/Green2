@@ -16,6 +16,7 @@
 
 package bayern.steinbrecher.green2.utility;
 
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
@@ -36,15 +37,21 @@ public final class ElementsUtility {
      * @param cssClass   The style class to add/remove.
      */
     public static void addCssClassIf(Parent parent, ObservableBooleanValue observable, String cssClass) {
-        observable.addListener((obs, oldVal, newVal) -> {
+        ChangeListener<Boolean> changeListener = (obs, oldVal, newVal) -> {
             ObservableList<String> styleClasses = parent.getStyleClass();
             if (newVal) {
                 if (!styleClasses.contains(cssClass)) {
                     styleClasses.add(cssClass);
+                    System.out.println(cssClass + " set");
                 }
             } else {
                 styleClasses.remove(cssClass);
+                System.out.println(cssClass + " removed");
             }
-        });
+        };
+        observable.addListener(changeListener);
+
+        //FIXME Don't call listener explicitly
+        changeListener.changed(observable, observable.get(), observable.get());
     }
 }

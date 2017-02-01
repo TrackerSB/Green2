@@ -93,7 +93,7 @@ public class CheckedRegexTextField extends CheckedTextField {
             return pattern.get().matcher(textProperty().get()).matches();
         }, pattern, textProperty()));
         addValidCondition(regexValid);
-        ElementsUtility.addCssClassIf(this, validProperty(), CSS_CLASS_REGEX_NO_MATCH);
+        ElementsUtility.addCssClassIf(this, validProperty().not(), CSS_CLASS_REGEX_NO_MATCH);
     }
 
     /**

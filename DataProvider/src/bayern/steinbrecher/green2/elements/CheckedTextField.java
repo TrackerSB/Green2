@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.utility.BindingUtility;
-import javafx.beans.binding.BooleanBinding;
+import bayern.steinbrecher.green2.utility.ElementsUtility;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -36,10 +36,10 @@ import java.util.List;
  * Represents text fields that detect whether their input text is longer than a
  * given maximum column count. These text fields do not stop users from entering
  * too long text. On the one hand they can tell you whether the input is too
- * long, on the other hand they set {@code CSS_CLASS_TOO_LONG_CONTENT} when the
- * content is too long and {@code CSS_CLASS_NO_CONTENT} when there´s no content
+ * long, on the other hand they set {@code TOO_LONG_CONTENT_CSS_CLASS} when the
+ * content is too long and {@code NO_CONTENT_CSS_CLASS} when there´s no content
  * as one of their css classes if checked is set to {@code true}.
- * If any condition is false, {@code CSS_CLASS_INVALID} is set.
+ * If any condition is false, {@code INVALID_CSS_CLASS} is set.
  *
  * @author Stefan Huber
  */
@@ -49,16 +49,16 @@ public class CheckedTextField extends TextField {
      * Holds the string representation of the css class attribute added when the
      * content of this text field is too long.
      */
-    public static final String CSS_CLASS_TOO_LONG_CONTENT = "toLongContent";
+    public static final String TOO_LONG_CONTENT_CSS_CLASS = "toLongContent";
     /**
      * Holds the string representation of the css class attribute added when
      * there´s no content in this field.
      */
-    public static final String CSS_CLASS_NO_CONTENT = "emptyTextField";
+    public static final String NO_CONTENT_CSS_CLASS = "emptyTextField";
     /**
      * Holds the string representation of the css class attribute added when the content of the TextField is invalid.
      */
-    public static final String CSS_CLASS_INVALID = "invalidContent";
+    public static final String INVALID_CSS_CLASS = "invalidContent";
     /**
      * Represents the maximum column count.
      */
@@ -128,30 +128,9 @@ public class CheckedTextField extends TextField {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
         valid.bind((toLongContent.or(emptyContent).and(checked).not()).and(validCondition));
-        valid.addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
-            } else {
-                if (emptyContent.get()) {
-                    getStyleClass().addAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_INVALID);
-                }
-                if (toLongContent.get()) {
-                    getStyleClass().addAll(CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
-                }
-            }
-        });
-
-        //FIXME Don't call listener explicitly
-        if (valid.get()) {
-            getStyleClass().removeAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
-        } else {
-            if (emptyContent.get()) {
-                getStyleClass().addAll(CSS_CLASS_NO_CONTENT, CSS_CLASS_INVALID);
-            }
-            if (toLongContent.get()) {
-                getStyleClass().addAll(CSS_CLASS_TOO_LONG_CONTENT, CSS_CLASS_INVALID);
-            }
-        }
+        ElementsUtility.addCssClassIf(this, valid.not(), INVALID_CSS_CLASS);
+        ElementsUtility.addCssClassIf(this, emptyContent, NO_CONTENT_CSS_CLASS);
+        ElementsUtility.addCssClassIf(this, toLongContent, TOO_LONG_CONTENT_CSS_CLASS);
     }
 
     /**
@@ -272,6 +251,7 @@ public class CheckedTextField extends TextField {
     }
 
     private void updateValidConditions() {
+        validCondition.unbind();
         validCondition.bind(BindingUtility.reduceAnd(validConditions.stream()));
     }
 

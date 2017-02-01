@@ -86,8 +86,6 @@ public class CheckedDatePicker extends DatePicker {
 
         empty.bind(getEditor().textProperty().isEmpty());
 
-        ElementsUtility.addCssClassIf(this, valid.not(), INVALID_DATE_CSS_CLASS);
-
         ObjectBinding<LocalDate> executionDateBinding = Bindings.createObjectBinding(() -> {
             String dateToParse = getEditor().textProperty().get();
             LocalDate newDate = null;
@@ -109,10 +107,12 @@ public class CheckedDatePicker extends DatePicker {
         }, executionDateBinding);
 
         valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()));
-        valid.addListener((observable, oldValue, newValue) -> {
-            System.out.println("bla");
-        });
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
+
+        valid.addListener((observable, oldValue, newValue) -> {
+            System.out.println("Date is valid: " + newValue);
+        });
+        ElementsUtility.addCssClassIf(this, valid.not(), INVALID_DATE_CSS_CLASS);
     }
 
     /**
