@@ -29,6 +29,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Represents a DatePicker which sets a css class attribute when it is empty or
@@ -89,6 +91,13 @@ public class CheckedDatePicker extends DatePicker {
         ObjectBinding<LocalDate> executionDateBinding = Bindings.createObjectBinding(() -> {
             String dateToParse = getEditor().textProperty().get();
             LocalDate newDate = null;
+
+            String[] dateParts = dateToParse.split(".");
+            if (dateParts.length == 3) {
+                dateParts[0] = (dateParts[0].length() < 2 ? "0" : "") + dateParts[0];
+                dateParts[1] = (dateParts[1].length() < 2 ? "0" : "") + dateParts[1];
+                dateToParse = Arrays.stream(dateParts).collect(Collectors.joining("."));
+            }
             try {
                 newDate = LocalDate.parse(dateToParse, DATE_TIME_FORMAT_SHORT);
             } catch (DateTimeParseException ex) {
