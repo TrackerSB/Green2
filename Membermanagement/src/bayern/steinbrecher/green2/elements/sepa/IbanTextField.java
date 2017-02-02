@@ -24,12 +24,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * Represents a {@code CheckedTextField} specialized for IBANs. CSS class {@code MESSAGE_ID_CSS_CLASS} is added.
+ * Represents a {@code CheckedTextField} specialized for IBANs. CSS class {@code CSS_CLASS_MESSAGE_ID} is added.
  *
  * @author Stefan Huber
  */
 public final class IbanTextField extends CheckedRegexTextField {
-    public static final String IBAN_CSS_CLASS = "ibanTextField";
+    public static final String CSS_CLASS_IBAN_TEXTFIELD = "ibanTextField";
     private BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
 
     /**
@@ -48,11 +48,8 @@ public final class IbanTextField extends CheckedRegexTextField {
         super(SepaUtility.MAX_CHAR_IBAN, text, SepaUtility.IBAN_REGEX);
         ibanValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidIban(textProperty().get()), textProperty()));
-        ibanValid.addListener((observable, oldValue, newValue) -> {
-            System.out.println("Iban is valid: " + newValue);
-        });
         addValidCondition(ibanValid);
-        getStyleClass().add(IBAN_CSS_CLASS);
+        getStyleClass().add(CSS_CLASS_IBAN_TEXTFIELD);
     }
 
     /**

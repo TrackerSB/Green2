@@ -259,7 +259,7 @@ public class Originator {
      * @param creditorId The new truster id.
      */
     public void setCreditorId(String creditorId) {
-        if (!SepaUtility.isValidCreditorId(iban)) {
+        if (!SepaUtility.isValidCreditorId(creditorId)) {
             throw new IllegalArgumentException("\"" + creditorId + "\" is no valid creditor id.");
         }
         this.creditorId = creditorId;

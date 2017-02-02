@@ -40,10 +40,6 @@ import java.util.stream.Collectors;
  */
 public class CheckedDatePicker extends DatePicker {
 
-    /**
-     * The css class added when the inserted date is no valid date.
-     */
-    public static final String INVALID_DATE_CSS_CLASS = "invalidDate";
     private static final DateTimeFormatter DATE_TIME_FORMAT_SHORT
             = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
     private static final DateTimeFormatter DATE_TIME_FORMAT_MEDIUM
@@ -118,7 +114,7 @@ public class CheckedDatePicker extends DatePicker {
         valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()));
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 
-        ElementsUtility.addCssClassIf(this, valid.not(), INVALID_DATE_CSS_CLASS);
+        ElementsUtility.addCssClassIf(this, valid.not(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**

@@ -21,6 +21,9 @@ import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.CheckedTextField;
+import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField;
+import bayern.steinbrecher.green2.elements.sepa.IbanTextField;
+import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
@@ -55,15 +58,15 @@ public class SepaFormController extends CheckedController {
     @FXML
     private CheckedTextField creditorTextField;
     @FXML
-    private CheckedTextField ibanTextField;
+    private IbanTextField ibanTextField;
     @FXML
     private CheckedTextField bicTextField;
     @FXML
-    private CheckedTextField creditorIdTextField;
+    private CreditorIdTextField creditorIdTextField;
     @FXML
     private CheckedTextField purposeTextField;
     @FXML
-    private CheckedTextField messageIdTextField;
+    private MessageIdTextField messageIdTextField;
     @FXML
     private CheckedTextField pmtInfIdTextField;
     private List<CheckedTextField> checkedTextFields;
@@ -97,9 +100,6 @@ public class SepaFormController extends CheckedController {
 
         pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
         creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_OF_INITIATING_PARTY);
-        messageIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_MESSAGE_ID);
-        /*messageIdTextField.setValidCondition(Bindings.createBooleanBinding(
-                () -> SepaUtility.isValidMessageId(messageIdTextField.getText()), messageIdTextField.textProperty()));*/
 
         anyInputToLong.bind(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)

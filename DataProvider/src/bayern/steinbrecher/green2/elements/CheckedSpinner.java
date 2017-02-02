@@ -27,16 +27,11 @@ import javafx.scene.control.SpinnerValueFactory;
 import java.security.PrivilegedActionException;
 
 /**
- * Extends the class {@code Spinner<T>} with a valid property and sets {@code INVALID_CSS_CLASS} if the content of the spinner is not valid.
+ * Extends the class {@code Spinner<T>} with a valid property and sets {@code ElementsUtility.CSS_CLASS_INVALID_CONTENT} if the content of the spinner is not valid.
  *
  * @author Stefan Huber
  */
 public class CheckedSpinner<T> extends Spinner<T> {
-    /**
-     * Css class attribute indicating that the current value of a
-     * {@code CheckedDoubleSpinner} is not valid.
-     */
-    public static final String INVALID_CSS_CLASS = "invalidSpinnerValue";
     /**
      * {@code BooleanProperty} indicating whether the current value is valid.
      */
@@ -61,7 +56,7 @@ public class CheckedSpinner<T> extends Spinner<T> {
             }
         }, getEditor().textProperty()));
 
-        ElementsUtility.addCssClassIf(this, valid.not(), INVALID_CSS_CLASS);
+        ElementsUtility.addCssClassIf(this, valid.not(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**

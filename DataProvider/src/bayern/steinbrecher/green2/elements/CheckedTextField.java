@@ -36,10 +36,10 @@ import java.util.List;
  * Represents text fields that detect whether their input text is longer than a
  * given maximum column count. These text fields do not stop users from entering
  * too long text. On the one hand they can tell you whether the input is too
- * long, on the other hand they set {@code TOO_LONG_CONTENT_CSS_CLASS} when the
- * content is too long and {@code NO_CONTENT_CSS_CLASS} when there´s no content
+ * long, on the other hand they set {@code CSS_CLASS_TOO_LONG_CONTENT} when the
+ * content is too long and {@code CSS_CLASS_NO_CONTENT} when there´s no content
  * as one of their css classes if checked is set to {@code true}.
- * If any condition is false, {@code INVALID_CSS_CLASS} is set.
+ * If any condition is false, {@code ElementsUtility.CSS_CLASS_INVALID_CONTENT} is set.
  *
  * @author Stefan Huber
  */
@@ -49,16 +49,12 @@ public class CheckedTextField extends TextField {
      * Holds the string representation of the css class attribute added when the
      * content of this text field is too long.
      */
-    public static final String TOO_LONG_CONTENT_CSS_CLASS = "toLongContent";
+    public static final String CSS_CLASS_TOO_LONG_CONTENT = "toLongContent";
     /**
      * Holds the string representation of the css class attribute added when
      * there´s no content in this field.
      */
-    public static final String NO_CONTENT_CSS_CLASS = "emptyTextField";
-    /**
-     * Holds the string representation of the css class attribute added when the content of the TextField is invalid.
-     */
-    public static final String INVALID_CSS_CLASS = "invalidContent";
+    public static final String CSS_CLASS_NO_CONTENT = "emptyTextField";
     /**
      * Represents the maximum column count.
      */
@@ -128,15 +124,9 @@ public class CheckedTextField extends TextField {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
         valid.bind((toLongContent.or(emptyContent).and(checked).not()).and(validCondition));
-        ElementsUtility.addCssClassIf(this, valid.not(), INVALID_CSS_CLASS);
-        ElementsUtility.addCssClassIf(this, emptyContent, NO_CONTENT_CSS_CLASS);
-        ElementsUtility.addCssClassIf(this, toLongContent, TOO_LONG_CONTENT_CSS_CLASS);
-        valid.addListener((observable, oldValue, newValue) -> {
-            System.out.println("valid is " + newValue);
-        });
-        validCondition.addListener((observable, oldValue, newValue) -> {
-            System.out.println("validCondition is " + newValue);
-        });
+        ElementsUtility.addCssClassIf(this, valid.not(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(this, emptyContent, CSS_CLASS_NO_CONTENT);
+        ElementsUtility.addCssClassIf(this, toLongContent, CSS_CLASS_TOO_LONG_CONTENT);
     }
 
     /**

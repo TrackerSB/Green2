@@ -71,7 +71,7 @@ public final class SepaUtility {
      * Regex describing a possible valid IBAN. (Checksum of the IBAN is not checked by this regex)
      */
     public static final String IBAN_REGEX
-            = "[A-Z]{" + SEPA_CC_LENGTH + "}\\d{0," + (MAX_CHAR_IBAN - SEPA_CC_LENGTH) + "}";
+            = "[A-Z]{" + SEPA_CC_LENGTH + "}\\d{2," + (MAX_CHAR_IBAN - SEPA_CC_LENGTH) + "}";
     private static final Pattern IBAN_PATTERN = Pattern.compile(IBAN_REGEX);
     /**
      * The regex for checking whether a message id is valid.

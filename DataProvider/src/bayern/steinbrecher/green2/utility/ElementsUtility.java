@@ -25,6 +25,8 @@ import javafx.scene.Parent;
  * Contains methods useful for many custom controls of {@code bayern.steinbrecher.green2.elements}.
  */
 public final class ElementsUtility {
+    public static final String CSS_CLASS_INVALID_CONTENT = "invalidContent";
+
     private ElementsUtility() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
@@ -42,11 +44,11 @@ public final class ElementsUtility {
             if (newVal) {
                 if (!styleClasses.contains(cssClass)) {
                     styleClasses.add(cssClass);
-                    System.out.println(cssClass + " added");
+                    System.out.println(cssClass + " added: " + parent.getStyleClass());
                 }
             } else {
                 styleClasses.remove(cssClass);
-                System.out.println(cssClass + " removed");
+                System.out.println(cssClass + " removed: " + parent.getStyleClass());
             }
         };
         observable.addListener(changeListener);

@@ -24,35 +24,24 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * Represents a {@code TextField} for entering a message id. {@code MESSAGE_ID_CSS_CLASS} is added.
+ * Represents a {@code TextField} for inserting a creditor id. Css class {@code CSS_CLASS_CREDITORID_TEXTFIELD} is added.
  *
  * @author Stefan Huber
  */
-public class MessageIdTextField extends CheckedRegexTextField {
-    public static final String MESSAGE_ID_CSS_CLASS = "messageIdTextField";
-    private BooleanProperty messageIdValid = new SimpleBooleanProperty(this, "messageIdValid");
+public class CreditorIdTextField extends CheckedRegexTextField {
+    public static final String CSS_CLASS_CREDITORID_TEXTFIELD = "creditorIdTextField";
+    private BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
 
-    /**
-     * Constructs an {@code IbanTextField} with no initial content.
-     */
-    public MessageIdTextField() {
+    public CreditorIdTextField() {
         this("");
     }
 
-    /**
-     * Constructs an {@code IbanTextField} with given content.
-     *
-     * @param text The initial content.
-     */
-    public MessageIdTextField(String text) {
+    public CreditorIdTextField(String text) {
         super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX);
-        messageIdValid.bind(Bindings.createBooleanBinding(
-                () -> SepaUtility.isValidMessageId(textProperty().get()), textProperty()));
-        messageIdValid.addListener((observable, oldValue, newValue) -> {
-            System.out.println("MessageId is valid: " + newValue);
-        });
-        addValidCondition(messageIdValid);
-        getStyleClass().add(MESSAGE_ID_CSS_CLASS);
+        creditorIdValid.bind(Bindings.createBooleanBinding(
+                () -> SepaUtility.isValidCreditorId(textProperty().get()), textProperty()));
+        addValidCondition(creditorIdValid);
+        getStyleClass().add(CSS_CLASS_CREDITORID_TEXTFIELD);
     }
 
     /**

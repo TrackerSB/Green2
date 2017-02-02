@@ -16,7 +16,6 @@
 
 package bayern.steinbrecher.green2.elements;
 
-import bayern.steinbrecher.green2.utility.ElementsUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -40,7 +39,7 @@ public class CheckedRegexTextField extends CheckedTextField {
      * Holds the string representation of the css class attribute added when the
      * content of this text field does not match the current regex.
      */
-    public static final String CSS_CLASS_REGEX_NO_MATCH = "unmatchRegex";
+    //public static final String CSS_CLASS_REGEX_NO_MATCH = "unmatchRegex";
     private StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
     private BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
     private ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
@@ -90,10 +89,11 @@ public class CheckedRegexTextField extends CheckedTextField {
         this.regex.set(regex);
         pattern.bind(Bindings.createObjectBinding(() -> Pattern.compile(this.regex.get()), this.regex));
         regexValid.bind(Bindings.createBooleanBinding(() -> {
-            return pattern.get().matcher(textProperty().get()).matches();
+            Pattern patternValue = this.pattern.get();
+            return patternValue != null && patternValue.matcher(textProperty().get()).matches();
         }, pattern, textProperty()));
         addValidCondition(regexValid);
-        ElementsUtility.addCssClassIf(this, regexValid.not(), CSS_CLASS_REGEX_NO_MATCH);
+        //ElementsUtility.addCssClassIf(this, regexValid.not(), CSS_CLASS_REGEX_NO_MATCH);
     }
 
     /**
