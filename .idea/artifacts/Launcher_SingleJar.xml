@@ -20,9 +20,9 @@
         </element>
         <element id="directory" name="licences">
           <element id="file-copy" path="$PROJECT_DIR$/licenses/license_icons.pdf" />
-          <element id="file-copy" path="$PROJECT_DIR$/licenses/LICENCSE.txt" />
+          <element id="file-copy" path="$PROJECT_DIR$/licenses/License.txt" />
         </element>
-        <element id="extracted-dir" path="$USER_HOME$/myPrograms/java/MyLibraries/out/artifacts/Wizard_jar/Wizard.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$USER_HOME$/myPrograms/java/MyLibraries/out/artifacts/Wizard/Wizard.jar" path-in-jar="/" />
       </element>
     </root>
   </artifact>
