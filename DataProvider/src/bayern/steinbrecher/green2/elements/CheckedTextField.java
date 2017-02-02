@@ -86,7 +86,7 @@ public class CheckedTextField extends TextField {
      */
     private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
     private final List<ObservableBooleanValue> validConditions = new ArrayList<>();
-    private final BooleanProperty validCondition = new SimpleBooleanProperty(true);
+    private final BooleanProperty validCondition = new SimpleBooleanProperty(this, "validCondition", true);
 
     /**
      * Constructs a new {@code CheckedTextField} with an max input length of
@@ -131,6 +131,12 @@ public class CheckedTextField extends TextField {
         ElementsUtility.addCssClassIf(this, valid.not(), INVALID_CSS_CLASS);
         ElementsUtility.addCssClassIf(this, emptyContent, NO_CONTENT_CSS_CLASS);
         ElementsUtility.addCssClassIf(this, toLongContent, TOO_LONG_CONTENT_CSS_CLASS);
+        valid.addListener((observable, oldValue, newValue) -> {
+            System.out.println("valid is " + newValue);
+        });
+        validCondition.addListener((observable, oldValue, newValue) -> {
+            System.out.println("validCondition is " + newValue);
+        });
     }
 
     /**

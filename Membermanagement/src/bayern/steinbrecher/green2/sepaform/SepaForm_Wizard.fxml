@@ -18,7 +18,9 @@
 
 <?import bayern.steinbrecher.green2.elements.CheckedDatePicker?>
 <?import bayern.steinbrecher.green2.elements.CheckedTextField?>
+<?import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.IbanTextField?>
+<?import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
@@ -54,10 +56,10 @@
     <Label text="%creditorId"
            GridPane.columnIndex="0"
            GridPane.rowIndex="4"/>
-    <CheckedTextField fx:id="creditorIdTextField"
-                      promptText="%creditorId"
-                      GridPane.columnIndex="1"
-                      GridPane.rowIndex="4"/>
+    <CreditorIdTextField fx:id="creditorIdTextField"
+                         promptText="%creditorId"
+                         GridPane.columnIndex="1"
+                         GridPane.rowIndex="4"/>
     <Label text="%purpose"
            GridPane.columnIndex="0"
            GridPane.rowIndex="5"/>
@@ -78,8 +80,8 @@
            GridPane.rowIndex="7"/>
     <HBox GridPane.columnIndex="1"
           GridPane.rowIndex="7">
-        <CheckedTextField fx:id="messageIdTextField"
-                               promptText="%messageId"/>
+        <MessageIdTextField fx:id="messageIdTextField"
+                            promptText="%messageId"/>
         <Button text="%generate"
                 onAction="#generateMessageId"/>
     </HBox>

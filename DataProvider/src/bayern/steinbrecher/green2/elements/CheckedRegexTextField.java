@@ -41,7 +41,7 @@ public class CheckedRegexTextField extends CheckedTextField {
      * content of this text field does not match the current regex.
      */
     public static final String CSS_CLASS_REGEX_NO_MATCH = "unmatchRegex";
-    private StringProperty regex = new SimpleStringProperty(this, "regex");
+    private StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
     private BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
     private ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
 
@@ -93,7 +93,7 @@ public class CheckedRegexTextField extends CheckedTextField {
             return pattern.get().matcher(textProperty().get()).matches();
         }, pattern, textProperty()));
         addValidCondition(regexValid);
-        ElementsUtility.addCssClassIf(this, validProperty().not(), CSS_CLASS_REGEX_NO_MATCH);
+        ElementsUtility.addCssClassIf(this, regexValid.not(), CSS_CLASS_REGEX_NO_MATCH);
     }
 
     /**

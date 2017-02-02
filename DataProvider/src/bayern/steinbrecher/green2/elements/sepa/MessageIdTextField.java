@@ -24,18 +24,18 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * Represents a {@code CheckedTextField} specialized for IBANs. CSS class {@code MESSAGE_ID_CSS_CLASS} is added.
+ * Represents a {@code TextField} for entering a message id. {@code MESSAGE_ID_CSS_CLASS} is added.
  *
  * @author Stefan Huber
  */
-public final class IbanTextField extends CheckedRegexTextField {
-    public static final String IBAN_CSS_CLASS = "ibanTextField";
-    private BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
+public class MessageIdTextField extends CheckedRegexTextField {
+    public static final String MESSAGE_ID_CSS_CLASS = "messageIdTextField";
+    private BooleanProperty messageIdValid = new SimpleBooleanProperty(this, "messageIdValid");
 
     /**
      * Constructs an {@code IbanTextField} with no initial content.
      */
-    public IbanTextField() {
+    public MessageIdTextField() {
         this("");
     }
 
@@ -44,15 +44,15 @@ public final class IbanTextField extends CheckedRegexTextField {
      *
      * @param text The initial content.
      */
-    public IbanTextField(String text) {
-        super(SepaUtility.MAX_CHAR_IBAN, text, SepaUtility.IBAN_REGEX);
-        ibanValid.bind(Bindings.createBooleanBinding(
-                () -> SepaUtility.isValidIban(textProperty().get()), textProperty()));
-        ibanValid.addListener((observable, oldValue, newValue) -> {
-            System.out.println("Iban is valid: " + newValue);
+    public MessageIdTextField(String text) {
+        super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX);
+        messageIdValid.bind(Bindings.createBooleanBinding(
+                () -> SepaUtility.isValidMessageId(textProperty().get()), textProperty()));
+        messageIdValid.addListener((observable, oldValue, newValue) -> {
+            System.out.println("MessageId is valid: " + newValue);
         });
-        addValidCondition(ibanValid);
-        getStyleClass().add(IBAN_CSS_CLASS);
+        addValidCondition(messageIdValid);
+        getStyleClass().add(MESSAGE_ID_CSS_CLASS);
     }
 
     /**
