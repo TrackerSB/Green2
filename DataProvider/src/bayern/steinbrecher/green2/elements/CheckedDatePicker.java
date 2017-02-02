@@ -92,7 +92,7 @@ public class CheckedDatePicker extends DatePicker {
             String dateToParse = getEditor().textProperty().get();
             LocalDate newDate = null;
 
-            String[] dateParts = dateToParse.split(".");
+            String[] dateParts = dateToParse.split("\\.");
             if (dateParts.length == 3) {
                 dateParts[0] = (dateParts[0].length() < 2 ? "0" : "") + dateParts[0];
                 dateParts[1] = (dateParts[1].length() < 2 ? "0" : "") + dateParts[1];
@@ -118,9 +118,6 @@ public class CheckedDatePicker extends DatePicker {
         valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()));
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 
-        valid.addListener((observable, oldValue, newValue) -> {
-            System.out.println("Date is valid: " + newValue);
-        });
         ElementsUtility.addCssClassIf(this, valid.not(), INVALID_DATE_CSS_CLASS);
     }
 

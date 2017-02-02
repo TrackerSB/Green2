@@ -21,6 +21,10 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 /**
  * Contains methods useful for many custom controls of {@code bayern.steinbrecher.green2.elements}.
  */
@@ -42,14 +46,13 @@ public final class ElementsUtility {
             if (newVal) {
                 if (!styleClasses.contains(cssClass)) {
                     styleClasses.add(cssClass);
-                    System.out.println(cssClass + " set");
                 }
             } else {
                 styleClasses.remove(cssClass);
-                System.out.println(cssClass + " removed");
             }
         };
         observable.addListener(changeListener);
+        Logger.getLogger(ElementsUtility.class.getName()).log(Level.INFO, "Listener registered for styleClasses: " + parent.getStyleClass().stream().collect(Collectors.joining(" ")));
 
         //FIXME Don't call listener explicitly
         changeListener.changed(observable, observable.get(), observable.get());
