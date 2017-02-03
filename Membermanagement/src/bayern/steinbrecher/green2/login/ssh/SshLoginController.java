@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.elements.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
 import bayern.steinbrecher.green2.login.LoginKey;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 import java.net.URL;
@@ -50,6 +51,7 @@ public class SshLoginController extends LoginController {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initProperties(sshUsernameField, sshPasswordField, databaseUsernameField, databasePasswordField);
+        Platform.runLater(() -> sshUsernameField.requestFocus());
     }
 
     /**

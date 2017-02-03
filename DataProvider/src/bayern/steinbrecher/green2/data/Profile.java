@@ -277,7 +277,7 @@ public class Profile {
     public static List<String> getAvailableProfiles() {
         String[] configFiles = new File(DataProvider.APP_DATA_PATH)
                 .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT));
-        if(configFiles == null){
+        if (configFiles == null) {
             return new ArrayList<>();
         } else {
             return Arrays.stream(configFiles)
@@ -300,7 +300,7 @@ public class Profile {
         //FIXME Wait for JDK 9 in order to use generic enums
         if (!key.getValueClass().isAssignableFrom(defaultValue.getClass())) {
             throw new IllegalArgumentException("Type of defaultValue and the type of the value key represents have to "
-                    + "be the same. (Still waiting for generic enums to fix this... :-( )");
+                    + "be the same. (Still waiting for generic enums to fix this on compile time... :-( )");
         }
         if (configurations.containsKey(key)) {
             String value = (String) configurations.get(key).getValue();

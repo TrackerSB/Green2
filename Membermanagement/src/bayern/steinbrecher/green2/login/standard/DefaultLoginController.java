@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.elements.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
 import bayern.steinbrecher.green2.login.LoginKey;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 import java.net.URL;
@@ -46,6 +47,7 @@ public class DefaultLoginController extends LoginController {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initProperties(databaseUsernameField, databasePasswordField);
+        Platform.runLater(() -> databaseUsernameField.requestFocus());
     }
 
     /**
