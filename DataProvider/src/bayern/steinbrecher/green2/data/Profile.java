@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -274,10 +275,15 @@ public class Profile {
     }
 
     public static List<String> getAvailableProfiles() {
-        return Arrays.stream(new File(DataProvider.APP_DATA_PATH)
-                .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT)))
-                .map(s -> s.substring(0, s.length() - CONFIGFILE_FORMAT.length()))
-                .collect(Collectors.toList());
+        String[] configFiles = new File(DataProvider.APP_DATA_PATH)
+                .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT));
+        if(configFiles == null){
+            return new ArrayList<>();
+        } else {
+            return Arrays.stream(configFiles)
+                    .map(s -> s.substring(0, s.length() - CONFIGFILE_FORMAT.length()))
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
