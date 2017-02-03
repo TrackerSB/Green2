@@ -54,7 +54,7 @@ public class Profile {
     private static final String ORIGINATORFILE_FORMAT = ".properties";
     /**
      * The symbol used to separate the config key on the left side and the value
-     * on the right side in gruen2.conf.
+     * on the right side of profile files.
      */
     public static final String VALUE_SEPARATOR = ":";
     /**
