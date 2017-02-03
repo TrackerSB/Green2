@@ -48,6 +48,7 @@ public class CheckedDatePicker extends DatePicker {
      * BooleanProperty indicating whether the currently inserted date is valid.
      */
     private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
+    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
     private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
     private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
     private final BooleanProperty invalidPastDate = new SimpleBooleanProperty(this, "invalidPastDate");
@@ -112,9 +113,10 @@ public class CheckedDatePicker extends DatePicker {
         }, executionDateBinding);
 
         valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()));
+        invalid.bind(valid.not());
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 
-        ElementsUtility.addCssClassIf(this, valid.not(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**

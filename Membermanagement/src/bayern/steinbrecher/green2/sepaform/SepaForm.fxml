@@ -99,16 +99,16 @@
            visible="${controller.anyInputToLong}"
            GridPane.columnIndex="1"
            GridPane.rowIndex="9"/>
-    <Label text="%missingInput"
-           styleClass="warningLabel"
-           visible="${controller.anyInputMissing}"
-           GridPane.columnIndex="1"
-           GridPane.rowIndex="10"/>
     <Label text="%pastExecutionDate"
            styleClass="warningLabel"
            visible="${executionDatePicker.invalidPastDate}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="10"/>
+    <Label text="%invalidOrMissingInput"
+           styleClass="warningLabel"
+           visible="${(!controller.valid) || controller.anyInputMissing}"
            GridPane.columnIndex="1"
-           GridPane.rowIndex="11"/>
+           GridPane.rowIndex="10"/>
 
     <Button text="%ready"
             defaultButton="true"

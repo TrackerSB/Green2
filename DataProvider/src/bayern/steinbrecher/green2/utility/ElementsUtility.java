@@ -32,7 +32,9 @@ public final class ElementsUtility {
     }
 
     /**
-     * Adds {@code cssClass} to the style classes of {@code parent} if {@code observable} holds {@code true}. Otherwise it removes the style class.
+     * Adds {@code cssClass} to the style classes of {@code parent} if {@code observable} holds {@code true}.
+     * Otherwise it removes the style class. NOTE: When passing bindings directly make sure they are not garbage
+     * collected. It is recommended to pass a {@code BooleanProperty} which may be bound.
      *
      * @param parent     The parent to add/remove the given style class.
      * @param observable The value to observe.

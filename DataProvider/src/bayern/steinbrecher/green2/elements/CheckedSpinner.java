@@ -36,6 +36,7 @@ public class CheckedSpinner<T> extends Spinner<T> {
      * {@code BooleanProperty} indicating whether the current value is valid.
      */
     private BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
+    private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
 
     /**
      * Constructs a new {@code CheckedSpinner}.
@@ -55,8 +56,9 @@ public class CheckedSpinner<T> extends Spinner<T> {
                 return false;
             }
         }, getEditor().textProperty()));
+        invalid.bind(valid.not());
 
-        ElementsUtility.addCssClassIf(this, valid.not(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**
