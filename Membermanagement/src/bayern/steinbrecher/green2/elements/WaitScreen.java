@@ -55,14 +55,12 @@ public class WaitScreen extends View<Controller> {
     private static final int VERTICAL_COUNT = 5;
     private static final int HORIZONTAL_COUNT = 9;
     private static final Duration DURATION_ANIMATION = Duration.millis(600);
-    private static final Duration DURATION_ANIMATION_HALF
-            = DURATION_ANIMATION.divide(2);
+    private static final Duration DURATION_ANIMATION_HALF = DURATION_ANIMATION.divide(2);
     private static final Duration DURATION_PAUSE = Duration.seconds(3);
     private static final int DELAY = 200;
     private static final double START_OPACITY = 0.5;
     private static final double CENTER_OPACITY = 1;
-    private final ParallelTransition overallTransition
-            = new ParallelTransition();
+    private final ParallelTransition overallTransition = new ParallelTransition();
 
     static {
         DIRECTION_VECTORS[0] = new Point2D(0, 1);
@@ -141,7 +139,7 @@ public class WaitScreen extends View<Controller> {
         overallTransition.play();
 
         Scene scene = new Scene(root, HORIZONTAL_COUNT * DIAMETER, VERTICAL_COUNT * DIAMETER);
-        scene.setFill(null);
+        scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);

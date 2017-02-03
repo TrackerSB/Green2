@@ -24,6 +24,7 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -47,13 +48,15 @@ public class Splashscreen extends View<Controller> {
         this.stage = stage;
 
         Pane root = new Pane();
+        root.setStyle("-fx-background-color: rgba(0,0,0,0)");
+
         ImageView imageView = new ImageView();
         imageView.setImage((Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage())
                 ? DataProvider.ImageSet.SPLASHSCREEN_DE : DataProvider.ImageSet.SPLASHSCREEN_EN).get());
         root.getChildren().add(imageView);
 
         Scene scene = new Scene(root);
-        scene.setFill(null);
+        scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
         stage.setTitle(DataProvider.getResourceValue("startingApplication"));
         stage.initModality(Modality.APPLICATION_MODAL);
