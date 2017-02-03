@@ -8,6 +8,10 @@ Set oWS = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
 programFilesPath = oWS.ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
 menuEntryFolderPath = oWS.SpecialFolders("AllUsersPrograms") & "\Green2"
+configFolderPath = oWS.ExpandEnvironmentStrings("%AppData%") & "\Green2"
+oldProgramFilesPath = oWS.ExpandEnvironmentStrings("%ProgramFiles%") & "\Grün2_Mitgliederverwaltung"
+oldMenuEntryFolderPath = oWS.SpecialFolders("AllUsersPrograms") & "\Grün2_Mitgliederverwaltung"
+oldConfigFolderPath = oWS.ExpandEnvironmentStrings("%AppData%") & "\Grün2_Mitgliederverwaltung"
 
 'Get the directory of the install script (May not be the current directory)
 downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
@@ -16,13 +20,28 @@ downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
 fso.DeleteFile downloadedDir & "*.sh"
 fso.DeleteFile downloadedDir & "*.desktop"
 
+'Delete start menu entries and program files of previous versions
+If fso.FolderExists(oldProgramFilesPath) Then
+    fso.DeleteFolder oldProgramFilesPath
+End If
+If fso.FolderExists(oldMenuEntryFolderPath) Then
+    fso.DeleteFolder oldMenuEntryFolderPath
+End If
+
+'Move configurations to new folder
+If fso.FolderExists(oldConfigFolderPath) Then
+    If NOT fso.FolderExists(configFolderPath) Then
+        fso.CreateFolder(configFolderPath)
+    End If
+    fso.CopyFile oldConfigFolderPath & "\*.*", configFolderPath
+    fso.DeleteFolder oldConfigFolderPath
+End If
+
 'Create program folder if needed
 If NOT fso.FolderExists(programFilesPath) Then
 	fso.CreateFolder(programFilesPath)
 End If
 
-'Copy createLink.vbs to temp
-tempCreateLink = oWS.ExpandEnvironmentStrings("%TEMP%") & "\createLink.vbs"
 With fso
     'Move lib folder
     libpath = programFilesPath & "\lib"
@@ -31,6 +50,14 @@ With fso
     End If
     .CopyFile downloadedDir & "lib\*.*", libpath
     .DeleteFolder downloadedDir & "lib"
+    
+    'Move licences folder
+    licencesPath = programFilesPath & "\lib"
+    If NOT .FolderExists(licencesPath) Then
+        .CreateFolder(licencesPath)
+    End If
+    .CopyFile downloadedDir & "licences\*.*", licencesPath
+    .DeleteFolder downloadedDir & "licences"
     
     'Move files (including this file itself)
     .CopyFile downloadedDir & "*.*", programFilesPath, True
