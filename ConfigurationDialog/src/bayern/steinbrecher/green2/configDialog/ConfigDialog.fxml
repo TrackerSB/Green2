@@ -16,6 +16,7 @@
   ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<?import bayern.steinbrecher.green2.elements.CharsetTextField?>
 <?import bayern.steinbrecher.green2.elements.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.CheckedTextField?>
 <?import javafx.scene.control.*?>
@@ -45,7 +46,7 @@
     <Label text="%sshCharset"
            GridPane.rowIndex="3"
            GridPane.columnIndex="0"/>
-    <CheckedTextField fx:id="sshCharsetTextField"
+    <CharsetTextField fx:id="sshCharsetTextField"
                       disable="${!useSSHCheckBox.selected}"
                       checked="${useSSHCheckBox.selected}"
                       promptText="%sshCharset"

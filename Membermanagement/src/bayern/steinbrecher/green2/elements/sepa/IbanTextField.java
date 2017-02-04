@@ -16,19 +16,17 @@
 
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.StringProperty;
 
 /**
  * Represents a {@code CheckedTextField} specialized for IBANs. CSS class {@code CSS_CLASS_MESSAGE_ID} is added.
  *
  * @author Stefan Huber
  */
-public final class IbanTextField extends CheckedRegexTextField {
+public final class IbanTextField extends SpecificRegexTextField {
     public static final String CSS_CLASS_IBAN_TEXTFIELD = "ibanTextField";
     private BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
 
@@ -50,25 +48,5 @@ public final class IbanTextField extends CheckedRegexTextField {
                 () -> SepaUtility.isValidIban(textProperty().get()), textProperty()));
         addValidCondition(ibanValid);
         getStyleClass().add(CSS_CLASS_IBAN_TEXTFIELD);
-    }
-
-    /**
-     * Unsupported operation. You're not allowed to change the regex used for IBANs.
-     *
-     * @return Nothing. UnsupportedOperationException thrown.
-     */
-    @Override
-    public StringProperty regexProperty() {
-        throw new UnsupportedOperationException("You're not allowed to change the regex used for IBANs");
-    }
-
-    /**
-     * Unsupported operation. You're not allowed to change the regex used for IBANs.
-     *
-     * @param regex Ignored.
-     */
-    @Override
-    public void setRegex(String regex) {
-        throw new UnsupportedOperationException("You're not allowed to change the regex used for IBANs");
     }
 }

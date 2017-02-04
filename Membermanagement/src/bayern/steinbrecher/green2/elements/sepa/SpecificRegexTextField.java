@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2017. Stefan Huber
+ * This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package bayern.steinbrecher.green2.elements.sepa;
+
+import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
+import javafx.beans.property.StringProperty;
+
+/**
+ * Represents a {@link CheckedRegexTextField} whose regex is unchangeable.
+ *
+ * @author Stefan Huber
+ */
+public abstract class SpecificRegexTextField extends CheckedRegexTextField {
+    public SpecificRegexTextField() {
+        this("");
+    }
+
+    public SpecificRegexTextField(String text){
+        this(Integer.MAX_VALUE, text, "");
+    }
+
+    protected SpecificRegexTextField(int maxColumnCount, String regex) {
+        this(maxColumnCount, "", regex);
+    }
+
+    protected SpecificRegexTextField(int maxColumnCount, String text, String regex) {
+        super(maxColumnCount, text, regex);
+    }
+
+    /**
+     * Unsupported operation. You're not allowed to change the regex used for IBANs.
+     *
+     * @return Nothing. UnsupportedOperationException thrown.
+     */
+    @Override
+    public final StringProperty regexProperty() {
+        throw new UnsupportedOperationException("You're not allowed to change the regex used for IBANs");
+    }
+
+    /**
+     * Unsupported operation. You're not allowed to change the regex used for IBANs.
+     *
+     * @param regex Ignored.
+     */
+    @Override
+    public final void setRegex(String regex) {
+        throw new UnsupportedOperationException("You're not allowed to change the regex used for IBANs");
+    }
+}
