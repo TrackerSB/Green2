@@ -143,7 +143,7 @@ public class WaitScreen extends View<Controller> {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setTitle("Einen Moment bitte");
+        stage.setTitle(DataProvider.getResourceValue("waitAMoment"));
         stage.setResizable(false);
         stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
     }

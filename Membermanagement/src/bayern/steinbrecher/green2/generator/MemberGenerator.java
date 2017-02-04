@@ -121,7 +121,7 @@ public class MemberGenerator {
 
             //Connect attributes
             Person p = new Person(row.get(prenameIndex), row.get(lastnameIndex), row.get(titleIndex), birthday, isMale);
-            //FIXME MandatChanged has not to be always false
+            //FIXME mandateChanged has not to be always false
             AccountHolder ah = new AccountHolder(row.get(ibanIndex), row.get(bicIndex), mandatsigned, false,
                     accountholderPrename, accountholderLastname, row.get(titleIndex), birthday, isMale);
             Address ad = new Address(row.get(streetIndex), row.get(housenumberIndex), row.get(postcodeIndex),

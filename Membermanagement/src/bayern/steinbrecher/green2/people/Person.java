@@ -25,52 +25,52 @@ import java.time.LocalDate;
  */
 public class Person {
 
-    private final String prename, lastname, title;
+    private final String firstName, lastName, title;
     private final LocalDate birthday;
     private final boolean male;
 
     /**
-     * Constructes a new person.
+     * Constructs a new person.
      *
-     * @param prename  The prename of the person.
-     * @param lastname The lastname of the person.
+     * @param firstName  The first name of the person.
+     * @param lastName The last name of the person.
      * @param title    The title of the person if any.
      * @param birthday The birthday date of the person.
      * @param male     {@code true} only if the person is male.
      */
-    public Person(String prename, String lastname, String title, LocalDate birthday, boolean male) {
-        this.prename = prename;
-        this.lastname = lastname;
+    public Person(String firstName, String lastName, String title, LocalDate birthday, boolean male) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.title = title;
         this.birthday = birthday;
         this.male = male;
     }
 
     /**
-     * Returns the prename.
+     * Returns the first name.
      *
-     * @return The prename.
+     * @return The first name.
      */
-    public String getPrename() {
-        return prename;
+    public String getFirstName() {
+        return firstName;
     }
 
     /**
-     * Returns the lastname.
+     * Returns the last name.
      *
-     * @return The lastname.
+     * @return The last name.
      */
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
     /**
-     * Returns lastname and prename spaceseparated.
+     * Returns last name and first name space separated.
      *
-     * @return Lastname and prename spaceseparated.
+     * @return last name and first name space separated.
      */
     public String getName() {
-        return getLastname() + " " + getPrename();
+        return getLastName() + " " + getFirstName();
     }
 
     /**

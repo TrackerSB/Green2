@@ -35,9 +35,9 @@ public class Member implements Comparable<Member> {
     private final boolean active, contributionfree;
 
     /**
-     * Constructes a new member.
+     * Constructs a new member.
      *
-     * @param membershipnumber   The mandat number.
+     * @param membershipnumber   The mandate number.
      * @param person             The person itself.
      * @param home               The homelocation.
      * @param accountHolder      The owner of the account to book off the
@@ -58,9 +58,9 @@ public class Member implements Comparable<Member> {
     }
 
     /**
-     * Returns the mandat number.
+     * Returns the mandate number.
      *
-     * @return The mandat number.
+     * @return The mandate number.
      */
     public int getMembershipnumber() {
         return membershipnumber;

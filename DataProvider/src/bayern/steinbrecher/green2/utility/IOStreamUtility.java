@@ -96,7 +96,7 @@ public final class IOStreamUtility {
 
     /**
      * Transfers all chars from {@link InputStream} to {@code outputStream} of a
-     * file. It loops over {@link InputStream} transfering {@code bytesPerLoop}
+     * file. It loops over {@link InputStream} transferring {@code bytesPerLoop}
      * bytes per loop.
      *
      * @param inputStream  The stream to read from.
@@ -123,7 +123,7 @@ public final class IOStreamUtility {
 
     /**
      * Overrides the hole content of {@code pathToFile} with {@code content}. If
-     * {@code pathToFile} doesn´t exist it creates one.
+     * {@code pathToFile} doesn't exist it creates one.
      *
      * @param content    The content to be written into the file.
      * @param pathToFile The file to write in.

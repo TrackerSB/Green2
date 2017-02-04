@@ -146,12 +146,12 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * Indicates whether the currently inserted data is abborted by the user.
+     * Indicates whether the currently inserted data is aborted by the user.
      *
-     * @return {@code true} only if the user abborted the currently inserted
+     * @return {@code true} only if the user aborted the currently inserted
      * data.
      */
-    public boolean userAbborted() {
+    public boolean userAborted() {
         return controller.userAbborted();
     }
 }

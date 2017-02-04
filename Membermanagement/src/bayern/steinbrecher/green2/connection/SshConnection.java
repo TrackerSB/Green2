@@ -86,7 +86,7 @@ public final class SshConnection extends DBConnection {
     }
 
     /**
-     * Constructes a new database connection over SSH.
+     * Constructs a new database connection over SSH.
      *
      * @param sshHost          The address of the ssh host.
      * @param sshUsername      The username for the ssh connection.

@@ -51,7 +51,7 @@ public final class DefaultConnection extends DBConnection {
     private Connection connection;
 
     /**
-     * Constructes a new database connection.
+     * Constructs a new database connection.
      *
      * @param databaseHost     The address of the database host.
      * @param databaseUsername The username for the database.

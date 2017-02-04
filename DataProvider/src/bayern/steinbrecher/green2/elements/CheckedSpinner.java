@@ -85,7 +85,7 @@ public class CheckedSpinner<T> extends Spinner<T> {
     }
 
     /**
-     * This interface is very similar to {@link Function<T, R>} but it contains a method throwing a
+     * This interface is very similar to {@link Function} but it contains a method throwing a
      * {@link ParseException}.
      */
     @FunctionalInterface

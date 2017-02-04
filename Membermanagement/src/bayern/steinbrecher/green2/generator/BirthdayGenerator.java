@@ -46,13 +46,13 @@ public class BirthdayGenerator {
             .thenComparing(m -> m.getPerson().getName());
     /**
      * Represents a function creating a {@link String} out of a {@link Member}
-     * containing the prename, lastname and the birthday of the member. Values
+     * containing the first name, last name and the birthday of the member. Values
      * are separated by semicolon and the {@link String} is closed by a
      * linebreak.
      */
     private static final Function<Member, String> PRINT_LINE = m -> {
         Person p = m.getPerson();
-        return p.getPrename() + ';' + p.getLastname() + ';' + p.getBirthday() + '\n';
+        return p.getFirstName() + ';' + p.getLastName() + ';' + p.getBirthday() + '\n';
     };
 
     /**

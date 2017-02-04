@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Delivers access to diffrent application wide usefull paths, icons, etc.
+ * Delivers access to different application wide useful paths, icons, etc.
  *
  * @author Stefan Huber
  */
@@ -41,7 +41,7 @@ public final class DataProvider {
             = ResourceBundle.getBundle("bayern.steinbrecher.green2.data.language.language");
     private static final int SPLASHSCREEN_PREFFERED_WIDTH = 800;
     /**
-     * The path of the file containing all stylings.
+     * The path of the file containing all styles.
      */
     public static final String STYLESHEET_PATH = "bayern/steinbrecher/green2/data/resources/styles.css";
     /**
@@ -111,7 +111,7 @@ public final class DataProvider {
      * Returns the value behind {@code key} of the resource bundle inserted
      * params.
      *
-     * @param key    The key to serach for.
+     * @param key    The key to search for.
      * @param params The params to insert.
      * @return The value with inserted params.
      */
@@ -128,7 +128,7 @@ public final class DataProvider {
      * Returns a list of values behind {@code key} of the resource bundle and
      * with inserted params.
      *
-     * @param key    The key to serach for.
+     * @param key    The key to search for.
      * @param params The list of params to insert each in the value behind
      *               {@code key}.
      * @return The list of values with inserted params.

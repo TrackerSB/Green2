@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.elements;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.TextField;
 
 import java.nio.charset.Charset;
 

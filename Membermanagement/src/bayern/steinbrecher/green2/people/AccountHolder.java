@@ -26,30 +26,30 @@ import java.time.LocalDate;
 public class AccountHolder extends Person {
 
     private final String iban, bic;
-    private final LocalDate mandatSigned;
-    private final boolean hasMandatChanged;
+    private final LocalDate mandateSigned;
+    private final boolean hasMandateChanged;
 
     /**
-     * Constructes a account holder.
+     * Constructs a account holder.
      *
-     * @param iban             The IBAN of the account holder.
-     * @param bic              The BIC of the accound holder.
-     * @param mandatSigned     The date when he signed his mandat.
-     * @param hasMandatChanged {@code true}, only if his mandat changed since
-     *                         last transfer.
-     * @param prename          The prename of the account holder.
-     * @param lastname         The lastname of the account holder.
-     * @param title            The title of the account holder if any.
-     * @param birthday         The birthday date of the account holder.
-     * @param isMale           {@code true} only if the account holder is male.
+     * @param iban              The IBAN of the account holder.
+     * @param bic               The BIC of the account holder.
+     * @param mandateSigned     The date when he signed his mandate.
+     * @param hasMandateChanged {@code true}, only if his mandate changed since
+     *                          last transfer.
+     * @param firstName         The firstName of the account holder.
+     * @param lastName          The last name of the account holder.
+     * @param title             The title of the account holder if any.
+     * @param birthday          The birthday date of the account holder.
+     * @param isMale            {@code true} only if the account holder is male.
      */
-    public AccountHolder(String iban, String bic, LocalDate mandatSigned, boolean hasMandatChanged, String prename,
-                         String lastname, String title, LocalDate birthday, boolean isMale) {
-        super(prename, lastname, title, birthday, isMale);
+    public AccountHolder(String iban, String bic, LocalDate mandateSigned, boolean hasMandateChanged, String firstName,
+                         String lastName, String title, LocalDate birthday, boolean isMale) {
+        super(firstName, lastName, title, birthday, isMale);
         this.iban = iban;
         this.bic = bic;
-        this.mandatSigned = mandatSigned;
-        this.hasMandatChanged = hasMandatChanged;
+        this.mandateSigned = mandateSigned;
+        this.hasMandateChanged = hasMandateChanged;
     }
 
     /**
@@ -89,20 +89,20 @@ public class AccountHolder extends Person {
     }
 
     /**
-     * Returns the date when this account holder signed his mandat.
+     * Returns the date when this account holder signed his mandate.
      *
-     * @return The date when this account holder signed his mandat.
+     * @return The date when this account holder signed his mandate.
      */
-    public LocalDate getMandatSigned() {
-        return mandatSigned;
+    public LocalDate getMandateSigned() {
+        return mandateSigned;
     }
 
     /**
-     * Returns whether the mandat changed since the last transfer.
+     * Returns whether the mandate changed since the last transfer.
      *
-     * @return {@code true} only if the mandat changed since the last transfer.
+     * @return {@code true} only if the mandate changed since the last transfer.
      */
-    public boolean hasMandatChanged() {
-        return hasMandatChanged;
+    public boolean hasMandateChanged() {
+        return hasMandateChanged;
     }
 }

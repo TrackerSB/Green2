@@ -158,7 +158,7 @@ public abstract class DBConnection implements AutoCloseable {
     /**
      * Queries the nickname table of the specified connection.
      *
-     * @return A map from prenames to nicknames.
+     * @return A map from first names to nicknames.
      */
     public Map<String, String> getAllNicknames() {
         try {

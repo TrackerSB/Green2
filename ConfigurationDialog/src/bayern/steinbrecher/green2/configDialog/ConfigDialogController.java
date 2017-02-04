@@ -76,12 +76,6 @@ public class ConfigDialogController extends CheckedController {
                 birthdayExpressionTextField, profileNameTextField));
 
         birthdayExpressionTextField.setRegex(ConfigKey.BIRTHDAY_PATTERN.pattern());
-        birthdayExpressionTextField.regexValidProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("regexValid changed");
-        });
-        birthdayExpressionTextField.validProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("valid changed");
-        });
         profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (stage != null) {
                 stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + newVal);

@@ -21,9 +21,11 @@ import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.wizard.WizardPage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +35,7 @@ import java.util.logging.Logger;
 /**
  * Represents a selection dialog.
  *
- * @param <T> The type of the attributes being able to selct.
+ * @param <T> The type of the attributes being able to select.
  * @author Stefan Huber
  */
 public class Selection<T extends Comparable<T>> extends WizardableView<Optional<List<T>>, SelectionController<T>> {
@@ -42,8 +44,8 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     private Stage owner;
 
     /**
-     * Greates a new Frame representing the given options as selectable
-     * {@code CheckBox}es and representing a {@link TextField} for entering a
+     * Creates a new Frame representing the given options as selectable
+     * {@link CheckBox} es and representing a {@link TextField} for entering a
      * number.
      *
      * @param options The options the user is allowed to select.
@@ -53,8 +55,8 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     }
 
     /**
-     * Greates a new Frame representing the given options as selectable
-     * {@code CheckBox}es and representing a {@link TextField} for entering a
+     * Creates a new Frame representing the given options as selectable
+     * {@link CheckBox}es and representing a {@link TextField} for entering a
      * number.
      *
      * @param options The options the user is allowed to select.
@@ -95,8 +97,8 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     }
 
     /**
-     * Retruns the list of currently selected items. Returns
-     * {@link Optional#empty()} if the user abborted the selection.
+     * Returns the list of currently selected items. Returns
+     * {@link Optional#empty()} if the user aborted the selection.
      *
      * @return The selection if any.
      */

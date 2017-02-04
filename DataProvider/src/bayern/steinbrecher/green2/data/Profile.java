@@ -58,7 +58,7 @@ public class Profile {
      */
     public static final String VALUE_SEPARATOR = ":";
     /**
-     * The configurations found in gruen2.conf.
+     * The configurations found in a profile file.
      */
     //FIXME Java 9: Replace Property<String> with Property<?>
     private ObservableMap<ConfigKey, Property<String>> configurations = FXCollections.observableHashMap();
@@ -234,7 +234,7 @@ public class Profile {
     /**
      * Renames the profile if no other profile with name {@code newName} exists.
      * If this profile already is named {@code newName} nothing happens. This
-     * method will affect the profile immediatly.
+     * method will affect the profile immediately.
      *
      * @param newName The new profile name.
      */
@@ -303,7 +303,7 @@ public class Profile {
                     + "be the same. (Still waiting for generic enums to fix this on compile time... :-( )");
         }
         if (configurations.containsKey(key)) {
-            String value = (String) configurations.get(key).getValue();
+            String value = configurations.get(key).getValue();
             if (defaultValue instanceof String) {
                 return (T) value;
             } else if (defaultValue instanceof Boolean) {

@@ -16,6 +16,7 @@
 
 package bayern.steinbrecher.green2;
 
+import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
 
 /**

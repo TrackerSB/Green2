@@ -34,7 +34,7 @@ public class Menu extends View<MenuController> {
     private Main caller;
 
     /**
-     * Constructes a menu.
+     * Constructs a menu.
      *
      * @param caller The object for calling the functions represented by the
      *               menu.
@@ -67,13 +67,13 @@ public class Menu extends View<MenuController> {
     }
 
     /**
-     * Not implemented. There´s no data to be abborted by the user.
+     * Not implemented. There´s no data to be aborted by the user.
      *
      * @return Nothing.
      * @throws UnsupportedOperationException Always thrown.
      */
     @Override
-    public boolean userAbborted() {
+    public boolean userAborted() {
         throw new UnsupportedOperationException("No data to abbort");
     }
 }

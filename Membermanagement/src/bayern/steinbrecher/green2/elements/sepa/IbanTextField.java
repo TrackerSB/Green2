@@ -16,13 +16,15 @@
 
 package bayern.steinbrecher.green2.elements.sepa;
 
+import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@link CheckedTextField} specialized for IBANs. CSS class {@code CSS_CLASS_MESSAGE_ID} is added.
+ * Represents a {@link CheckedRegexTextField} specialized for IBANs. CSS class {@link #CSS_CLASS_IBAN_TEXTFIELD} is
+ * added.
  *
  * @author Stefan Huber
  */
@@ -31,14 +33,14 @@ public final class IbanTextField extends SpecificRegexTextField {
     private BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
 
     /**
-     * Constructs an {@code IbanTextField} with no initial content.
+     * Constructs an {@link IbanTextField} with no initial content.
      */
     public IbanTextField() {
         this("");
     }
 
     /**
-     * Constructs an {@code IbanTextField} with given content.
+     * Constructs an {@link IbanTextField} with given content.
      *
      * @param text The initial content.
      */

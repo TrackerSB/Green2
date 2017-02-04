@@ -16,6 +16,7 @@
 
 package bayern.steinbrecher.green2.utility;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
@@ -46,11 +47,9 @@ public final class ElementsUtility {
             if (newVal) {
                 if (!styleClasses.contains(cssClass)) {
                     styleClasses.add(cssClass);
-                    System.out.println(cssClass + " added: " + parent.getStyleClass());
                 }
             } else {
                 styleClasses.remove(cssClass);
-                System.out.println(cssClass + " removed: " + parent.getStyleClass());
             }
         };
         observable.addListener(changeListener);

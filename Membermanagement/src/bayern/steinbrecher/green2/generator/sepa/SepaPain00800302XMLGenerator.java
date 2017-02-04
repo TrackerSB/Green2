@@ -97,7 +97,7 @@ public final class SepaPain00800302XMLGenerator {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName()).log(Level.WARNING, "{0} has no BIC", m);
             }
-            if (ah.getMandatSigned() == null) {
+            if (ah.getMandateSigned() == null) {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
                         .log(Level.WARNING, "{0} has a bad \"MandatErstellt\"", m);
@@ -114,7 +114,7 @@ public final class SepaPain00800302XMLGenerator {
      * Generates the output for the sepa-xml-file.
      *
      * @param member        The list of member to include in the xml.
-     * @param originator    The origiantor of the direct debit.
+     * @param originator    The originator of the direct debit.
      * @param contributions The mapping of membershipnumbers to contributions.
      * @return The {@link String} representing the xml file content.
      */
@@ -228,10 +228,10 @@ public final class SepaPain00800302XMLGenerator {
                     .append(m.getMembershipnumber())
                     .append("</MndtId>\n")
                     .append("           <DtOfSgntr>")
-                    .append(ah.getMandatSigned())
+                    .append(ah.getMandateSigned())
                     .append("</DtOfSgntr>\n")
                     .append("           <AmdmntInd>")
-                    .append(ah.hasMandatChanged())
+                    .append(ah.hasMandateChanged())
                     .append("</AmdmntInd>\n")
                     .append("         </MndtRltdInf>\n")
                     .append("       </DrctDbtTx>\n")
@@ -244,9 +244,9 @@ public final class SepaPain00800302XMLGenerator {
                     .append("       </DbtrAgt>\n")
                     .append("       <Dbtr>\n")
                     .append("         <Nm>")
-                    .append(ah.getLastname())
+                    .append(ah.getLastName())
                     .append(", ")
-                    .append(ah.getPrename())
+                    .append(ah.getFirstName())
                     .append("</Nm>\n")
                     .append("       </Dbtr>\n")
                     .append("       <DbtrAcct>\n")

@@ -34,7 +34,7 @@ public abstract class Controller implements Initializable {
      * Only {@code true} when the user explicitly aborted his input. (E.g.
      * pressing the X of the window.)
      */
-    private boolean userAbborted = false;
+    private boolean userAborted = false;
 
     /**
      * Sets the stage the controller can refer to. (E.g. for closing the stage)
@@ -44,7 +44,7 @@ public abstract class Controller implements Initializable {
      */
     public void setStage(Stage stage) {
         this.stage = stage;
-        stage.setOnCloseRequest(evt -> userAbborted = true);
+        stage.setOnCloseRequest(evt -> userAborted = true);
     }
 
     /**
@@ -62,6 +62,6 @@ public abstract class Controller implements Initializable {
      * @return {@code true} only if the user aborted his input explicitly.
      */
     public boolean userAbborted() {
-        return userAbborted;
+        return userAborted;
     }
 }

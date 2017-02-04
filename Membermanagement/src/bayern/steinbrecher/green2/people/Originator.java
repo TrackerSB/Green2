@@ -91,7 +91,7 @@ public class Originator {
     }
 
     /**
-     * Reads in the specified file and sets the apropriate attributes.
+     * Reads in the specified file and sets the appropriate attributes.
      *
      * @throws FileNotFoundException Thrown if the file could not be found.
      */

@@ -77,7 +77,7 @@ public class MenuController extends Controller {
     }
 
     /**
-     * Sets the caller which provides the funcionality this controller has to
+     * Sets the caller which provides the functionality this controller has to
      * use.
      *
      * @param caller The provider of the functionality.

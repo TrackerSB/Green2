@@ -173,7 +173,7 @@ public class Main extends Application {
         loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 waitScreen.close();
-            } else if (!login.userAbborted()) {
+            } else if (!login.userAborted()) {
                 waitScreen.show();
             } else {
                 Platform.exit();
@@ -184,9 +184,8 @@ public class Main extends Application {
     }
 
     private Service<Optional<DBConnection>> createConnectionService(Login login, WaitScreen waitScreen) {
-        Service<Optional<DBConnection>> connectionService = ServiceFactory.createService(() -> {
-            return getConnection(login, waitScreen);
-        });
+        Service<Optional<DBConnection>> connectionService
+                = ServiceFactory.createService(() -> getConnection(login, waitScreen));
 
         connectionService.setOnSucceeded(wse -> {
             Optional<DBConnection> optDBConnection = connectionService.getValue();
@@ -555,7 +554,7 @@ public class Main extends Application {
                 DataProvider.getResourceValue("memberBadBirthday"),
                 DataProvider.getResourceValue("allBirthdaysCorrect"))
                 + "\n\n"
-                + checkDates(m -> m.getAccountHolder().getMandatSigned(),
+                + checkDates(m -> m.getAccountHolder().getMandateSigned(),
                 DataProvider.getResourceValue("memberBadMandatSigned"),
                 DataProvider.getResourceValue("allMandatSignedCorrect"));
         Alert alert = DialogUtility.createMessageAlert(message, menuStage);

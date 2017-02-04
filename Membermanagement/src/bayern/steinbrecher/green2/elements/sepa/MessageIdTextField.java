@@ -16,13 +16,14 @@
 
 package bayern.steinbrecher.green2.elements.sepa;
 
+import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@link TextField} for entering a message id. {@code CSS_CLASS_MESSAGE_ID} is added.
+ * Represents a {@link CheckedRegexTextField} for entering a message id. {@link #CSS_CLASS_MESSAGE_ID} is added.
  *
  * @author Stefan Huber
  */
@@ -31,14 +32,14 @@ public final class MessageIdTextField extends SpecificRegexTextField {
     private BooleanProperty messageIdValid = new SimpleBooleanProperty(this, "messageIdValid");
 
     /**
-     * Constructs an {@code IbanTextField} with no initial content.
+     * Constructs an {@link MessageIdTextField} with no initial content.
      */
     public MessageIdTextField() {
         this("");
     }
 
     /**
-     * Constructs an {@code IbanTextField} with given content.
+     * Constructs an {@link MessageIdTextField} with given content.
      *
      * @param text The initial content.
      */
