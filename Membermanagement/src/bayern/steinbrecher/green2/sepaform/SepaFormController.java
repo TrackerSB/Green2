@@ -164,10 +164,10 @@ public class SepaFormController extends CheckedController {
     }
 
     /**
-     * Returns the currently set originator. Returns {@code Optional.empty} if
+     * Returns the currently set originator. Returns {@link Optional#empty()} if
      * the user did not confirm input.
      *
-     * @return The currently set originator or {@code Optional.empty()}.
+     * @return The currently set originator or {@link Optional#empty()}.
      */
     public Optional<Originator> getOriginator() {
         if (userAbborted()) {

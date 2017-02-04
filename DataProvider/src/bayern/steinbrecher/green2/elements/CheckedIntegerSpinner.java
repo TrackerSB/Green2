@@ -36,7 +36,7 @@ public class CheckedIntegerSpinner extends CheckedSpinner<Integer> {
     };
 
     /**
-     * Constructs a new {@code CheckedIntegerSpinner}.
+     * Constructs a new {@link CheckedIntegerSpinner}.
      *
      * @param min            The minimum allowed value.
      * @param max            The maximum allowed value.

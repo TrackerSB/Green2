@@ -41,7 +41,7 @@ public class AddressGenerator {
     }
 
     /**
-     * Generates a {@code String} representing a CSV-file of member with their
+     * Generates a {@link String} representing a CSV-file of member with their
      * addresses and their salutation. It also contains column labels and you
      * can import it into Word for serial letters.
      *
@@ -64,7 +64,7 @@ public class AddressGenerator {
      * @param member    The member to create an salutations for.
      * @param nicknames The map containing the nicknames used for the
      *                  salutations.
-     * @return A list with apropriate salutations.
+     * @return A list with appropriate salutations.
      */
     private static List<String> createSalutations(List<Member> member, Map<String, String> nicknames) {
         List<String> addresses = new ArrayList<>(member.size());
@@ -79,11 +79,11 @@ public class AddressGenerator {
     }
 
     /**
-     * Creates output representing {@code member}. The order is not guaranteed.
+     * Creates output representing {@link Member}. The order is not guaranteed.
      * But the first row will contain column labels (german).
      *
      * @param member      The list of member to create output for.
-     * @param salutations The list containing the apropriate salutations for the
+     * @param salutations The list containing the appropriate salutations for the
      *                    member.
      * @return A String representing the output.
      */

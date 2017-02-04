@@ -23,8 +23,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import java.nio.charset.Charset;
 
 /**
- * Represents a {@code TextField} for entering a {@code Charset}. It also checks whether the current system supports
- * the entered {@code Charset}.
+ * Represents a {@link TextField} for entering a {@link Charset}. It also checks whether the current system supports
+ * the entered {@link Charset}.
  */
 public final class CharsetTextField extends CheckedTextField {
     private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");

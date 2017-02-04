@@ -21,6 +21,7 @@ import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.wizard.WizardPage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -75,12 +76,12 @@ public class Contribution extends WizardableView<Optional<Double>, ContributionC
     /**
      * Opens the contribution window if no other process yet opened one, blocks
      * until the window is closed and returns the value entered in the
-     * {@code TextField}. Returns {@code Optional.empty} if the user did not
+     * {@link TextField}. Returns {@link Optional#empty()} if the user did not
      * confirm the contribution. The window will only be opened ONCE; even if
      * multiple threads are calling this function. They will be blocked until
      * the window is closed.
      *
-     * @return The value entered in the the {@code TextField} if any.
+     * @return The value entered in the the {@link TextField} if any.
      * @see ContributionController#getContribution()
      */
     public Optional<Double> getContribution() {

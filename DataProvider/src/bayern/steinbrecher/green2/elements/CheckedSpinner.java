@@ -25,15 +25,17 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
 import java.security.PrivilegedActionException;
+import java.util.function.Function;
 
 /**
- * Extends the class {@code Spinner<T>} with a valid property and sets {@code ElementsUtility.CSS_CLASS_INVALID_CONTENT} if the content of the spinner is not valid.
+ * Extends the class {@link Spinner<T>} with a valid property and sets
+ * {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} if the content of the spinner is not valid.
  *
  * @author Stefan Huber
  */
 public class CheckedSpinner<T> extends Spinner<T> {
     /**
-     * {@code BooleanProperty} indicating whether the current value is valid.
+     * {@link BooleanProperty} indicating whether the current value is valid.
      */
     private BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
     private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
@@ -42,7 +44,8 @@ public class CheckedSpinner<T> extends Spinner<T> {
      * Constructs a new {@code CheckedSpinner}.
      *
      * @param factory The factory generating values.
-     * @param parser  The function to parse the content of the Spinner. (It throws a {@code ParseException} if the value could not be parsed.)
+     * @param parser  The function to parse the content of the Spinner. (It throws a {@link ParseException} if the
+     *                value could not be parsed.)
      */
     public CheckedSpinner(SpinnerValueFactory<T> factory, ParseFunction<T> parser) {
         super(factory);
@@ -62,10 +65,10 @@ public class CheckedSpinner<T> extends Spinner<T> {
     }
 
     /**
-     * Returns the {@code BooleanProperty} representing whether the current
+     * Returns the {@link BooleanProperty} representing whether the current
      * value is valid or not.
      *
-     * @return The {@code BooleanProperty} representing whether the current
+     * @return The {@link BooleanProperty} representing whether the current
      * value is valid or not.
      */
     public ReadOnlyBooleanProperty validProperty() {
@@ -82,7 +85,8 @@ public class CheckedSpinner<T> extends Spinner<T> {
     }
 
     /**
-     * This interface is very similar to {@code Function} but it contains a method throwing a {@code ParseException}.
+     * This interface is very similar to {@link Function<T, R>} but it contains a method throwing a
+     * {@link ParseException}.
      */
     @FunctionalInterface
     public interface ParseFunction<T> {
@@ -135,8 +139,7 @@ public class CheckedSpinner<T> extends Spinner<T> {
          * message of <tt>(cause==null ? null : cause.toString())</tt> (which
          * typically contains the class and detail message of <tt>cause</tt>).
          * This constructor is useful for exceptions that are little more than
-         * wrappers for other throwables (for example, {@link
-         * PrivilegedActionException}).
+         * wrappers for other throwables (for example, {@link PrivilegedActionException}).
          *
          * @param cause the cause (which is saved for later retrieval by the
          *              {@link #getCause()} method).  (A <tt>null</tt> value is

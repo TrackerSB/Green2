@@ -45,9 +45,9 @@ public class BirthdayGenerator {
             .thenComparing(m -> m.getPerson().getBirthday().getDayOfMonth())
             .thenComparing(m -> m.getPerson().getName());
     /**
-     * Represents a function creating a {@code String} out of a {@code Member}
+     * Represents a function creating a {@link String} out of a {@link Member}
      * containing the prename, lastname and the birthday of the member. Values
-     * are separated by semicolon and the {@code String} is closed by a
+     * are separated by semicolon and the {@link String} is closed by a
      * linebreak.
      */
     private static final Function<Member, String> PRINT_LINE = m -> {
@@ -63,7 +63,7 @@ public class BirthdayGenerator {
     }
 
     /**
-     * Creates a {@code String} representing content for a CSV-file containing a
+     * Creates a {@link String} representing content for a CSV-file containing a
      * grouped list of the given member and their age they had or will have in
      * year {@code year}.
      *
@@ -106,11 +106,11 @@ public class BirthdayGenerator {
      * Appends all member of {@code currentAgeActive} and
      * {@code currentAgePassiv} to {@code output} if the lists are not empty.
      *
-     * @param output            The {@code StringBuilder} to append the output to.
+     * @param output            The {@link StringBuilder} to append the output to.
      * @param currentAge        The age of the member in the given lists.
      * @param currentAgeActive  The list of active member which are
      *                          {@code currentAge} years old.
-     * @param currentAgePassive The list of passiv member which are
+     * @param currentAgePassive The list of passive member which are
      *                          {@code currentAge} years old.
      */
     private static void tryAppendMember(StringBuilder output, int currentAge, List<Member> currentAgeActive,

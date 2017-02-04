@@ -22,7 +22,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@code TextField} for inserting a creditor id. Css class {@code CSS_CLASS_CREDITORID_TEXTFIELD} is added.
+ * Represents a {@link TextField} for inserting a creditor id. Css class {@link CSS_CLASS_CREDITORID_TEXTFIELD} is added.
  *
  * @author Stefan Huber
  */

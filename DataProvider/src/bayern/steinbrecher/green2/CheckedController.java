@@ -16,13 +16,12 @@
 
 package bayern.steinbrecher.green2;
 
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * This controller extends {@code Controller} with the properties
+ * This controller extends {@link Controller} with the properties
  * {@code anyMissingInput}, {@code anyInputToLong} and {@code valid}.
  *
  * @author Stefan Huber

@@ -73,7 +73,7 @@ public abstract class LoginController extends CheckedController {
 
     /**
      * Returns the currently entered login information. It returns
-     * {@code Optional.empty()} only if the window was closed without pressing a
+     * {@link Optional#empty()} only if the window was closed without pressing a
      * confirm button. That means if {@code userConfirmed} is {@code false}.
      *
      * @return The currently entered login information.

@@ -28,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.application.Application;
 
 import java.util.Locale;
 import java.util.logging.Level;
@@ -89,7 +90,7 @@ public class Splashscreen extends View<Controller> {
      *
      * @param millis The time in milliseconds the screen has to be shown.
      * @param stage  The stage to use for the window. (Used as param for
-     *               {@code start(...)}).
+     *               {@link Application#start(Stage)}).
      */
     public static void showSplashscreen(long millis, Stage stage) {
         try {

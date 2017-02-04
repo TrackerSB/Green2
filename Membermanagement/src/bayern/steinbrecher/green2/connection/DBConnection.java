@@ -142,8 +142,8 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Returns a list of all member accessable with {@code dbc}. The list
-     * contains all labels hold in {@code COLUMN_LABELS_MEMBER}.
+     * Returns a list of all member accessible with {@code dbc}. The list
+     * contains all labels hold in {@link DBConnection#COLUMN_LABELS_MEMBER}.
      *
      * @return The list with the member.
      */
@@ -197,7 +197,7 @@ public abstract class DBConnection implements AutoCloseable {
      * Reads the individual contributions of every member - if specified.
      *
      * @return A Optional containing the individual contributions or
-     * {@code Optional.empty()} if inidividual contributions are not specified.
+     * {@link Optional#empty()} if inidividual contributions are not specified.
      */
     public Optional<Map<Integer, Double>> readIndividualContributions() {
         if (checkColumn("Mitglieder", "Beitrag")) {

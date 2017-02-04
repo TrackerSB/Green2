@@ -42,7 +42,7 @@ public final class URLUtility {
      * redirects)
      *
      * @param url The HTTP(S)-URL to resolve.
-     * @return The resolved HTTP(S)-URL. Returns {@code Optional.empty()} only
+     * @return The resolved HTTP(S)-URL. Returns {@link Optional#empty()} only
      * if the given URL is invalid, not reachable or an unrecognized status code
      * is thrown like 401 or 500.
      */

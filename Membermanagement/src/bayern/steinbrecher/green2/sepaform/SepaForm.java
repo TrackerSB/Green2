@@ -75,9 +75,9 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
 
     /**
      * Returns the originator currently represented. Returns
-     * {@code Optional.empty} if the user did not confirm the input.
+     * {@link Optional#empty()} if the user did not confirm the input.
      *
-     * @return The originator or {@code Optional.empty}.
+     * @return The originator or {@link Optional#empty()}.
      */
     public Optional<Originator> getOriginator() {
         return controller.getOriginator();

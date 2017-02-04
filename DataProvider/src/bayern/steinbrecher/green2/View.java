@@ -48,7 +48,7 @@ public abstract class View<T extends Controller> extends Application {
     protected T controller;
 
     /**
-     * Throws a {@code IllegalStateException} only if stage is {@code null}.
+     * Throws a {@link IllegalStateException} only if stage is {@code null}.
      */
     protected void checkStage() {
         if (stage == null) {
@@ -74,10 +74,10 @@ public abstract class View<T extends Controller> extends Application {
 
     /**
      * Makes sure the window is only shown once. When multiple threads are
-     * calling this method they will be set to {@code wait} apart from the first
-     * one. This one opens the stage set in {@code start}, blocks until the
+     * calling this method they will be set to {@link Thread#wait()} apart from the first
+     * one. This one opens the stage set in {@link Application#start(Stage)}, blocks until the
      * window is closed and then notifies all other threads. If the JavaFX
-     * Application Thread calls it, it calls {@code showAndWait}.
+     * Application Thread calls it, it calls {@link View#showOnceAndWait()}.
      *
      * @see Stage#showAndWait()
      * @see View#showOnce(java.lang.Runnable)
@@ -103,7 +103,7 @@ public abstract class View<T extends Controller> extends Application {
 
     /**
      * Makes sure the window is only shown once. The first call opens the view
-     * and returns. Further calls have no effect until {@code reset()} is
+     * and returns. Further calls have no effect until {@link View#reset()} is
      * called. This method does NOT block.
      *
      * @param callback The runnable to call when the view gets closed.
@@ -136,10 +136,10 @@ public abstract class View<T extends Controller> extends Application {
 
     /**
      * Returns the property indicating whether the next call of
-     * {@code showOnceAndWait()} would open the window.
+     * {@link View#showOnceAndWait()} would open the window.
      *
      * @return The property indicating whether the next call of
-     * {@code showOnceAndWait()} would open the window.
+     * {@link View#showOnceAndWait()} would open the window.
      */
     public BooleanBinding wouldShowBinding() {
         return wouldShowProperty;

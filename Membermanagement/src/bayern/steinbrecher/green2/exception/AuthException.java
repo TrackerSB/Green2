@@ -26,31 +26,31 @@ public class AuthException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Erstellt eine {@code AuthException}, welche weder eine Detalinachricht
-     * noch einen Grund für ihr Auftreten enthält.
+     * Constructs a new exception with {@code null} as its detail message and no cause.
      */
     public AuthException() {
         super();
     }
 
     /**
-     * Erstellt eine {@code AuthException}, welche die Datailnachricht
-     * {@code message} enthält, jedoch keinen Grund für ihr Auftreten.
+     * Constructs a new exception with the specified detail message and no cause.
      *
-     * @param message Die Detailnachricht, die weitere Informationen zum Fehler
-     *                geben kann.
+     * @param message The detail message.
      */
     public AuthException(String message) {
         super(message);
     }
 
     /**
-     * Erstellt eine {@code AuthException} mit gegebener Detailnachricht
-     * {@code message} und dem Grund {@code cause} für ihr Auftreten.
+     * Constructs a new exception with the specified detail message and
+     * cause.  <p>Note that the detail message associated with
+     * {@code cause} is <i>not</i> automatically incorporated in
+     * this exception's detail message.
      *
-     * @param message Die Detailnachricht, die weitere Informationen zum Fehler
-     *                geben kann.
-     * @param cause   Der Grund weswegen der Fehler ausgelöst wurde.
+     * @param message The detail message.
+     * @param cause   The cause.  (A <tt>null</tt> value is
+     *                permitted, and indicates that the cause is nonexistent or
+     *                unknown.)
      */
     public AuthException(String message, Throwable cause) {
         super(message, cause);

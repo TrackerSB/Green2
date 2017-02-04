@@ -109,10 +109,10 @@ public enum ConfigKey {
      */
     SSH_CHARSET(Charset.class) {
         /**
-         * Checks whether the given value represents a supported {@code Charset}.
+         * Checks whether the given value represents a supported {@link Charset}.
          *
          * @param value The value to check.
-         * @return {@code true} only if {@code value} represents a supported {@code Charset}.
+         * @return {@code true} only if {@code value} represents a supported {@link Charset}.
          */
         @Override
         public <T> boolean isValid(T value) {
@@ -178,7 +178,8 @@ public enum ConfigKey {
     }
 
     /**
-     * Returns a value of the type this ConfigKey holds converting it from {@code value}. NOTE: It does NOT imply that the valid is a valid value to be used as value of a ConfigKey.
+     * Returns a value of the type this ConfigKey holds converting it from {@code value}. NOTE: It does NOT imply
+     * that the valid is a valid value to be used as value of a ConfigKey.
      *
      * @param value The String representation to convert.
      * @param <T>   The type of the value the ConfigKey holds.

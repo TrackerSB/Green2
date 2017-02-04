@@ -145,9 +145,11 @@ public class ProfileChoice extends Application {
     }
 
     /**
-     * Returns an {@code Optional} containing the selected profile if any. If the window is not closed it always returns {@code Optional.empty()}.
+     * Returns an {@link Optional} containing the selected profile if any. If the window is not closed it always
+     * returns {@link Optional#empty()}.
      *
-     * @return An {@code Optional} containing the selected profile if any. If the window is not closed it always returns {@code Optional.empty()}.
+     * @return An {@link Optional} containing the selected profile if any. If the window is not closed it always
+     * returns {@link Optional#empty()}.
      */
     public Optional<Profile> getProfile() {
         return Optional.ofNullable(profile);
@@ -158,7 +160,7 @@ public class ProfileChoice extends Application {
      * dialog is closed.
      *
      * @param editable {@code true} only if profiles should be able to edit and/or to delete.
-     * @return An {@code Optional} which contains the selected profile if any.
+     * @return An {@link Optional} which contains the selected profile if any.
      */
     public static Optional<Profile> askForProfile(boolean editable) {
         if (editable) {

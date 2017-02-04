@@ -36,10 +36,10 @@ import java.util.List;
  * Represents text fields that detect whether their input text is longer than a
  * given maximum column count. These text fields do not stop users from entering
  * too long text. On the one hand they can tell you whether the input is too
- * long, on the other hand they set {@code CSS_CLASS_TOO_LONG_CONTENT} when the
- * content is too long and {@code CSS_CLASS_NO_CONTENT} when there´s no content
+ * long, on the other hand they set {@link #CSS_CLASS_TOO_LONG_CONTENT} when the
+ * content is too long and {@link #CSS_CLASS_NO_CONTENT} when there´s no content
  * as one of their css classes if checked is set to {@code true}.
- * If any condition is false, {@code ElementsUtility.CSS_CLASS_INVALID_CONTENT} is set.
+ * If any condition is false, {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} is set.
  *
  * @author Stefan Huber
  */
@@ -86,15 +86,15 @@ public class CheckedTextField extends TextField {
     private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
 
     /**
-     * Constructs a new {@code CheckedTextField} with an max input length of
-     * {@code Integer.MAX_VALUE} and no initial content.
+     * Constructs a new {@link CheckedTextField} with an max input length of
+     * {@link Integer#MAX_VALUE} and no initial content.
      */
     public CheckedTextField() {
         this(Integer.MAX_VALUE);
     }
 
     /**
-     * Constructs a new {@code CheckedTextField} with an max input length of
+     * Constructs a new {@link CheckedTextField} with an max input length of
      * {@code maxColumnCount} and no initial content.
      *
      * @param maxColumnCount The initial max input length.
@@ -104,7 +104,7 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Constructs a new {@code CheckedTextField} with an max input length of
+     * Constructs a new {@link CheckedTextField} with an max input length of
      * {@code maxColumnCount} and {@code text} as initial content.
      *
      * @param maxColumnCount The initial max input length.

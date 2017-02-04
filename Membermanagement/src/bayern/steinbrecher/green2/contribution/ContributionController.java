@@ -53,7 +53,7 @@ public class ContributionController extends WizardableController {
 
     /**
      * Returns the currently inserted contribution. Returns
-     * {@code Optional.empty} if the user didn´t confirm the contribution yet.
+     * {@link Optional#empty()} if the user didn´t confirm the contribution yet.
      *
      * @return The currently inserted contribution.
      */

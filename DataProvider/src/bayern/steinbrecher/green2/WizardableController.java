@@ -21,7 +21,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a controller of a {@code WizardableView}.
+ * Represents a controller of a {@link WizardableView}.
  *
  * @author Stefan Huber
  */

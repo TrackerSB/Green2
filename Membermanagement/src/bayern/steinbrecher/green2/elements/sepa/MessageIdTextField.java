@@ -22,7 +22,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@code TextField} for entering a message id. {@code CSS_CLASS_MESSAGE_ID} is added.
+ * Represents a {@link TextField} for entering a message id. {@code CSS_CLASS_MESSAGE_ID} is added.
  *
  * @author Stefan Huber
  */

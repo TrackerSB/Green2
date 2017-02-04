@@ -40,7 +40,7 @@ public class VersionHandler {
      * Returns the version of the application on the repository.
      *
      * @return The version of the application on the repository. Returns
-     * {@code Optional.empty()} only if the online version could not be read.
+     * {@link Optional#empty()} only if the online version could not be read.
      */
     public static Optional<String> readOnlineVersion() {
         try {
@@ -57,7 +57,7 @@ public class VersionHandler {
      * Returns the currently installed version of this application.
      *
      * @return The currently installed version of the application. Returns
-     * {@code Optional.empty()} if this application is not installed yet or the
+     * {@link Optional#empty()} if this application is not installed yet or the
      * version could not be read.
      */
     public static Optional<String> readLocalVersion() {

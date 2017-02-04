@@ -28,7 +28,7 @@ import javafx.beans.property.StringProperty;
 import java.util.regex.Pattern;
 
 /**
- * Represents a {@code CheckedTextField} which also checks whether the current
+ * Represents a {@link CheckedTextField} which also checks whether the current
  * text is matching a given regex.
  *
  * @author Stefan Huber
@@ -45,8 +45,8 @@ public class CheckedRegexTextField extends CheckedTextField {
     private ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
 
     /**
-     * Constructs a new {@code CheckedRegexTextField} without initial content,
-     * maximum column count of {@code Integer.MAX_VALUE} and a all accepting
+     * Constructs a new {@link CheckedRegexTextField} without initial content,
+     * maximum column count of {@link Integer#MAX_VALUE} and a all accepting
      * regex.
      */
     public CheckedRegexTextField() {
@@ -54,8 +54,8 @@ public class CheckedRegexTextField extends CheckedTextField {
     }
 
     /**
-     * Creates a new {@code CheckedRegexTextField} with no initial content, a
-     * maximum column count of {@code Integer.MAX_VALUE} and validated by
+     * Creates a new {@link CheckedRegexTextField} with no initial content, a
+     * maximum column count of {@link Integer#MAX_VALUE} and validated by
      * {@code regex}.
      *
      * @param regex The regex for validating the input.
@@ -65,7 +65,7 @@ public class CheckedRegexTextField extends CheckedTextField {
     }
 
     /**
-     * Constructs a new {@code CheckedRegexTextField} with an max input length
+     * Constructs a new {@link CheckedRegexTextField} with an max input length
      * of {@code maxColumnCount}, no initial content and regex {@code regex}.
      *
      * @param maxColumnCount The initial max input length.
@@ -76,7 +76,7 @@ public class CheckedRegexTextField extends CheckedTextField {
     }
 
     /**
-     * Constructs a new {@code CheckedRegexTextField} with an max input length
+     * Constructs a new {@link CheckedRegexTextField} with an max input length
      * of {@code maxColumnCount}, {@code text} as initial content and regex
      * {@code regex}.
      *

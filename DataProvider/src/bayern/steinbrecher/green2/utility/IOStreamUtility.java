@@ -48,15 +48,15 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Reads the hole content of a given {@code InputStream} decoding with
-     * {@code charset}.
+     * Reads the hole content of a given {@link InputStream} decoding with
+     * {@link Charset}.
      *
-     * @param inputStream The {@code InputStream} to read.
-     * @param charset     The charset to use for decoding the {@code InputStream}.
-     * @return The content of the given {@code InputStream}. It never returns
+     * @param inputStream The {@link InputStream} to read.
+     * @param charset     The charset to use for decoding the {@link InputStream}.
+     * @return The content of the given {@link InputStream}. It never returns
      * {@code null}.
-     * @throws IOException Thrown if an {@code IOException} is thrown by
-     *                     {@code InputStream::read}.
+     * @throws IOException Thrown if an {@link IOException} is thrown by
+     *                     {@link InputStream#read()}.
      * @see InputStream#read()
      */
     public static String readAll(InputStream inputStream, Charset charset) throws IOException {
@@ -95,13 +95,13 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Transfers all chars from {@code inputStream} to {@code outputStream} of a
-     * file. It loops over {@code inputStream} transfering {@code bytesPerLoop}
+     * Transfers all chars from {@link InputStream} to {@code outputStream} of a
+     * file. It loops over {@link InputStream} transfering {@code bytesPerLoop}
      * bytes per loop.
      *
      * @param inputStream  The stream to read from.
      * @param outputStream The stream of the file to write to.
-     * @param size         The size of the {@code inputStream}.
+     * @param size         The size of the {@link InputStream}.
      * @param bytesPerLoop The amount of bytes to transfer per loop.
      * @param callback     A method to call on every loop. {@code null} for no
      *                     callback.

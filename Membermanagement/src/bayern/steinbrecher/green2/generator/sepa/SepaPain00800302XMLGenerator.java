@@ -45,7 +45,7 @@ public final class SepaPain00800302XMLGenerator {
     }
 
     /**
-     * Generates a xml-file containing all member of {@code member}, which have
+     * Generates a xml-file containing all member of {@link Member}, which have
      * a iban and a bic, and prints the generated output into
      * {@code outputfile}. If {@code outputfile} already exists it will be
      * replaced. If it don´t it will be created.
@@ -78,10 +78,10 @@ public final class SepaPain00800302XMLGenerator {
     }
 
     /**
-     * Removes all member which have no iban or no bic from {@code member}.
+     * Removes all member which have no iban or no bic from {@link Member}.
      *
      * @param member The list of member to filter.
-     * @return The list containing the member EXCLUDED from {@code member}.
+     * @return The list containing the member EXCLUDED from {@link Member}.
      */
     private static List<Member> filterValidMember(List<Member> member) {
         List<Member> invalidMember = new LinkedList<>();
@@ -116,7 +116,7 @@ public final class SepaPain00800302XMLGenerator {
      * @param member        The list of member to include in the xml.
      * @param originator    The origiantor of the direct debit.
      * @param contributions The mapping of membershipnumbers to contributions.
-     * @return The {@code String} representing the xml file content.
+     * @return The {@link String} representing the xml file content.
      */
     private static String createXML(List<Member> member, Originator originator, Map<Integer, Double> contributions,
                                     SequenceType sequenceType) {

@@ -30,15 +30,15 @@ import javafx.scene.AccessibleRole;
 public class CheckedPasswordField extends CheckedTextField {
 
     /**
-     * Constructes a new {@code CheckedPasswordField} with an max input length
-     * of {@code Integer.MAX_VALUE} and no initial content.
+     * Constructs a new {@link CheckedPasswordField} with an max input length
+     * of {@link Integer#MAX_VALUE} and no initial content.
      */
     public CheckedPasswordField() {
         this(Integer.MAX_VALUE);
     }
 
     /**
-     * Constructes a new {@code CheckedPasswordField} with a maximum column
+     * Constructs a new {@link CheckedPasswordField} with a maximum column
      * count of {@code maxColumnCount} and no content.
      *
      * @param maxColumnCount The initial maximum column count.
@@ -48,7 +48,7 @@ public class CheckedPasswordField extends CheckedTextField {
     }
 
     /**
-     * Constructes a new {@code CheckedPasswordField} with a maximum column
+     * Constructs a new {@link CheckedPasswordField} with a maximum column
      * count of {@code maxColumnCount} and initial content {@code text}.
      *
      * @param maxColumnCount The initial maximum column count.
@@ -96,7 +96,7 @@ public class CheckedPasswordField extends CheckedTextField {
     private class PasswordFieldSkin extends TextFieldSkin {
 
         /**
-         * Constructes a new skin for masking {@code checkedPasswordField}.
+         * Constructs a new skin for masking {@link CheckedPasswordField}.
          *
          * @param checkedPasswordField The passwordfield to mask.
          */
@@ -105,7 +105,7 @@ public class CheckedPasswordField extends CheckedTextField {
         }
 
         /**
-         * Constructes a new skin for masking {@code checkedPasswordField} with
+         * Constructs a new skin for masking {@link CheckedPasswordField} with
          * the given behavior.
          *
          * @param checkedPasswordField The passwordfield to mask.

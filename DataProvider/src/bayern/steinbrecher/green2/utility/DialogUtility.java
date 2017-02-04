@@ -268,7 +268,7 @@ public final class DialogUtility {
     }
 
     /**
-     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
      *
      * @param message The message to display.
      * @return The created alert.
@@ -278,7 +278,7 @@ public final class DialogUtility {
     }
 
     /**
-     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
      *
      * @param message The message to display.
      * @param owner   The owner of the alert.
@@ -289,7 +289,7 @@ public final class DialogUtility {
     }
 
     /**
-     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
      *
      * @param message The message to display.
      * @param header  The header to show.
@@ -302,7 +302,7 @@ public final class DialogUtility {
     }
 
     /**
-     * Crates a message alert. This alert shows the message in a non-editable {@code TextArea}.
+     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
      *
      * @param message The message to display.
      * @param header  The header to show.

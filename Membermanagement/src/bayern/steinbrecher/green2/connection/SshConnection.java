@@ -216,7 +216,7 @@ public final class SshConnection extends DBConnection {
     /**
      * Splits up a string on the given regex. The regex itself won´t show up in
      * any element of the returned list. When two or more regex are right in a
-     * row an empty {@code String} will be added. (This is the main difference
+     * row an empty {@link String} will be added. (This is the main difference
      * to {@code String.split(...)})
      */
     private List<String> splitUp(String row, char regex) {

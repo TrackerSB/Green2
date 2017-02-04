@@ -74,7 +74,7 @@ public class LauncherController implements Initializable {
     /**
      * Increases the value of {@code percentageProperty()} by 1.0/{@code steps}.
      *
-     * @param steps The count of steps 100% is splitted.
+     * @param steps The count of steps 100% is split.
      */
     public void incPercentage(int steps) {
         if (percentage.get() < 1) {
@@ -83,10 +83,10 @@ public class LauncherController implements Initializable {
     }
 
     /**
-     * Returns the property which contains a {@code String} representation of
+     * Returns the property which contains a {@link String} representation of
      * the value hold by {@code percentageProperty}.
      *
-     * @return The property which contains a {@code String} representation of
+     * @return The property which contains a {@link String} representation of
      * the value hold by {@code percentageProperty}.
      * @see #percentageProperty()
      */

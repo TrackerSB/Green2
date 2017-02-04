@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -125,7 +126,7 @@ public class Main extends Application {
         Platform.setImplicitExit(false);
         /*
          * boolean value needed to make sure no other windows shows up because
-         * {@code Platform.exit()} is async.
+         * {@link Platform#exit()} is async.
          */
         boolean valid = checkConfigs();
         if (valid) {
@@ -162,8 +163,8 @@ public class Main extends Application {
     }
 
     /*
-     * This method creates a {@code WaitScreen}, connects {@code login} to it
-     * AND calls {@code start(...)} of login.
+     * This method creates a {@link WaitScreen}, connects {@code login} to it
+     * AND calls {@link Application#start(Stage)} of login.
      */
     private WaitScreen createWaitScreen(Login login) throws IOException {
         WaitScreen waitScreen = new WaitScreen();
@@ -266,14 +267,14 @@ public class Main extends Application {
 
     /**
      * Asks the user for the needed logindata as long as the inserted data is
-     * not correct or the user abborts. This method should NOT be called by
+     * not correct or the user aborts. This method should NOT be called by
      * JavaFX Application Thread. E.g. use
-     * {@code ServiceFactory.createService(...)}.
+     * {@link ServiceFactory#createService(Callable)}.
      *
      * @param login      The loginframe used to ask the user.
      * @param waitScreen The waitscreen to show when trying to connect to the
      *                   server.
-     * @return {@code Optional.empty()} only if the connection could not be
+     * @return {@link Optional#empty()} only if the connection could not be
      * established. E.g. the user closed the window or the configured connection
      * is not reachable.
      */
@@ -336,8 +337,8 @@ public class Main extends Application {
 
     /**
      * Checks whether all objects are not {@code null}. If any is {@code null}
-     * it throws a {@code IllegalStateException} saying that the caller has to
-     * call {@code start(...)} first.
+     * it throws a {@link IllegalStateException} saying that the caller has to
+     * call {@link Application#start(Stage)} first.
      *
      * @param obj The objects to test.
      */

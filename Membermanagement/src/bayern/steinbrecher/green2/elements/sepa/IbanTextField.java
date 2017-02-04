@@ -22,7 +22,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@code CheckedTextField} specialized for IBANs. CSS class {@code CSS_CLASS_MESSAGE_ID} is added.
+ * Represents a {@link CheckedTextField} specialized for IBANs. CSS class {@code CSS_CLASS_MESSAGE_ID} is added.
  *
  * @author Stefan Huber
  */

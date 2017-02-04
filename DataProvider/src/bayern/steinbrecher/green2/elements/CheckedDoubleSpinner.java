@@ -36,7 +36,7 @@ public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
     };
 
     /**
-     * Constructs a new {@code CheckedDoubleSpinner}.
+     * Constructs a new {@link CheckedDoubleSpinner}.
      *
      * @param min            The minimum allowed value.
      * @param max            The maximum allowed value.

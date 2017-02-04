@@ -31,14 +31,14 @@ public abstract class Controller implements Initializable {
      */
     protected Stage stage = null;
     /**
-     * Only {@code true} when the user explicitly abborted his input. (E.g.
+     * Only {@code true} when the user explicitly aborted his input. (E.g.
      * pressing the X of the window.)
      */
     private boolean userAbborted = false;
 
     /**
-     * Sets the stage the conroller can refer to. (E.g. for closing the stage)
-     * NOTE: It overrides {@code onCloseRequest}.
+     * Sets the stage the controller can refer to. (E.g. for closing the stage)
+     * NOTE: It overrides {@link Stage#onCloseRequest}.
      *
      * @param stage The stage to refer to.
      */
@@ -48,7 +48,7 @@ public abstract class Controller implements Initializable {
     }
 
     /**
-     * Throws a {@code IllegalStateException} only if stage is {@code null}.
+     * Throws a {@link IllegalStateException} only if stage is {@code null}.
      */
     protected void checkStage() {
         if (stage == null) {
@@ -57,9 +57,9 @@ public abstract class Controller implements Initializable {
     }
 
     /**
-     * Checks whether the user abborted his input.
+     * Checks whether the user aborted his input.
      *
-     * @return {@code true} only if the user abborted his input explicitly.
+     * @return {@code true} only if the user aborted his input explicitly.
      */
     public boolean userAbborted() {
         return userAbborted;

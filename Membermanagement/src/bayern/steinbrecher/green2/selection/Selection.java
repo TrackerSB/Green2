@@ -43,7 +43,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
 
     /**
      * Greates a new Frame representing the given options as selectable
-     * {@code CheckBox}es and representing a {@code TextField} for entering a
+     * {@code CheckBox}es and representing a {@link TextField} for entering a
      * number.
      *
      * @param options The options the user is allowed to select.
@@ -54,7 +54,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
 
     /**
      * Greates a new Frame representing the given options as selectable
-     * {@code CheckBox}es and representing a {@code TextField} for entering a
+     * {@code CheckBox}es and representing a {@link TextField} for entering a
      * number.
      *
      * @param options The options the user is allowed to select.
@@ -96,7 +96,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
 
     /**
      * Retruns the list of currently selected items. Returns
-     * {@code Optional.empty} if the user abborted the selection.
+     * {@link Optional#empty()} if the user abborted the selection.
      *
      * @return The selection if any.
      */
