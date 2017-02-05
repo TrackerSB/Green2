@@ -201,14 +201,13 @@ public class MemberManagement extends Application {
 
                 executeQueries();
 
-                menuStage.showingProperty().addListener(
-                        (obs, oldVal, newVal) -> {
-                            if (newVal) {
-                                waitScreen.close();
-                            } else {
-                                Platform.exit();
-                            }
-                        });
+                menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal) {
+                        waitScreen.close();
+                    } else {
+                        Platform.exit();
+                    }
+                });
 
                 try {
                     new Menu(this).start(menuStage);
