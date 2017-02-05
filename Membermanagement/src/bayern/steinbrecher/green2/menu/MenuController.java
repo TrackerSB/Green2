@@ -19,7 +19,7 @@ package bayern.steinbrecher.green2.menu;
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.elements.CheckedIntegerSpinner;
-import bayern.steinbrecher.green2.main.Main;
+import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -38,7 +38,7 @@ import java.util.ResourceBundle;
 public class MenuController extends Controller {
 
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
-    private Main caller;
+    private MemberManagement caller;
     @FXML
     private Button generateContribution;
     @FXML
@@ -82,7 +82,7 @@ public class MenuController extends Controller {
      *
      * @param caller The provider of the functionality.
      */
-    public void setCaller(Main caller) {
+    public void setCaller(MemberManagement caller) {
         this.caller = caller;
     }
 

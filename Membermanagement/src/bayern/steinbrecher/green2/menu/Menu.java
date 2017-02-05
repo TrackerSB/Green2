@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.View;
 import bayern.steinbrecher.green2.data.DataProvider;
-import bayern.steinbrecher.green2.main.Main;
+import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -31,7 +31,7 @@ import javafx.stage.Stage;
  */
 public class Menu extends View<MenuController> {
 
-    private Main caller;
+    private MemberManagement caller;
 
     /**
      * Constructs a menu.
@@ -39,7 +39,7 @@ public class Menu extends View<MenuController> {
      * @param caller The object for calling the functions represented by the
      *               menu.
      */
-    public Menu(Main caller) {
+    public Menu(MemberManagement caller) {
         this.caller = caller;
     }
 

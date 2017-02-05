@@ -14,7 +14,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bayern.steinbrecher.green2.main;
+package bayern.steinbrecher.green2.membermanagement;
 
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.DefaultConnection;
@@ -85,7 +85,7 @@ import java.util.stream.IntStream;
  *
  * @author Stefan Huber
  */
-public class Main extends Application {
+public class MemberManagement extends Application {
 
     private static final long SPLASHSCREEN_MILLIS = 2500;
     private Profile profile;
@@ -101,7 +101,7 @@ public class Main extends Application {
     /**
      * Default constructor.
      */
-    public Main() {
+    public MemberManagement() {
         List<String> availableProfiles = Profile.getAvailableProfiles();
         if (availableProfiles.size() < 1) {
             ProgramCaller.startGreen2ConfigDialog();
@@ -195,7 +195,7 @@ public class Main extends Application {
                     dbConnection.createTablesIfNeeded();
                 } catch (SchemeCreationException ex) {
                     DialogUtility.createErrorAlert(DataProvider.getResourceValue("couldntCreateScheme")).showAndWait();
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.exit();
                 }
 
@@ -213,7 +213,7 @@ public class Main extends Application {
                 try {
                     new Menu(this).start(menuStage);
                 } catch (Exception ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -242,7 +242,7 @@ public class Main extends Application {
             } else if (cause instanceof AuthException) {
                 dialog = DialogUtility.createInfoAlert(DataProvider.getResourceValue("checkInput"));
             } else {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Not action specified for: {0}", cause);
+                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, "Not action specified for: {0}", cause);
                 dialog = DialogUtility.createErrorAlert(DataProvider.getResourceValue("unexpectedAbort"));
             }
 
@@ -372,7 +372,7 @@ public class Main extends Application {
         try {
             generateAddresses(member.get(), DataProvider.SAVE_PATH + "/Serienbrief_alle.csv");
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -391,7 +391,7 @@ public class Main extends Application {
             generateAddresses(memberBirthday.get(year).get(),
                     DataProvider.SAVE_PATH + "/Serienbrief_Geburtstag_" + year + ".csv");
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -482,7 +482,7 @@ public class Main extends Application {
                 }
             });
         } catch (InterruptedException | ExecutionException | IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
             Alert alert = DialogUtility.createErrorAlert(DataProvider.getResourceValue("noSepaDebit"), menuStage);
             alert.showAndWait();
         }
@@ -538,7 +538,7 @@ public class Main extends Application {
             return message.isEmpty() ? allCorrectMessage
                     : invalidDatesIntro + "\n" + message;
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
             return "";
         }
     }
