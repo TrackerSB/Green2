@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Determine sudo command
 KdeSudoExists=$(command -v kdesudo >/dev/null)
