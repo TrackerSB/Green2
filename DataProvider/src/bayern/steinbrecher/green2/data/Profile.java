@@ -118,7 +118,7 @@ public class Profile {
                 if (configFile.getValue().exists()) {
                     throw new ProfileRenamingException("Profile " + profileName + " already exists");
                 } else if (!configFile.getValue().createNewFile()) {
-                    throw new ProfileRenamingException("Profile could not be created.");
+                    throw new ProfileRenamingException("Profile " + profileName + " could not be created.");
                 }
             } catch (IOException ex) {
                 throw new ProfileRenamingException("New profile could not be created.", ex);
@@ -213,7 +213,7 @@ public class Profile {
     }
 
     private String generateLine(ConfigKey key) {
-        return key.name() + VALUE_SEPARATOR + key.getStringFromValue(configurations.get(key).getValue()) + "\n";
+        return key.name() + VALUE_SEPARATOR + key.getStringFromValue(configurations.get(key).getValue());
     }
 
     /**
