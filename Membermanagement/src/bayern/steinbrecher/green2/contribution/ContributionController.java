@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.contribution;
 
 import bayern.steinbrecher.green2.WizardableController;
-import bayern.steinbrecher.green2.elements.CheckedDoubleSpinner;
+import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
 import javafx.fxml.FXML;
 
 import java.net.URL;

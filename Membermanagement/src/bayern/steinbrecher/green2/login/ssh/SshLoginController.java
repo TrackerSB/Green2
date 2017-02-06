@@ -16,8 +16,8 @@
 
 package bayern.steinbrecher.green2.login.ssh;
 
-import bayern.steinbrecher.green2.elements.CheckedPasswordField;
-import bayern.steinbrecher.green2.elements.CheckedTextField;
+import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField;
+import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
 import bayern.steinbrecher.green2.login.LoginKey;
 import javafx.application.Platform;

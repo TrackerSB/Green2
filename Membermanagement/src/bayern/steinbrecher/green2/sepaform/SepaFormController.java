@@ -20,10 +20,11 @@ import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
-import bayern.steinbrecher.green2.elements.CheckedTextField;
+import bayern.steinbrecher.green2.elements.buttons.HelpButton;
 import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField;
 import bayern.steinbrecher.green2.elements.sepa.IbanTextField;
 import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField;
+import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
@@ -73,11 +74,11 @@ public class SepaFormController extends CheckedController {
     @FXML
     private CheckedDatePicker executionDatePicker;
     @FXML
-    private Label initiatingPartyLabel;
-    @FXML
     private Label messageIdLabel;
     @FXML
     private Label pmtInfIdLabel;
+    @FXML
+    private HelpButton creatorHelpButton;
 
     /**
      * {@inheritDoc}
@@ -85,8 +86,6 @@ public class SepaFormController extends CheckedController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         String maxCharCount = DataProvider.getResourceValue("maxCharCount");
-        initiatingPartyLabel.setText(DataProvider.getResourceValue("nameOfInitiatingParty") + "\n"
-                + MessageFormat.format(maxCharCount, SepaUtility.MAX_CHAR_NAME_OF_INITIATING_PARTY));
         pmtInfIdLabel.setText(DataProvider.getResourceValue("pmtInfId") + "\n"
                 + MessageFormat.format(maxCharCount, SepaUtility.MAX_CHAR_PMTINFID));
 
@@ -99,7 +98,9 @@ public class SepaFormController extends CheckedController {
                 creditorIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
 
         pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
-        creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_OF_INITIATING_PARTY);
+        creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_OF_CREATOR);
+        creatorHelpButton.setHelpMessage(
+                DataProvider.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_OF_CREATOR));
 
         anyInputToLong.bind(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)

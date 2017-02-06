@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.elements.CheckedRegexTextField;
+import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import javafx.beans.property.StringProperty;
 
 /**

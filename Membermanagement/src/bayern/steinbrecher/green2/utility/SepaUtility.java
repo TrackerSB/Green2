@@ -49,7 +49,7 @@ public final class SepaUtility {
      * The maximum length of the name of the party creating the SEPA Direct
      * Debit.
      */
-    public static final int MAX_CHAR_NAME_OF_INITIATING_PARTY = 70;
+    public static final int MAX_CHAR_NAME_OF_CREATOR = 70;
     private static final SimpleDateFormat SEPA_DATETIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /**

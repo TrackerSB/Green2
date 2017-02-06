@@ -14,7 +14,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bayern.steinbrecher.green2.elements;
+package bayern.steinbrecher.green2.elements.spinner;
 
 import javafx.beans.NamedArg;
 import javafx.scene.control.SpinnerValueFactory;
@@ -25,18 +25,18 @@ import javafx.scene.control.SpinnerValueFactory;
  *
  * @author Stefan Huber
  */
-public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
+public class CheckedIntegerSpinner extends CheckedSpinner<Integer> {
 
-    private static final ParseFunction<Double> parseFunction = value -> {
+    private static final ParseFunction<Integer> parseFunction = value -> {
         try {
-            return Double.parseDouble(value);
+            return Integer.parseInt(value);
         } catch (NumberFormatException ex) {
             throw new ParseException(ex);
         }
     };
 
     /**
-     * Constructs a new {@link CheckedDoubleSpinner}.
+     * Constructs a new {@link CheckedIntegerSpinner}.
      *
      * @param min            The minimum allowed value.
      * @param max            The maximum allowed value.
@@ -45,10 +45,11 @@ public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
      *                       value will be used.
      * @param amountToStepBy The amount to increment or decrement by, per step.
      */
-    public CheckedDoubleSpinner(@NamedArg("min") double min,
-                                @NamedArg("max") double max,
-                                @NamedArg("initialValue") double initialValue,
-                                @NamedArg("amountToStepBy") double amountToStepBy) {
-        super(new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max, initialValue, amountToStepBy), parseFunction);
+    public CheckedIntegerSpinner(@NamedArg("min") int min,
+                                 @NamedArg("max") int max,
+                                 @NamedArg("initialValue") int initialValue,
+                                 @NamedArg("amountToStepBy") int amountToStepBy) {
+        super(new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, initialValue, amountToStepBy),
+                parseFunction);
     }
 }

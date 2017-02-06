@@ -16,7 +16,7 @@
   ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<?import bayern.steinbrecher.green2.elements.CheckedIntegerSpinner?>
+<?import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>

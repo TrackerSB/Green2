@@ -14,7 +14,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bayern.steinbrecher.green2.elements;
+package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import javafx.beans.binding.Bindings;

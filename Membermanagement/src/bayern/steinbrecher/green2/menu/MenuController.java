@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.data.DataProvider;
-import bayern.steinbrecher.green2.elements.CheckedIntegerSpinner;
+import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;

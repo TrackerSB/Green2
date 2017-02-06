@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.login;
 
 import bayern.steinbrecher.green2.CheckedController;
-import bayern.steinbrecher.green2.elements.CheckedTextField;
+import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
