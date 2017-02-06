@@ -254,6 +254,7 @@ public final class DialogUtility {
     private static Alert addMessageTextArea(Alert alert, String message) {
         TextArea messageArea = new TextArea(message);
         messageArea.setEditable(false);
+        messageArea.setWrapText(true);
 
         GridPane grid = new GridPane();
         grid.addColumn(0, messageArea);

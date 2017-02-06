@@ -30,13 +30,17 @@ import java.util.regex.Pattern;
 public final class SepaUtility {
 
     /**
-     * Holds the count of days the PmtInfId has to be unique.
+     * Holds the count of days the MessageId has to be unique.
      */
-    public static final int UNIQUE_DAYS_PMTINFID = 15;
+    public static final int UNIQUE_DAYS_MESSAGEID = 15;
     /**
      * The maximum length of the message id.
      */
     public static final int MAX_CHAR_MESSAGE_ID = 35;
+    /**
+     * Holds the count of month the PmtInfId has to be unique.
+     */
+    public static final int UNIQUE_MONTH_PMTINFID = 3;
     /**
      * The maximum length of payment information id (PmtInfId).
      */

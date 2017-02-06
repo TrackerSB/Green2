@@ -28,14 +28,10 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -74,45 +70,37 @@ public class SepaFormController extends CheckedController {
     @FXML
     private CheckedDatePicker executionDatePicker;
     @FXML
-    private Label messageIdLabel;
-    @FXML
-    private Label pmtInfIdLabel;
-    @FXML
     private HelpButton creatorHelpButton;
+    @FXML
+    private HelpButton messageIdHelpButton;
+    @FXML
+    private HelpButton pmtInfIdHelpButton;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        String maxCharCount = DataProvider.getResourceValue("maxCharCount");
-        pmtInfIdLabel.setText(DataProvider.getResourceValue("pmtInfId") + "\n"
-                + MessageFormat.format(maxCharCount, SepaUtility.MAX_CHAR_PMTINFID));
-
-        String uniqueForDays = DataProvider.getResourceValue("uniqueForDays");
-        messageIdLabel.setText(DataProvider.getResourceValue("messageId") + "\n"
-                + MessageFormat.format(maxCharCount, SepaUtility.MAX_CHAR_MESSAGE_ID) + "\n"
-                + MessageFormat.format(uniqueForDays, SepaUtility.UNIQUE_DAYS_PMTINFID));
-
         checkedTextFields = Arrays.asList(creatorTextField, creditorTextField, ibanTextField, bicTextField,
                 creditorIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
 
         pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
+        pmtInfIdHelpButton.setHelpMessage(DataProvider.getResourceValue(
+                "helpPmtInfId", SepaUtility.UNIQUE_MONTH_PMTINFID, SepaUtility.MAX_CHAR_PMTINFID));
         creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_OF_CREATOR);
         creatorHelpButton.setHelpMessage(
                 DataProvider.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_OF_CREATOR));
+        messageIdHelpButton.setHelpMessage(DataProvider.getResourceValue(
+                "helpMessageId", SepaUtility.MAX_CHAR_MESSAGE_ID, SepaUtility.UNIQUE_DAYS_MESSAGEID));
 
-        anyInputToLong.bind(checkedTextFields.stream()
-                .map(CheckedTextField::toLongProperty)
-                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
-        anyInputMissing.bind(checkedTextFields.stream()
-                .map(CheckedTextField::emptyProperty)
-                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or)
-                .or(executionDatePicker.emptyProperty()));
+        anyInputToLong.bind(BindingUtility.reduceOr(checkedTextFields.stream()
+                .map(CheckedTextField::toLongProperty)));
+        anyInputMissing.bind(executionDatePicker.emptyProperty()
+                .or(BindingUtility.reduceOr(checkedTextFields.stream()
+                        .map(CheckedTextField::emptyProperty))));
         valid.bind(executionDatePicker.validProperty()
-                .and(checkedTextFields.stream()
-                        .map(CheckedTextField::validProperty)
-                        .reduce(BindingUtility.TRUE_BINDING, BooleanExpression::and, BooleanExpression::and)));
+                .and(BindingUtility.reduceAnd(checkedTextFields.stream()
+                        .map(CheckedTextField::validProperty))));
 
         Profile profile = DataProvider.getProfile();
 

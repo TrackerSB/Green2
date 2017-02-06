@@ -16,11 +16,13 @@
 
 package bayern.steinbrecher.green2.elements.buttons;
 
+import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 
@@ -75,7 +77,13 @@ public class HelpButton extends Button {
     public HelpButton(String text, String helpMessage, Node graphic) {
         super(text, graphic);
         this.helpMessage.addListener((obs, oldVal, newVal) -> {
-            setOnAction(aevt -> DialogUtility.createInfoAlert(newVal, getScene().getWindow()).show());
+            setOnAction(aevt -> {
+                Alert alert = DialogUtility.createMessageAlert(newVal, getScene().getWindow());
+                String help = DataProvider.getResourceValue("help");
+                alert.setTitle(help);
+                alert.setHeaderText(help);
+                alert.show();
+            });
         });
         //FIXME Try not to call explicitly.
         setOnAction(aevt -> DialogUtility.createInfoAlert(helpMessage, getScene().getWindow()).show());
