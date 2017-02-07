@@ -25,3 +25,8 @@ Currently people seem to be happy about the features already included so some ot
 
 ## Coding conventions
 The coding conventions are exactly Java coding conventions [(http://www.oracle.com/technetwork/java/codeconventions-150003.pdf)](http://www.oracle.com/technetwork/java/codeconventions-150003.pdf) but the recommended maximum line length mentioned in section 4.1 is extended to 120 characters.
+
+## Badges
+[![forthebadge](http://forthebadge.com/images/badges/built-with-science.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/fuck-it-ship-it.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/no-ragrets.svg)](http://forthebadge.com)
