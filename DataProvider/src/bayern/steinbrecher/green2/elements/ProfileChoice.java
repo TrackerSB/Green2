@@ -66,15 +66,16 @@ public class ProfileChoice extends Application {
         String deleteLabel = DataProvider.getResourceValue("delete");
         for (String profileName : profiles) {
             Label name = new Label(profileName);
-            Button edit = new Button(editLabel);
+            Button edit = new Button(editLabel, DataProvider.ImageSet.EDIT.getAsSmallImageView());
             edit.setOnAction(evt -> editProfile(profileName));
-            Button delete = new Button(deleteLabel);
+            Button delete = new Button(deleteLabel, DataProvider.ImageSet.TRASH.getAsSmallImageView());
             delete.setOnAction(evt -> askForDeleteProfile(profileName));
             profilePane.addRow(currentRowIndex, name, edit, delete);
             currentRowIndex++;
         }
 
-        Button create = new Button(DataProvider.getResourceValue("create"));
+        Button create = new Button(
+                DataProvider.getResourceValue("create"), DataProvider.ImageSet.ADD.getAsSmallImageView());
         create.setOnAction(evt -> {
             created = true;
             stage.close();

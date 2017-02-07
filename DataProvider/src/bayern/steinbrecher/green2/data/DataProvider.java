@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.data;
 
 import bayern.steinbrecher.green2.utility.URLUtility;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -43,7 +44,7 @@ public final class DataProvider {
     /**
      * The path of the file containing all styles.
      */
-    public static final String STYLESHEET_PATH = "bayern/steinbrecher/green2/data/resources/styles.css";
+    public static final String STYLESHEET_PATH = "styles.css";
     /**
      * The os currently operating on. (Only supported os can be set)
      */
@@ -190,7 +191,17 @@ public final class DataProvider {
         /**
          * The splashscreen of the german version of Green2.
          */
-        SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true);
+        SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true),
+        /**
+         * An image showing a plus sign used to symbol &bdquo;add&ldquo;.
+         */
+        ADD("icons/add.png"),
+        EDIT("icons/edit.png"),
+        TRASH("icons/trash.png"),
+        INFO("icons/info.png"),
+        ERROR("icons/error.png"),
+        WARNING("icons/warning.png"),
+        CHECKED("icons/checked.png");
 
         private static final String BASIC_ICON_DIR_PATH = "/";
         private Image image;
@@ -210,6 +221,31 @@ public final class DataProvider {
          */
         public Image get() {
             return image;
+        }
+
+        /**
+         * Returns the image as {@link ImageView} of size 15x15.
+         *
+         * @returns The image as {@link ImageView}.
+         */
+        public ImageView getAsSmallImageView() {
+            ImageView imageView = new ImageView(get());
+            imageView.setFitHeight(15);
+            imageView.setFitWidth(15);
+            return imageView;
+        }
+
+        /**
+         * Returns the image as {@link ImageView} of size 50x50.
+         *
+         * @returns The image as {@link ImageView}.
+         */
+        public ImageView getAsBigImageView() {
+            ImageView imageView = new ImageView(get());
+            imageView.setSmooth(true);
+            imageView.setFitHeight(50);
+            imageView.setFitWidth(50);
+            return imageView;
         }
     }
 }

@@ -34,7 +34,7 @@
     -fx-font-size: 12px;
 }
 
-.root, .wizard-content{
+.root, .wizard-content {
     -fx-hgap: 5px;
     -fx-vgap: 10px;
 }
@@ -42,6 +42,14 @@
 .button:hover {
     -fx-font-color: white;
 }
+
+/*.checked-password-field {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-background-image: url(icons/key.png);
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 15px;
+    -fx-background-position: center;
+}*/
 
 .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
     -fx-background-color: -fx-main-color;
@@ -51,7 +59,7 @@
     -fx-background-color: derive(-fx-main-color, 30%);
 }
 
-.dialog-pane{
+.dialog-pane {
     -fx-padding: 0px;
 }
 

@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.DataProvider;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -48,6 +49,25 @@ public final class DialogUtility {
         scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
         Stage stage = (Stage) scene.getWindow();
         stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+
+        Node graphic;
+        switch (alert.getAlertType()) {
+            case CONFIRMATION:
+                graphic = DataProvider.ImageSet.CHECKED.getAsBigImageView();
+                break;
+            case ERROR:
+                graphic = DataProvider.ImageSet.ERROR.getAsBigImageView();
+                break;
+            case INFORMATION:
+                graphic = DataProvider.ImageSet.INFO.getAsBigImageView();
+                break;
+            case WARNING:
+                graphic = DataProvider.ImageSet.WARNING.getAsBigImageView();
+                break;
+            default:
+                graphic = null;
+        }
+        alert.setGraphic(graphic);
 
         return alert;
     }
@@ -164,7 +184,7 @@ public final class DialogUtility {
     /**
      * Crates an error alert showing a stacktrace of an exception.
      *
-     * @param ex    The exception to show.
+     * @param ex     The exception to show.
      * @param header The title of the window.
      * @return The created alert.
      */
