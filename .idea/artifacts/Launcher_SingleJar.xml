@@ -18,11 +18,10 @@
         <element id="directory" name="META-INF">
           <element id="file-copy" path="$PROJECT_DIR$/Launcher/META-INF/MANIFEST.MF" />
         </element>
-        <element id="directory" name="licences">
-          <element id="file-copy" path="$PROJECT_DIR$/licenses/license_icons.pdf" />
-          <element id="file-copy" path="$PROJECT_DIR$/licenses/License.txt" />
-        </element>
         <element id="extracted-dir" path="$USER_HOME$/myPrograms/java/MyLibraries/out/artifacts/Wizard/Wizard.jar" path-in-jar="/" />
+        <element id="directory" name="licenses">
+          <element id="dir-copy" path="$PROJECT_DIR$/licenses" />
+        </element>
       </element>
     </root>
   </artifact>
