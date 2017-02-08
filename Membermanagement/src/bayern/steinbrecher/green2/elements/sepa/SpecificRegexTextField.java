@@ -25,13 +25,6 @@ import javafx.beans.property.StringProperty;
  * @author Stefan Huber
  */
 public abstract class SpecificRegexTextField extends CheckedRegexTextField {
-    public SpecificRegexTextField() {
-        this("");
-    }
-
-    public SpecificRegexTextField(String text){
-        this(Integer.MAX_VALUE, text, "");
-    }
 
     protected SpecificRegexTextField(int maxColumnCount, String regex) {
         this(maxColumnCount, "", regex);
