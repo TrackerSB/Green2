@@ -86,7 +86,13 @@ public class HelpButton extends Button {
             });
         });
         //FIXME Try not to call explicitly.
-        setOnAction(aevt -> DialogUtility.createInfoAlert(helpMessage, getScene().getWindow()).show());
+        setOnAction(aevt -> {
+            Alert alert = DialogUtility.createMessageAlert(helpMessage, getScene().getWindow());
+            String help = DataProvider.getResourceValue("help");
+            alert.setTitle(help);
+            alert.setHeaderText(help);
+            alert.show();
+        });
         this.helpMessage.set(helpMessage);
         getStyleClass().add(CSS_CLASS_HELP_BUTTON);
     }

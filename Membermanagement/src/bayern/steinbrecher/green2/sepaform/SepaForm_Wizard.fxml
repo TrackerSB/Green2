@@ -22,6 +22,7 @@
 <?import bayern.steinbrecher.green2.elements.sepa.IbanTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
+<?import bayern.steinbrecher.green2.elements.textfields.NameTextField?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
@@ -32,17 +33,17 @@
     <HelpButton fx:id="creatorHelpButton"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="0"/>
-    <CheckedTextField fx:id="creatorTextField"
-                      promptText="%nameOfCreator"
-                      GridPane.columnIndex="2"
-                      GridPane.rowIndex="0"/>
+    <NameTextField fx:id="creatorTextField"
+                   promptText="%nameOfCreator"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="0"/>
     <Label text="%accountHolder"
            GridPane.columnIndex="0"
            GridPane.rowIndex="1"/>
     <HelpButton helpMessage="%helpCreditor"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="1"/>
-    <CheckedTextField fx:id="creditorTextField"
+    <NameTextField fx:id="creditorTextField"
                       promptText="%accountHolder"
                       GridPane.columnIndex="2"
                       GridPane.rowIndex="1"/>
@@ -114,7 +115,7 @@
     <HelpButton fx:id="pmtInfIdHelpButton"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="8"/>
-    <CheckedTextField fx:id="pmtInfIdTextField"
+    <NameTextField fx:id="pmtInfIdTextField"
                       promptText="%pmtInfId"
                       GridPane.columnIndex="2"
                       GridPane.rowIndex="8"/>

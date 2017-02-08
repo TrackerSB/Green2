@@ -196,13 +196,59 @@ public final class DataProvider {
          * An image showing a plus sign used to symbol &bdquo;add&ldquo;.
          */
         ADD("icons/add.png"),
+        /**
+         * An image for editing.
+         */
         EDIT("icons/edit.png"),
+        /**
+         * An image for deleting.
+         */
         TRASH("icons/trash.png"),
+        /**
+         * An image for information.
+         */
         INFO("icons/info.png"),
+        /**
+         * An image for errors.
+         */
         ERROR("icons/error.png"),
+        /**
+         * An image for warnings.
+         */
         WARNING("icons/warning.png"),
-        CHECKED("icons/checked.png");
+        /**
+         * An image for confirmations or checklists.
+         */
+        CHECKED("icons/checked.png"),
+        /**
+         * An image for showing moving forward.
+         */
+        FAST_FORWARD("icons/fast-forward.png"),
+        /**
+         * An image for saving.
+         */
+        SAVE("icons/save.png"),
+        /**
+         * An image for a secret.
+         */
+        KEY("icons/save.png"),
+        /**
+         * An image for passwords.
+         */
+        LOCKED("icons/locked.png"),
+        /**
+         * An image for names/logins.
+         */
+        ID_CARD("icons/id-card.png"),
+        /**
+         * An image for next.
+         */
+        NEXT("icons/next.png");
 
+        /**
+         * A CSS class which can be set to a control when it uses one of these images as glyphicon.
+         */
+        public static final String CSS_CLASS_GLYPHICON = "glyphicon";
         private static final String BASIC_ICON_DIR_PATH = "/";
         private Image image;
 
@@ -210,7 +256,8 @@ public final class DataProvider {
             image = new Image(BASIC_ICON_DIR_PATH + filename);
         }
 
-        ImageSet(String filename, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) {
+        ImageSet(String filename, double requestedWidth, double requestedHeight, boolean preserveRatio,
+                 boolean smooth) {
             image = new Image(BASIC_ICON_DIR_PATH + filename, requestedWidth, requestedHeight, preserveRatio, smooth);
         }
 

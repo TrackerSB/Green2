@@ -16,6 +16,7 @@
 
 package bayern.steinbrecher.green2.elements.textfields;
 
+import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import javafx.beans.property.BooleanProperty;
@@ -39,12 +40,17 @@ import java.util.List;
  * long, on the other hand they set {@link #CSS_CLASS_TOO_LONG_CONTENT} when the
  * content is too long and {@link #CSS_CLASS_NO_CONTENT} when there´s no content
  * as one of their css classes if checked is set to {@code true}.
- * If any condition is false, {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} is set.
+ * If any condition is false, {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} is set. Also
+ * {@link DataProvider.ImageSet#CSS_CLASS_GLYPHICON} and {@link #CSS_CLASS_CHECKED_TEXTFIELD} are added.
  *
  * @author Stefan Huber
  */
 public class CheckedTextField extends TextField {
 
+    /**
+     * The CSS class representing this class.
+     */
+    public static final String CSS_CLASS_CHECKED_TEXTFIELD = "checked-textfield";
     /**
      * Holds the string representation of the css class attribute added when the
      * content of this text field is too long.
@@ -116,6 +122,7 @@ public class CheckedTextField extends TextField {
         initProperties();
 
         setMaxColumnCount(maxColumnCount);
+        getStyleClass().addAll(CSS_CLASS_CHECKED_TEXTFIELD, DataProvider.ImageSet.CSS_CLASS_GLYPHICON);
     }
 
     /**

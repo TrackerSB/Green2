@@ -20,6 +20,8 @@
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="bayern.steinbrecher.green2.configDialog.ConfigDialogController">
@@ -95,10 +97,28 @@
             defaultButton="true"
             onAction="#saveSettings"
             GridPane.rowIndex="9"
-            GridPane.columnIndex="0"/>
+            GridPane.columnIndex="0">
+        <!-- FIXME Do it differently. It is not flexible enough -->
+        <graphic>
+            <ImageView fitHeight="15" fitWidth="15">
+                <image>
+                    <Image url="/icons/save.png"/>
+                </image>
+            </ImageView>
+        </graphic>
+    </Button>
     <Button disable="${!controller.valid}"
             text="%saveAndContinue"
             onAction="#saveSettingsAndContinue"
             GridPane.rowIndex="9"
-            GridPane.columnIndex="1"/>
+            GridPane.columnIndex="1">
+        <!-- FIXME Do it differently. It is not flexible enough -->
+        <graphic>
+            <ImageView fitHeight="15" fitWidth="15">
+                <image>
+                    <Image url="/icons/fast-forward.png"/>
+                </image>
+            </ImageView>
+        </graphic>
+    </Button>
 </GridPane>

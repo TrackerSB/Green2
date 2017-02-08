@@ -43,14 +43,6 @@
     -fx-font-color: white;
 }
 
-/*.checked-password-field {
-    -fx-background-color: rgba(0, 0, 0, 0);
-    -fx-background-image: url(icons/key.png);
-    -fx-background-repeat: no-repeat;
-    -fx-background-size: 15px;
-    -fx-background-position: center;
-}*/
-
 .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
     -fx-background-color: -fx-main-color;
 }
@@ -79,6 +71,30 @@
 
 .invalidContent:focused {
     -fx-border-color: transparent;
+}
+
+/** This splitting needs to be */
+.text-field {
+    -fx-padding: 4px 8px 4px 8px; /** Copy/paste modena.css */
+}
+
+.glyphicon {
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 15px;
+    -fx-background-position: 5px center;
+    -fx-padding: 4px 8px 4px 25px;
+}
+
+.checked-textfield {
+    -fx-background-image: url("icons/next.png");
+}
+
+.checked-password-field {
+    -fx-background-image: url(icons/locked.png);
+}
+
+.name-textfield {
+    -fx-background-image: url("icons/id-card.png");
 }
 
 .warningLabel {

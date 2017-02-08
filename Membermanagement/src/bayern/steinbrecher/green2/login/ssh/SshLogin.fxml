@@ -23,6 +23,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
+<?import bayern.steinbrecher.green2.elements.textfields.NameTextField?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="bayern.steinbrecher.green2.login.ssh.SshLoginController">
     <!-- This checkbox needs to be out of order because of referencing its id -->
@@ -34,7 +35,7 @@
     <Label text="%sshUsername"
            GridPane.rowIndex="0"
            GridPane.columnIndex="0"/>
-    <CheckedTextField fx:id="sshUsernameField"
+    <NameTextField fx:id="sshUsernameField"
                       promptText="%sshUsername"
                       checked="${!allowEmptyFieldsCheckbox.selected}"
                       GridPane.rowIndex="0"
@@ -50,7 +51,7 @@
     <Label text="%databaseUsername"
            GridPane.rowIndex="2"
            GridPane.columnIndex="0"/>
-    <CheckedTextField fx:id="databaseUsernameField"
+    <NameTextField fx:id="databaseUsernameField"
                       promptText="%databaseUsername"
                       checked="${!allowEmptyFieldsCheckbox.selected}"
                       GridPane.rowIndex="2"

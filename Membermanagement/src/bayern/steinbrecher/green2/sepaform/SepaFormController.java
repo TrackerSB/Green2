@@ -91,7 +91,7 @@ public class SepaFormController extends CheckedController {
         creatorHelpButton.setHelpMessage(
                 DataProvider.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_OF_CREATOR));
         messageIdHelpButton.setHelpMessage(DataProvider.getResourceValue(
-                "helpMessageId", SepaUtility.MAX_CHAR_MESSAGE_ID, SepaUtility.UNIQUE_DAYS_MESSAGEID));
+                "helpMessageId", SepaUtility.UNIQUE_DAYS_MESSAGEID, SepaUtility.MAX_CHAR_MESSAGE_ID));
 
         anyInputToLong.bind(BindingUtility.reduceOr(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)));
