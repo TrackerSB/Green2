@@ -25,7 +25,9 @@ import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 
+import java.io.File;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -53,6 +55,8 @@ public class MenuController extends Controller {
     private Button generateBirthdayInfos;
     @FXML
     private CheckedIntegerSpinner yearSpinner;
+    @FXML
+    private javafx.scene.control.Menu licensesMenu;
 
     /**
      * {@inheritDoc}
@@ -74,6 +78,13 @@ public class MenuController extends Controller {
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
+        for (File license : DataProvider.getLicenses()) {
+            MenuItem item = new MenuItem(license.getName());
+            item.setOnAction(aevt -> {
+                //TODO Show license
+            });
+            licensesMenu.getItems().add(item);
+        }
     }
 
     /**

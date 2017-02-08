@@ -21,9 +21,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-      spacing="10"
       fx:controller="bayern.steinbrecher.green2.menu.MenuController">
-    <HBox spacing="10">
+    <MenuBar>
+        <Menu fx:id="licensesMenu"
+              text="%licenses"></Menu>
+    </MenuBar>
+    <HBox>
         <Label text="%year"/>
         <CheckedIntegerSpinner fx:id="yearSpinner"
                                min="0"
@@ -34,7 +37,7 @@
                text="%invalidOrMissingInput"
                styleClass="warningLabel"/>
     </HBox>
-    <HBox spacing="10">
+    <HBox>
         <VBox spacing="10">
             <Label text="%allAboutSepa"
                    styleClass="heading"/>
@@ -48,7 +51,7 @@
                     onAction="#checkData"
                     text="%checkData"/>
         </VBox>
-        <VBox spacing="10">
+        <VBox>
             <Label text="%getAddressesForWord"
                    styleClass="heading"/>
             <Button fx:id="generateAllAddresses"
@@ -58,7 +61,7 @@
                     onAction="#generateAddressesBirthday"
                     disable="${!yearSpinner.valid}"/>
         </VBox>
-        <VBox spacing="10">
+        <VBox>
             <Label text="%getInformations"
                    styleClass="heading"/>
             <Button fx:id="generateBirthdayInfos"

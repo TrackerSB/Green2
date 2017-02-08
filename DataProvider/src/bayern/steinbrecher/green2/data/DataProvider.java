@@ -21,12 +21,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Delivers access to different application wide useful paths, icons, etc.
@@ -153,13 +157,41 @@ public final class DataProvider {
         }
     }
 
+    /**
+     * Loads the profile with name {@code profileName}.
+     *
+     * @param profileName The name of the profile to load.
+     * @param newProfile  {@code true} if it is new and does not exist yet.
+     * @return The loaded profile.
+     */
     public static Profile loadProfile(String profileName, boolean newProfile) {
         return loadProfile(new Profile(profileName, newProfile));
     }
 
+    /**
+     * Loads the given profile.
+     *
+     * @param profile The profile to load.
+     * @return The profile itself. (This may be used for chaining)
+     */
     public static Profile loadProfile(Profile profile) {
         loadedProfile = profile;
         return profile;
+    }
+
+    /**
+     * Returns a list of all files of the licenses directory.
+     *
+     * @return The list of all files of the licenses directory.
+     */
+    public static List<File> getLicenses() {
+        try {
+            return Files.list(Paths.get(PROGRAMFOLDER_PATH_LOCAL + "/licenses")).map(path -> new File(path.toUri()))
+                    .collect(Collectors.toList());
+        } catch (IOException ex) {
+            Logger.getLogger(DataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     /**
