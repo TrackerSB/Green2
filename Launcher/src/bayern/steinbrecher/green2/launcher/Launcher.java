@@ -186,7 +186,7 @@ public final class Launcher extends Application {
                  * windows.
                  */
                 installer.waitFor();
-                Thread.sleep(1000);
+                Thread.sleep(2000);
 
                 //Check whether file "installed" was created.
                 boolean gotInstalled = Arrays.asList(tempDir.list())
