@@ -20,11 +20,13 @@ import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.data.DataProvider;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
+import bayern.steinbrecher.green2.utility.DialogUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 
@@ -154,5 +156,19 @@ public class MenuController extends Controller {
         if (yearSpinner.isValid()) {
             caller.generateBirthdayInfos(yearSpinner.getValue());
         }
+    }
+
+    @FXML
+    private void showCredits() {
+        Alert alert = DialogUtility.createMessageAlert(DataProvider.getResourceValue("creditsContent"), stage);
+        alert.setHeaderText(DataProvider.getResourceValue("credits"));
+        alert.show();
+    }
+
+    @FXML
+    private void showVersion() {
+        Alert alert = DialogUtility.createMessageAlert(DataProvider.getVersion(), stage);
+        alert.setHeaderText(DataProvider.getResourceValue("version"));
+        alert.show();
     }
 }

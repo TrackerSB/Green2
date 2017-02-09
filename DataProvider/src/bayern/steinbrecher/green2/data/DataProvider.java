@@ -28,6 +28,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -191,6 +192,22 @@ public final class DataProvider {
         } catch (IOException ex) {
             Logger.getLogger(DataProvider.class.getName()).log(Level.WARNING, null, ex);
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Returns a {@link String} containing the current version.
+     *
+     * @return A {@link String} containing the current version.
+     */
+    public static String getVersion() {
+        File versionFile = new File(DataProvider.VERSIONFILE_PATH_LOCAL);
+        if (versionFile.exists()) {
+            try (Scanner sc = new Scanner(versionFile.getPath())) {
+                return sc.nextLine();
+            }
+        } else {
+            return DataProvider.getResourceValue("versionNotFound");
         }
     }
 
