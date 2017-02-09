@@ -52,12 +52,12 @@ With fso
     .DeleteFolder downloadedDir & "lib"
     
     'Move licences folder
-    licencesPath = programFilesPath & "\lib"
+    licencesPath = programFilesPath & "\licenses"
     If NOT .FolderExists(licencesPath) Then
         .CreateFolder(licencesPath)
     End If
-    .CopyFile downloadedDir & "licences\*.*", licencesPath
-    .DeleteFolder downloadedDir & "licences"
+    .CopyFile downloadedDir & "licenses\*.*", licencesPath
+    .DeleteFolder downloadedDir & "licenses"
     
     'Move files (including this file itself)
     .CopyFile downloadedDir & "*.*", programFilesPath, True
