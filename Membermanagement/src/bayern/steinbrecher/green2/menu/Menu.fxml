@@ -26,47 +26,49 @@
         <Menu fx:id="licensesMenu"
               text="%licenses"></Menu>
     </MenuBar>
-    <HBox>
-        <Label text="%year"/>
-        <CheckedIntegerSpinner fx:id="yearSpinner"
-                               min="0"
-                               max="5000"
-                               amountToStepBy="1"
-                               editable="true"/>
-        <Label visible="${!yearSpinner.valid}"
-               text="%invalidOrMissingInput"
-               styleClass="warningLabel"/>
-    </HBox>
-    <HBox>
-        <VBox spacing="10">
-            <Label text="%allAboutSepa"
-                   styleClass="heading"/>
-            <Button fx:id="generateContribution"
-                    onAction="#generateContributionSepa"
-                    text="%contributions"/>
-            <Button fx:id="generateUniversalSepa"
-                    onAction="#generateUniversalSepa"
-                    text="%arbitrarySepaDirectDebit"/>
-            <Button fx:id="checkData"
-                    onAction="#checkData"
-                    text="%checkData"/>
-        </VBox>
-        <VBox>
-            <Label text="%getAddressesForWord"
-                   styleClass="heading"/>
-            <Button fx:id="generateAllAddresses"
-                    onAction="#generateAddressesAll"
-                    text="%ofAllMember"/>
-            <Button fx:id="generateAddressesBirthday"
-                    onAction="#generateAddressesBirthday"
-                    disable="${!yearSpinner.valid}"/>
-        </VBox>
-        <VBox>
-            <Label text="%getInformations"
-                   styleClass="heading"/>
-            <Button fx:id="generateBirthdayInfos"
-                    onAction="#generateBirthdayInfos"
-                    disable="${!yearSpinner.valid}"/>
-        </VBox>
-    </HBox>
+    <VBox fx:id="menuContent">
+        <HBox>
+            <Label text="%year"/>
+            <CheckedIntegerSpinner fx:id="yearSpinner"
+                                   min="0"
+                                   max="5000"
+                                   amountToStepBy="1"
+                                   editable="true"/>
+            <Label visible="${!yearSpinner.valid}"
+                   text="%invalidOrMissingInput"
+                   styleClass="warningLabel"/>
+        </HBox>
+        <HBox>
+            <VBox>
+                <Label text="%allAboutSepa"
+                       styleClass="heading"/>
+                <Button fx:id="generateContribution"
+                        onAction="#generateContributionSepa"
+                        text="%contributions"/>
+                <Button fx:id="generateUniversalSepa"
+                        onAction="#generateUniversalSepa"
+                        text="%arbitrarySepaDirectDebit"/>
+                <Button fx:id="checkData"
+                        onAction="#checkData"
+                        text="%checkData"/>
+            </VBox>
+            <VBox>
+                <Label text="%getAddressesForWord"
+                       styleClass="heading"/>
+                <Button fx:id="generateAllAddresses"
+                        onAction="#generateAddressesAll"
+                        text="%ofAllMember"/>
+                <Button fx:id="generateAddressesBirthday"
+                        onAction="#generateAddressesBirthday"
+                        disable="${!yearSpinner.valid}"/>
+            </VBox>
+            <VBox>
+                <Label text="%getInformations"
+                       styleClass="heading"/>
+                <Button fx:id="generateBirthdayInfos"
+                        onAction="#generateBirthdayInfos"
+                        disable="${!yearSpinner.valid}"/>
+            </VBox>
+        </HBox>
+    </VBox>
 </VBox>

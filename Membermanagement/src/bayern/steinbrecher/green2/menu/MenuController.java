@@ -24,6 +24,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 
@@ -57,12 +58,16 @@ public class MenuController extends Controller {
     private CheckedIntegerSpinner yearSpinner;
     @FXML
     private javafx.scene.control.Menu licensesMenu;
+    @FXML
+    private Node menuContent;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        menuContent.setStyle("-fx-padding: 10px");
+
         StringBinding yearBinding = Bindings.createStringBinding(() -> {
             String year = "?";
             if (yearSpinner.isValid()) {

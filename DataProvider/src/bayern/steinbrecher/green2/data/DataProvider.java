@@ -189,8 +189,8 @@ public final class DataProvider {
             return Files.list(Paths.get(PROGRAMFOLDER_PATH_LOCAL + "/licenses")).map(path -> new File(path.toUri()))
                     .collect(Collectors.toList());
         } catch (IOException ex) {
-            Logger.getLogger(DataProvider.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            Logger.getLogger(DataProvider.class.getName()).log(Level.WARNING, null, ex);
+            return new ArrayList<>();
         }
     }
 

@@ -54,6 +54,7 @@ public class Menu extends View<MenuController> {
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        root.setStyle("-fx-padding: 0px");
 
         controller = fxmlLoader.getController();
         controller.setStage(stage);
@@ -74,6 +75,6 @@ public class Menu extends View<MenuController> {
      */
     @Override
     public boolean userAborted() {
-        throw new UnsupportedOperationException("No data to abbort");
+        throw new UnsupportedOperationException("No data to abort");
     }
 }

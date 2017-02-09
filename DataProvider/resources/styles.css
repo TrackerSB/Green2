@@ -29,9 +29,13 @@
 .root {
     -fx-background-color: white;
     -fx-focus-color: -fx-main-color;
-    -fx-padding: 5px 10px;
+    -fx-padding: 10px;
     -fx-default-button: -fx-focus-color;
     -fx-font-size: 12px;
+}
+
+.menu-bar{
+    -fx-padding-bottom: 5px;
 }
 
 .root, .wizard-content {
@@ -40,7 +44,12 @@
 }
 
 .button:hover {
-    -fx-font-color: white;
+    -fx-font-color: -fx-background-color;
+}
+
+.help-button{
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
 }
 
 .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
