@@ -305,7 +305,7 @@ public final class DataProvider {
         /**
          * Returns the image as {@link ImageView} of size 15x15.
          *
-         * @returns The image as {@link ImageView}.
+         * @return The image as {@link ImageView}.
          */
         public ImageView getAsSmallImageView() {
             ImageView imageView = new ImageView(get());
@@ -317,7 +317,7 @@ public final class DataProvider {
         /**
          * Returns the image as {@link ImageView} of size 50x50.
          *
-         * @returns The image as {@link ImageView}.
+         * @return The image as {@link ImageView}.
          */
         public ImageView getAsBigImageView() {
             ImageView imageView = new ImageView(get());
