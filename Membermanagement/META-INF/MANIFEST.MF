@@ -1,2 +1,4 @@
 Manifest-Version: 1.0
+Main-Class: bayern.steinbrecher.green2.membermanagement.MemberManageme
+ nt
 

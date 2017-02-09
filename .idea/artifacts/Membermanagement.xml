@@ -15,7 +15,7 @@
       <element id="archive" name="Membermanagement.jar">
         <element id="module-output" name="Membermanagement" />
         <element id="directory" name="META-INF">
-          <element id="file-copy" path="$PROJECT_DIR$/Launcher/META-INF/MANIFEST.MF" />
+          <element id="file-copy" path="$PROJECT_DIR$/Membermanagement/META-INF/MANIFEST.MF" />
         </element>
       </element>
       <element id="directory" name="lib">
