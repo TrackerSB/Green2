@@ -20,7 +20,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import com.sun.javafx.scene.control.skin.ContextMenuContent.ArrowMenuItem?>
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.menu.MenuController">
     <MenuBar>

@@ -167,7 +167,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void showVersion() {
-        Alert alert = DialogUtility.createMessageAlert(DataProvider.getVersion(), stage);
+        Alert alert = DialogUtility.createInfoAlert(DataProvider.getVersion(), stage);
         alert.setHeaderText(DataProvider.getResourceValue("version"));
         alert.show();
     }
