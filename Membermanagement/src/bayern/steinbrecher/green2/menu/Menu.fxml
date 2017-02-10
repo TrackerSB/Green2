@@ -27,7 +27,8 @@
               text="%licenses"/>
         <Menu fx:id="aboutMenu"
               text="%about">
-            <MenuItem text="%credits"
+            <MenuItem fx:id="creditsMenuItem"
+                      text="%credits"
                       onAction="#showCredits"/>
             <MenuItem text="%version"
                       onAction="#showVersion"/>

@@ -30,10 +30,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Controller for Menu.fxml.
@@ -62,12 +66,16 @@ public class MenuController extends Controller {
     private javafx.scene.control.Menu licensesMenu;
     @FXML
     private Node menuContent;
+    @FXML
+    private MenuItem creditsMenuItem;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        creditsMenuItem.setGraphic(DataProvider.ImageSet.CHECK.getAsSmallImageView());
+        //TODO Think about moving this line to css file
         menuContent.setStyle("-fx-padding: 10px");
 
         StringBinding yearBinding = Bindings.createStringBinding(() -> {
@@ -88,8 +96,13 @@ public class MenuController extends Controller {
         for (File license : DataProvider.getLicenses()) {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
-                //TODO Show license
+                try {
+                    Desktop.getDesktop().open(license);
+                } catch (IOException ex) {
+                    Logger.getLogger(MenuController.class.getName()).log(Level.WARNING, "Could not open license", ex);
+                }
             });
+            item.setGraphic(DataProvider.ImageSet.INVESTMENT.getAsSmallImageView());
             licensesMenu.getItems().add(item);
         }
     }

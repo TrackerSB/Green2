@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.data.DataProvider;
 import javafx.application.Platform;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +38,8 @@ public final class ProgramCaller {
 
     private static void startJar(String jarname) {
         try {
-            new ProcessBuilder("java", "-jar", DataProvider.PROGRAMFOLDER_PATH_LOCAL + "/" + jarname).start();
+            new ProcessBuilder("java", "-jar", Paths.get(DataProvider.APPLICATION_ROOT.toString(), jarname).toString())
+                    .start();
             Platform.exit();
         } catch (IOException ex) {
             Logger.getLogger(ProgramCaller.class.getName()).log(Level.SEVERE, null, ex);

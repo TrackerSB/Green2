@@ -20,8 +20,6 @@
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="bayern.steinbrecher.green2.configDialog.ConfigDialogController">
@@ -92,33 +90,17 @@
            styleClass="warningLabel"
            GridPane.rowIndex="8"
            GridPane.columnIndex="1"/>
-    <Button disable="${!controller.valid}"
+    <Button fx:id="saveSettings"
+            disable="${!controller.valid}"
             text="%save"
             defaultButton="true"
             onAction="#saveSettings"
             GridPane.rowIndex="9"
-            GridPane.columnIndex="0">
-        <!-- FIXME Do it differently. It is not flexible enough -->
-        <graphic>
-            <ImageView fitHeight="15" fitWidth="15">
-                <image>
-                    <Image url="/icons/save.png"/>
-                </image>
-            </ImageView>
-        </graphic>
-    </Button>
-    <Button disable="${!controller.valid}"
+            GridPane.columnIndex="0"/>
+    <Button fx:id="saveAndContinue"
+            disable="${!controller.valid}"
             text="%saveAndContinue"
             onAction="#saveSettingsAndContinue"
             GridPane.rowIndex="9"
-            GridPane.columnIndex="1">
-        <!-- FIXME Do it differently. It is not flexible enough -->
-        <graphic>
-            <ImageView fitHeight="15" fitWidth="15">
-                <image>
-                    <Image url="/icons/fast-forward.png"/>
-                </image>
-            </ImageView>
-        </graphic>
-    </Button>
+            GridPane.columnIndex="1"/>
 </GridPane>

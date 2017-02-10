@@ -54,6 +54,7 @@ public class Menu extends View<MenuController> {
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
         root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        //TODO Think about moving this line to css file
         root.setStyle("-fx-padding: 0px");
 
         controller = fxmlLoader.getController();

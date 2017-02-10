@@ -30,6 +30,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 
 import java.net.URL;
@@ -47,6 +48,10 @@ import java.util.ResourceBundle;
  */
 public class ConfigDialogController extends CheckedController {
 
+    @FXML
+    private Button saveSettings;
+    @FXML
+    private Button saveAndContinue;
     @FXML
     private CheckBox useSSHCheckBox;
     @FXML
@@ -72,6 +77,9 @@ public class ConfigDialogController extends CheckedController {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        saveSettings.setGraphic(DataProvider.ImageSet.SAVE.getAsSmallImageView());
+        saveAndContinue.setGraphic(DataProvider.ImageSet.FAST_FORWARD.getAsSmallImageView());
+
         checkedTextFields.addAll(Arrays.asList(sshHostTextField, databaseHostTextField, databaseNameTextField,
                 birthdayExpressionTextField, profileNameTextField));
 

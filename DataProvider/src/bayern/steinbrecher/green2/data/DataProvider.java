@@ -22,10 +22,13 @@ import javafx.scene.image.ImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -51,6 +54,18 @@ public final class DataProvider {
      */
     public static final String STYLESHEET_PATH = "styles.css";
     /**
+     * The name of the folder which should contain the application.
+     */
+    private static final String APPLICATION_FOLDER_NAME = "Green2";
+    /**
+     * The name of the folder containing the licenses of Green2.
+     */
+    private static final String LICENSES_FOLDER_NAME = "licenses";
+    /**
+     * The name of the folder containing the library jars.
+     */
+    private static final String LIBRARIES_FOLDER_NAME = "lib";
+    /**
      * The os currently operating on. (Only supported os can be set)
      */
     public static final OS CURRENT_OS
@@ -64,36 +79,54 @@ public final class DataProvider {
      */
     public static final String SAVE_PATH = CURRENT_OS == OS.WINDOWS ? HOME_DIR + "/Desktop" : HOME_DIR;
     /**
+     * The path of the jar containing this class.
+     */
+    private static final Path CURRENT_JAR_PATH = resolveCurrentJarPath();
+    /**
+     * The root path of Green2 application. It is the path of the current jar if this class is directly included in
+     * Launcher (Launcher SingleJar version).
+     */
+    public static final Path APPLICATION_ROOT = resolveApplicationRoot();
+    /**
+     * Check whether this class is added as library (Green2) or directly included into a jar (Launcher SingleJar
+     * version).
+     */
+    private static final boolean USED_AS_LIBRARY
+            = Arrays.toString(APPLICATION_ROOT.toFile().list()).contains(LIBRARIES_FOLDER_NAME);
+    /**
+     * The path of the folder containing the licenses of Green2.
+     */
+    public static final Path LICENSES_PATH = Paths.get(APPLICATION_ROOT.toString(), LICENSES_FOLDER_NAME);
+    /**
      * The path of the folder where to put user specific data of the
      * application.
      */
     public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
-            ? "/AppData/Roaming/Green2" : "/.Green2");
+            ? "/AppData/Roaming/" : "/.") + APPLICATION_FOLDER_NAME;
     /**
      * The path of the local folder where to save the application itself.
      */
-    public static final String PROGRAMFOLDER_PATH_LOCAL = CURRENT_OS == OS.WINDOWS
-            ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/Green2"
-            : "/opt/Green2";
+    private static final String PROGRAMFOLDER_PATH_LOCAL = (CURRENT_OS == OS.WINDOWS
+            ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/" : "/opt/") + APPLICATION_FOLDER_NAME;
+    /**
+     * The URL of the online repository containing the installation files.
+     */
+    private static final String PROGRAMFOLDER_PATH_ONLINE
+            = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
+            .orElse("");
     /**
      * The path of the local version file.
      */
     public static final String VERSIONFILE_PATH_LOCAL = DataProvider.APP_DATA_PATH + "/version.txt";
     /**
-     * The URL of the online repository containing the installation files.
-     */
-    public static final String PROGRAMFOLDER_PATH_ONLINE
-            = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
-            .orElse("");
-    /**
-     * The URL of the file containing the used charset of the zip and its files.
-     */
-    public static final String CHARSET_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
-    /**
      * The URL of the version file describing the version of the files at
      * {@code PROGRAMFOLDER_PATH_ONLINE}.
      */
     public static final String VERSIONFILE_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
+    /**
+     * The URL of the file containing the used charset of the zip and its files.
+     */
+    public static final String CHARSET_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
     /**
      * The URL of the zip containing the installation files of the application.
      */
@@ -105,12 +138,29 @@ public final class DataProvider {
         new File(DataProvider.APP_DATA_PATH).mkdir();
     }
 
-    private static boolean isLoaded() {
-        return loadedProfile != null;
-    }
-
     private DataProvider() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
+    }
+
+    private static Path resolveApplicationRoot() {
+        Path root = CURRENT_JAR_PATH;
+        do {
+            root = root.getParent();
+        } while (!(root == null || root.getFileName().toString().equals(APPLICATION_FOLDER_NAME)));
+
+        return root == null ? CURRENT_JAR_PATH : root;
+    }
+
+    private static Path resolveCurrentJarPath() {
+        try {
+            return Paths.get(DataProvider.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException ex) {
+            throw new IllegalStateException("Could not resolve location of this jar.", ex);
+        }
+    }
+
+    private static boolean isLoaded() {
+        return loadedProfile != null;
     }
 
     /**
@@ -187,7 +237,8 @@ public final class DataProvider {
      */
     public static List<File> getLicenses() {
         try {
-            return Files.list(Paths.get(PROGRAMFOLDER_PATH_LOCAL + "/licenses")).map(path -> new File(path.toUri()))
+            return Files.list(LICENSES_PATH)
+                    .map(path -> new File(path.toUri()))
                     .collect(Collectors.toList());
         } catch (IOException ex) {
             Logger.getLogger(DataProvider.class.getName()).log(Level.WARNING, null, ex);
@@ -241,58 +292,24 @@ public final class DataProvider {
          * The splashscreen of the german version of Green2.
          */
         SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true),
-        /**
-         * An image showing a plus sign used to symbol &bdquo;add&ldquo;.
-         */
         ADD("icons/add.png"),
-        /**
-         * An image for editing.
-         */
         EDIT("icons/edit.png"),
-        /**
-         * An image for deleting.
-         */
         TRASH("icons/trash.png"),
-        /**
-         * An image for information.
-         */
         INFO("icons/info.png"),
-        /**
-         * An image for errors.
-         */
         ERROR("icons/error.png"),
-        /**
-         * An image for warnings.
-         */
         WARNING("icons/warning.png"),
         /**
          * An image for confirmations or checklists.
          */
         CHECKED("icons/checked.png"),
-        /**
-         * An image for showing moving forward.
-         */
         FAST_FORWARD("icons/fast-forward.png"),
-        /**
-         * An image for saving.
-         */
         SAVE("icons/save.png"),
-        /**
-         * An image for a secret.
-         */
         KEY("icons/save.png"),
-        /**
-         * An image for passwords.
-         */
         LOCKED("icons/locked.png"),
-        /**
-         * An image for names/logins.
-         */
         ID_CARD("icons/id-card.png"),
-        /**
-         * An image for next.
-         */
-        NEXT("icons/next.png");
+        NEXT("icons/next.png"),
+        CHECK("icons/check.png"),
+        INVESTMENT("icons/investment.png");
 
         /**
          * A CSS class which can be set to a control when it uses one of these images as glyphicon.

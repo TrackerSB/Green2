@@ -34,7 +34,7 @@
     -fx-font-size: 12px;
 }
 
-.menu-bar{
+.menu-bar {
     -fx-padding-bottom: 5px;
 }
 
@@ -43,11 +43,7 @@
     -fx-vgap: 10px;
 }
 
-.button:hover {
-    -fx-font-color: -fx-background-color;
-}
-
-.help-button{
+.help-button {
     -fx-background-radius: 12px;
     -fx-border-radius: 12px;
 }
@@ -64,12 +60,12 @@
     -fx-padding: 0px;
 }
 
-.date-picker, .text-field {
-    -fx-highlight-fill: -fx-main-color;
+.text-input, .date-picker {
     -fx-border-color: transparent;
     -fx-background-radius: 3px;
     -fx-border-radius: 3px;
     -fx-min-width: 250px;
+    -fx-highlight-fill: -fx-main-color;
 }
 
 .invalidContent {

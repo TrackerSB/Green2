@@ -95,7 +95,7 @@
                        forceFuture="true"
                        GridPane.columnIndex="2"
                        GridPane.rowIndex="6"/>
-    <Label text="messageId"
+    <Label text="%messageId"
            GridPane.columnIndex="0"
            GridPane.rowIndex="7"/>
     <HelpButton fx:id="messageIdHelpButton"
@@ -109,7 +109,7 @@
         <Button text="%generate"
                 onAction="#generateMessageId"/>
     </HBox>
-    <Label text="pmtInfId"
+    <Label text="%pmtInfId"
            GridPane.columnIndex="0"
            GridPane.rowIndex="8"/>
     <HelpButton fx:id="pmtInfIdHelpButton"

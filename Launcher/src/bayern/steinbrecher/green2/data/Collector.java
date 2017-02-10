@@ -50,24 +50,28 @@ import java.util.stream.Collectors;
  */
 public final class Collector {
 
-    private static URL POST_URL; //FIXME Should be final
+    private static final URL POST_URL = resolvePostURL();
     private static boolean preparedToSend = false;
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
-    static {
+    private Collector() {
+        throw new UnsupportedOperationException("Construction of an object is not allowed.");
+    }
+
+    private static URL resolvePostURL() {
+        URL url;
         Optional<String> resolvedURL = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/php/collector.php");
-        resolvedURL.ifPresent(url -> {
+        if (resolvedURL.isPresent()) {
             try {
-                POST_URL = new URL(url);
+                url = new URL(resolvedURL.get());
                 preparedToSend = true;
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
             }
-        });
-    }
-
-    private Collector() {
-        throw new UnsupportedOperationException("Construction of an object is not allowed.");
+        } else {
+            url = null;
+        }
+        return null;
     }
 
     private static String generateDataString() {
