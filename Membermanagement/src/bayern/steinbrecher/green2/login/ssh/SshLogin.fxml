@@ -37,8 +37,7 @@
                       promptText="%sshUsername"
                       checked="${!allowEmptyFieldsCheckbox.selected}"
                       GridPane.rowIndex="0"
-                      GridPane.columnIndex="1"
-    text="traunviertler-traunwalchen.de"/>
+                      GridPane.columnIndex="1"/>
     <Label text="%sshPassword"
            GridPane.rowIndex="1"
            GridPane.columnIndex="0"/>
@@ -46,8 +45,7 @@
                           promptText="%sshPassword"
                           checked="${!allowEmptyFieldsCheckbox.selected}"
                           GridPane.rowIndex="1"
-                          GridPane.columnIndex="1"
-    text="EQ8Fdhj*U"/>
+                          GridPane.columnIndex="1"/>
     <Label text="%databaseUsername"
            GridPane.rowIndex="2"
            GridPane.columnIndex="0"/>
@@ -55,8 +53,7 @@
                       promptText="%databaseUsername"
                       checked="${!allowEmptyFieldsCheckbox.selected}"
                       GridPane.rowIndex="2"
-                      GridPane.columnIndex="1"
-    text="traunviertler_t"/>
+                      GridPane.columnIndex="1"/>
     <Label text="%databasePassword"
            GridPane.rowIndex="3"
            GridPane.columnIndex="0"/>
@@ -64,8 +61,7 @@
                           promptText="%databasePassword"
                           checked="${!allowEmptyFieldsCheckbox.selected}"
                           GridPane.rowIndex="3"
-                          GridPane.columnIndex="1"
-    text="dz6WdqwY"/>
+                          GridPane.columnIndex="1"/>
 
     <Label text="%invalidOrMissingInput"
            visible="${!controller.valid}"

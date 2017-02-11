@@ -32,13 +32,22 @@ import java.util.logging.Logger;
  */
 public final class ProgramCaller {
 
+    /**
+     * The path of the local folder where to save the application itself.
+     */
+    public static final String PROGRAMFOLDER_PATH_LOCAL
+            = (EnvironmentHandler.CURRENT_OS == EnvironmentHandler.OS.WINDOWS
+            ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/" : "/opt/")
+            + EnvironmentHandler.APPLICATION_FOLDER_NAME;
+
     private ProgramCaller() {
         throw new UnsupportedOperationException("Construction of an object not allowed");
     }
 
     private static void startJar(String jarname) {
         try {
-            new ProcessBuilder("java", "-jar", Paths.get(EnvironmentHandler.APPLICATION_ROOT.toString(), jarname).toString())
+            new ProcessBuilder("java", "-jar", Paths.get((EnvironmentHandler.IS_USED_AS_LIBRARY
+                    ? EnvironmentHandler.APPLICATION_ROOT : PROGRAMFOLDER_PATH_LOCAL).toString(), jarname).toString())
                     .start();
             Platform.exit();
         } catch (IOException ex) {

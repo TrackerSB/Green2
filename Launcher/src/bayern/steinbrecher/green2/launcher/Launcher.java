@@ -96,9 +96,10 @@ public final class Launcher extends Application {
         Optional<String> optLocalVersion = VersionHandler.readLocalVersion();
 
         Service<Void> serv = null;
+        boolean isInstalled = optLocalVersion.isPresent() && new File(ProgramCaller.PROGRAMFOLDER_PATH_LOCAL).exists();
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
-            if (optLocalVersion.isPresent()) {
+            if (isInstalled) {
                 String localVersion = optLocalVersion.get();
                 if (!localVersion.equalsIgnoreCase(onlineVersion) && ChoiceDialog.askForUpdate()) {
                     serv = downloadAndInstall(onlineVersion);
@@ -110,7 +111,7 @@ public final class Launcher extends Application {
                 serv = downloadAndInstall(onlineVersion);
                 serv.setOnSucceeded(evt -> ProgramCaller.startGreen2ConfigDialog());
             }
-        } else if (optLocalVersion.isPresent()) {
+        } else if (isInstalled) {
             ProgramCaller.startGreen2();
         } else {
             throw new IllegalStateException(

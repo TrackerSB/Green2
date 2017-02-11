@@ -58,7 +58,7 @@ public final class EnvironmentHandler {
     /**
      * The name of the folder which should contain the application.
      */
-    private static final String APPLICATION_FOLDER_NAME = "Green2";
+    public static final String APPLICATION_FOLDER_NAME = "Green2";
     private static final String BASIC_ICON_DIR_PATH = "/";
     /**
      * The name of the folder containing the licenses of Green2.
@@ -91,6 +91,10 @@ public final class EnvironmentHandler {
      */
     private static final Path CURRENT_JAR_PATH = resolveCurrentJarPath();
     /**
+     * Saves {@code true} only if this jar is used as library and is not directly included.
+     */
+    public static final boolean IS_USED_AS_LIBRARY = isUsedAsLibrary();
+    /**
      * The root path of Green2 application. It is the path of the current jar if this class is directly included in
      * Launcher (Launcher SingleJar version).
      */
@@ -105,11 +109,6 @@ public final class EnvironmentHandler {
      */
     public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
             ? "/AppData/Roaming/" : "/.") + APPLICATION_FOLDER_NAME;
-    /**
-     * The path of the local folder where to save the application itself.
-     */
-    private static final String PROGRAMFOLDER_PATH_LOCAL = (CURRENT_OS == OS.WINDOWS
-            ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/" : "/opt/") + APPLICATION_FOLDER_NAME;
     private static Profile loadedProfile;
 
     static {
@@ -121,18 +120,36 @@ public final class EnvironmentHandler {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
 
+    private static boolean isUsedAsLibrary() {
+        Path root = CURRENT_JAR_PATH;
+        Path rootFileName;
+        do {
+            rootFileName = root.getFileName();
+            root = root.getParent();
+        } while (!(root == null || rootFileName == null || rootFileName.toString().equals(APPLICATION_FOLDER_NAME)));
+
+        return !(root == null || rootFileName == null);
+    }
+
     private static Path resolveApplicationRoot() {
         Path root = CURRENT_JAR_PATH;
+        Path rootFileName;
         do {
             root = root.getParent();
-        } while (!(root == null || root.getFileName().toString().equals(APPLICATION_FOLDER_NAME)));
+            if(root == null) {
+                break;
+            } else {
+                rootFileName = root.getFileName();
+            }
+        } while (!(rootFileName == null || rootFileName.toString().equals(APPLICATION_FOLDER_NAME)));
 
-        return root == null ? CURRENT_JAR_PATH : root;
+        return IS_USED_AS_LIBRARY ? root : CURRENT_JAR_PATH.getParent();
     }
 
     private static Path resolveCurrentJarPath() {
         try {
-            return Paths.get(EnvironmentHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return Paths.get(EnvironmentHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                    .toAbsolutePath();
         } catch (URISyntaxException ex) {
             throw new IllegalStateException("Could not resolve location of this jar.", ex);
         }
@@ -235,7 +252,7 @@ public final class EnvironmentHandler {
      */
     public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding) {
         File initialDirectory = new File(PREFERENCES_NODE.get(LAST_SAVE_PATH_KEY, DEFAULT_SAVE_PATH));
-        if(!initialDirectory.exists()){
+        if (!initialDirectory.exists()) {
             initialDirectory = new File(DEFAULT_SAVE_PATH);
         }
         File initialFile = new File(initialDirectory, filePrefix + "." + fileEnding);
