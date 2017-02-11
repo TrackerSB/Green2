@@ -18,8 +18,6 @@ package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -42,9 +40,9 @@ public class VersionHandler {
             = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
             .orElse("");
     /**
-     * The path of the local version file.
+     * The key used in the preferences to store the current version.
      */
-    private static final String VERSIONFILE_PATH_LOCAL = EnvironmentHandler.APP_DATA_PATH + "/version.txt";
+    private static final String VERSION_KEY = "version";
     /**
      * The URL of the version file describing the version of the files at
      * {@code PROGRAMFOLDER_PATH_ONLINE}.
@@ -76,15 +74,7 @@ public class VersionHandler {
      * version could not be read.
      */
     public static Optional<String> readLocalVersion() {
-        File localVersionfile = new File(VERSIONFILE_PATH_LOCAL);
-        if (localVersionfile.exists()) {
-            try (Scanner sc = new Scanner(localVersionfile)) {
-                return Optional.of(sc.nextLine());
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(VersionHandler.class.getName()).log(Level.INFO, null, ex);
-            }
-        }
-        return Optional.empty();
+        return Optional.ofNullable(EnvironmentHandler.PREFERENCES_NODE.get(VERSION_KEY, null));
     }
 
     /**
@@ -93,8 +83,7 @@ public class VersionHandler {
      * @param newVersion The new version to set as new local version.
      */
     public static void updateLocalVersion(String newVersion) {
-        new File(EnvironmentHandler.APP_DATA_PATH).mkdir();
-        IOStreamUtility.printContent(newVersion, new File(VERSIONFILE_PATH_LOCAL), false);
+        EnvironmentHandler.PREFERENCES_NODE.put(VERSION_KEY, newVersion);
     }
 
     /**
