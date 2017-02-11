@@ -28,6 +28,7 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 
 import java.io.FileNotFoundException;
@@ -119,6 +120,8 @@ public class SepaFormController extends CheckedController {
         messageIdTextField.setText(originator.getMsgId());
         pmtInfIdTextField.setText(originator.getPmtInfId());
         executionDatePicker.setValue(originator.getExecutiondate());
+
+        Platform.runLater(() -> creatorTextField.requestFocus());
     }
 
     @FXML

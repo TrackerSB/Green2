@@ -19,15 +19,16 @@
 <?import bayern.steinbrecher.green2.elements.textfields.CharsetTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
+<?import bayern.steinbrecher.green2.elements.textfields.NameTextField?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="bayern.steinbrecher.green2.configDialog.ConfigDialogController">
-    <CheckedTextField fx:id="profileNameTextField"
-                      promptText="%profileName"
-                      GridPane.rowIndex="0"
-                      GridPane.columnIndex="0"
-                      GridPane.columnSpan="2"/>
+    <NameTextField fx:id="profileNameTextField"
+                   promptText="%profileName"
+                   GridPane.rowIndex="0"
+                   GridPane.columnIndex="0"
+                   GridPane.columnSpan="2"/>
     <CheckBox fx:id="useSSHCheckBox"
               selected="true"
               text="%useSSH"

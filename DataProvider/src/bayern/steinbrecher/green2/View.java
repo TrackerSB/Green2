@@ -67,7 +67,7 @@ public abstract class View<T extends Controller> extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        root.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
         controller = fxmlLoader.getController();
         return root;
     }

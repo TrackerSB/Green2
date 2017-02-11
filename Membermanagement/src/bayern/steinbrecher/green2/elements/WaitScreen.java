@@ -145,7 +145,7 @@ public class WaitScreen extends View<Controller> {
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setTitle(DataProvider.getResourceValue("waitAMoment"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
     }
 
     /**

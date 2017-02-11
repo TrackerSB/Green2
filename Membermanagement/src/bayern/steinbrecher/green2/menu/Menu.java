@@ -53,7 +53,7 @@ public class Menu extends View<MenuController> {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Menu.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        root.getStylesheets().addAll(DataProvider.DEFAULT_STYLESHEET, "/menu.css");
         //TODO Think about moving this line to css file
         root.setStyle("-fx-padding: 0px");
 
@@ -64,7 +64,7 @@ public class Menu extends View<MenuController> {
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.getResourceValue("chooseProgram"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
         stage.show();
     }
 

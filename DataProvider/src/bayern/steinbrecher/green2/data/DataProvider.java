@@ -52,11 +52,12 @@ public final class DataProvider {
     /**
      * The path of the file containing all styles.
      */
-    public static final String STYLESHEET_PATH = "styles.css";
+    public static final String DEFAULT_STYLESHEET = "styles.css";
     /**
      * The name of the folder which should contain the application.
      */
     private static final String APPLICATION_FOLDER_NAME = "Green2";
+    private static final String BASIC_ICON_DIR_PATH = "/";
     /**
      * The name of the folder containing the licenses of Green2.
      */
@@ -277,9 +278,9 @@ public final class DataProvider {
     }
 
     /**
-     * Contains enums representing pictures and icons used in Green2.
+     * Contains logos and splashscreens.
      */
-    public enum ImageSet {
+    public enum LogoSet {
         /**
          * The Green2 logo.
          */
@@ -291,40 +292,58 @@ public final class DataProvider {
         /**
          * The splashscreen of the german version of Green2.
          */
-        SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true),
-        ADD("icons/add.png"),
-        EDIT("icons/edit.png"),
-        TRASH("icons/trash.png"),
-        INFO("icons/info.png"),
-        ERROR("icons/error.png"),
-        WARNING("icons/warning.png"),
-        /**
-         * An image for confirmations or checklists.
-         */
-        CHECKED("icons/checked.png"),
-        FAST_FORWARD("icons/fast-forward.png"),
-        SAVE("icons/save.png"),
-        KEY("icons/save.png"),
-        LOCKED("icons/locked.png"),
-        ID_CARD("icons/id-card.png"),
-        NEXT("icons/next.png"),
-        CHECK("icons/check.png"),
-        INVESTMENT("icons/investment.png");
+        SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true);
 
-        /**
-         * A CSS class which can be set to a control when it uses one of these images as glyphicon.
-         */
-        public static final String CSS_CLASS_GLYPHICON = "glyphicon";
-        private static final String BASIC_ICON_DIR_PATH = "/";
         private Image image;
 
-        ImageSet(String filename) {
+        LogoSet(String filename) {
             image = new Image(BASIC_ICON_DIR_PATH + filename);
         }
 
-        ImageSet(String filename, double requestedWidth, double requestedHeight, boolean preserveRatio,
-                 boolean smooth) {
+        LogoSet(String filename, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) {
             image = new Image(BASIC_ICON_DIR_PATH + filename, requestedWidth, requestedHeight, preserveRatio, smooth);
+        }
+
+        /**
+         * Returns the image this enum represents.
+         *
+         * @return The image this enum represents.
+         */
+        public Image get() {
+            return image;
+        }
+    }
+
+    /**
+     * Contains enums representing pictures and icons used in Green2.
+     */
+    public enum ImageSet {
+
+        ADD("icons/add.png", false),
+        EDIT("icons/edit.png", false),
+        TRASH("icons/trash.png", false),
+        INFO("icons/info.png", true),
+        ERROR("icons/error.png", true),
+        WARNING("icons/warning.png", true),
+        /**
+         * An image for confirmations or checklists.
+         */
+        CHECKED("icons/checked.png", true),
+        KEY("icons/key.png", false),
+        LOCKED("icons/locked.png", false),
+        ID_CARD("icons/id-card.png", false),
+        NEXT("icons/next.png", false),
+        BACK("icons/back.png", false),
+        SUCCESS("icons/success.png", false),
+        CREDIT_CARD("icons/credit-card.png", false),
+        BANK("icons/back.png", false);
+
+        private Image image;
+        private boolean isBig;
+
+        ImageSet(String filename, boolean big) {
+            image = new Image(BASIC_ICON_DIR_PATH + filename);
+            isBig = big;
         }
 
         /**
@@ -337,27 +356,20 @@ public final class DataProvider {
         }
 
         /**
-         * Returns the image as {@link ImageView} of size 15x15.
+         * Returns the image as {@link ImageView} of size 50x50 if big and of size 15x15 if small.
          *
          * @return The image as {@link ImageView}.
          */
-        public ImageView getAsSmallImageView() {
-            ImageView imageView = new ImageView(get());
-            imageView.setFitHeight(15);
-            imageView.setFitWidth(15);
-            return imageView;
-        }
-
-        /**
-         * Returns the image as {@link ImageView} of size 50x50.
-         *
-         * @return The image as {@link ImageView}.
-         */
-        public ImageView getAsBigImageView() {
+        public ImageView getAsImageView() {
             ImageView imageView = new ImageView(get());
             imageView.setSmooth(true);
-            imageView.setFitHeight(50);
-            imageView.setFitWidth(50);
+            if (isBig) {
+                imageView.setFitHeight(50);
+                imageView.setFitWidth(50);
+            } else {
+                imageView.setFitHeight(15);
+                imageView.setFitWidth(15);
+            }
             return imageView;
         }
     }

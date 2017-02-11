@@ -42,7 +42,7 @@ public class DefaultLogin extends Login {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DefaultLogin.fxml"));
         fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        root.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
 
         controller = fxmlLoader.getController();
         controller.setStage(stage);
@@ -50,6 +50,6 @@ public class DefaultLogin extends Login {
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.getResourceValue("loginTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
     }
 }

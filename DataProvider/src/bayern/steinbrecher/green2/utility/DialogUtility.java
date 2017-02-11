@@ -46,23 +46,23 @@ public final class DialogUtility {
 
     private static Alert addStyleAndIcon(Alert alert) {
         Scene scene = alert.getDialogPane().getScene();
-        scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        scene.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
         Stage stage = (Stage) scene.getWindow();
-        stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
 
         Node graphic;
         switch (alert.getAlertType()) {
             case CONFIRMATION:
-                graphic = DataProvider.ImageSet.CHECKED.getAsBigImageView();
+                graphic = DataProvider.ImageSet.CHECKED.getAsImageView();
                 break;
             case ERROR:
-                graphic = DataProvider.ImageSet.ERROR.getAsBigImageView();
+                graphic = DataProvider.ImageSet.ERROR.getAsImageView();
                 break;
             case INFORMATION:
-                graphic = DataProvider.ImageSet.INFO.getAsBigImageView();
+                graphic = DataProvider.ImageSet.INFO.getAsImageView();
                 break;
             case WARNING:
-                graphic = DataProvider.ImageSet.WARNING.getAsBigImageView();
+                graphic = DataProvider.ImageSet.WARNING.getAsImageView();
                 break;
             default:
                 graphic = null;

@@ -47,7 +47,7 @@ public class ConfigDialog extends Application {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfigDialog.fxml"));
                 fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
                 Parent root = fxmlLoader.load();
-                root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+                root.getStylesheets().addAll(DataProvider.DEFAULT_STYLESHEET, "/configDialog.css");
 
                 ConfigDialogController controller = fxmlLoader.getController();
                 controller.setStage(stage);
@@ -58,7 +58,7 @@ public class ConfigDialog extends Application {
                     }
                 });
                 stage.setResizable(false);
-                stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+                stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
                 stage.setScene(new Scene(root));
                 stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + profile.getProfileName());
                 stage.show();

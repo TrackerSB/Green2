@@ -29,7 +29,7 @@ import javafx.scene.control.TextField;
  * @author Stefan Huber
  */
 public final class CreditorIdTextField extends SpecificRegexTextField {
-    public static final String CSS_CLASS_CREDITORID_TEXTFIELD = "creditorIdTextField";
+    public static final String CSS_CLASS_CREDITORID_TEXTFIELD = "creditorid-textfield";
     private BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
 
     public CreditorIdTextField() {

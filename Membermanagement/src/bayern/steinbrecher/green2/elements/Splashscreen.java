@@ -53,7 +53,7 @@ public class Splashscreen extends View<Controller> {
 
         ImageView imageView = new ImageView();
         imageView.setImage((Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage())
-                ? DataProvider.ImageSet.SPLASHSCREEN_DE : DataProvider.ImageSet.SPLASHSCREEN_EN).get());
+                ? DataProvider.LogoSet.SPLASHSCREEN_DE : DataProvider.LogoSet.SPLASHSCREEN_EN).get());
         root.getChildren().add(imageView);
 
         Scene scene = new Scene(root);
@@ -62,7 +62,7 @@ public class Splashscreen extends View<Controller> {
         stage.setTitle(DataProvider.getResourceValue("startingApplication"));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
-        stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
     }
 
     /**

@@ -57,7 +57,7 @@ public class ChoiceDialog extends Application {
 
         VBox vbox = new VBox(message, hbox);
         vbox.setSpacing(10);
-        vbox.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        vbox.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
 
         stage.setScene(new Scene(vbox));
         stage.initStyle(StageStyle.UTILITY);

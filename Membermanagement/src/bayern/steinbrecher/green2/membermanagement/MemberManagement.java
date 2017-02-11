@@ -453,9 +453,9 @@ public class MemberManagement extends Application {
             wizardStage.initOwner(menuStage);
             wizardStage.setTitle(DataProvider.getResourceValue("generateSepa"));
             wizardStage.setResizable(false);
-            wizardStage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+            wizardStage.getIcons().add(DataProvider.LogoSet.LOGO.get());
             wizard.start(wizardStage);
-            wizardStage.getScene().getStylesheets().add(DataProvider.STYLESHEET_PATH);
+            wizardStage.getScene().getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
             wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     Map<String, ?> results = wizard.getResults().get();

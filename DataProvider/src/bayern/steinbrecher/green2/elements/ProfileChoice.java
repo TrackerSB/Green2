@@ -66,27 +66,27 @@ public class ProfileChoice extends Application {
         String deleteLabel = DataProvider.getResourceValue("delete");
         for (String profileName : profiles) {
             Label name = new Label(profileName);
-            Button edit = new Button(editLabel, DataProvider.ImageSet.EDIT.getAsSmallImageView());
+            Button edit = new Button(editLabel, DataProvider.ImageSet.EDIT.getAsImageView());
             edit.setOnAction(evt -> editProfile(profileName));
-            Button delete = new Button(deleteLabel, DataProvider.ImageSet.TRASH.getAsSmallImageView());
+            Button delete = new Button(deleteLabel, DataProvider.ImageSet.TRASH.getAsImageView());
             delete.setOnAction(evt -> askForDeleteProfile(profileName));
             profilePane.addRow(currentRowIndex, name, edit, delete);
             currentRowIndex++;
         }
 
         Button create = new Button(
-                DataProvider.getResourceValue("create"), DataProvider.ImageSet.ADD.getAsSmallImageView());
+                DataProvider.getResourceValue("create"), DataProvider.ImageSet.ADD.getAsImageView());
         create.setOnAction(evt -> {
             created = true;
             stage.close();
         });
 
         Scene scene = new Scene(new VBox(choiceLabel, profilePane, create));
-        scene.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+        scene.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle(DataProvider.getResourceValue("chooseProfile"));
-        stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
 
         stage.showAndWait();
 
@@ -171,8 +171,8 @@ public class ProfileChoice extends Application {
         } else {
             ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(null, Profile.getAvailableProfiles());
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
-            dialogPane.getStylesheets().add(DataProvider.STYLESHEET_PATH);
-            ((Stage) dialogPane.getScene().getWindow()).getIcons().add(DataProvider.ImageSet.LOGO.get());
+            dialogPane.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
+            ((Stage) dialogPane.getScene().getWindow()).getIcons().add(DataProvider.LogoSet.LOGO.get());
 
             Optional<String> profileName = choiceDialog.showAndWait();
             if (profileName.isPresent()) {

@@ -25,7 +25,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
@@ -64,20 +63,12 @@ public class MenuController extends Controller {
     private CheckedIntegerSpinner yearSpinner;
     @FXML
     private javafx.scene.control.Menu licensesMenu;
-    @FXML
-    private Node menuContent;
-    @FXML
-    private MenuItem creditsMenuItem;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        creditsMenuItem.setGraphic(DataProvider.ImageSet.CHECK.getAsSmallImageView());
-        //TODO Think about moving this line to css file
-        menuContent.setStyle("-fx-padding: 10px");
-
         StringBinding yearBinding = Bindings.createStringBinding(() -> {
             String year = "?";
             if (yearSpinner.isValid()) {
@@ -102,7 +93,6 @@ public class MenuController extends Controller {
                     Logger.getLogger(MenuController.class.getName()).log(Level.WARNING, "Could not open license", ex);
                 }
             });
-            item.setGraphic(DataProvider.ImageSet.INVESTMENT.getAsSmallImageView());
             licensesMenu.getItems().add(item);
         }
     }

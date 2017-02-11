@@ -122,7 +122,7 @@ public final class Launcher extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Launcher.fxml"));
             fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
             Parent root = fxmlLoader.load();
-            root.getStylesheets().add(DataProvider.STYLESHEET_PATH);
+            root.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
             controller = fxmlLoader.getController();
             stage.setScene(new Scene(root));
             stage.setResizable(false);

@@ -70,7 +70,7 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
         stage.setScene(new Scene(root));
         stage.setTitle(DataProvider.getResourceValue("sepaFormTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.ImageSet.LOGO.get());
+        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
     }
 
     /**

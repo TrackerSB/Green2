@@ -18,6 +18,7 @@
 
 <?import bayern.steinbrecher.green2.elements.buttons.HelpButton?>
 <?import bayern.steinbrecher.green2.elements.CheckedDatePicker?>
+<?import bayern.steinbrecher.green2.elements.sepa.BicTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.IbanTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField?>
@@ -44,9 +45,9 @@
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="1"/>
     <NameTextField fx:id="creditorTextField"
-                      promptText="%accountHolder"
-                      GridPane.columnIndex="2"
-                      GridPane.rowIndex="1"/>
+                   promptText="%accountHolder"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="1"/>
     <Label text="%iban"
            GridPane.columnIndex="0"
            GridPane.rowIndex="2"/>
@@ -63,10 +64,10 @@
     <HelpButton helpMessage="%helpBic"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="3"/>
-    <CheckedTextField fx:id="bicTextField"
-                      promptText="%bic"
-                      GridPane.columnIndex="2"
-                      GridPane.rowIndex="3"/>
+    <BicTextField fx:id="bicTextField"
+                  promptText="%bic"
+                  GridPane.columnIndex="2"
+                  GridPane.rowIndex="3"/>
     <Label text="%creditorId"
            GridPane.columnIndex="0"
            GridPane.rowIndex="4"/>
@@ -116,9 +117,9 @@
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="8"/>
     <NameTextField fx:id="pmtInfIdTextField"
-                      promptText="%pmtInfId"
-                      GridPane.columnIndex="2"
-                      GridPane.rowIndex="8"/>
+                   promptText="%pmtInfId"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="8"/>
 
     <Label text="%inputToLong"
            styleClass="warningLabel"
