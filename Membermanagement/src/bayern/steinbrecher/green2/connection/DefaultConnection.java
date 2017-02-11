@@ -38,10 +38,6 @@ import java.util.logging.Logger;
 public final class DefaultConnection extends DBConnection {
 
     /**
-     * The name of the used driver.
-     */
-    private static final String DRIVER = "com.mysql.jdbc.Driver";
-    /**
      * The protocol used as the beginning of the location of the database.
      */
     private static final String DRIVER_PROTOCOL = "jdbc:mysql://";
@@ -64,15 +60,12 @@ public final class DefaultConnection extends DBConnection {
     public DefaultConnection(String databaseHost, String databaseUsername, String databasePasswd, String databaseName)
             throws AuthException, UnknownHostException {
         try {
-            Class.forName(DRIVER);
             if (!databaseHost.endsWith("/")) {
                 databaseHost += "/";
             }
             connection = DriverManager.getConnection(DRIVER_PROTOCOL + databaseHost + databaseName
                             + "?verifyServerCertificate=false" + "&useSSL=true&zeroDateTimeBehavior=convertToNull",
                     databaseUsername, databasePasswd);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(DefaultConnection.class.getName()).log(Level.SEVERE, null, ex);
             if (ex instanceof CommunicationsException) {
