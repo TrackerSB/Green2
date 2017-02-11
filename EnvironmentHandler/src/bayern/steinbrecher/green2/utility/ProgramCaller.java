@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.utility;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import javafx.application.Platform;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public final class ProgramCaller {
 
     private static void startJar(String jarname) {
         try {
-            new ProcessBuilder("java", "-jar", Paths.get(DataProvider.APPLICATION_ROOT.toString(), jarname).toString())
+            new ProcessBuilder("java", "-jar", Paths.get(EnvironmentHandler.APPLICATION_ROOT.toString(), jarname).toString())
                     .start();
             Platform.exit();
         } catch (IOException ex) {

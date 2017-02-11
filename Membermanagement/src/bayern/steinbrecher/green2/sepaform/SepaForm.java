@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.sepaform;
 
 import bayern.steinbrecher.green2.WizardableView;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.wizard.WizardPage;
 import javafx.scene.Parent;
@@ -68,9 +68,9 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
 
         stage.initOwner(owner);
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.getResourceValue("sepaFormTitle"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("sepaFormTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

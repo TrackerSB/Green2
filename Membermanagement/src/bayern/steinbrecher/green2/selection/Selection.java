@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableView;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -91,9 +91,9 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
 
         stage.initOwner(owner);
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.getResourceValue("selectionTitle"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("selectionTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

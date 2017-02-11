@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  *
  * @author Stefan Huber
  */
-public final class DataProvider {
+public final class EnvironmentHandler {
 
     /**
      * Containing translations for the system default language.
@@ -118,7 +118,7 @@ public final class DataProvider {
     /**
      * The path of the local version file.
      */
-    public static final String VERSIONFILE_PATH_LOCAL = DataProvider.APP_DATA_PATH + "/version.txt";
+    public static final String VERSIONFILE_PATH_LOCAL = EnvironmentHandler.APP_DATA_PATH + "/version.txt";
     /**
      * The URL of the version file describing the version of the files at
      * {@code PROGRAMFOLDER_PATH_ONLINE}.
@@ -136,10 +136,10 @@ public final class DataProvider {
 
     static {
         //Create configDir if not existing
-        new File(DataProvider.APP_DATA_PATH).mkdir();
+        new File(EnvironmentHandler.APP_DATA_PATH).mkdir();
     }
 
-    private DataProvider() {
+    private EnvironmentHandler() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
 
@@ -154,7 +154,7 @@ public final class DataProvider {
 
     private static Path resolveCurrentJarPath() {
         try {
-            return Paths.get(DataProvider.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return Paths.get(EnvironmentHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException ex) {
             throw new IllegalStateException("Could not resolve location of this jar.", ex);
         }
@@ -176,7 +176,7 @@ public final class DataProvider {
         if (RESOURCE_BUNDLE.containsKey(key)) {
             return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
         } else {
-            Logger.getLogger(DataProvider.class.getName()).log(Level.INFO, "No resource for \"{0}\" found.", key);
+            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.INFO, "No resource for \"{0}\" found.", key);
             return key;
         }
     }
@@ -242,7 +242,7 @@ public final class DataProvider {
                     .map(path -> new File(path.toUri()))
                     .collect(Collectors.toList());
         } catch (IOException ex) {
-            Logger.getLogger(DataProvider.class.getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.WARNING, null, ex);
             return new ArrayList<>();
         }
     }
@@ -253,13 +253,13 @@ public final class DataProvider {
      * @return A {@link String} containing the current version.
      */
     public static String getVersion() {
-        File versionFile = new File(DataProvider.VERSIONFILE_PATH_LOCAL);
+        File versionFile = new File(EnvironmentHandler.VERSIONFILE_PATH_LOCAL);
         if (versionFile.exists()) {
             try (Scanner sc = new Scanner(versionFile.getPath())) {
                 return sc.nextLine();
             }
         } else {
-            return DataProvider.getResourceValue("versionNotFound");
+            return EnvironmentHandler.getResourceValue("versionNotFound");
         }
     }
 

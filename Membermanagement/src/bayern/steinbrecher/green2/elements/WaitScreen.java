@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.View;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -143,9 +143,9 @@ public class WaitScreen extends View<Controller> {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setTitle(DataProvider.getResourceValue("waitAMoment"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("waitAMoment"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

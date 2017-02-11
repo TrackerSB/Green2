@@ -10,7 +10,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="DataProvider" />
+    <orderEntry type="module" module-name="EnvironmentHandler" />
     <orderEntry type="library" name="com.jcraft:jsch:Latest" level="application" />
     <orderEntry type="library" name="mysql:mysql-connector-java:Latest" level="application" />
     <orderEntry type="library" name="Wizard" level="application" />

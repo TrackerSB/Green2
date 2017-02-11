@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.Controller;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import bayern.steinbrecher.green2.utility.DialogUtility;
@@ -77,14 +77,14 @@ public class MenuController extends Controller {
             return year;
         }, yearSpinner.validProperty(), yearSpinner.valueProperty());
         generateBirthdayInfos.textProperty().bind(
-                new SimpleStringProperty(DataProvider.getResourceValue("groupedBirthdayMember") + " ")
+                new SimpleStringProperty(EnvironmentHandler.getResourceValue("groupedBirthdayMember") + " ")
                         .concat(yearBinding));
         generateAddressesBirthday.textProperty().bind(
-                new SimpleStringProperty(DataProvider.getResourceValue("birthdayExpression") + " ")
+                new SimpleStringProperty(EnvironmentHandler.getResourceValue("birthdayExpression") + " ")
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
-        for (File license : DataProvider.getLicenses()) {
+        for (File license : EnvironmentHandler.getLicenses()) {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
                 try {
@@ -163,15 +163,15 @@ public class MenuController extends Controller {
 
     @FXML
     private void showCredits() {
-        Alert alert = DialogUtility.createMessageAlert(DataProvider.getResourceValue("creditsContent"), stage);
-        alert.setHeaderText(DataProvider.getResourceValue("credits"));
+        Alert alert = DialogUtility.createMessageAlert(EnvironmentHandler.getResourceValue("creditsContent"), stage);
+        alert.setHeaderText(EnvironmentHandler.getResourceValue("credits"));
         alert.show();
     }
 
     @FXML
     private void showVersion() {
-        Alert alert = DialogUtility.createInfoAlert(DataProvider.getVersion(), stage);
-        alert.setHeaderText(DataProvider.getResourceValue("version"));
+        Alert alert = DialogUtility.createInfoAlert(EnvironmentHandler.getVersion(), stage);
+        alert.setHeaderText(EnvironmentHandler.getResourceValue("version"));
         alert.show();
     }
 }

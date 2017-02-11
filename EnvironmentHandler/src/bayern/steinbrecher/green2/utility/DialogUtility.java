@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.utility;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -46,23 +46,23 @@ public final class DialogUtility {
 
     private static Alert addStyleAndIcon(Alert alert) {
         Scene scene = alert.getDialogPane().getScene();
-        scene.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
+        scene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
         Stage stage = (Stage) scene.getWindow();
-        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
 
         Node graphic;
         switch (alert.getAlertType()) {
             case CONFIRMATION:
-                graphic = DataProvider.ImageSet.CHECKED.getAsImageView();
+                graphic = EnvironmentHandler.ImageSet.CHECKED.getAsImageView();
                 break;
             case ERROR:
-                graphic = DataProvider.ImageSet.ERROR.getAsImageView();
+                graphic = EnvironmentHandler.ImageSet.ERROR.getAsImageView();
                 break;
             case INFORMATION:
-                graphic = DataProvider.ImageSet.INFO.getAsImageView();
+                graphic = EnvironmentHandler.ImageSet.INFO.getAsImageView();
                 break;
             case WARNING:
-                graphic = DataProvider.ImageSet.WARNING.getAsImageView();
+                graphic = EnvironmentHandler.ImageSet.WARNING.getAsImageView();
                 break;
             default:
                 graphic = null;
@@ -153,7 +153,7 @@ public final class DialogUtility {
     }
 
     private static Alert addStacktrace(Alert alert, Exception ex) {
-        Label stacktraceLabel = new Label(DataProvider.getResourceValue("stacktraceLabel"));
+        Label stacktraceLabel = new Label(EnvironmentHandler.getResourceValue("stacktraceLabel"));
 
         StringWriter stacktrace = new StringWriter();
         PrintWriter stacktracePw = new PrintWriter(stacktrace);

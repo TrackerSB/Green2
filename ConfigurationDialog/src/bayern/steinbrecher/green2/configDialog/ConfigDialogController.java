@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.configDialog;
 
 import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.data.ConfigKey;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
@@ -78,7 +78,7 @@ public class ConfigDialogController extends CheckedController {
         birthdayExpressionTextField.setRegex(ConfigKey.BIRTHDAY_PATTERN.pattern());
         profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (stage != null) {
-                stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + newVal);
+                stage.setTitle(EnvironmentHandler.getResourceValue("configureApplication") + ": " + newVal);
             }
             profileAlreadyExists.set(!profile.getProfileName().equals(newVal)
                     && Profile.getAvailableProfiles().contains(newVal));
@@ -96,7 +96,7 @@ public class ConfigDialogController extends CheckedController {
                 .and(profileAlreadyExists.not()));
 
         //Load settings
-        profile = DataProvider.getProfile();
+        profile = EnvironmentHandler.getProfile();
         useSSHCheckBox.setSelected(profile.getOrDefault(ConfigKey.USE_SSH, true));
         sshHostTextField.setText(profile.getOrDefault(ConfigKey.SSH_HOST, ""));
         databaseHostTextField.setText(profile.getOrDefault(ConfigKey.DATABASE_HOST, ""));

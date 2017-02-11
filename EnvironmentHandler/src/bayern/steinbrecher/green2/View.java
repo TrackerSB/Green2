@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -65,9 +65,9 @@ public abstract class View<T extends Controller> extends Application {
 
     protected <P extends Parent> P loadFXML(String resource) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
-        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+        fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
+        root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
         controller = fxmlLoader.getController();
         return root;
     }

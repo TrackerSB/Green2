@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.View;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -51,9 +51,9 @@ public class Menu extends View<MenuController> {
         this.stage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Menu.fxml"));
-        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+        fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().addAll(DataProvider.DEFAULT_STYLESHEET, "/menu.css");
+        root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET, "/menu.css");
         //TODO Think about moving this line to css file
         root.setStyle("-fx-padding: 0px");
 
@@ -62,9 +62,9 @@ public class Menu extends View<MenuController> {
         controller.setCaller(caller);
 
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.getResourceValue("chooseProgram"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("chooseProgram"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
         stage.show();
     }
 

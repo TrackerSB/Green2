@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.utility;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.launcher.Launcher;
 
 import java.io.File;
@@ -44,7 +44,7 @@ public class VersionHandler {
      */
     public static Optional<String> readOnlineVersion() {
         try {
-            URL onlineVersionUrl = new URL(DataProvider.VERSIONFILE_PATH_ONLINE);
+            URL onlineVersionUrl = new URL(EnvironmentHandler.VERSIONFILE_PATH_ONLINE);
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
             return Optional.of(sc.nextLine());
         } catch (IOException ex) {
@@ -61,7 +61,7 @@ public class VersionHandler {
      * version could not be read.
      */
     public static Optional<String> readLocalVersion() {
-        File localVersionfile = new File(DataProvider.VERSIONFILE_PATH_LOCAL);
+        File localVersionfile = new File(EnvironmentHandler.VERSIONFILE_PATH_LOCAL);
         if (localVersionfile.exists()) {
             try (Scanner sc = new Scanner(localVersionfile)) {
                 return Optional.of(sc.nextLine());
@@ -78,7 +78,7 @@ public class VersionHandler {
      * @param newVersion The new version to set as new local version.
      */
     public static void updateLocalVersion(String newVersion) {
-        new File(DataProvider.APP_DATA_PATH).mkdir();
-        IOStreamUtility.printContent(newVersion, DataProvider.VERSIONFILE_PATH_LOCAL, false);
+        new File(EnvironmentHandler.APP_DATA_PATH).mkdir();
+        IOStreamUtility.printContent(newVersion, EnvironmentHandler.VERSIONFILE_PATH_LOCAL, false);
     }
 }

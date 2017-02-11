@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.sepaform;
 
 import bayern.steinbrecher.green2.CheckedController;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.buttons.HelpButton;
@@ -86,12 +86,12 @@ public class SepaFormController extends CheckedController {
                 creditorIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
 
         pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
-        pmtInfIdHelpButton.setHelpMessage(DataProvider.getResourceValue(
+        pmtInfIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
                 "helpPmtInfId", SepaUtility.UNIQUE_MONTH_PMTINFID, SepaUtility.MAX_CHAR_PMTINFID));
         creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_OF_CREATOR);
         creatorHelpButton.setHelpMessage(
-                DataProvider.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_OF_CREATOR));
-        messageIdHelpButton.setHelpMessage(DataProvider.getResourceValue(
+                EnvironmentHandler.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_OF_CREATOR));
+        messageIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
                 "helpMessageId", SepaUtility.UNIQUE_DAYS_MESSAGEID, SepaUtility.MAX_CHAR_MESSAGE_ID));
 
         anyInputToLong.bind(BindingUtility.reduceOr(checkedTextFields.stream()
@@ -103,7 +103,7 @@ public class SepaFormController extends CheckedController {
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));
 
-        Profile profile = DataProvider.getProfile();
+        Profile profile = EnvironmentHandler.getProfile();
 
         try {
             originator = Originator.readOriginatorInfo(profile.getOriginatorInfoPath());
@@ -127,7 +127,7 @@ public class SepaFormController extends CheckedController {
     @FXML
     private void generateMessageId() {
         messageIdTextField.setText(DateTimeFormatter.ISO_DATE.format(LocalDate.now()) + " "
-                + DataProvider.getResourceValue("contributions_sepaChars") + " "
+                + EnvironmentHandler.getResourceValue("contributions_sepaChars") + " "
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
 

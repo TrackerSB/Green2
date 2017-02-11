@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.login.standard;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.login.Login;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,16 +40,16 @@ public class DefaultLogin extends Login {
         this.stage = stage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DefaultLogin.fxml"));
-        fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+        fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
         Parent root = fxmlLoader.load();
-        root.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
+        root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
 
         controller = fxmlLoader.getController();
         controller.setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.getResourceValue("loginTitle"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("loginTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 }

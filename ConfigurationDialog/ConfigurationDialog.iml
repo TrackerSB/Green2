@@ -9,6 +9,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="DataProvider" />
+    <orderEntry type="module" module-name="EnvironmentHandler" />
   </component>
 </module>

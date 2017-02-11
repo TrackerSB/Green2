@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.configDialog;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ProfileChoice;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -42,12 +42,12 @@ public class ConfigDialog extends Application {
     public void start(Stage stage) {
         ProfileChoice.askForProfile(true).ifPresent(profile -> {
             try {
-                DataProvider.loadProfile(profile);
+                EnvironmentHandler.loadProfile(profile);
 
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfigDialog.fxml"));
-                fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+                fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
                 Parent root = fxmlLoader.load();
-                root.getStylesheets().addAll(DataProvider.DEFAULT_STYLESHEET, "/configDialog.css");
+                root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET, "/configDialog.css");
 
                 ConfigDialogController controller = fxmlLoader.getController();
                 controller.setStage(stage);
@@ -58,9 +58,9 @@ public class ConfigDialog extends Application {
                     }
                 });
                 stage.setResizable(false);
-                stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+                stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 stage.setScene(new Scene(root));
-                stage.setTitle(DataProvider.getResourceValue("configureApplication") + ": " + profile.getProfileName());
+                stage.setTitle(EnvironmentHandler.getResourceValue("configureApplication") + ": " + profile.getProfileName());
                 stage.show();
             } catch (IOException ex) {
                 Logger.getLogger(ConfigDialog.class.getName()).log(Level.SEVERE, null, ex);

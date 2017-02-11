@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.elements;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -40,16 +40,16 @@ public class ChoiceDialog extends Application {
      */
     @Override
     public void start(Stage stage) {
-        Label message = new Label(DataProvider.getResourceValue("installUpdates"));
+        Label message = new Label(EnvironmentHandler.getResourceValue("installUpdates"));
 
-        Button yesButton = new Button(DataProvider.getResourceValue("yes"));
+        Button yesButton = new Button(EnvironmentHandler.getResourceValue("yes"));
         yesButton.setDefaultButton(true);
         yesButton.setOnAction(evt -> {
             installUpdates = true;
             stage.close();
         });
 
-        Button noButton = new Button(DataProvider.getResourceValue("no"));
+        Button noButton = new Button(EnvironmentHandler.getResourceValue("no"));
         noButton.setOnAction(evt -> stage.close());
 
         HBox hbox = new HBox(yesButton, noButton);
@@ -57,12 +57,12 @@ public class ChoiceDialog extends Application {
 
         VBox vbox = new VBox(message, hbox);
         vbox.setSpacing(10);
-        vbox.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
+        vbox.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
 
         stage.setScene(new Scene(vbox));
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
-        stage.setTitle(DataProvider.getResourceValue("installUpdates"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("installUpdates"));
         stage.showAndWait();
     }
 

@@ -16,7 +16,7 @@
 
 package bayern.steinbrecher.green2.generator;
 
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Person;
@@ -144,7 +144,7 @@ public class BirthdayGenerator {
             return false;
         } else {
             int age = year - birthday.getYear();
-            return DataProvider.getProfile().getAgeFunction().apply(age);
+            return EnvironmentHandler.getProfile().getAgeFunction().apply(age);
         }
     }
 }

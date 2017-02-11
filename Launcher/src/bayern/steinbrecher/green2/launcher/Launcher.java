@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.launcher;
 
 import bayern.steinbrecher.green2.data.Collector;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 
 /**
  * Installs Green2 and checks for updates. (This application needs to be
- * independent, so it contains DataProvider project.).
+ * independent, so it contains EnvironmentHandler project.).
  *
  * @author Stefan Huber
  */
@@ -65,7 +65,7 @@ public final class Launcher extends Application {
     private LauncherController controller;
 
     static {
-        try (Scanner sc = new Scanner(new URL(DataProvider.CHARSET_PATH_ONLINE).openStream())) {
+        try (Scanner sc = new Scanner(new URL(EnvironmentHandler.CHARSET_PATH_ONLINE).openStream())) {
             ZIP_CHARSET = Charset.forName(sc.nextLine());
         } catch (IOException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
@@ -120,13 +120,13 @@ public final class Launcher extends Application {
     private void showProgressWindow() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Launcher.fxml"));
-            fxmlLoader.setResources(DataProvider.RESOURCE_BUNDLE);
+            fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
             Parent root = fxmlLoader.load();
-            root.getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
+            root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
             controller = fxmlLoader.getController();
             stage.setScene(new Scene(root));
             stage.setResizable(false);
-            stage.setTitle(DataProvider.getResourceValue("downloadNewVersion"));
+            stage.setTitle(EnvironmentHandler.getResourceValue("downloadNewVersion"));
             stage.initStyle(StageStyle.UTILITY);
             stage.show();
         } catch (IOException ex) {
@@ -136,7 +136,7 @@ public final class Launcher extends Application {
 
     private File download() throws IOException {
         File tempFile = Files.createTempFile(null, ".zip").toFile();
-        URLConnection downloadConnection = new URL(DataProvider.GREEN2_ZIP_URL).openConnection();
+        URLConnection downloadConnection = new URL(EnvironmentHandler.GREEN2_ZIP_URL).openConnection();
         long fileSize = Long.parseLong(downloadConnection.getHeaderField("Content-Length"));
         long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
 
@@ -152,7 +152,7 @@ public final class Launcher extends Application {
     private Process install(File downloadedDir) throws IOException, InterruptedException {
         String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
-        switch (DataProvider.CURRENT_OS) {
+        switch (EnvironmentHandler.CURRENT_OS) {
             case WINDOWS:
                 command = new String[]{"cscript", dirPath + "/install.vbs"};
                 break;

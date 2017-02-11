@@ -21,7 +21,7 @@ import bayern.steinbrecher.green2.connection.DefaultConnection;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.contribution.Contribution;
 import bayern.steinbrecher.green2.data.ConfigKey;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.ProfileChoice;
 import bayern.steinbrecher.green2.elements.Splashscreen;
@@ -106,11 +106,11 @@ public class MemberManagement extends Application {
         if (availableProfiles.size() < 1) {
             ProgramCaller.startGreen2ConfigDialog();
         } else if (availableProfiles.size() == 1) {
-            profile = DataProvider.loadProfile(availableProfiles.get(0), false);
+            profile = EnvironmentHandler.loadProfile(availableProfiles.get(0), false);
         } else {
             Optional<Profile> requestedProfile = ProfileChoice.askForProfile(false);
             if (requestedProfile.isPresent()) {
-                profile = DataProvider.loadProfile(requestedProfile.get());
+                profile = EnvironmentHandler.loadProfile(requestedProfile.get());
             } else {
                 Platform.exit();
             }
@@ -141,7 +141,7 @@ public class MemberManagement extends Application {
         boolean valid = profile.isAllConfigurationsSet();
         if (!valid) {
             DialogUtility.createErrorAlert(
-                    MessageFormat.format(DataProvider.getResourceValue("badConfigs"), profile.getProfileName()))
+                    MessageFormat.format(EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName()))
                     .showAndWait()
                     .ifPresent(buttontype -> {
                         if (buttontype == ButtonType.OK) {
@@ -194,7 +194,7 @@ public class MemberManagement extends Application {
                 try {
                     dbConnection.createTablesIfNeeded();
                 } catch (SchemeCreationException ex) {
-                    DialogUtility.createErrorAlert(DataProvider.getResourceValue("couldntCreateScheme")).showAndWait();
+                    DialogUtility.createErrorAlert(EnvironmentHandler.getResourceValue("couldntCreateScheme")).showAndWait();
                     Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.exit();
                 }
@@ -235,14 +235,14 @@ public class MemberManagement extends Application {
         Platform.runLater(() -> {
             Alert dialog;
             if (cause instanceof ConnectException) {
-                dialog = DialogUtility.createInfoAlert(DataProvider.getResourceValue("checkConnection"));
+                dialog = DialogUtility.createInfoAlert(EnvironmentHandler.getResourceValue("checkConnection"));
             } else if (cause instanceof UnknownHostException) {
-                dialog = DialogUtility.createStacktraceAlert(cause, DataProvider.getResourceValue("checkConnection"));
+                dialog = DialogUtility.createStacktraceAlert(cause, EnvironmentHandler.getResourceValue("checkConnection"));
             } else if (cause instanceof AuthException) {
-                dialog = DialogUtility.createInfoAlert(DataProvider.getResourceValue("checkInput"));
+                dialog = DialogUtility.createInfoAlert(EnvironmentHandler.getResourceValue("checkInput"));
             } else {
                 Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, "Not action specified for: {0}", cause);
-                dialog = DialogUtility.createErrorAlert(DataProvider.getResourceValue("unexpectedAbort"));
+                dialog = DialogUtility.createErrorAlert(EnvironmentHandler.getResourceValue("unexpectedAbort"));
             }
 
             dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
@@ -349,7 +349,7 @@ public class MemberManagement extends Application {
     private void generateAddresses(List<Member> member, String filename) {
         checkNull(nicknames);
         if (member.isEmpty()) {
-            Alert alert = DialogUtility.createInfoAlert(DataProvider.getResourceValue("noMemberForOutput"), menuStage);
+            Alert alert = DialogUtility.createInfoAlert(EnvironmentHandler.getResourceValue("noMemberForOutput"), menuStage);
             alert.showAndWait();
         } else {
             try {
@@ -364,12 +364,12 @@ public class MemberManagement extends Application {
     /**
      * Generates a file Serienbrief_alle.csv containing addresses of all member.
      *
-     * @see DataProvider#SAVE_PATH
+     * @see EnvironmentHandler#SAVE_PATH
      */
     public void generateAddressesAll() {
         checkNull(member);
         try {
-            generateAddresses(member.get(), DataProvider.SAVE_PATH + "/Serienbrief_alle.csv");
+            generateAddresses(member.get(), EnvironmentHandler.SAVE_PATH + "/Serienbrief_alle.csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -381,14 +381,14 @@ public class MemberManagement extends Application {
      * {@code year}.
      *
      * @param year The year to look for member.
-     * @see DataProvider#SAVE_PATH
+     * @see EnvironmentHandler#SAVE_PATH
      */
     public void generateAddressesBirthday(int year) {
         checkNull(memberBirthday);
         memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             generateAddresses(memberBirthday.get(year).get(),
-                    DataProvider.SAVE_PATH + "/Serienbrief_Geburtstag_" + year + ".csv");
+                    EnvironmentHandler.SAVE_PATH + "/Serienbrief_Geburtstag_" + year + ".csv");
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -399,7 +399,7 @@ public class MemberManagement extends Application {
      * get a birthday notification in year {@code year}.
      *
      * @param year The year to look for member.
-     * @see DataProvider#SAVE_PATH
+     * @see EnvironmentHandler#SAVE_PATH
      */
     public void generateBirthdayInfos(int year) {
         checkNull(memberBirthday);
@@ -409,11 +409,11 @@ public class MemberManagement extends Application {
             List<Member> birthdayList = memberBirthday.get(year).get();
             if (birthdayList.isEmpty()) {
                 Alert alert = DialogUtility.createInfoAlert(
-                        DataProvider.getResourceValue("noMemberForOutput"), menuStage);
+                        EnvironmentHandler.getResourceValue("noMemberForOutput"), menuStage);
                 alert.showAndWait();
             } else {
                 IOStreamUtility.printContent(BirthdayGenerator.createGroupedOutput(birthdayList, year),
-                        DataProvider.SAVE_PATH + "/Geburtstag_" + year + ".csv", true);
+                        EnvironmentHandler.SAVE_PATH + "/Geburtstag_" + year + ".csv", true);
             }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -451,11 +451,11 @@ public class MemberManagement extends Application {
             Wizard wizard = new Wizard(pages);
             Stage wizardStage = new Stage();
             wizardStage.initOwner(menuStage);
-            wizardStage.setTitle(DataProvider.getResourceValue("generateSepa"));
+            wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
             wizardStage.setResizable(false);
-            wizardStage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+            wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
             wizard.start(wizardStage);
-            wizardStage.getScene().getStylesheets().add(DataProvider.DEFAULT_STYLESHEET);
+            wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
             wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     Map<String, ?> results = wizard.getResults().get();
@@ -468,21 +468,21 @@ public class MemberManagement extends Application {
 
                     List<Member> invalidMember
                             = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, contributions, originator,
-                            sequenceType, DataProvider.SAVE_PATH + "/Sepa.xml",
+                            sequenceType, EnvironmentHandler.SAVE_PATH + "/Sepa.xml",
                             profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
                     String message = invalidMember.stream()
                             .map(Member::toString)
                             .collect(Collectors.joining("\n"));
                     if (!message.isEmpty()) {
                         Alert alert = DialogUtility.createErrorAlert(message + "\n"
-                                + DataProvider.getResourceValue("haveBadAccountInformation"), menuStage);
+                                + EnvironmentHandler.getResourceValue("haveBadAccountInformation"), menuStage);
                         alert.show();
                     }
                 }
             });
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-            Alert alert = DialogUtility.createErrorAlert(DataProvider.getResourceValue("noSepaDebit"), menuStage);
+            Alert alert = DialogUtility.createErrorAlert(EnvironmentHandler.getResourceValue("noSepaDebit"), menuStage);
             alert.showAndWait();
         }
     }
@@ -514,16 +514,16 @@ public class MemberManagement extends Application {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (badIban.isEmpty()) {
-            return DataProvider.getResourceValue("correctIbans");
+            return EnvironmentHandler.getResourceValue("correctIbans");
         } else {
-            String noIban = DataProvider.getResourceValue("noIban");
+            String noIban = EnvironmentHandler.getResourceValue("noIban");
             String message = badIban.stream()
                     .map(m -> {
                         String iban = m.getAccountHolder().getIban();
                         return m + ": \"" + (iban.isEmpty() ? noIban : iban) + "\"";
                     })
                     .collect(Collectors.joining("\n"));
-            return DataProvider.getResourceValue("memberBadIban") + "\n" + message;
+            return EnvironmentHandler.getResourceValue("memberBadIban") + "\n" + message;
         }
     }
 
@@ -550,12 +550,12 @@ public class MemberManagement extends Application {
         checkNull(member);
         String message = checkIbans() + "\n\n"
                 + checkDates(m -> m.getPerson().getBirthday(),
-                DataProvider.getResourceValue("memberBadBirthday"),
-                DataProvider.getResourceValue("allBirthdaysCorrect"))
+                EnvironmentHandler.getResourceValue("memberBadBirthday"),
+                EnvironmentHandler.getResourceValue("allBirthdaysCorrect"))
                 + "\n\n"
                 + checkDates(m -> m.getAccountHolder().getMandateSigned(),
-                DataProvider.getResourceValue("memberBadMandatSigned"),
-                DataProvider.getResourceValue("allMandatSignedCorrect"));
+                EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
+                EnvironmentHandler.getResourceValue("allMandatSignedCorrect"));
         Alert alert = DialogUtility.createMessageAlert(message, menuStage);
         alert.showAndWait();
     }

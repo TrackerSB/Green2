@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.contribution;
 
 import bayern.steinbrecher.green2.WizardableView;
-import bayern.steinbrecher.green2.data.DataProvider;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -68,9 +68,9 @@ public class Contribution extends WizardableView<Optional<Double>, ContributionC
 
         stage.initOwner(owner);
         stage.setScene(new Scene(root));
-        stage.setTitle(DataProvider.getResourceValue("contributionTitle"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("contributionTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(DataProvider.LogoSet.LOGO.get());
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

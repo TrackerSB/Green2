@@ -79,7 +79,7 @@ public class Profile {
      * need to be a file yet)
      */
     private StringExpression originatorInfoPath
-            = new SimpleStringProperty(DataProvider.APP_DATA_PATH)
+            = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
             .concat("/")
             .concat(profileName)
             .concat(ORIGINATORFILE_FORMAT);
@@ -88,7 +88,7 @@ public class Profile {
      * The path to the configfile. (May not exist, yet)
      */
     private StringExpression configFilePath
-            = new SimpleStringProperty(DataProvider.APP_DATA_PATH)
+            = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
             .concat("/")
             .concat(profileName)
             .concat(CONFIGFILE_FORMAT);
@@ -154,7 +154,7 @@ public class Profile {
                 }
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DataProvider.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return FXCollections.observableMap(configurations);
     }
@@ -188,7 +188,7 @@ public class Profile {
                                 functionPart = age -> age == new Integer(part.substring(1));
                                 break;
                             default:
-                                Logger.getLogger(DataProvider.class.getName())
+                                Logger.getLogger(EnvironmentHandler.class.getName())
                                         .log(Level.WARNING, "{0} gets skipped", part);
                         }
                     } catch (NumberFormatException ex) {
@@ -243,10 +243,10 @@ public class Profile {
         if (!newName.equals(profileName.get())) {
             String oldConfigPath = configFilePath.get();
             File oldConfigFile = configFile.getValue();
-            String newConfigPath = DataProvider.APP_DATA_PATH + "/" + newName + CONFIGFILE_FORMAT;
+            String newConfigPath = EnvironmentHandler.APP_DATA_PATH + "/" + newName + CONFIGFILE_FORMAT;
             File newConfigFile = new File(newConfigPath);
 
-            String newOriginatorPath = DataProvider.APP_DATA_PATH + "/" + newName + ORIGINATORFILE_FORMAT;
+            String newOriginatorPath = EnvironmentHandler.APP_DATA_PATH + "/" + newName + ORIGINATORFILE_FORMAT;
             File newOriginatorFile = new File(newOriginatorPath);
 
             if (newConfigFile.exists() || newOriginatorFile.exists()) {
@@ -275,7 +275,7 @@ public class Profile {
     }
 
     public static List<String> getAvailableProfiles() {
-        String[] configFiles = new File(DataProvider.APP_DATA_PATH)
+        String[] configFiles = new File(EnvironmentHandler.APP_DATA_PATH)
                 .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT));
         if (configFiles == null) {
             return new ArrayList<>();

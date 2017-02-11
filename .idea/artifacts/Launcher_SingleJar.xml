@@ -14,7 +14,7 @@
     <root id="root">
       <element id="archive" name="Launcher.jar">
         <element id="module-output" name="Launcher" />
-        <element id="module-output" name="DataProvider" />
+        <element id="module-output" name="EnvironmentHandler" />
         <element id="extracted-dir" path="$USER_HOME$/myPrograms/java/MyLibraries/out/artifacts/Wizard/Wizard.jar" path-in-jar="/" />
         <element id="directory" name="licenses">
           <element id="dir-copy" path="$PROJECT_DIR$/licenses" />
