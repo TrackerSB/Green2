@@ -142,6 +142,7 @@ public class ProfileChoice extends Application {
 
                             profilePane.getChildren().removeAll(nodesToDelete);
                             new Profile(profileName, false).deleteProfile();
+                            stage.sizeToScene();
                         }
                     }
                 });
