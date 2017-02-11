@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.prefs.Preferences;
 
 /**
  * Represents a dialog for choosing the profile to use.
@@ -46,8 +45,7 @@ import java.util.prefs.Preferences;
  */
 public class ProfileChoice extends Application {
 
-    private static final String PREFERENCES_LAST_PROFILE_KEY = "defaultProfile";
-    private static final Preferences GREEN2_NODE = Preferences.userRoot().node("bayern/steinbrecher/green2");
+    private static final String LAST_PROFILE_KEY = "defaultProfile";
     private Stage stage;
     private Profile profile;
     private boolean created = false;
@@ -174,7 +172,7 @@ public class ProfileChoice extends Application {
             return Optional.ofNullable(choice.profile);
         } else {
             List<String> availableProfiles = Profile.getAvailableProfiles();
-            String lastProfile = GREEN2_NODE.get(PREFERENCES_LAST_PROFILE_KEY, null);
+            String lastProfile = EnvironmentHandler.PREFERENCES_NODE.get(LAST_PROFILE_KEY, null);
             if (!availableProfiles.contains(lastProfile)) {
                 lastProfile = null;
             }
@@ -186,7 +184,7 @@ public class ProfileChoice extends Application {
 
             Optional<String> profileName = choiceDialog.showAndWait();
             if (profileName.isPresent()) {
-                GREEN2_NODE.put(PREFERENCES_LAST_PROFILE_KEY, profileName.get());
+                EnvironmentHandler.PREFERENCES_NODE.put(LAST_PROFILE_KEY, profileName.get());
                 return Optional.of(new Profile(profileName.get(), false));
             } else {
                 return Optional.empty();

@@ -21,6 +21,7 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import bayern.steinbrecher.green2.utility.DialogUtility;
+import bayern.steinbrecher.green2.utility.VersionHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -170,7 +171,7 @@ public class MenuController extends Controller {
 
     @FXML
     private void showVersion() {
-        Alert alert = DialogUtility.createInfoAlert(EnvironmentHandler.getVersion(), stage);
+        Alert alert = DialogUtility.createInfoAlert(VersionHandler.getVersion(), stage);
         alert.setHeaderText(EnvironmentHandler.getResourceValue("version"));
         alert.show();
     }

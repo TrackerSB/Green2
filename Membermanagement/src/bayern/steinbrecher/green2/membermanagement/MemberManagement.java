@@ -56,6 +56,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -346,15 +347,16 @@ public class MemberManagement extends Application {
         }
     }
 
-    private void generateAddresses(List<Member> member, String filename) {
+    private void generateAddresses(List<Member> member, File outputFile) {
         checkNull(nicknames);
         if (member.isEmpty()) {
-            Alert alert = DialogUtility.createInfoAlert(EnvironmentHandler.getResourceValue("noMemberForOutput"), menuStage);
+            Alert alert = DialogUtility.createInfoAlert(
+                    EnvironmentHandler.getResourceValue("noMemberForOutput"), menuStage);
             alert.showAndWait();
         } else {
             try {
                 IOStreamUtility.printContent(
-                        AddressGenerator.generateAddressData(member, nicknames.get()), filename, true);
+                        AddressGenerator.generateAddressData(member, nicknames.get()), outputFile, true);
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -363,16 +365,16 @@ public class MemberManagement extends Application {
 
     /**
      * Generates a file Serienbrief_alle.csv containing addresses of all member.
-     *
-     * @see EnvironmentHandler#SAVE_PATH
      */
     public void generateAddressesAll() {
         checkNull(member);
-        try {
-            generateAddresses(member.get(), EnvironmentHandler.SAVE_PATH + "/Serienbrief_alle.csv");
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_alle", "csv").ifPresent(file -> {
+            try {
+                generateAddresses(member.get(), file);
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
     /**
@@ -381,17 +383,17 @@ public class MemberManagement extends Application {
      * {@code year}.
      *
      * @param year The year to look for member.
-     * @see EnvironmentHandler#SAVE_PATH
      */
     public void generateAddressesBirthday(int year) {
         checkNull(memberBirthday);
         memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
-        try {
-            generateAddresses(memberBirthday.get(year).get(),
-                    EnvironmentHandler.SAVE_PATH + "/Serienbrief_Geburtstag_" + year + ".csv");
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_Geburtstag_" + year, "csv").ifPresent(file -> {
+            try {
+                generateAddresses(memberBirthday.get(year).get(), file);
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
     /**
@@ -399,7 +401,6 @@ public class MemberManagement extends Application {
      * get a birthday notification in year {@code year}.
      *
      * @param year The year to look for member.
-     * @see EnvironmentHandler#SAVE_PATH
      */
     public void generateBirthdayInfos(int year) {
         checkNull(memberBirthday);
@@ -412,8 +413,9 @@ public class MemberManagement extends Application {
                         EnvironmentHandler.getResourceValue("noMemberForOutput"), menuStage);
                 alert.showAndWait();
             } else {
-                IOStreamUtility.printContent(BirthdayGenerator.createGroupedOutput(birthdayList, year),
-                        EnvironmentHandler.SAVE_PATH + "/Geburtstag_" + year + ".csv", true);
+                EnvironmentHandler.askForSavePath(menuStage, "/Geburtstag_" + year, "csv").ifPresent(file -> {
+                    IOStreamUtility.printContent(BirthdayGenerator.createGroupedOutput(birthdayList, year), file, true);
+                });
             }
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
@@ -466,18 +468,19 @@ public class MemberManagement extends Application {
                     }
                     Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
-                    List<Member> invalidMember
-                            = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, contributions, originator,
-                            sequenceType, EnvironmentHandler.SAVE_PATH + "/Sepa.xml",
-                            profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
-                    String message = invalidMember.stream()
-                            .map(Member::toString)
-                            .collect(Collectors.joining("\n"));
-                    if (!message.isEmpty()) {
-                        Alert alert = DialogUtility.createErrorAlert(message + "\n"
-                                + EnvironmentHandler.getResourceValue("haveBadAccountInformation"), menuStage);
-                        alert.show();
-                    }
+                    EnvironmentHandler.askForSavePath(menuStage, "Sepa", "xml").ifPresent(file -> {
+                        List<Member> invalidMember
+                                = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, contributions, originator,
+                                sequenceType, file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
+                        String message = invalidMember.stream()
+                                .map(Member::toString)
+                                .collect(Collectors.joining("\n"));
+                        if (!message.isEmpty()) {
+                            Alert alert = DialogUtility.createErrorAlert(message + "\n"
+                                    + EnvironmentHandler.getResourceValue("haveBadAccountInformation"), menuStage);
+                            alert.show();
+                        }
+                    });
                 }
             });
         } catch (InterruptedException | ExecutionException | IOException ex) {

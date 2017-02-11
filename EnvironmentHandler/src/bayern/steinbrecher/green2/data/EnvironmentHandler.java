@@ -16,9 +16,10 @@
 
 package bayern.steinbrecher.green2.data;
 
-import bayern.steinbrecher.green2.utility.URLUtility;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,12 +29,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +69,11 @@ public final class EnvironmentHandler {
      */
     private static final String LIBRARIES_FOLDER_NAME = "lib";
     /**
+     * The node of the user preferences where to put user specific settings of Green2.
+     */
+    public static final Preferences PREFERENCES_NODE = Preferences.userRoot().node("bayern/steinbrecher/green2");
+    private static final String LAST_SAVE_PATH_KEY = "lastSavePath";
+    /**
      * The os currently operating on. (Only supported os can be set)
      */
     public static final OS CURRENT_OS
@@ -78,7 +85,7 @@ public final class EnvironmentHandler {
     /**
      * The path where to save files the user wants.
      */
-    public static final String SAVE_PATH = CURRENT_OS == OS.WINDOWS ? HOME_DIR + "/Desktop" : HOME_DIR;
+    private static final String DEFAULT_SAVE_PATH = CURRENT_OS == OS.WINDOWS ? HOME_DIR + "/Desktop" : HOME_DIR;
     /**
      * The path of the jar containing this class.
      */
@@ -89,15 +96,9 @@ public final class EnvironmentHandler {
      */
     public static final Path APPLICATION_ROOT = resolveApplicationRoot();
     /**
-     * Check whether this class is added as library (Green2) or directly included into a jar (Launcher SingleJar
-     * version).
-     */
-    private static final boolean USED_AS_LIBRARY
-            = Arrays.toString(APPLICATION_ROOT.toFile().list()).contains(LIBRARIES_FOLDER_NAME);
-    /**
      * The path of the folder containing the licenses of Green2.
      */
-    public static final Path LICENSES_PATH = Paths.get(APPLICATION_ROOT.toString(), LICENSES_FOLDER_NAME);
+    private static final Path LICENSES_PATH = Paths.get(APPLICATION_ROOT.toString(), LICENSES_FOLDER_NAME);
     /**
      * The path of the folder where to put user specific data of the
      * application.
@@ -109,29 +110,6 @@ public final class EnvironmentHandler {
      */
     private static final String PROGRAMFOLDER_PATH_LOCAL = (CURRENT_OS == OS.WINDOWS
             ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/" : "/opt/") + APPLICATION_FOLDER_NAME;
-    /**
-     * The URL of the online repository containing the installation files.
-     */
-    private static final String PROGRAMFOLDER_PATH_ONLINE
-            = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
-            .orElse("");
-    /**
-     * The path of the local version file.
-     */
-    public static final String VERSIONFILE_PATH_LOCAL = EnvironmentHandler.APP_DATA_PATH + "/version.txt";
-    /**
-     * The URL of the version file describing the version of the files at
-     * {@code PROGRAMFOLDER_PATH_ONLINE}.
-     */
-    public static final String VERSIONFILE_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
-    /**
-     * The URL of the file containing the used charset of the zip and its files.
-     */
-    public static final String CHARSET_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
-    /**
-     * The URL of the zip containing the installation files of the application.
-     */
-    public static final String GREEN2_ZIP_URL = PROGRAMFOLDER_PATH_ONLINE + "/Green2.zip";
     private static Profile loadedProfile;
 
     static {
@@ -248,23 +226,43 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Returns a {@link String} containing the current version.
+     * Opens a dialog asking the user to choose a directory.
      *
-     * @return A {@link String} containing the current version.
+     * @param owner      The owner of the dialog.
+     * @param filePrefix The name of the file which may be extended by a number if it already exists.
+     * @param fileEnding The format of the file. NOTE: Without leading point.
+     * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.
      */
-    public static String getVersion() {
-        File versionFile = new File(EnvironmentHandler.VERSIONFILE_PATH_LOCAL);
-        if (versionFile.exists()) {
-            try (Scanner sc = new Scanner(versionFile.getPath())) {
-                return sc.nextLine();
-            }
-        } else {
-            return EnvironmentHandler.getResourceValue("versionNotFound");
+    public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding) {
+        File initialDirectory = new File(PREFERENCES_NODE.get(LAST_SAVE_PATH_KEY, DEFAULT_SAVE_PATH));
+        File initialFile = new File(initialDirectory, filePrefix + "." + fileEnding);
+        Random random = new Random();
+        while (initialFile.exists()) {
+            initialFile = new File(initialDirectory, filePrefix + "_" + random.nextInt(1000) + "." + fileEnding);
         }
+
+        FileChooser saveDialog = new FileChooser();
+        saveDialog.setTitle(getResourceValue("save"));
+        saveDialog.setInitialDirectory(initialDirectory);
+        saveDialog.setInitialFileName(initialFile.getName());
+        FileChooser.ExtensionFilter givenExtensionFilter
+                = new FileChooser.ExtensionFilter(fileEnding.toUpperCase(), "*." + fileEnding);
+        saveDialog.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter(EnvironmentHandler.getResourceValue("allFiles"), "*.*"),
+                givenExtensionFilter);
+        saveDialog.setSelectedExtensionFilter(givenExtensionFilter);
+        Optional<File> chosenFile = Optional.ofNullable(saveDialog.showSaveDialog(owner));
+        chosenFile.ifPresent(file -> {
+            String parentDir = file.getParent();
+            if (parentDir != null) {
+                PREFERENCES_NODE.put(LAST_SAVE_PATH_KEY, parentDir);
+            }
+        });
+        return chosenFile;
     }
 
     /**
-     * Contains enums representing supported operation systems.
+     * Contains supported operation systems.
      */
     public enum OS {
         /**

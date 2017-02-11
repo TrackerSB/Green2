@@ -55,7 +55,14 @@ import java.util.logging.Logger;
  * @author Stefan Huber
  */
 public final class Launcher extends Application {
-
+    /**
+     * The URL of the zip containing the installation files of the application.
+     */
+    private static final String GREEN2_ZIP_URL = VersionHandler.PROGRAMFOLDER_PATH_ONLINE + "/Green2.zip";
+    /**
+     * The URL of the file containing the used charset of the zip and its files.
+     */
+    private static final String CHARSET_PATH_ONLINE = VersionHandler.PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
     /**
      * Zipfile is currently delivered ISO-8859-1 (Latin-1) encoded.
      */
@@ -65,7 +72,7 @@ public final class Launcher extends Application {
     private LauncherController controller;
 
     static {
-        try (Scanner sc = new Scanner(new URL(EnvironmentHandler.CHARSET_PATH_ONLINE).openStream())) {
+        try (Scanner sc = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream())) {
             ZIP_CHARSET = Charset.forName(sc.nextLine());
         } catch (IOException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
@@ -136,7 +143,7 @@ public final class Launcher extends Application {
 
     private File download() throws IOException {
         File tempFile = Files.createTempFile(null, ".zip").toFile();
-        URLConnection downloadConnection = new URL(EnvironmentHandler.GREEN2_ZIP_URL).openConnection();
+        URLConnection downloadConnection = new URL(GREEN2_ZIP_URL).openConnection();
         long fileSize = Long.parseLong(downloadConnection.getHeaderField("Content-Length"));
         long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
 

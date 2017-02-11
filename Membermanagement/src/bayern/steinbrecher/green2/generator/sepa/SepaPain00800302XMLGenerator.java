@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 
+import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +61,7 @@ public final class SepaPain00800302XMLGenerator {
      * outputfile. These are member which have no iban or no bic.
      */
     public static List<Member> createXMLFile(List<Member> member, Map<Integer, Double> contributions,
-                                             Originator originator, SequenceType sequenceType, String outputfile,
+                                             Originator originator, SequenceType sequenceType, File outputfile,
                                              boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
         List<Member> missingContribution = member.stream()

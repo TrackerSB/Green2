@@ -17,7 +17,6 @@
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.launcher.Launcher;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,6 +36,22 @@ import java.util.logging.Logger;
 public class VersionHandler {
 
     /**
+     * The URL of the online repository containing the installation files.
+     */
+    public static final String PROGRAMFOLDER_PATH_ONLINE
+            = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
+            .orElse("");
+    /**
+     * The path of the local version file.
+     */
+    private static final String VERSIONFILE_PATH_LOCAL = EnvironmentHandler.APP_DATA_PATH + "/version.txt";
+    /**
+     * The URL of the version file describing the version of the files at
+     * {@code PROGRAMFOLDER_PATH_ONLINE}.
+     */
+    private static final String VERSIONFILE_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
+
+    /**
      * Returns the version of the application on the repository.
      *
      * @return The version of the application on the repository. Returns
@@ -44,11 +59,11 @@ public class VersionHandler {
      */
     public static Optional<String> readOnlineVersion() {
         try {
-            URL onlineVersionUrl = new URL(EnvironmentHandler.VERSIONFILE_PATH_ONLINE);
+            URL onlineVersionUrl = new URL(VERSIONFILE_PATH_ONLINE);
             Scanner sc = new Scanner(onlineVersionUrl.openStream());
             return Optional.of(sc.nextLine());
         } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VersionHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return Optional.empty();
     }
@@ -61,7 +76,7 @@ public class VersionHandler {
      * version could not be read.
      */
     public static Optional<String> readLocalVersion() {
-        File localVersionfile = new File(EnvironmentHandler.VERSIONFILE_PATH_LOCAL);
+        File localVersionfile = new File(VERSIONFILE_PATH_LOCAL);
         if (localVersionfile.exists()) {
             try (Scanner sc = new Scanner(localVersionfile)) {
                 return Optional.of(sc.nextLine());
@@ -79,6 +94,15 @@ public class VersionHandler {
      */
     public static void updateLocalVersion(String newVersion) {
         new File(EnvironmentHandler.APP_DATA_PATH).mkdir();
-        IOStreamUtility.printContent(newVersion, EnvironmentHandler.VERSIONFILE_PATH_LOCAL, false);
+        IOStreamUtility.printContent(newVersion, new File(VERSIONFILE_PATH_LOCAL), false);
+    }
+
+    /**
+     * Returns a {@link String} containing the current version.
+     *
+     * @return A {@link String} containing the current version or &bdquo;version not found&ldquo; if it was not found.
+     */
+    public static String getVersion() {
+        return readLocalVersion().orElse(EnvironmentHandler.getResourceValue("versionNotFound"));
     }
 }

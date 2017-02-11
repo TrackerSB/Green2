@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.utility;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -122,17 +123,17 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Overrides the hole content of {@code pathToFile} with {@code content}. If
+     * Overrides the hole content of {@code outputFile} with {@code content}. If
      * {@code pathToFile} doesn't exist it creates one.
      *
      * @param content    The content to be written into the file.
-     * @param pathToFile The file to write in.
+     * @param outputFile The file to write in.
      * @param withBom    Only if {@code true} it adds '\uFEFF' to the beginning of
      *                   the file.
      */
-    public static void printContent(String content, String pathToFile, boolean withBom) {
+    public static void printContent(String content, File outputFile, boolean withBom) {
         try (BufferedWriter bw
-                     = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathToFile), "UTF-8"))) {
+                     = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
             //To make no UTF-8 without BOM but with BOM (Big Endian).
             if (withBom) {
                 bw.append('\uFEFF');

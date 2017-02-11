@@ -228,7 +228,7 @@ public class Profile {
         String out = Arrays.stream(ConfigKey.values())
                 .map(this::generateLine)
                 .collect(Collectors.joining("\n"));
-        IOStreamUtility.printContent(out, configFilePath.get(), false);
+        IOStreamUtility.printContent(out, new File(configFilePath.get()), false);
     }
 
     /**
@@ -241,7 +241,6 @@ public class Profile {
     public synchronized void renameProfile(String newName) {
         checkDeleted();
         if (!newName.equals(profileName.get())) {
-            String oldConfigPath = configFilePath.get();
             File oldConfigFile = configFile.getValue();
             String newConfigPath = EnvironmentHandler.APP_DATA_PATH + "/" + newName + CONFIGFILE_FORMAT;
             File newConfigFile = new File(newConfigPath);
