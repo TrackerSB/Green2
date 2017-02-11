@@ -137,20 +137,20 @@ public class Profile {
         try (Scanner sc = new Scanner(configFile)) {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
-                parts = line.split(VALUE_SEPARATOR);
-                if (parts.length != 2) {
-                    Logger.getLogger(DataProvider.class.getName())
-                            .log(Level.WARNING, "\"{0}\" has not exactly two elements. It remains ignored.", line);
-                } else {
+                if (line.contains(VALUE_SEPARATOR)) {
+                    parts = line.split(VALUE_SEPARATOR, 2);
                     ConfigKey key = ConfigKey.valueOf(parts[0].toUpperCase());
-                    Property<String> value = new SimpleObjectProperty<>(parts[1]);
+                    Property<String> value = new SimpleObjectProperty<>(parts.length < 2 ? "" : parts[1]);
                     //FIXME Remove getValueFromString when Java 9 is released.
                     if (key.isValid(key.getValueFromString(value.getValue()))) {
                         configurations.put(key, value);
                     } else {
                         Logger.getLogger(Profile.class.getName())
-                                .log(Level.WARNING, key + " has an invalid value. It is skipped.");
+                                .log(Level.WARNING, "\"{0}\" has an invalid value. It is skipped.", key);
                     }
+                } else {
+                    Logger.getLogger(Profile.class.getName())
+                            .log(Level.SEVERE, "Line \"{0}\" contains no \"" + VALUE_SEPARATOR + "\"", line);
                 }
             }
         } catch (FileNotFoundException ex) {
