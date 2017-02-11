@@ -94,6 +94,7 @@ public class HelpButton extends Button {
             alert.show();
         });
         this.helpMessage.set(helpMessage);
+        setFocusTraversable(false);
         getStyleClass().add(CSS_CLASS_HELP_BUTTON);
     }
 
