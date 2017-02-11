@@ -235,6 +235,9 @@ public final class EnvironmentHandler {
      */
     public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding) {
         File initialDirectory = new File(PREFERENCES_NODE.get(LAST_SAVE_PATH_KEY, DEFAULT_SAVE_PATH));
+        if(!initialDirectory.exists()){
+            initialDirectory = new File(DEFAULT_SAVE_PATH);
+        }
         File initialFile = new File(initialDirectory, filePrefix + "." + fileEnding);
         Random random = new Random();
         while (initialFile.exists()) {
