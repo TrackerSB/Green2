@@ -89,6 +89,7 @@ public class MenuController extends Controller {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
                 try {
+                    license.setWritable(false, false);
                     Desktop.getDesktop().open(license);
                 } catch (IOException ex) {
                     Logger.getLogger(MenuController.class.getName()).log(Level.WARNING, "Could not open license", ex);
