@@ -62,7 +62,7 @@ public abstract class DBConnection implements AutoCloseable {
             + "Hausnummer VARCHAR(255) NOT NULL,"
             + "PLZ VARCHAR(255) NOT NULL,"
             + "Ort VARCHAR(255) NOT NULL,"
-            + "AusgetretenSeit DATE NOT NULL DEFAULT '0000-00-00',"
+            + "AusgetretenSeit DATE DEFAULT NULL,"
             + "IBAN VARCHAR(255) NOT NULL,"
             + "BIC VARCHAR(255) NOT NULL,"
             + "MandatErstellt DATE NOT NULL,"
@@ -76,7 +76,7 @@ public abstract class DBConnection implements AutoCloseable {
     private static final String QUERY_ALL_MEMBER
             = "SELECT " + ALL_COLUMN_LABELS_MEMBER
             + " FROM Mitglieder "
-            + "WHERE AusgetretenSeit='0000-00-00';";
+            + "WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;"; //0000-00-00 legacy check
     private static final String QUERY_ALL_NICKNAMES
             = "SELECT Name, Spitzname FROM Spitznamen;";
     private static final String QUERY_ALL_CONTRIBUTIONS
@@ -197,7 +197,7 @@ public abstract class DBConnection implements AutoCloseable {
      * Reads the individual contributions of every member - if specified.
      *
      * @return A Optional containing the individual contributions or
-     * {@link Optional#empty()} if inidividual contributions are not specified.
+     * {@link Optional#empty()} if individual contributions are not specified.
      */
     public Optional<Map<Integer, Double>> readIndividualContributions() {
         if (checkColumn("Mitglieder", "Beitrag")) {

@@ -175,6 +175,9 @@ public final class SshConnection extends DBConnection {
             String[] rows = result.split("\n");
             List<List<String>> resultTable = Arrays.stream(rows)
                     .map(row -> splitUp(row, '\t'))
+                    .map(rowFields -> rowFields.stream()
+                            .map(f -> f.equals("0000-00-00") ? null : f) //Legacy check 0000-00-00
+                            .collect(Collectors.toList()))
                     .collect(Collectors.toList());
 
             channel.disconnect();

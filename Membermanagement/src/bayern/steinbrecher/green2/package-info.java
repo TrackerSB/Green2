@@ -36,7 +36,7 @@
  * <li>Hausnummer</li>
  * <li>PLZ</li>
  * <li>Ort</li>
- * <li>AusgetretenSeit (0000-00-00 if not resigned)</li>
+ * <li>AusgetretenSeit (null if not resigned)</li>
  * <li>IBAN</li>
  * <li>BIC</li>
  * <li>mandateErstellt (The date when the member signed the direct debit)</li>
