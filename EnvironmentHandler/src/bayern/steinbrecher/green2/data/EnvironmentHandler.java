@@ -132,18 +132,21 @@ public final class EnvironmentHandler {
     }
 
     private static Path resolveApplicationRoot() {
-        Path root = CURRENT_JAR_PATH;
-        Path rootFileName;
-        do {
-            root = root.getParent();
-            if(root == null) {
-                break;
-            } else {
-                rootFileName = root.getFileName();
-            }
-        } while (!(rootFileName == null || rootFileName.toString().equals(APPLICATION_FOLDER_NAME)));
-
-        return IS_USED_AS_LIBRARY ? root : CURRENT_JAR_PATH.getParent();
+        if (IS_USED_AS_LIBRARY) {
+            Path root = CURRENT_JAR_PATH;
+            Path rootFileName;
+            do {
+                root = root.getParent();
+                if (root == null) {
+                    break;
+                } else {
+                    rootFileName = root.getFileName();
+                }
+            } while (!(rootFileName == null || rootFileName.toString().equals(APPLICATION_FOLDER_NAME)));
+            return root;
+        } else {
+            return CURRENT_JAR_PATH.getParent();
+        }
     }
 
     private static Path resolveCurrentJarPath() {
