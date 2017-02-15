@@ -16,18 +16,19 @@
 
 package bayern.steinbrecher.green2.people;
 
+import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,8 +47,8 @@ public class Originator {
             bic,
             creditorId,
             pmtInfId,
-            purpose,
-            filename;
+            purpose;
+    private File originatorFile;
     private static final Properties DEFAULT_PROPERTIES = new Properties() {
         private static final long serialVersionUID = 1L;
 
@@ -66,62 +67,63 @@ public class Originator {
 
     /**
      * Constructs a new originator which has owns the attributes specified in
-     * {@code filename}. HINT: Attributes are only set after calling
+     * {@code originatorFile}. HINT: Attributes are only set after calling
      * {@code readOriginatorInfo()}.
      *
-     * @param filename The file containing all attributes.
+     * @param profile The profile this originator belongs to.
      */
-    public Originator(String filename) {
-        this.filename = filename;
+    public Originator(Profile profile) {
+        this.originatorFile = profile.getOriginatorInfoFile();
     }
 
     /**
      * Constructs a new originator out of the attributes specified in
-     * {@code filename}.
+     * {@code originatorFile}.
      *
-     * @param filename The file to read from.
-     * @return The new originator
-     * @throws java.io.FileNotFoundException Thrown if the file could not be
-     *                                       found.
+     * @param profile The profile the originator has to belong to.
+     * @return The new originator or {@link Optional#empty()} if the file was not found or could not be read.
      */
-    public static Originator readOriginatorInfo(String filename) throws FileNotFoundException {
-        Originator e = new Originator(filename);
-        e.readOriginatorInfo();
-        return e;
+    public static Optional<Originator> readOriginatorInfo(Profile profile) {
+        Originator originator = new Originator(profile);
+        return Optional.ofNullable(originator.readOriginatorInfo() ? originator : null);
     }
 
     /**
      * Reads in the specified file and sets the appropriate attributes.
      *
-     * @throws FileNotFoundException Thrown if the file could not be found.
+     * @return {@code true} only if the file associated with this originator was found and could be read.
      */
-    public void readOriginatorInfo() throws FileNotFoundException {
-        try {
-            Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
-            originatorProps.load(new InputStreamReader(new FileInputStream(new File(filename)), "UTF-8"));
-            Arrays.stream(getClass().getDeclaredFields())
-                    .parallel()
-                    .filter(f -> !f.getName().equalsIgnoreCase("filename"))
-                    .forEach(f -> {
-                        try {
-                            String property = originatorProps.getProperty(f.getName());
+    public boolean readOriginatorInfo() {
+        if (originatorFile.exists()) {
+            try {
+                Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
+                originatorProps.load(new InputStreamReader(new FileInputStream(originatorFile), "UTF-8"));
+                Arrays.stream(getClass().getDeclaredFields())
+                        .parallel()
+                        .filter(f -> !f.getName().equalsIgnoreCase("originatorFile"))
+                        .forEach(f -> {
+                            try {
+                                String property = originatorProps.getProperty(f.getName());
 
-                            if (f.getType() == LocalDate.class) {
-                                f.set(this, LocalDate.parse(property));
-                            } else if (f.getType() == String.class) {
-                                f.set(this, property);
-                            } else {
-                                Logger.getLogger(Originator.class.getName())
-                                        .log(Level.INFO, "No action for reading in {0} defined. Gets skipped.",
-                                                f.getType());
+                                if (f.getType() == LocalDate.class) {
+                                    f.set(this, LocalDate.parse(property));
+                                } else if (f.getType() == String.class) {
+                                    f.set(this, property);
+                                } else {
+                                    Logger.getLogger(Originator.class.getName())
+                                            .log(Level.INFO, "No action for reading in {0} defined. Gets skipped.",
+                                                    f.getType());
+                                }
+                            } catch (IllegalArgumentException | IllegalAccessException ex) {
+                                Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
                             }
-                        } catch (IllegalArgumentException | IllegalAccessException ex) {
-                            Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
-                        }
-                    });
-        } catch (IOException ex) {
-            Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
+                        });
+                return true;
+            } catch (IOException ex) {
+                Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
+            }
         }
+        return false;
     }
 
     /**
@@ -132,7 +134,7 @@ public class Originator {
         Arrays.stream(getClass().getDeclaredFields())
                 .parallel()
                 .filter(f -> !f.getName().equalsIgnoreCase("default_properties"))
-                .filter(f -> !f.getName().equalsIgnoreCase("filename"))
+                .filter(f -> !f.getName().equalsIgnoreCase("originatorFile"))
                 .forEach(f -> {
                     try {
                         originatorProps.put(f.getName(), f.get(this).toString());
@@ -142,7 +144,7 @@ public class Originator {
                 });
         try {
             originatorProps.store(
-                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "UTF-8")), null);
+                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(originatorFile), "UTF-8")), null);
         } catch (Exception ex) {
             Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
         }

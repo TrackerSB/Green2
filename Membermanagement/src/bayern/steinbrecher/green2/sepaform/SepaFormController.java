@@ -31,7 +31,6 @@ import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -40,8 +39,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Represents Controller for SepaForm.fxml.
@@ -105,12 +102,8 @@ public class SepaFormController extends CheckedController {
 
         Profile profile = EnvironmentHandler.getProfile();
 
-        try {
-            originator = Originator.readOriginatorInfo(profile.getOriginatorInfoPath());
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SepaFormController.class.getName()).log(Level.INFO, null, ex);
-            originator = new Originator(profile.getOriginatorInfoPath());
-        }
+        originator = Originator.readOriginatorInfo(profile).orElse(new Originator(profile));
+
         creatorTextField.setText(originator.getCreator());
         creditorTextField.setText(originator.getCreditor());
         ibanTextField.setText(originator.getIban());

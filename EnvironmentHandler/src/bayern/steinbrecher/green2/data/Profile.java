@@ -228,7 +228,7 @@ public class Profile {
         String out = Arrays.stream(ConfigKey.values())
                 .map(this::generateLine)
                 .collect(Collectors.joining("\n"));
-        IOStreamUtility.printContent(out, new File(configFilePath.get()), false);
+        IOStreamUtility.printContent(out, configFile.getValue(), false);
     }
 
     /**
@@ -368,25 +368,24 @@ public class Profile {
     }
 
     /**
-     * Returns the path of the file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not guaranteed that this file exists.
+     * Returns the property holding the file containing the originator infos.
      *
-     * @return The path of the file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not guaranteed that this file exists.
+     * @return The property holding the file containing the originator infos.
      */
-    public String getOriginatorInfoPath() {
-        checkDeleted();
-        return originatorInfoPath.get();
+    public ReadOnlyProperty<File> originatorInfoFile() {
+        return originatorInfoFile;
     }
 
     /**
-     * Returns the path containing this configurations.
+     * Returns the file containing originator infos for SEPA Direct
+     * Debits. NOTE: It is not guaranteed that this file exists.
      *
-     * @return The path containing this configurations.
+     * @return The file containing originator infos for SEPA Direct
+     * Debits. NOTE: It is not guaranteed that this file exists.
      */
-    public String getConfigFilePath() {
+    public File getOriginatorInfoFile() {
         checkDeleted();
-        return configFilePath.get();
+        return originatorInfoFile.getValue();
     }
 
     /**

@@ -64,7 +64,8 @@ public final class DefaultConnection extends DBConnection {
                 databaseHost += "/";
             }
             connection = DriverManager.getConnection(DRIVER_PROTOCOL + databaseHost + databaseName
-                            + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull",
+                            + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
+                            + "&serverTimezone=UTC",
                     databaseUsername, databasePasswd);
         } catch (SQLException ex) {
             Logger.getLogger(DefaultConnection.class.getName()).log(Level.SEVERE, null, ex);
