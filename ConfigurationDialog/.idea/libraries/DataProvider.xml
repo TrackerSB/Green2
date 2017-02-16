@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="DataProvider">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../DataProvider/out/artifacts/DataProvider/DataProvider.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

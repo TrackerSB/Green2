@@ -3,10 +3,4 @@
 **/dist/*
 **/bin/*
 *.class
-.idea/inspectionProfiles/
-Launcher/.idea/artifacts/
-Launcher/.idea/inspectionProfiles/
-Membermanagement/.idea/inspectionProfiles/
-out/
-**/.idea/workspace.xml
-.idea/workspace.xml
+/EnvironmentHandler/EnvironmentHandler/nbproject/private/
