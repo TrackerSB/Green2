@@ -141,8 +141,9 @@ public class MemberManagement extends Application {
     private boolean checkConfigs() {
         boolean valid = profile.isAllConfigurationsSet();
         if (!valid) {
-            DialogUtility.createErrorAlert(
-                    MessageFormat.format(EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName()))
+            String badConfigs = MessageFormat.format(
+                    EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName());
+            DialogUtility.createErrorAlert(null, badConfigs, badConfigs)
                     .showAndWait()
                     .ifPresent(buttontype -> {
                         if (buttontype == ButtonType.OK) {
@@ -195,7 +196,8 @@ public class MemberManagement extends Application {
                 try {
                     dbConnection.createTablesIfNeeded();
                 } catch (SchemeCreationException ex) {
-                    DialogUtility.createErrorAlert(EnvironmentHandler.getResourceValue("couldntCreateScheme")).showAndWait();
+                    String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
+                    DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme).showAndWait();
                     Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.exit();
                 }
@@ -235,15 +237,17 @@ public class MemberManagement extends Application {
     private void handleAuthException(Login login, WaitScreen waitScreen, Exception cause) {
         Platform.runLater(() -> {
             Alert dialog;
-            if (cause instanceof ConnectException) {
-                dialog = DialogUtility.createInfoAlert(EnvironmentHandler.getResourceValue("checkConnection"));
-            } else if (cause instanceof UnknownHostException) {
-                dialog = DialogUtility.createStacktraceAlert(cause, EnvironmentHandler.getResourceValue("checkConnection"));
+            if (cause instanceof UnknownHostException || cause instanceof ConnectException) {
+                String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
+                dialog = DialogUtility.createStacktraceAlert(null, cause, checkConnection, checkConnection);
             } else if (cause instanceof AuthException) {
-                dialog = DialogUtility.createInfoAlert(EnvironmentHandler.getResourceValue("checkInput"));
+                String checkInput = EnvironmentHandler.getResourceValue("checkInput");
+                dialog = DialogUtility.createInfoAlert(null, checkInput, checkInput);
             } else {
-                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, "Not action specified for: {0}", cause);
-                dialog = DialogUtility.createErrorAlert(EnvironmentHandler.getResourceValue("unexpectedAbort"));
+                Logger.getLogger(MemberManagement.class.getName())
+                        .log(Level.SEVERE, "Not action specified for: {0}", cause);
+                String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
+                dialog = DialogUtility.createErrorAlert(null, unexpectedAbort, unexpectedAbort);
             }
 
             dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
@@ -350,8 +354,8 @@ public class MemberManagement extends Application {
     private void generateAddresses(List<Member> member, File outputFile) {
         checkNull(nicknames);
         if (member.isEmpty()) {
-            Alert alert = DialogUtility.createInfoAlert(
-                    EnvironmentHandler.getResourceValue("noMemberForOutput"), menuStage);
+            String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
+            Alert alert = DialogUtility.createInfoAlert(menuStage, noMemberForOutput, noMemberForOutput);
             alert.showAndWait();
         } else {
             try {
@@ -409,8 +413,8 @@ public class MemberManagement extends Application {
         try {
             List<Member> birthdayList = memberBirthday.get(year).get();
             if (birthdayList.isEmpty()) {
-                Alert alert = DialogUtility.createInfoAlert(
-                        EnvironmentHandler.getResourceValue("noMemberForOutput"), menuStage);
+                String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
+                Alert alert = DialogUtility.createInfoAlert(menuStage, noMemberForOutput, noMemberForOutput);
                 alert.showAndWait();
             } else {
                 EnvironmentHandler.askForSavePath(menuStage, "/Geburtstag_" + year, "csv").ifPresent(file -> {
@@ -476,8 +480,8 @@ public class MemberManagement extends Application {
                                 .map(Member::toString)
                                 .collect(Collectors.joining("\n"));
                         if (!message.isEmpty()) {
-                            Alert alert = DialogUtility.createErrorAlert(message + "\n"
-                                    + EnvironmentHandler.getResourceValue("haveBadAccountInformation"), menuStage);
+                            Alert alert = DialogUtility.createErrorAlert(menuStage, message + "\n"
+                                    + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
                             alert.show();
                         }
                     });
@@ -485,7 +489,8 @@ public class MemberManagement extends Application {
             });
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-            Alert alert = DialogUtility.createErrorAlert(EnvironmentHandler.getResourceValue("noSepaDebit"), menuStage);
+            String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
+            Alert alert = DialogUtility.createErrorAlert(menuStage, noSepaDebit, noSepaDebit);
             alert.showAndWait();
         }
     }
@@ -559,7 +564,8 @@ public class MemberManagement extends Application {
                 + checkDates(m -> m.getAccountHolder().getMandateSigned(),
                 EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
                 EnvironmentHandler.getResourceValue("allMandatSignedCorrect"));
-        Alert alert = DialogUtility.createMessageAlert(message, menuStage);
+        String checkData = EnvironmentHandler.getResourceValue("checkData");
+        Alert alert = DialogUtility.createMessageAlert(menuStage, message, checkData, checkData);
         alert.showAndWait();
     }
 

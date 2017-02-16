@@ -44,6 +44,11 @@ public final class DialogUtility {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
     }
 
+    private static Alert initOwner(Alert alert, Window owner) {
+        alert.initOwner(owner);
+        return alert;
+    }
+
     private static Alert addStyleAndIcon(Alert alert) {
         Scene scene = alert.getDialogPane().getScene();
         scene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
@@ -72,87 +77,47 @@ public final class DialogUtility {
         return alert;
     }
 
-    private static Alert createAlert(Alert.AlertType type) {
-        return addStyleAndIcon(new Alert(type));
-    }
-
-    private static Alert createAlert(Alert.AlertType type, Window owner) {
-        Alert alert = new Alert(type);
-        alert.initOwner(owner);
-        return addStyleAndIcon(alert);
-    }
-
-    private static Alert createAlert(Alert.AlertType type, String message) {
-        Alert alert = createAlert(type);
-        alert.setContentText(message);
-
-        return alert;
-    }
-
-    private static Alert createAlert(Alert.AlertType type, String message, Window owner) {
-        Alert alert = createAlert(type, owner);
-        alert.setContentText(message);
-
-        return alert;
-    }
-
-    private static Alert createAlert(Alert.AlertType type, String message, String header) {
-        Alert alert = createAlert(type, message);
-        alert.setHeaderText(header);
-        return alert;
-    }
-
-    private static Alert createAlert(Alert.AlertType type, String message, String header, String title) {
-        Alert alert = createAlert(type, message, header);
-        alert.setTitle(title);
+    /**
+     * Creates an {@link Alert} with given settings.
+     *
+     * @param alertType The type of the alert.
+     * @param owner     The owner of the alert or {@code null} if no owner has to be set.
+     * @param args      The arguments containing the content, title and the header header. NOTE: The order is important.
+     *                  If you specify less elements or an element is {@code null} these elements will have the default
+     *                  value according to {@link Alert}.
+     * @return The created {@link Alert}.
+     */
+    public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
+        Alert alert = addStyleAndIcon(initOwner(new Alert(alertType), owner));
+        switch (args.length) {
+            case 3:
+                if (args[2] != null) {
+                    alert.setHeaderText(args[2]);
+                }
+            case 2:
+                if (args[1] != null) {
+                    alert.setTitle(args[1]);
+                }
+            case 1:
+                if (args[0] != null) {
+                    alert.setContentText(args[0]);
+                }
+        }
         return alert;
     }
 
     /**
-     * Crates an error alert.
+     * Creates an {@link Alert} which shows a stacktrace with given settings.
      *
-     * @param message The message to display.
-     * @return The created alert.
+     * @param owner The owner of the alert or {@code null} if no owner has to be set.
+     * @param ex    The exception to show.
+     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @return The created {@link Alert}.
+     * @see #createAlert(Alert.AlertType, Window, String...)
      */
-    public static Alert createErrorAlert(String message) {
-        return createAlert(Alert.AlertType.ERROR, message);
-    }
+    public static Alert createStacktraceAlert(Window owner, Exception ex, String... args) {
+        Alert alert = createAlert(Alert.AlertType.ERROR, owner, args);
 
-    /**
-     * Crates an error alert.
-     *
-     * @param message The message to display.
-     * @param owner   The owner of this alert.
-     * @return The created alert.
-     */
-    public static Alert createErrorAlert(String message, Window owner) {
-        return createAlert(Alert.AlertType.ERROR, message, owner);
-    }
-
-    /**
-     * Crates an error alert.
-     *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @return The created alert.
-     */
-    public static Alert createErrorAlert(String message, String header) {
-        return createAlert(Alert.AlertType.ERROR, message, header);
-    }
-
-    /**
-     * Crates an error alert.
-     *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @param title   The title of the window.
-     * @return The created alert.
-     */
-    public static Alert createErrorAlert(String message, String header, String title) {
-        return createAlert(Alert.AlertType.ERROR, message, header, title);
-    }
-
-    private static Alert addStacktrace(Alert alert, Exception ex) {
         Label stacktraceLabel = new Label(EnvironmentHandler.getResourceValue("stacktraceLabel"));
 
         StringWriter stacktrace = new StringWriter();
@@ -172,106 +137,53 @@ public final class DialogUtility {
     }
 
     /**
-     * Crates an error alert showing a stacktrace of an exception.
+     * Creates an {@link Alert} showing a warning with given settings.
      *
-     * @param ex The exception to show.
-     * @return The created alert.
+     * @param owner The owner of the alert or {@code null} if no owner has to be set.
+     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @return The created {@link Alert}.
+     * @see #createAlert(Alert.AlertType, Window, String...)
      */
-    public static Alert createStacktraceAlert(Exception ex) {
-        return addStacktrace(createAlert(Alert.AlertType.ERROR), ex);
+    public static Alert createWarningAlert(Window owner, String... args) {
+        return createAlert(Alert.AlertType.WARNING, owner, args);
     }
 
     /**
-     * Crates an error alert showing a stacktrace of an exception.
+     * Creates an {@link Alert} showing an error with given settings.
      *
-     * @param ex     The exception to show.
-     * @param header The title of the window.
-     * @return The created alert.
+     * @param owner The owner of the alert or {@code null} if no owner has to be set.
+     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @return The created {@link Alert}.
+     * @see #createAlert(Alert.AlertType, Window, String...)
      */
-    public static Alert createStacktraceAlert(Exception ex, String header) {
-        Alert alert = createStacktraceAlert(ex);
-        alert.setHeaderText(header);
-        return alert;
+    public static Alert createErrorAlert(Window owner, String... args) {
+        return createAlert(Alert.AlertType.ERROR, owner, args);
     }
 
     /**
-     * Crates a warning alert.
+     * Creates an {@link Alert} showing information with given settings.
      *
-     * @param message The message to display.
-     * @return The created alert.
+     * @param owner The owner of the alert or {@code null} if no owner has to be set.
+     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @return The created {@link Alert}.
+     * @see #createAlert(Alert.AlertType, Window, String...)
      */
-    public static Alert createWarningAlert(String message) {
-        return createAlert(Alert.AlertType.WARNING, message);
+    public static Alert createInfoAlert(Window owner, String... args) {
+        return createAlert(Alert.AlertType.INFORMATION, owner, args);
     }
 
     /**
-     * Crates a warning alert.
+     * Creates an {@link Alert} showing a message with given settings.
      *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @return The created alert.
+     * @param owner   The owner of the alert or {@code null} if no owner has to be set.
+     * @param message The message (multi line allowed) to show.
+     * @param args    For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @return The created {@link Alert}.
+     * @see #createAlert(Alert.AlertType, Window, String...)
      */
-    public static Alert createWarningAlert(String message, String header) {
-        return createAlert(Alert.AlertType.WARNING, message, header);
-    }
+    public static Alert createMessageAlert(Window owner, String message, String... args) {
+        Alert alert = createAlert(Alert.AlertType.INFORMATION, owner, args);
 
-    /**
-     * Crates a warning alert.
-     *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @param title   The title of the window.
-     * @return The created alert.
-     */
-    public static Alert createWarningAlert(String message, String header, String title) {
-        return createAlert(Alert.AlertType.WARNING, message, header, title);
-    }
-
-    /**
-     * Crates an information alert.
-     *
-     * @param message The message to display.
-     * @return The created alert.
-     */
-    public static Alert createInfoAlert(String message) {
-        return createAlert(Alert.AlertType.INFORMATION, message);
-    }
-
-    /**
-     * Crates an information alert.
-     *
-     * @param message The message to display.
-     * @param owner   The owner of the alert.
-     * @return The created alert.
-     */
-    public static Alert createInfoAlert(String message, Window owner) {
-        return createAlert(Alert.AlertType.INFORMATION, message, owner);
-    }
-
-    /**
-     * Crates an information alert.
-     *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @return The created alert.
-     */
-    public static Alert createInfoAlert(String message, String header) {
-        return createAlert(Alert.AlertType.INFORMATION, message, header);
-    }
-
-    /**
-     * Crates an information alert.
-     *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @param title   The title of the window.
-     * @return The created alert.
-     */
-    public static Alert createInfoAlert(String message, String header, String title) {
-        return createAlert(Alert.AlertType.INFORMATION, message, header, title);
-    }
-
-    private static Alert addMessageTextArea(Alert alert, String message) {
         TextArea messageArea = new TextArea(message);
         messageArea.setEditable(false);
         messageArea.setWrapText(true);
@@ -289,60 +201,12 @@ public final class DialogUtility {
     }
 
     /**
-     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
-     *
-     * @param message The message to display.
-     * @return The created alert.
-     */
-    public static Alert createMessageAlert(String message) {
-        return addMessageTextArea(createAlert(Alert.AlertType.INFORMATION), message);
-    }
-
-    /**
-     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
-     *
-     * @param message The message to display.
-     * @param owner   The owner of the alert.
-     * @return The created alert.
-     */
-    public static Alert createMessageAlert(String message, Window owner) {
-        return addMessageTextArea(createAlert(Alert.AlertType.INFORMATION, owner), message);
-    }
-
-    /**
-     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
-     *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @return The created alert.
-     */
-    public static Alert createMessageAlert(String message, String header) {
-        Alert messageAlert = createMessageAlert(message);
-        messageAlert.setHeaderText(header);
-        return messageAlert;
-    }
-
-    /**
-     * Crates a message alert. This alert shows the message in a non-editable {@link TextArea}.
-     *
-     * @param message The message to display.
-     * @param header  The header to show.
-     * @param title   The title of the window.
-     * @return The created alert.
-     */
-    public static Alert createMessageAlert(String message, String header, String title) {
-        Alert messageAlert = createMessageAlert(message, header);
-        messageAlert.setTitle(title);
-        return messageAlert;
-    }
-
-    /**
-     * Creates an alert with given type, given message, given buttons and with default stylesheet and icon.
+     * Creates an alert with custom buttons.
      *
      * @param type    The type of the alert.
-     * @param message The message to display.
+     * @param message The message to show.
      * @param buttons The buttons to show.
-     * @return The created alert.
+     * @return The created {@link Alert}.
      */
     public static Alert createAlert(Alert.AlertType type, String message, ButtonType... buttons) {
         return addStyleAndIcon(new Alert(type, message, buttons));

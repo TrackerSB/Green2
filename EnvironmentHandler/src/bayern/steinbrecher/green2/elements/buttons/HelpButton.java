@@ -78,19 +78,17 @@ public class HelpButton extends Button {
         super(text, graphic);
         this.helpMessage.addListener((obs, oldVal, newVal) -> {
             setOnAction(aevt -> {
-                Alert alert = DialogUtility.createMessageAlert(newVal, getScene().getWindow());
                 String help = EnvironmentHandler.getResourceValue("help");
-                alert.setTitle(help);
-                alert.setHeaderText(help);
+                String findHelp = EnvironmentHandler.getResourceValue("findHelp");
+                Alert alert = DialogUtility.createMessageAlert(getScene().getWindow(), newVal, help, help);
                 alert.show();
             });
         });
         //FIXME Try not to call explicitly.
         setOnAction(aevt -> {
-            Alert alert = DialogUtility.createMessageAlert(helpMessage, getScene().getWindow());
             String help = EnvironmentHandler.getResourceValue("help");
-            alert.setTitle(help);
-            alert.setHeaderText(help);
+            String findHelp = EnvironmentHandler.getResourceValue("findHelp");
+            Alert alert = DialogUtility.createMessageAlert(getScene().getWindow(), helpMessage, help, help);
             alert.show();
         });
         this.helpMessage.set(helpMessage);
