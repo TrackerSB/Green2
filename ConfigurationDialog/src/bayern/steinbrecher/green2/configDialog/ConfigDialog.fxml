@@ -16,6 +16,7 @@
   ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<?import bayern.steinbrecher.green2.elements.buttons.HelpButton?>
 <?import bayern.steinbrecher.green2.elements.textfields.CharsetTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
@@ -78,8 +79,10 @@
               selected="true"
               text="%sepaUseBom"
               GridPane.rowIndex="7"
-              GridPane.columnIndex="0"
-              GridPane.columnSpan="2"/>
+              GridPane.columnIndex="0"/>
+    <HelpButton helpMessage="%helpBom"
+                GridPane.rowIndex="7"
+                GridPane.columnIndex="1"/>
 
     <Label text="%invalidOrMissingInput"
            visible="${!controller.valid}"
