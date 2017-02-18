@@ -28,8 +28,11 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public final class MessageIdTextField extends SpecificRegexTextField {
 
+    /**
+     * The CSS class representing objects of this class.
+     */
     public static final String CSS_CLASS_MESSAGE_ID = "messageIdTextField";
-    private BooleanProperty messageIdValid = new SimpleBooleanProperty(this, "messageIdValid");
+    private final BooleanProperty messageIdValid = new SimpleBooleanProperty(this, "messageIdValid");
 
     /**
      * Constructs an {@link MessageIdTextField} with no initial content.

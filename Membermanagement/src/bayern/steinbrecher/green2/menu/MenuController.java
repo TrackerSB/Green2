@@ -22,7 +22,6 @@ import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.VersionHandler;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -83,7 +82,7 @@ public class MenuController extends Controller {
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
-        for (File license : EnvironmentHandler.getLicenses()) {
+        EnvironmentHandler.getLicenses().stream().forEach((license) -> {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
                 try {
@@ -94,7 +93,7 @@ public class MenuController extends Controller {
                 }
             });
             licensesMenu.getItems().add(item);
-        }
+        });
     }
 
     /**

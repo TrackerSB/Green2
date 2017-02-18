@@ -184,7 +184,7 @@ public final class EnvironmentHandler {
      */
     public static List<String> getResourceValues(String key, List<Object[]> params) {
         List<String> values = new ArrayList<>(params.size());
-        params.forEach(p -> values.add(getResourceValue(key, p)));
+        params.stream().forEachOrdered(p -> values.add(getResourceValue(key, p)));
         return values;
     }
 

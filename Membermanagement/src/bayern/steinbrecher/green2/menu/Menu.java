@@ -18,7 +18,6 @@ package bayern.steinbrecher.green2.menu;
 import bayern.steinbrecher.green2.View;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -30,7 +29,7 @@ import javafx.stage.Stage;
  */
 public class Menu extends View<MenuController> {
 
-    private MemberManagement caller;
+    private final MemberManagement caller;
 
     /**
      * Constructs a menu.
@@ -48,14 +47,11 @@ public class Menu extends View<MenuController> {
     public void start(Stage stage) throws Exception {
         this.stage = stage;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Menu.fxml"));
-        fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
-        Parent root = fxmlLoader.load();
+        Parent root = loadFXML("Menu.fxml");
         root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET, "/menu.css");
         //TODO Think about moving this line to css file
         root.setStyle("-fx-padding: 0px");
 
-        controller = fxmlLoader.getController();
         controller.setStage(stage);
         controller.setCaller(caller);
 

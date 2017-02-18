@@ -20,10 +20,14 @@ import bayern.steinbrecher.green2.utility.SepaUtility;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
@@ -46,7 +50,7 @@ public class Originator {
             creditorId,
             pmtInfId,
             purpose;
-    private File originatorFile;
+    private final File originatorFile;
     private static final Properties DEFAULT_PROPERTIES = new Properties() {
         private static final long serialVersionUID = 1L;
 
@@ -91,9 +95,9 @@ public class Originator {
      */
     public boolean readOriginatorInfo() {
         if (originatorFile.exists()) {
-            try {
+            try (Reader reader = new InputStreamReader(new FileInputStream(originatorFile), "UTF-8")) {
                 Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
-                originatorProps.load(new InputStreamReader(new FileInputStream(originatorFile), "UTF-8"));
+                originatorProps.load(reader);
                 Arrays.stream(getClass().getDeclaredFields())
                         .parallel()
                         .filter(f -> !f.getName().equalsIgnoreCase("originatorFile"))
@@ -138,11 +142,12 @@ public class Originator {
                         Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
                     }
                 });
-        try {
-            originatorProps.store(
-                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(originatorFile), "UTF-8")), null);
-        } catch (Exception ex) {
-            Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(originatorFile), "UTF-8"))) {
+            originatorProps.store(writer, null);
+        } catch (UnsupportedEncodingException | FileNotFoundException ex) {
+            Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

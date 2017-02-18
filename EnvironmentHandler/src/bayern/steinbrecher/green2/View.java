@@ -60,6 +60,15 @@ public abstract class View<T extends Controller> extends Application {
         }
     }
 
+    /**
+     * Loads the given FMXL resource.
+     *
+     * @param <P> The concrete type of the root element of the given resource.
+     * @param resource The FXML resource.
+     * @return The root of{@code resource}.
+     * @throws IOException Thrown only if the given resource could not be loaded by {@link FXMLLoader#load()}.
+     * @see Class#getResource(java.lang.String)
+     */
     protected <P extends Parent> P loadFXML(String resource) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
         fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);

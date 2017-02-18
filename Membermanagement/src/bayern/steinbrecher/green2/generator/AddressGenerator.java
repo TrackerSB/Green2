@@ -62,7 +62,7 @@ public class AddressGenerator {
      */
     private static List<String> createSalutations(List<Member> member, Map<String, String> nicknames) {
         List<String> addresses = new ArrayList<>(member.size());
-        member.forEach(m -> {
+        member.stream().forEach(m -> {
             String address = m.getPerson().isMale() ? "Lieber " : "Liebe ";
             address += nicknames.getOrDefault(m.getPerson().getFirstName(), m.getPerson().getFirstName());
             addresses.add(address);

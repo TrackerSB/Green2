@@ -18,7 +18,6 @@ package bayern.steinbrecher.green2.login.ssh;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.login.Login;
 import java.io.IOException;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -37,12 +36,7 @@ public class SshLogin extends Login {
     public void start(Stage stage) throws IOException {
         this.stage = stage;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SshLogin.fxml"));
-        fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
-        Parent root = fxmlLoader.load();
-        root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-
-        controller = fxmlLoader.getController();
+        Parent root = loadFXML("SshLogin.fxml");
         controller.setStage(stage);
 
         stage.setScene(new Scene(root));

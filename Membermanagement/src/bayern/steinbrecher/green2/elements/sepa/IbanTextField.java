@@ -29,8 +29,11 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public final class IbanTextField extends SpecificRegexTextField {
 
+    /**
+     * The CSS class representing objects of this class.
+     */
     public static final String CSS_CLASS_IBAN_TEXTFIELD = "iban-textfield";
-    private BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
+    private final BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
 
     /**
      * Constructs an {@link IbanTextField} with no initial content.

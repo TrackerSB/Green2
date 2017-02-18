@@ -80,7 +80,7 @@ public final class SepaUtility {
      * http://www.sepaforcorporates.com/sepa-implementation/valid-xml-characters-sepa-payments/
      */
     public static final String MESSAGE_ID_REGEX = "([a-zA-Z0-9]|/| |-|\\?|:|\\(|\\)|\\.|,|'|\\+)*";
-    private static final Pattern messageIdPattern = Pattern.compile(MESSAGE_ID_REGEX);
+    private static final Pattern MESSAGE_ID_PATTERN = Pattern.compile(MESSAGE_ID_REGEX);
 
     /**
      * Prohibit instantiation.
@@ -138,9 +138,15 @@ public final class SepaUtility {
      * @return {@code true} only if the message id is valid.
      */
     public static boolean isValidMessageId(String messageId) {
-        return messageIdPattern.matcher(messageId).matches() && messageId.length() <= MAX_CHAR_MESSAGE_ID;
+        return MESSAGE_ID_PATTERN.matcher(messageId).matches() && messageId.length() <= MAX_CHAR_MESSAGE_ID;
     }
 
+    /**
+     * Returns the given date as {@link String} which is valid for usage in Sepa Direct Debits.
+     *
+     * @param date The date to convert.
+     * @return The valid representation of the given date.
+     */
     public static String getSepaDate(Date date) {
         return SEPA_DATETIME_FORMATTER.format(date);
     }

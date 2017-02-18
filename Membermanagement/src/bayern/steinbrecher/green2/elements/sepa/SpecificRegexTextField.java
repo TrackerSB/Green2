@@ -25,10 +25,24 @@ import javafx.beans.property.StringProperty;
  */
 public abstract class SpecificRegexTextField extends CheckedRegexTextField {
 
+    /**
+     * Only calls {@code super(...)}. Needed making subclasses beeing able to call {@code super}.
+     *
+     * {@inheritDoc}
+     *
+     * @see CheckedRegexTextField#CheckedRegexTextField(int, java.lang.String)
+     */
     protected SpecificRegexTextField(int maxColumnCount, String regex) {
         this(maxColumnCount, "", regex);
     }
 
+    /**
+     * Only calls {@code super(...)}. Needed making subclasses beeing able to call {@code super}.
+     *
+     * {@inheritDoc}
+     *
+     * @see CheckedRegexTextField#CheckedRegexTextField(int, java.lang.String, java.lang.String)
+     */
     protected SpecificRegexTextField(int maxColumnCount, String text, String regex) {
         super(maxColumnCount, text, regex);
     }

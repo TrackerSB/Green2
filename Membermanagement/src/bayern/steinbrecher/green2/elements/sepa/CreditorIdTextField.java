@@ -29,13 +29,24 @@ import javafx.scene.control.TextField;
  */
 public final class CreditorIdTextField extends SpecificRegexTextField {
 
+    /**
+     * The CSS class representing objects of this class.
+     */
     public static final String CSS_CLASS_CREDITORID_TEXTFIELD = "creditorid-textfield";
-    private BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
+    private final BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
 
+    /**
+     * Creates a new empty {@link CreditorIdTextField}.
+     */
     public CreditorIdTextField() {
         this("");
     }
 
+    /**
+     * Creates a new {@link CreditorIdTextField} with initial text {@code text}.
+     *
+     * @param text The initial content of this field.
+     */
     public CreditorIdTextField(String text) {
         super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX);
         creditorIdValid.bind(Bindings.createBooleanBinding(

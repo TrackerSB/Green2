@@ -159,7 +159,9 @@ public abstract class DBConnection implements AutoCloseable {
             List<List<String>> queriedNicknames = execQuery(QUERY_ALL_NICKNAMES);
 
             Map<String, String> mappedNicknames = new HashMap<>();
-            queriedNicknames.parallelStream().skip(1).forEach(row -> mappedNicknames.put(row.get(0), row.get(1)));
+            queriedNicknames.parallelStream()
+                    .skip(1)
+                    .forEach(row -> mappedNicknames.put(row.get(0), row.get(1)));
             return mappedNicknames;
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);

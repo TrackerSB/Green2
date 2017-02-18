@@ -48,13 +48,6 @@ import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
@@ -79,6 +72,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
 
 /**
  * Represents the entry of the hole application.
@@ -415,7 +414,7 @@ public class MemberManagement extends Application {
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
 
-            Map<Integer, Double> contributions = new HashMap<>();
+            Map<Integer, Double> contributions = new HashMap<>(); //FIXME These lines may be simplified.
             Optional<Map<Integer, Double>> optContributions = individualContributions.get();
             boolean askForContribution = !(useMemberContributions && optContributions.isPresent());
             if (useMemberContributions) {
@@ -451,7 +450,7 @@ public class MemberManagement extends Application {
                     List<Member> selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
                     if (askForContribution) {
                         double contribution = ((Optional<Double>) results.get("contribution")).get();
-                        selectedMember.forEach(m -> contributions.put(m.getMembershipnumber(), contribution));
+                        selectedMember.stream().forEach(m -> contributions.put(m.getMembershipnumber(), contribution));
                     }
                     Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
