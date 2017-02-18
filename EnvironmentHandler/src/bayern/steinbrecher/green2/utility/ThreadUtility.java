@@ -13,13 +13,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
-
-import javafx.beans.binding.BooleanExpression;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.BooleanExpression;
 
 /**
  * Providing often used functions in a comfortable way.
@@ -36,11 +34,11 @@ public final class ThreadUtility {
     }
 
     /**
-     * Calls {@code wait()} and when it´s notified it checks {@code exp}. If
-     * {@code exp} returns {@code true} it calls {@code wait()} again.
+     * Calls {@code wait()} and when it´s notified it checks {@code exp}. If {@code exp} returns {@code true} it calls
+     * {@code wait()} again.
      *
      * @param monitor The monitor whose {@code wait()} to call.
-     * @param exp     The expression to check whether to wait again or not.
+     * @param exp The expression to check whether to wait again or not.
      * @see Object#wait()
      */
     public static void waitWhile(Object monitor, BooleanExpression exp) {

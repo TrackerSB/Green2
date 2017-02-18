@@ -13,16 +13,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.contribution;
 
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
-import javafx.fxml.FXML;
-
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 
 /**
  * Contains a window for inserting a double value representing a contribution.
@@ -52,8 +50,8 @@ public class ContributionController extends WizardableController {
     }
 
     /**
-     * Returns the currently inserted contribution. Returns
-     * {@link Optional#empty()} if the user didn't confirm the contribution yet.
+     * Returns the currently inserted contribution. Returns {@link Optional#empty()} if the user didn't confirm the
+     * contribution yet.
      *
      * @return The currently inserted contribution.
      */

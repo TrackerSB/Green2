@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import java.io.IOException;
@@ -38,13 +37,11 @@ public final class URLUtility {
     }
 
     /**
-     * Resolves the real HTTP(S)-URL of the given HTTP(S)-URL. (E.g. it follows
-     * redirects)
+     * Resolves the real HTTP(S)-URL of the given HTTP(S)-URL. (E.g. it follows redirects)
      *
      * @param url The HTTP(S)-URL to resolve.
-     * @return The resolved HTTP(S)-URL. Returns {@link Optional#empty()} only
-     * if the given URL is invalid, not reachable or an unrecognized status code
-     * is thrown like 401 or 500.
+     * @return The resolved HTTP(S)-URL. Returns {@link Optional#empty()} only if the given URL is invalid, not
+     * reachable or an unrecognized status code is thrown like 401 or 500.
      */
     public static Optional<String> resolveURL(String url) {
         try {

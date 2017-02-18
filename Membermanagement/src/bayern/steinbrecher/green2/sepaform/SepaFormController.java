@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.sepaform;
 
 import bayern.steinbrecher.green2.CheckedController;
@@ -28,9 +27,6 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -39,6 +35,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
 
 /**
  * Represents Controller for SepaForm.fxml.
@@ -149,8 +147,7 @@ public class SepaFormController extends CheckedController {
     }
 
     /**
-     * Returns the currently set originator. Returns {@link Optional#empty()} if
-     * the user did not confirm input.
+     * Returns the currently set originator. Returns {@link Optional#empty()} if the user did not confirm input.
      *
      * @return The currently set originator or {@link Optional#empty()}.
      */

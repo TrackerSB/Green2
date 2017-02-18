@@ -13,14 +13,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.generator;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Person;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,16 +26,15 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Generates files containing the relevant birthdays of a given year and writes
- * them to a file.
+ * Generates files containing the relevant birthdays of a given year and writes them to a file.
  *
  * @author Stefan Huber
  */
 public class BirthdayGenerator {
 
     /**
-     * Sorts according to a members birthday (year descending, month ascending,
-     * day ascending) and then according to members name.
+     * Sorts according to a members birthday (year descending, month ascending, day ascending) and then according to
+     * members name.
      */
     public static final Comparator<Member> SORTING = Comparator.comparing(
             (Member m) -> m.getPerson().getBirthday().getYear()).reversed()
@@ -45,10 +42,8 @@ public class BirthdayGenerator {
             .thenComparing(m -> m.getPerson().getBirthday().getDayOfMonth())
             .thenComparing(m -> m.getPerson().getName());
     /**
-     * Represents a function creating a {@link String} out of a {@link Member}
-     * containing the first name, last name and the birthday of the member. Values
-     * are separated by semicolon and the {@link String} is closed by a
-     * linebreak.
+     * Represents a function creating a {@link String} out of a {@link Member} containing the first name, last name and
+     * the birthday of the member. Values are separated by semicolon and the {@link String} is closed by a linebreak.
      */
     private static final Function<Member, String> PRINT_LINE = m -> {
         Person p = m.getPerson();
@@ -63,13 +58,11 @@ public class BirthdayGenerator {
     }
 
     /**
-     * Creates a {@link String} representing content for a CSV-file containing a
-     * grouped list of the given member and their age they had or will have in
-     * year {@code year}.
+     * Creates a {@link String} representing content for a CSV-file containing a grouped list of the given member and
+     * their age they had or will have in year {@code year}.
      *
      * @param member The member to print.
-     * @param year   The year in which the age of the given member has to be
-     *               calculated.
+     * @param year The year in which the age of the given member has to be calculated.
      * @return A string representing the hole content of a CSV file.
      */
     public static String createGroupedOutput(List<Member> member, int year) {
@@ -103,18 +96,16 @@ public class BirthdayGenerator {
     }
 
     /**
-     * Appends all member of {@code currentAgeActive} and
-     * {@code currentAgePassiv} to {@code output} if the lists are not empty.
+     * Appends all member of {@code currentAgeActive} and {@code currentAgePassiv} to {@code output} if the lists are
+     * not empty.
      *
-     * @param output            The {@link StringBuilder} to append the output to.
-     * @param currentAge        The age of the member in the given lists.
-     * @param currentAgeActive  The list of active member which are
-     *                          {@code currentAge} years old.
-     * @param currentAgePassive The list of passive member which are
-     *                          {@code currentAge} years old.
+     * @param output The {@link StringBuilder} to append the output to.
+     * @param currentAge The age of the member in the given lists.
+     * @param currentAgeActive The list of active member which are {@code currentAge} years old.
+     * @param currentAgePassive The list of passive member which are {@code currentAge} years old.
      */
     private static void tryAppendMember(StringBuilder output, int currentAge, List<Member> currentAgeActive,
-                                        List<Member> currentAgePassive) {
+            List<Member> currentAgePassive) {
         if (!currentAgeActive.isEmpty() || !currentAgePassive.isEmpty()) {
             output.append("\n\n").append(currentAge).append("ter Geburtstag\n");
             if (!currentAgeActive.isEmpty()) {
@@ -133,7 +124,7 @@ public class BirthdayGenerator {
     /**
      * Checks whether the given member fits the configured birthday criteria.
      *
-     * @param m    The member to check.
+     * @param m The member to check.
      * @param year The year to calculate his age at.
      * @return {@code true} only if {@code m} fits the configured criteria.
      * @see Profile#getAgeFunction()

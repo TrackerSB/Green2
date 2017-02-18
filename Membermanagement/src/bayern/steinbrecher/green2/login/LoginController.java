@@ -13,20 +13,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.login;
 
 import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.BooleanExpression;
-import javafx.fxml.FXML;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.BooleanExpression;
+import javafx.fxml.FXML;
 
 /**
  * Represents a controller for a login.
@@ -41,9 +39,8 @@ public abstract class LoginController extends CheckedController {
     protected List<CheckedTextField> textInputFields;
 
     /**
-     * Adds all given textfields into {@code textInputFields} and sets up the
-     * properties {@code anyInputMissing}, {@code anyInputToLong} and
-     * {@code valid}.
+     * Adds all given textfields into {@code textInputFields} and sets up the properties {@code anyInputMissing},
+     * {@code anyInputToLong} and {@code valid}.
      *
      * @param fields The textfields to use for setup.
      */
@@ -72,9 +69,8 @@ public abstract class LoginController extends CheckedController {
     }
 
     /**
-     * Returns the currently entered login information. It returns
-     * {@link Optional#empty()} only if the window was closed without pressing a
-     * confirm button. That means if {@code userConfirmed} is {@code false}.
+     * Returns the currently entered login information. It returns {@link Optional#empty()} only if the window was
+     * closed without pressing a confirm button. That means if {@code userConfirmed} is {@code false}.
      *
      * @return The currently entered login information.
      */

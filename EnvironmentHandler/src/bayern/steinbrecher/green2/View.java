@@ -13,11 +13,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -26,8 +26,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 /**
  * Represents the base implementation of all other windows.
@@ -38,8 +36,7 @@ import java.io.IOException;
 public abstract class View<T extends Controller> extends Application {
 
     /**
-     * The stage which has to be set in every start-Method of implementing
-     * classes.
+     * The stage which has to be set in every start-Method of implementing classes.
      */
     protected Stage stage = null;
     private final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
@@ -73,11 +70,10 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * Makes sure the window is only shown once. When multiple threads are
-     * calling this method they will be set to {@link Thread#wait()} apart from the first
-     * one. This one opens the stage set in {@link Application#start(Stage)}, blocks until the
-     * window is closed and then notifies all other threads. If the JavaFX
-     * Application Thread calls it, it calls {@link View#showOnceAndWait()}.
+     * Makes sure the window is only shown once. When multiple threads are calling this method they will be set to
+     * {@link Thread#wait()} apart from the first one. This one opens the stage set in {@link Application#start(Stage)},
+     * blocks until the window is closed and then notifies all other threads. If the JavaFX Application Thread calls it,
+     * it calls {@link View#showOnceAndWait()}.
      *
      * @see Stage#showAndWait()
      * @see View#showOnce(java.lang.Runnable)
@@ -102,9 +98,8 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * Makes sure the window is only shown once. The first call opens the view
-     * and returns. Further calls have no effect until {@link View#reset()} is
-     * called. This method does NOT block.
+     * Makes sure the window is only shown once. The first call opens the view and returns. Further calls have no effect
+     * until {@link View#reset()} is called. This method does NOT block.
      *
      * @param callback The runnable to call when the view gets closed.
      * @see View#showOnceAndWait()
@@ -126,8 +121,7 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * After calling this method the window can be opened once again. But
-     * previously inserted data stays unchanged.
+     * After calling this method the window can be opened once again. But previously inserted data stays unchanged.
      */
     public synchronized void reset() {
         gotClosedProperty.set(false);
@@ -135,11 +129,9 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * Returns the property indicating whether the next call of
-     * {@link View#showOnceAndWait()} would open the window.
+     * Returns the property indicating whether the next call of {@link View#showOnceAndWait()} would open the window.
      *
-     * @return The property indicating whether the next call of
-     * {@link View#showOnceAndWait()} would open the window.
+     * @return The property indicating whether the next call of {@link View#showOnceAndWait()} would open the window.
      */
     public BooleanBinding wouldShowBinding() {
         return wouldShowProperty;
@@ -148,8 +140,7 @@ public abstract class View<T extends Controller> extends Application {
     /**
      * Indicates whether the currently inserted data is aborted by the user.
      *
-     * @return {@code true} only if the user aborted the currently inserted
-     * data.
+     * @return {@code true} only if the user aborted the currently inserted data.
      */
     public boolean userAborted() {
         return controller.userAbborted();

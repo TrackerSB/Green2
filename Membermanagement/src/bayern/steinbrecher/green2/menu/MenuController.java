@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.Controller;
@@ -22,14 +21,6 @@ import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.VersionHandler;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
-
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +29,13 @@ import java.time.LocalDate;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 
 /**
  * Controller for Menu.fxml.
@@ -100,8 +98,7 @@ public class MenuController extends Controller {
     }
 
     /**
-     * Sets the caller which provides the functionality this controller has to
-     * use.
+     * Sets the caller which provides the functionality this controller has to use.
      *
      * @param caller The provider of the functionality.
      */

@@ -13,22 +13,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.sepaform;
 
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.wizard.WizardPage;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * Represents a form for input according to sepa informations.
@@ -49,8 +47,7 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
     /**
      * Creates a sepa form.
      *
-     * @param owner The owner which causes this window to close if the owner is
-     *              closed. The owner is not blocked.
+     * @param owner The owner which causes this window to close if the owner is closed. The owner is not blocked.
      */
     public SepaForm(Stage owner) {
         this.owner = owner;
@@ -74,8 +71,8 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
     }
 
     /**
-     * Returns the originator currently represented. Returns
-     * {@link Optional#empty()} if the user did not confirm the input.
+     * Returns the originator currently represented. Returns {@link Optional#empty()} if the user did not confirm the
+     * input.
      *
      * @return The originator or {@link Optional#empty()}.
      */

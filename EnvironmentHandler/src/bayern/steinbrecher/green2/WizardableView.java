@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2;
 
 import bayern.steinbrecher.wizard.Wizard;
@@ -29,11 +28,10 @@ import bayern.steinbrecher.wizard.WizardPage;
 public abstract class WizardableView<T, C extends WizardableController> extends View<C> {
 
     /**
-     * Creates a {@link WizardPage}. The nextFunction is set to {@code null} and
-     * isFinish is set to {@code false}.
+     * Creates a {@link WizardPage}. The nextFunction is set to {@code null} and isFinish is set to {@code false}.
      *
-     * @return The newly created {@link WizardPage}. Returns {@code null} if the
-     * {@link WizardPage} could not be created.
+     * @return The newly created {@link WizardPage}. Returns {@code null} if the {@link WizardPage} could not be
+     * created.
      */
     public abstract WizardPage<T> getWizardPage();
 }

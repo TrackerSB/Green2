@@ -13,12 +13,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.people;
 
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.utility.SepaUtility;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,9 +64,8 @@ public class Originator {
     private LocalDate executionDate;
 
     /**
-     * Constructs a new originator which has owns the attributes specified in
-     * {@code originatorFile}. HINT: Attributes are only set after calling
-     * {@code readOriginatorInfo()}.
+     * Constructs a new originator which has owns the attributes specified in {@code originatorFile}. HINT: Attributes
+     * are only set after calling {@code readOriginatorInfo()}.
      *
      * @param profile The profile this originator belongs to.
      */
@@ -77,8 +74,7 @@ public class Originator {
     }
 
     /**
-     * Constructs a new originator out of the attributes specified in
-     * {@code originatorFile}.
+     * Constructs a new originator out of the attributes specified in {@code originatorFile}.
      *
      * @param profile The profile the originator has to belong to.
      * @return The new originator or {@link Optional#empty()} if the file was not found or could not be read.

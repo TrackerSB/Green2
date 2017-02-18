@@ -13,12 +13,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.login;
 
 /**
- * Represents constants for description of login information such as ssh
- * password or ssh username.
+ * Represents constants for description of login information such as ssh password or ssh username.
  *
  * @author Stefan Huber
  */

@@ -13,13 +13,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.View;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
@@ -28,11 +31,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.application.Application;
-
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Represents a splashscreen.
@@ -66,8 +64,7 @@ public class Splashscreen extends View<Controller> {
     }
 
     /**
-     * Shows this splashscreen for {@code millis} milliseconds and blocks until
-     * the splashscreen closes.
+     * Shows this splashscreen for {@code millis} milliseconds and blocks until the splashscreen closes.
      *
      * @param millis The time in milliseconds the screen has to be shown.
      */
@@ -85,12 +82,10 @@ public class Splashscreen extends View<Controller> {
     }
 
     /**
-     * Creates, shows a splashscreen for {@code millis} milliseconds and blocks
-     * until the splashscreen closes.
+     * Creates, shows a splashscreen for {@code millis} milliseconds and blocks until the splashscreen closes.
      *
      * @param millis The time in milliseconds the screen has to be shown.
-     * @param stage  The stage to use for the window. (Used as param for
-     *               {@link Application#start(Stage)}).
+     * @param stage The stage to use for the window. (Used as param for {@link Application#start(Stage)}).
      */
     public static void showSplashscreen(long millis, Stage stage) {
         try {

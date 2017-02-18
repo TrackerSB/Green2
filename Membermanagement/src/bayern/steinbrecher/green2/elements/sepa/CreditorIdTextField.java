@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.sepa;
 
 import bayern.steinbrecher.green2.utility.SepaUtility;
@@ -29,6 +28,7 @@ import javafx.scene.control.TextField;
  * @author Stefan Huber
  */
 public final class CreditorIdTextField extends SpecificRegexTextField {
+
     public static final String CSS_CLASS_CREDITORID_TEXTFIELD = "creditorid-textfield";
     private BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
 

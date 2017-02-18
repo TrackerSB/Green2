@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.data;
 
 import java.nio.charset.Charset;
@@ -27,8 +26,8 @@ import java.util.regex.Pattern;
 public enum ConfigKey {
 
     /**
-     * Indicating whether to use SSH or not. Write "Yes" to use SSH. ("Ja" is
-     * also accepted because of legacy, but should not be used.)
+     * Indicating whether to use SSH or not. Write "Yes" to use SSH. ("Ja" is also accepted because of legacy, but
+     * should not be used.)
      */
     USE_SSH(Boolean.class) {
         /**
@@ -91,8 +90,7 @@ public enum ConfigKey {
         }
     },
     /**
-     * The expression to indicate which people get birthday notifications. Like
-     * =50,=60,=70,=75,&gt;=80
+     * The expression to indicate which people get birthday notifications. Like =50,=60,=70,=75,&gt;=80
      */
     BIRTHDAY_EXPRESSION(String.class) {
         /**
@@ -149,7 +147,7 @@ public enum ConfigKey {
      * Checks whether the given value is valid for this ConfigKey.
      *
      * @param value The value to check.
-     * @param <T>   The type of the value.
+     * @param <T> The type of the value.
      * @return {@code true} only if this value is valid for this ConfigKey.
      */
     public abstract <T> boolean isValid(T value);
@@ -158,7 +156,7 @@ public enum ConfigKey {
      * Returns a String representation of value according to the type of the value the ConfigKey holds.
      *
      * @param value The value to convert.
-     * @param <T>   The type of the value the ConfigKey holds.
+     * @param <T> The type of the value the ConfigKey holds.
      * @return The String representation.
      */
     public <T> String getStringFromValue(T value) {
@@ -178,11 +176,11 @@ public enum ConfigKey {
     }
 
     /**
-     * Returns a value of the type this ConfigKey holds converting it from {@code value}. NOTE: It does NOT imply
-     * that the valid is a valid value to be used as value of a ConfigKey.
+     * Returns a value of the type this ConfigKey holds converting it from {@code value}. NOTE: It does NOT imply that
+     * the valid is a valid value to be used as value of a ConfigKey.
      *
      * @param value The String representation to convert.
-     * @param <T>   The type of the value the ConfigKey holds.
+     * @param <T> The type of the value the ConfigKey holds.
      * @return The converted value.
      */
     public <T> T getValueFromString(String value) {

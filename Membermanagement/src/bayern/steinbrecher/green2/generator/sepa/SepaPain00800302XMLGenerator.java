@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.generator.sepa;
 
 import bayern.steinbrecher.green2.people.AccountHolder;
@@ -21,7 +20,6 @@ import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
-
 import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
@@ -46,23 +44,22 @@ public final class SepaPain00800302XMLGenerator {
     }
 
     /**
-     * Generates a xml-file containing all member of {@link Member}, which have
-     * a iban and a bic, and prints the generated output into
-     * {@code outputfile}. If {@code outputfile} already exists it will be
-     * replaced. If it don´t it will be created.
+     * Generates a xml-file containing all member of {@link Member}, which have a iban and a bic, and prints the
+     * generated output into {@code outputfile}. If {@code outputfile} already exists it will be replaced. If it don´t
+     * it will be created.
      *
-     * @param member        The member to collect money via direct debit from.
+     * @param member The member to collect money via direct debit from.
      * @param contributions The mapping of membershipnumbers to contributions.
-     * @param originator    The originator of the direct debit.
-     * @param sequenceType  The sequence type of the direct debit.
-     * @param outputfile    The path to the file to print the xml to.
-     * @param sepaWithBom   Indicates whether to use UTF-8 with or without BOM.
-     * @return A list containing member which are not included in the
-     * outputfile. These are member which have no iban or no bic.
+     * @param originator The originator of the direct debit.
+     * @param sequenceType The sequence type of the direct debit.
+     * @param outputfile The path to the file to print the xml to.
+     * @param sepaWithBom Indicates whether to use UTF-8 with or without BOM.
+     * @return A list containing member which are not included in the outputfile. These are member which have no iban or
+     * no bic.
      */
     public static List<Member> createXMLFile(List<Member> member, Map<Integer, Double> contributions,
-                                             Originator originator, SequenceType sequenceType, File outputfile,
-                                             boolean sepaWithBom) {
+            Originator originator, SequenceType sequenceType, File outputfile,
+            boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
         List<Member> missingContribution = member.stream()
                 .filter(m -> !contributions.containsKey(m.getMembershipnumber()))
@@ -114,13 +111,13 @@ public final class SepaPain00800302XMLGenerator {
     /**
      * Generates the output for the sepa-xml-file.
      *
-     * @param member        The list of member to include in the xml.
-     * @param originator    The originator of the direct debit.
+     * @param member The list of member to include in the xml.
+     * @param originator The originator of the direct debit.
      * @param contributions The mapping of membershipnumbers to contributions.
      * @return The {@link String} representing the xml file content.
      */
     private static String createXML(List<Member> member, Originator originator, Map<Integer, Double> contributions,
-                                    SequenceType sequenceType) {
+            SequenceType sequenceType) {
         int numberOfTransactions = member.size();
         double controlSum = member.parallelStream()
                 .mapToDouble(m -> contributions.get(m.getMembershipnumber()))

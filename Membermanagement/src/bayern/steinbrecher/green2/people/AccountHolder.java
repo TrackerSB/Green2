@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.people;
 
 import java.time.LocalDate;
@@ -32,19 +31,18 @@ public class AccountHolder extends Person {
     /**
      * Constructs a account holder.
      *
-     * @param iban              The IBAN of the account holder.
-     * @param bic               The BIC of the account holder.
-     * @param mandateSigned     The date when he signed his mandate.
-     * @param hasMandateChanged {@code true}, only if his mandate changed since
-     *                          last transfer.
-     * @param firstName         The firstName of the account holder.
-     * @param lastName          The last name of the account holder.
-     * @param title             The title of the account holder if any.
-     * @param birthday          The birthday date of the account holder.
-     * @param isMale            {@code true} only if the account holder is male.
+     * @param iban The IBAN of the account holder.
+     * @param bic The BIC of the account holder.
+     * @param mandateSigned The date when he signed his mandate.
+     * @param hasMandateChanged {@code true}, only if his mandate changed since last transfer.
+     * @param firstName The firstName of the account holder.
+     * @param lastName The last name of the account holder.
+     * @param title The title of the account holder if any.
+     * @param birthday The birthday date of the account holder.
+     * @param isMale {@code true} only if the account holder is male.
      */
     public AccountHolder(String iban, String bic, LocalDate mandateSigned, boolean hasMandateChanged, String firstName,
-                         String lastName, String title, LocalDate birthday, boolean isMale) {
+            String lastName, String title, LocalDate birthday, boolean isMale) {
         super(firstName, lastName, title, birthday, isMale);
         this.iban = iban;
         this.bic = bic;

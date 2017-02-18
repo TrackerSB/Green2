@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import java.io.File;
@@ -45,18 +44,17 @@ public final class ZipUtility {
      * Unzips the given file into the given folder.
      *
      * @param zippedFile The file to unzip.
-     * @param outputDir  The directory where to put the unzipped files.
-     * @param charset    The charset of the zip and its files. NOTE: VBS files will
-     *                   be unzipped using Windows-1252 and JAR, PNG and ICO using ISO-8859-1.
-     * @throws IOException Thrown only if no temporary directory could be
-     *                     created.
+     * @param outputDir The directory where to put the unzipped files.
+     * @param charset The charset of the zip and its files. NOTE: VBS files will be unzipped using Windows-1252 and JAR,
+     * PNG and ICO using ISO-8859-1.
+     * @throws IOException Thrown only if no temporary directory could be created.
      */
     public static void unzip(File zippedFile, File outputDir, Charset charset) throws IOException {
         String outDirPath = outputDir.getAbsolutePath();
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zippedFile), charset);
-             InputStreamReader isr = new InputStreamReader(zis, charset);
-             InputStreamReader isrVBS = new InputStreamReader(zis, VBS_CHARSET);
-             InputStreamReader isrLatin = new InputStreamReader(zis, JAR_ICO_PNG_CHARSET)) {
+                InputStreamReader isr = new InputStreamReader(zis, charset);
+                InputStreamReader isrVBS = new InputStreamReader(zis, VBS_CHARSET);
+                InputStreamReader isrLatin = new InputStreamReader(zis, JAR_ICO_PNG_CHARSET)) {
             ZipEntry zipEntry;
             boolean vbs;
             boolean jar;

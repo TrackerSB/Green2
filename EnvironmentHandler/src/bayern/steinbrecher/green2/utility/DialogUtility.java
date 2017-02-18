@@ -13,10 +13,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -28,9 +29,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /**
  * Provides functions for creating different dialogs. NOTE: There are some functions like initOwner(...) which may
@@ -81,10 +79,10 @@ public final class DialogUtility {
      * Creates an {@link Alert} with given settings.
      *
      * @param alertType The type of the alert.
-     * @param owner     The owner of the alert or {@code null} if no owner has to be set.
-     * @param args      The arguments containing the content, title and the header header. NOTE: The order is important.
-     *                  If you specify less elements or an element is {@code null} these elements will have the default
-     *                  value according to {@link Alert}.
+     * @param owner The owner of the alert or {@code null} if no owner has to be set.
+     * @param args The arguments containing the content, title and the header header. NOTE: The order is important. If
+     * you specify less elements or an element is {@code null} these elements will have the default value according to
+     * {@link Alert}.
      * @return The created {@link Alert}.
      */
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
@@ -110,8 +108,8 @@ public final class DialogUtility {
      * Creates an {@link Alert} which shows a stacktrace with given settings.
      *
      * @param owner The owner of the alert or {@code null} if no owner has to be set.
-     * @param ex    The exception to show.
-     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @param ex The exception to show.
+     * @param args For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
      * @return The created {@link Alert}.
      * @see #createAlert(Alert.AlertType, Window, String...)
      */
@@ -140,7 +138,7 @@ public final class DialogUtility {
      * Creates an {@link Alert} showing a warning with given settings.
      *
      * @param owner The owner of the alert or {@code null} if no owner has to be set.
-     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @param args For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
      * @return The created {@link Alert}.
      * @see #createAlert(Alert.AlertType, Window, String...)
      */
@@ -152,7 +150,7 @@ public final class DialogUtility {
      * Creates an {@link Alert} showing an error with given settings.
      *
      * @param owner The owner of the alert or {@code null} if no owner has to be set.
-     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @param args For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
      * @return The created {@link Alert}.
      * @see #createAlert(Alert.AlertType, Window, String...)
      */
@@ -164,7 +162,7 @@ public final class DialogUtility {
      * Creates an {@link Alert} showing information with given settings.
      *
      * @param owner The owner of the alert or {@code null} if no owner has to be set.
-     * @param args  For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @param args For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
      * @return The created {@link Alert}.
      * @see #createAlert(Alert.AlertType, Window, String...)
      */
@@ -175,9 +173,9 @@ public final class DialogUtility {
     /**
      * Creates an {@link Alert} showing a message with given settings.
      *
-     * @param owner   The owner of the alert or {@code null} if no owner has to be set.
+     * @param owner The owner of the alert or {@code null} if no owner has to be set.
      * @param message The message (multi line allowed) to show.
-     * @param args    For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
+     * @param args For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
      * @return The created {@link Alert}.
      * @see #createAlert(Alert.AlertType, Window, String...)
      */
@@ -203,7 +201,7 @@ public final class DialogUtility {
     /**
      * Creates an alert with custom buttons.
      *
-     * @param type    The type of the alert.
+     * @param type The type of the alert.
      * @param message The message to show.
      * @param buttons The buttons to show.
      * @return The created {@link Alert}.

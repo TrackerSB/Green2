@@ -13,24 +13,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * Represents a selection dialog.
@@ -44,9 +42,8 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     private Stage owner;
 
     /**
-     * Creates a new Frame representing the given options as selectable
-     * {@link CheckBox} es and representing a {@link TextField} for entering a
-     * number.
+     * Creates a new Frame representing the given options as selectable {@link CheckBox} es and representing a
+     * {@link TextField} for entering a number.
      *
      * @param options The options the user is allowed to select.
      */
@@ -55,13 +52,11 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     }
 
     /**
-     * Creates a new Frame representing the given options as selectable
-     * {@link CheckBox}es and representing a {@link TextField} for entering a
-     * number.
+     * Creates a new Frame representing the given options as selectable {@link CheckBox}es and representing a
+     * {@link TextField} for entering a number.
      *
      * @param options The options the user is allowed to select.
-     * @param owner   The owner which causes this window to close if the owner is
-     *                closed. The owner is not blocked.
+     * @param owner The owner which causes this window to close if the owner is closed. The owner is not blocked.
      */
     public Selection(List<T> options, Stage owner) {
         this.options = options;
@@ -97,8 +92,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     }
 
     /**
-     * Returns the list of currently selected items. Returns
-     * {@link Optional#empty()} if the user aborted the selection.
+     * Returns the list of currently selected items. Returns {@link Optional#empty()} if the user aborted the selection.
      *
      * @return The selection if any.
      */

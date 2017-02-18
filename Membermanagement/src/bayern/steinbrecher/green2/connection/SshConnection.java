@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.connection;
 
 import bayern.steinbrecher.green2.exception.AuthException;
@@ -23,7 +22,6 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,20 +86,19 @@ public final class SshConnection extends DBConnection {
     /**
      * Constructs a new database connection over SSH.
      *
-     * @param sshHost          The address of the ssh host.
-     * @param sshUsername      The username for the ssh connection.
-     * @param sshPassword      The password for the ssh connection.
-     * @param databaseHost     The address of the database host (without protocol).
+     * @param sshHost The address of the ssh host.
+     * @param sshUsername The username for the ssh connection.
+     * @param sshPassword The password for the ssh connection.
+     * @param databaseHost The address of the database host (without protocol).
      * @param databaseUsername The username for the database.
-     * @param databasePasswd   The password for the database.
-     * @param databaseName     The name of the database to connect to.
-     * @param charset          The charset used by ssh response.
-     * @throws AuthException        Thrown if some of username, password or host is
-     *                              wrong or not reachable.
+     * @param databasePasswd The password for the database.
+     * @param databaseName The name of the database to connect to.
+     * @param charset The charset used by ssh response.
+     * @throws AuthException Thrown if some of username, password or host is wrong or not reachable.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      */
     public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost,
-                         String databaseUsername, String databasePasswd, String databaseName, Charset charset)
+            String databaseUsername, String databasePasswd, String databaseName, Charset charset)
             throws AuthException, UnknownHostException {
         this.databaseHost = databaseHost;
         this.databaseUsername = databaseUsername;
@@ -128,12 +125,11 @@ public final class SshConnection extends DBConnection {
     /**
      * Creates a ssh session.
      *
-     * @param sshHost     The address of the host of the ssh service to connect to.
+     * @param sshHost The address of the host of the ssh service to connect to.
      * @param sshUsername The username used to login.
      * @param sshPassword The password used to login.
      * @return A Session representing the ssh connection.
-     * @throws AuthException Thrown if some of username, password or host is
-     *                       wrong or unreachable.
+     * @throws AuthException Thrown if some of username, password or host is wrong or unreachable.
      */
     private Session createSshSession(String sshHost, String sshUsername, String sshPassword)
             throws AuthException {
@@ -176,8 +172,8 @@ public final class SshConnection extends DBConnection {
             List<List<String>> resultTable = Arrays.stream(rows)
                     .map(row -> splitUp(row, '\t'))
                     .map(rowFields -> rowFields.stream()
-                            .map(f -> f.equals("0000-00-00") ? null : f) //Legacy check 0000-00-00
-                            .collect(Collectors.toList()))
+                    .map(f -> f.equals("0000-00-00") ? null : f) //Legacy check 0000-00-00
+                    .collect(Collectors.toList()))
                     .collect(Collectors.toList());
 
             channel.disconnect();
@@ -217,10 +213,9 @@ public final class SshConnection extends DBConnection {
     }
 
     /**
-     * Splits up a string on the given regex. The regex itself won´t show up in
-     * any element of the returned list. When two or more regex are right in a
-     * row an empty {@link String} will be added. (This is the main difference
-     * to {@code String.split(...)})
+     * Splits up a string on the given regex. The regex itself won´t show up in any element of the returned list. When
+     * two or more regex are right in a row an empty {@link String} will be added. (This is the main difference to
+     * {@code String.split(...)})
      */
     private List<String> splitUp(String row, char regex) {
         List<String> columns = new ArrayList<>();

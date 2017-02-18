@@ -13,15 +13,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.spinner;
 
 import javafx.beans.NamedArg;
 import javafx.scene.control.SpinnerValueFactory;
 
 /**
- * Represents a spinner for double values which sets a css attribute when the
- * inserted value is not valid.
+ * Represents a spinner for double values which sets a css attribute when the inserted value is not valid.
  *
  * @author Stefan Huber
  */
@@ -38,17 +36,16 @@ public class CheckedIntegerSpinner extends CheckedSpinner<Integer> {
     /**
      * Constructs a new {@link CheckedIntegerSpinner}.
      *
-     * @param min            The minimum allowed value.
-     * @param max            The maximum allowed value.
-     * @param initialValue   The value of the Spinner when first instantiated,
-     *                       must be within the bounds of the min and max arguments, or else the min
-     *                       value will be used.
+     * @param min The minimum allowed value.
+     * @param max The maximum allowed value.
+     * @param initialValue The value of the Spinner when first instantiated, must be within the bounds of the min and
+     * max arguments, or else the min value will be used.
      * @param amountToStepBy The amount to increment or decrement by, per step.
      */
     public CheckedIntegerSpinner(@NamedArg("min") int min,
-                                 @NamedArg("max") int max,
-                                 @NamedArg("initialValue") int initialValue,
-                                 @NamedArg("amountToStepBy") int amountToStepBy) {
+            @NamedArg("max") int max,
+            @NamedArg("initialValue") int initialValue,
+            @NamedArg("amountToStepBy") int amountToStepBy) {
         super(new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, initialValue, amountToStepBy),
                 parseFunction);
     }

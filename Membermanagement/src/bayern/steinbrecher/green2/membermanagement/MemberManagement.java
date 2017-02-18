@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.membermanagement;
 
 import bayern.steinbrecher.green2.connection.DBConnection;
@@ -125,22 +124,13 @@ public class MemberManagement extends Application {
     public void start(Stage primaryStage) throws IOException {
         menuStage = primaryStage;
         Platform.setImplicitExit(false);
-        /*
-         * boolean value needed to make sure no other windows shows up because
-         * {@link Platform#exit()} is async.
-         */
-        boolean valid = checkConfigs();
-        if (valid) {
+
+        if (profile.isAllConfigurationsSet()) {
             Splashscreen.showSplashscreen(SPLASHSCREEN_MILLIS, new Stage());
             Login login = createLogin();
             WaitScreen waitScreen = createWaitScreen(login);
             createConnectionService(login, waitScreen).start();
-        }
-    }
-
-    private boolean checkConfigs() {
-        boolean valid = profile.isAllConfigurationsSet();
-        if (!valid) {
+        } else {
             String badConfigs = MessageFormat.format(
                     EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName());
             DialogUtility.createErrorAlert(null, badConfigs, badConfigs)
@@ -151,7 +141,6 @@ public class MemberManagement extends Application {
                         }
                     });
         }
-        return valid;
     }
 
     private Login createLogin() {
@@ -223,8 +212,7 @@ public class MemberManagement extends Application {
     }
 
     /**
-     * This method is called when the application should stop, destroys
-     * resources and prepares for application exit.
+     * This method is called when the application should stop, destroys resources and prepares for application exit.
      */
     @Override
     public void stop() {
@@ -269,17 +257,14 @@ public class MemberManagement extends Application {
     }
 
     /**
-     * Asks the user for the needed logindata as long as the inserted data is
-     * not correct or the user aborts. This method should NOT be called by
-     * JavaFX Application Thread. E.g. use
+     * Asks the user for the needed logindata as long as the inserted data is not correct or the user aborts. This
+     * method should NOT be called by JavaFX Application Thread. E.g. use
      * {@link ServiceFactory#createService(Callable)}.
      *
-     * @param login      The loginframe used to ask the user.
-     * @param waitScreen The waitscreen to show when trying to connect to the
-     *                   server.
-     * @return {@link Optional#empty()} only if the connection could not be
-     * established. E.g. the user closed the window or the configured connection
-     * is not reachable.
+     * @param login The loginframe used to ask the user.
+     * @param waitScreen The waitscreen to show when trying to connect to the server.
+     * @return {@link Optional#empty()} only if the connection could not be established. E.g. the user closed the window
+     * or the configured connection is not reachable.
      */
     private Optional<DBConnection> getConnection(Login login, WaitScreen waitScreen) {
         DBConnection con = null;
@@ -339,9 +324,8 @@ public class MemberManagement extends Application {
     }
 
     /**
-     * Checks whether all objects are not {@code null}. If any is {@code null}
-     * it throws a {@link IllegalStateException} saying that the caller has to
-     * call {@link Application#start(Stage)} first.
+     * Checks whether all objects are not {@code null}. If any is {@code null} it throws a {@link IllegalStateException}
+     * saying that the caller has to call {@link Application#start(Stage)} first.
      *
      * @param obj The objects to test.
      */
@@ -382,9 +366,8 @@ public class MemberManagement extends Application {
     }
 
     /**
-     * Generates a file Serienbrief_Geburtstag_{@code year}.csv containing
-     * addresses of all member who get a birthday notification in year
-     * {@code year}.
+     * Generates a file Serienbrief_Geburtstag_{@code year}.csv containing addresses of all member who get a birthday
+     * notification in year {@code year}.
      *
      * @param year The year to look for member.
      */
@@ -401,8 +384,8 @@ public class MemberManagement extends Application {
     }
 
     /**
-     * Generates a file Geburtstag_{@code year}.csv containing all member who
-     * get a birthday notification in year {@code year}.
+     * Generates a file Geburtstag_{@code year}.csv containing all member who get a birthday notification in year
+     * {@code year}.
      *
      * @param year The year to look for member.
      */
@@ -427,7 +410,7 @@ public class MemberManagement extends Application {
     }
 
     private void generateSepa(Future<List<Member>> memberToSelectFuture, boolean useMemberContributions,
-                              SequenceType sequenceType) {
+            SequenceType sequenceType) {
         checkNull(individualContributions, memberToSelectFuture);
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
@@ -475,7 +458,7 @@ public class MemberManagement extends Application {
                     EnvironmentHandler.askForSavePath(menuStage, "Sepa", "xml").ifPresent(file -> {
                         List<Member> invalidMember
                                 = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, contributions, originator,
-                                sequenceType, file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
+                                        sequenceType, file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
                         String message = invalidMember.stream()
                                 .map(Member::toString)
                                 .collect(Collectors.joining("\n"));
@@ -503,8 +486,7 @@ public class MemberManagement extends Application {
     }
 
     /**
-     * Asks for contribution and for member (only non-contributionfree are
-     * shown) to debit from.
+     * Asks for contribution and for member (only non-contributionfree are shown) to debit from.
      */
     public void generateContributionSepa() {
         generateSepa(memberNonContributionfree, true, SequenceType.RCUR);
@@ -536,7 +518,7 @@ public class MemberManagement extends Application {
     }
 
     private String checkDates(Function<Member, LocalDate> dateFunction, String invalidDatesIntro,
-                              String allCorrectMessage) {
+            String allCorrectMessage) {
         try {
             String message = member.get().parallelStream()
                     .filter(m -> dateFunction.apply(m) == null)
@@ -551,19 +533,18 @@ public class MemberManagement extends Application {
     }
 
     /**
-     * Checks the correctness of all data and shows a dialog showing invalid
-     * data entries.
+     * Checks the correctness of all data and shows a dialog showing invalid data entries.
      */
     public void checkData() {
         checkNull(member);
         String message = checkIbans() + "\n\n"
                 + checkDates(m -> m.getPerson().getBirthday(),
-                EnvironmentHandler.getResourceValue("memberBadBirthday"),
-                EnvironmentHandler.getResourceValue("allBirthdaysCorrect"))
+                        EnvironmentHandler.getResourceValue("memberBadBirthday"),
+                        EnvironmentHandler.getResourceValue("allBirthdaysCorrect"))
                 + "\n\n"
                 + checkDates(m -> m.getAccountHolder().getMandateSigned(),
-                EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
-                EnvironmentHandler.getResourceValue("allMandatSignedCorrect"));
+                        EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
+                        EnvironmentHandler.getResourceValue("allMandatSignedCorrect"));
         String checkData = EnvironmentHandler.getResourceValue("checkData");
         Alert alert = DialogUtility.createMessageAlert(menuStage, message, checkData, checkData);
         alert.showAndWait();

@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.people;
 
 import java.time.LocalDate;
@@ -32,11 +31,11 @@ public class Person {
     /**
      * Constructs a new person.
      *
-     * @param firstName  The first name of the person.
+     * @param firstName The first name of the person.
      * @param lastName The last name of the person.
-     * @param title    The title of the person if any.
+     * @param title The title of the person if any.
      * @param birthday The birthday date of the person.
-     * @param male     {@code true} only if the person is male.
+     * @param male {@code true} only if the person is male.
      */
     public Person(String firstName, String lastName, String title, LocalDate birthday, boolean male) {
         this.firstName = firstName;

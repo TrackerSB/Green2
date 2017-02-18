@@ -13,15 +13,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.login;
 
 import bayern.steinbrecher.green2.View;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import javafx.stage.Stage;
 
 /**
  * Represents a login.
@@ -34,10 +32,9 @@ public abstract class Login extends View<LoginController> {
     public abstract void start(Stage primaryStage) throws IOException;
 
     /**
-     * Returns the information that was entered in the login. This method blocks
-     * until the frame is closed or hidden. It won't show more than once even if
-     * multiple threads call it. They will be blocked and notified when the
-     * login window closes.
+     * Returns the information that was entered in the login. This method blocks until the frame is closed or hidden. It
+     * won't show more than once even if multiple threads call it. They will be blocked and notified when the login
+     * window closes.
      *
      * @return The Information that was entered in the login.
      */

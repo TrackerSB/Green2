@@ -13,9 +13,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.launcher;
 
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -23,10 +25,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.Initializable;
-
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.ResourceBundle;
 
 /**
  * Controller of download dialog.
@@ -50,11 +48,9 @@ public class LauncherController implements Initializable {
     }
 
     /**
-     * Returns the property containing the current value representing the
-     * progress of download.
+     * Returns the property containing the current value representing the progress of download.
      *
-     * @return The property containing the current value representing the
-     * progress of download.
+     * @return The property containing the current value representing the progress of download.
      */
     public ReadOnlyDoubleProperty percentageProperty() {
         return percentage;
@@ -82,11 +78,11 @@ public class LauncherController implements Initializable {
     }
 
     /**
-     * Returns the property which contains a {@link String} representation of
-     * the value hold by {@code percentageProperty}.
+     * Returns the property which contains a {@link String} representation of the value hold by
+     * {@code percentageProperty}.
      *
-     * @return The property which contains a {@link String} representation of
-     * the value hold by {@code percentageProperty}.
+     * @return The property which contains a {@link String} representation of the value hold by
+     * {@code percentageProperty}.
      * @see #percentageProperty()
      */
     public ReadOnlyStringProperty percentageStringProperty() {

@@ -13,13 +13,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
+import java.util.concurrent.Callable;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-
-import java.util.concurrent.Callable;
 
 /**
  * Represents methods for creating services.
@@ -36,13 +34,11 @@ public final class ServiceFactory {
     }
 
     /**
-     * Creates a service which executes {@code task} and returns a value of type
-     * {@code V}.
+     * Creates a service which executes {@code task} and returns a value of type {@code V}.
      *
-     * @param <V>  The type of the value to return.
+     * @param <V> The type of the value to return.
      * @param task The task to execute.
-     * @return The service which executes {@code task} and returns a value of
-     * type {@code V}.
+     * @return The service which executes {@code task} and returns a value of type {@code V}.
      */
     public static <V> Service<V> createService(Callable<V> task) {
         return new Service<V>() {

@@ -13,12 +13,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.utility.DialogUtility;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -31,12 +35,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 
 /**
  * Represents a dialog for choosing the profile to use.
@@ -148,19 +146,18 @@ public class ProfileChoice extends Application {
     }
 
     /**
-     * Returns an {@link Optional} containing the selected profile if any. If the window is not closed it always
-     * returns {@link Optional#empty()}.
+     * Returns an {@link Optional} containing the selected profile if any. If the window is not closed it always returns
+     * {@link Optional#empty()}.
      *
-     * @return An {@link Optional} containing the selected profile if any. If the window is not closed it always
-     * returns {@link Optional#empty()}.
+     * @return An {@link Optional} containing the selected profile if any. If the window is not closed it always returns
+     * {@link Optional#empty()}.
      */
     public Optional<Profile> getProfile() {
         return Optional.ofNullable(profile);
     }
 
     /**
-     * Creates a dialog for selecting a profile. This method blocks until the
-     * dialog is closed.
+     * Creates a dialog for selecting a profile. This method blocks until the dialog is closed.
      *
      * @param editable {@code true} only if profiles should be able to edit and/or to delete.
      * @return An {@link Optional} which contains the selected profile if any.

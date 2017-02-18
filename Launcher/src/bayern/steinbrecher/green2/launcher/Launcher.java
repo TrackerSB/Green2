@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.launcher;
 
 import bayern.steinbrecher.green2.data.Collector;
@@ -24,15 +23,6 @@ import bayern.steinbrecher.green2.utility.ProgramCaller;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.VersionHandler;
 import bayern.steinbrecher.green2.utility.ZipUtility;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,14 +37,23 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
- * Installs Green2 and checks for updates. (This application needs to be
- * independent, so it contains EnvironmentHandler project.).
+ * Installs Green2 and checks for updates. (This application needs to be independent, so it contains EnvironmentHandler
+ * project.).
  *
  * @author Stefan Huber
  */
 public final class Launcher extends Application {
+
     /**
      * The URL of the zip containing the installation files of the application.
      */

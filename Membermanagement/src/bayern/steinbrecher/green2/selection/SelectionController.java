@@ -13,10 +13,15 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableController;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
@@ -31,13 +36,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 /**
  * Represents controller for Selection.fxml.
@@ -62,12 +60,12 @@ public class SelectionController<T extends Comparable<T>>
     private ListView<CheckBox> optionsListView;
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
-        if (newVal) {
-            selectedCount.set(selectedCount.get() + 1);
-        } else {
-            selectedCount.set(selectedCount.get() - 1);
-        }
-    };
+                if (newVal) {
+                    selectedCount.set(selectedCount.get() + 1);
+                } else {
+                    selectedCount.set(selectedCount.get() - 1);
+                }
+            };
 
     /**
      * {@inheritDoc}
@@ -117,8 +115,8 @@ public class SelectionController<T extends Comparable<T>>
     }
 
     /**
-     * Returns the list of currently selected items. Returns
-     * {@link Optional#empty()} if the user didn't confirm the selection yet.
+     * Returns the list of currently selected items. Returns {@link Optional#empty()} if the user didn't confirm the
+     * selection yet.
      *
      * @return An Optional containing the selection if any.
      */
@@ -138,11 +136,9 @@ public class SelectionController<T extends Comparable<T>>
     }
 
     /**
-     * Returns the property representing the number of currently selected
-     * fields.
+     * Returns the property representing the number of currently selected fields.
      *
-     * @return The property representing the number of currently selected
-     * fields.
+     * @return The property representing the number of currently selected fields.
      */
     public ReadOnlyIntegerProperty selectedCountProperty() {
         return selectedCount;
@@ -176,11 +172,9 @@ public class SelectionController<T extends Comparable<T>>
     }
 
     /**
-     * Returns the property representing a boolean indicating whether no entry
-     * is currently selected.
+     * Returns the property representing a boolean indicating whether no entry is currently selected.
      *
-     * @return The property representing a boolean indicating whether no entry
-     * is currently selected.
+     * @return The property representing a boolean indicating whether no entry is currently selected.
      */
     public ReadOnlyBooleanProperty nothingSelectedProperty() {
         return nothingSelected;
@@ -196,11 +190,9 @@ public class SelectionController<T extends Comparable<T>>
     }
 
     /**
-     * Returns the property representing a boolean indicating whether every
-     * entry is currently selected.
+     * Returns the property representing a boolean indicating whether every entry is currently selected.
      *
-     * @return The property representing a boolean indicating whether every
-     * entry is currently selected.
+     * @return The property representing a boolean indicating whether every entry is currently selected.
      */
     public ReadOnlyBooleanProperty allSelectedProperty() {
         return allSelected;

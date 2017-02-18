@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import java.math.BigInteger;
@@ -50,8 +49,7 @@ public final class SepaUtility {
      */
     public static final int MAX_CHAR_IBAN = 34;
     /**
-     * The maximum length of the name of the party creating the SEPA Direct
-     * Debit.
+     * The maximum length of the name of the party creating the SEPA Direct Debit.
      */
     public static final int MAX_CHAR_NAME_OF_CREATOR = 70;
     private static final SimpleDateFormat SEPA_DATETIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -78,8 +76,7 @@ public final class SepaUtility {
             = "[A-Z]{" + SEPA_CC_LENGTH + "}\\d{2," + (MAX_CHAR_IBAN - SEPA_CC_LENGTH) + "}";
     private static final Pattern IBAN_PATTERN = Pattern.compile(IBAN_REGEX);
     /**
-     * The regex for checking whether a message id is valid.
-     * Which characters are supported by Sepa is taken from
+     * The regex for checking whether a message id is valid. Which characters are supported by Sepa is taken from
      * http://www.sepaforcorporates.com/sepa-implementation/valid-xml-characters-sepa-payments/
      */
     public static final String MESSAGE_ID_REGEX = "([a-zA-Z0-9]|/| |-|\\?|:|\\(|\\)|\\.|,|'|\\+)*";

@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.buttons;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -28,12 +27,13 @@ import javafx.scene.control.ButtonBase;
 
 /**
  * Represents a button which shows a help message on click. This button uses
- * {@link ButtonBase#setOnAction(EventHandler)}. NOTE: Because this method is final it cannot be overridden. That
- * means: Don't call it on this button otherwise it may not work as expected.
+ * {@link ButtonBase#setOnAction(EventHandler)}. NOTE: Because this method is final it cannot be overridden. That means:
+ * Don't call it on this button otherwise it may not work as expected.
  *
  * @author Stefan Huber
  */
 public class HelpButton extends Button {
+
     /**
      * The CSS class representing a {@link HelpButton}.
      */
@@ -59,7 +59,7 @@ public class HelpButton extends Button {
     /**
      * Creates a new {@link HelpButton} showing given {@code helpMessage} and labeled with given {@code text}.
      *
-     * @param text        The label of the button.
+     * @param text The label of the button.
      * @param helpMessage The helpMessage message to show.
      */
     public HelpButton(String text, String helpMessage) {
@@ -70,9 +70,9 @@ public class HelpButton extends Button {
      * Creates a new {@link HelpButton} showing given {@code helpMessage}, labeled with given {@code text} and with
      * given graphic shown on it.
      *
-     * @param text        The label of the button.
+     * @param text The label of the button.
      * @param helpMessage The helpMessage message to show.
-     * @param graphic     The graphic to show.
+     * @param graphic The graphic to show.
      */
     public HelpButton(String text, String helpMessage, Node graphic) {
         super(text, graphic);

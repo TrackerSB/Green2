@@ -13,12 +13,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.View;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import java.util.stream.IntStream;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -36,8 +36,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-
-import java.util.stream.IntStream;
 
 /**
  * Represents a screen showing a fancy wait symbol.

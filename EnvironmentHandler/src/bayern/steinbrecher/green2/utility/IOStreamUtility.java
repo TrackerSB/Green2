@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import java.io.BufferedWriter;
@@ -49,15 +48,12 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Reads the hole content of a given {@link InputStream} decoding with
-     * {@link Charset}.
+     * Reads the hole content of a given {@link InputStream} decoding with {@link Charset}.
      *
      * @param inputStream The {@link InputStream} to read.
-     * @param charset     The charset to use for decoding the {@link InputStream}.
-     * @return The content of the given {@link InputStream}. It never returns
-     * {@code null}.
-     * @throws IOException Thrown if an {@link IOException} is thrown by
-     *                     {@link InputStream#read()}.
+     * @param charset The charset to use for decoding the {@link InputStream}.
+     * @return The content of the given {@link InputStream}. It never returns {@code null}.
+     * @throws IOException Thrown if an {@link IOException} is thrown by {@link InputStream#read()}.
      * @see InputStream#read()
      */
     public static String readAll(InputStream inputStream, Charset charset) throws IOException {
@@ -96,21 +92,19 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Transfers all chars from {@link InputStream} to {@code outputStream} of a
-     * file. It loops over {@link InputStream} transferring {@code bytesPerLoop}
-     * bytes per loop.
+     * Transfers all chars from {@link InputStream} to {@code outputStream} of a file. It loops over {@link InputStream}
+     * transferring {@code bytesPerLoop} bytes per loop.
      *
-     * @param inputStream  The stream to read from.
+     * @param inputStream The stream to read from.
      * @param outputStream The stream of the file to write to.
-     * @param size         The size of the {@link InputStream}.
+     * @param size The size of the {@link InputStream}.
      * @param bytesPerLoop The amount of bytes to transfer per loop.
-     * @param callback     A method to call on every loop. {@code null} for no
-     *                     callback.
+     * @param callback A method to call on every loop. {@code null} for no callback.
      */
     public static void transfer(InputStream inputStream, FileOutputStream outputStream, long size, long bytesPerLoop,
-                                Runnable callback) {
+            Runnable callback) {
         try (ReadableByteChannel inChannel = Channels.newChannel(inputStream);
-             FileChannel outChannel = outputStream.getChannel()) {
+                FileChannel outChannel = outputStream.getChannel()) {
             for (long offset = 0; offset < size; offset += bytesPerLoop) {
                 outChannel.transferFrom(inChannel, offset, bytesPerLoop);
                 if (callback != null) {
@@ -123,17 +117,16 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Overrides the hole content of {@code outputFile} with {@code content}. If
-     * {@code pathToFile} doesn't exist it creates one.
+     * Overrides the hole content of {@code outputFile} with {@code content}. If {@code pathToFile} doesn't exist it
+     * creates one.
      *
-     * @param content    The content to be written into the file.
+     * @param content The content to be written into the file.
      * @param outputFile The file to write in.
-     * @param withBom    Only if {@code true} it adds '\uFEFF' to the beginning of
-     *                   the file.
+     * @param withBom Only if {@code true} it adds '\uFEFF' to the beginning of the file.
      */
     public static void printContent(String content, File outputFile, boolean withBom) {
         try (BufferedWriter bw
-                     = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
+                = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
             //To make no UTF-8 without BOM but with BOM (Big Endian).
             if (withBom) {
                 bw.append('\uFEFF');

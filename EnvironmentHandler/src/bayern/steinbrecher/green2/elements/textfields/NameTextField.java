@@ -13,29 +13,28 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.textfields;
 
 /**
  * It is the same as {@link CheckedTextField} but it adds a further CSS class {@link #CSS_CLASS_NAME_TEXTFIELD}.
  */
 public class NameTextField extends CheckedTextField {
+
     /**
      * The CSS class representing this class.
      */
     public static final String CSS_CLASS_NAME_TEXTFIELD = "name-textfield";
 
     /**
-     * Constructs a new {@link NameTextField} with an max input length of
-     * {@link Integer#MAX_VALUE} and no initial content.
+     * Constructs a new {@link NameTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
+     * content.
      */
     public NameTextField() {
         this(Integer.MAX_VALUE);
     }
 
     /**
-     * Constructs a new {@link NameTextField} with an max input length of
-     * {@code maxColumnCount} and no initial content.
+     * Constructs a new {@link NameTextField} with an max input length of {@code maxColumnCount} and no initial content.
      *
      * @param maxColumnCount The initial max input length.
      */
@@ -44,11 +43,11 @@ public class NameTextField extends CheckedTextField {
     }
 
     /**
-     * Constructs a new {@link NameTextField} with an max input length of
-     * {@code maxColumnCount} and {@code text} as initial content.
+     * Constructs a new {@link NameTextField} with an max input length of {@code maxColumnCount} and {@code text} as
+     * initial content.
      *
      * @param maxColumnCount The initial max input length.
-     * @param text           The initial content.
+     * @param text The initial content.
      */
     public NameTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);

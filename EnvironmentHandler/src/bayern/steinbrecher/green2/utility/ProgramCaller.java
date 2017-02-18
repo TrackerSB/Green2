@@ -13,20 +13,17 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import javafx.application.Platform;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 /**
- * Contains methods for calling programs of Green2 like configuration dialog or
- * the main application.
+ * Contains methods for calling programs of Green2 like configuration dialog or the main application.
  *
  * @author Stefan Huber
  */
@@ -37,7 +34,7 @@ public final class ProgramCaller {
      */
     public static final String PROGRAMFOLDER_PATH_LOCAL
             = (EnvironmentHandler.CURRENT_OS == EnvironmentHandler.OS.WINDOWS
-            ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/" : "/opt/")
+                    ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/" : "/opt/")
             + EnvironmentHandler.APPLICATION_FOLDER_NAME;
 
     private ProgramCaller() {

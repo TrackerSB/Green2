@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.people;
 
 import java.text.Collator;
@@ -37,17 +36,15 @@ public class Member implements Comparable<Member> {
     /**
      * Constructs a new member.
      *
-     * @param membershipnumber   The mandate number.
-     * @param person             The person itself.
-     * @param home               The homelocation.
-     * @param accountHolder      The owner of the account to book off the
-     *                           contribution.
-     * @param isActive           {@code true} only if this member is an active one.
-     * @param isContributionfree {@code true} only if this member does not have
-     *                           to pay contribution.
+     * @param membershipnumber The mandate number.
+     * @param person The person itself.
+     * @param home The homelocation.
+     * @param accountHolder The owner of the account to book off the contribution.
+     * @param isActive {@code true} only if this member is an active one.
+     * @param isContributionfree {@code true} only if this member does not have to pay contribution.
      */
     public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder, boolean isActive,
-                  boolean isContributionfree) {
+            boolean isContributionfree) {
         COLLATOR.setStrength(Collator.SECONDARY);
         this.membershipnumber = membershipnumber;
         this.person = person;

@@ -13,15 +13,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /**
  * Contains the hole application.
  * <p>
- * For using Green2 you need a MySQL database with at least the following tables
- * and attributes. (Green2 creates these tables for you if they not already
- * exist). This means at least for the first login you have to use an account
- * which is allowed to create tables. After the scheme is created you can use a
- * readonly account.
+ * For using Green2 you need a MySQL database with at least the following tables and attributes. (Green2 creates these
+ * tables for you if they not already exist). This means at least for the first login you have to use an account which
+ * is allowed to create tables. After the scheme is created you can use a readonly account.
  * <ol>
  * <li>Mitglieder
  * <ul>
@@ -40,14 +37,11 @@
  * <li>IBAN</li>
  * <li>BIC</li>
  * <li>mandateErstellt (The date when the member signed the direct debit)</li>
- * <li>KontoinhaberVorname (Only needed when Vorname is different from the
- * first name of the account holder)</li>
- * <li>KontoinhaberNachname (Only needed when Nachname is different from the
- * last name of the account holder)</li>
- * <li>istBeitragsfrei (0=has to pay contribution, 1=has not to pay
+ * <li>KontoinhaberVorname (Only needed when Vorname is different from the first name of the account holder)</li>
+ * <li>KontoinhaberNachname (Only needed when Nachname is different from the last name of the account holder)</li>
+ * <li>istBeitragsfrei (0=has to pay contribution, 1=has not to pay contribution)</li>
+ * <li>Beitrag (Optional. Used for setting individual contributions. If not specified Green2 asks for a default
  * contribution)</li>
- * <li>Beitrag (Optional. Used for setting individual contributions. If not
- * specified Green2 asks for a default contribution)</li>
  * </ul>
  * </li>
  * <li>Spitznamen

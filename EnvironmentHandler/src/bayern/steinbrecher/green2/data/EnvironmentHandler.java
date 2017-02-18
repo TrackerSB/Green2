@@ -13,13 +13,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.data;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +31,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  * Delivers access to different application wide useful paths, icons, etc.
@@ -104,8 +102,7 @@ public final class EnvironmentHandler {
      */
     private static final Path LICENSES_PATH = Paths.get(APPLICATION_ROOT.toString(), LICENSES_FOLDER_NAME);
     /**
-     * The path of the folder where to put user specific data of the
-     * application.
+     * The path of the folder where to put user specific data of the application.
      */
     public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
             ? "/AppData/Roaming/" : "/.") + APPLICATION_FOLDER_NAME;
@@ -163,10 +160,9 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Returns the value behind {@code key} of the resource bundle inserted
-     * params.
+     * Returns the value behind {@code key} of the resource bundle inserted params.
      *
-     * @param key    The key to search for.
+     * @param key The key to search for.
      * @param params The params to insert.
      * @return The value with inserted params.
      */
@@ -180,12 +176,10 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Returns a list of values behind {@code key} of the resource bundle and
-     * with inserted params.
+     * Returns a list of values behind {@code key} of the resource bundle and with inserted params.
      *
-     * @param key    The key to search for.
-     * @param params The list of params to insert each in the value behind
-     *               {@code key}.
+     * @param key The key to search for.
+     * @param params The list of params to insert each in the value behind {@code key}.
      * @return The list of values with inserted params.
      */
     public static List<String> getResourceValues(String key, List<Object[]> params) {
@@ -211,7 +205,7 @@ public final class EnvironmentHandler {
      * Loads the profile with name {@code profileName}.
      *
      * @param profileName The name of the profile to load.
-     * @param newProfile  {@code true} if it is new and does not exist yet.
+     * @param newProfile {@code true} if it is new and does not exist yet.
      * @return The loaded profile.
      */
     public static Profile loadProfile(String profileName, boolean newProfile) {
@@ -248,7 +242,7 @@ public final class EnvironmentHandler {
     /**
      * Opens a dialog asking the user to choose a directory.
      *
-     * @param owner      The owner of the dialog.
+     * @param owner The owner of the dialog.
      * @param filePrefix The name of the file which may be extended by a number if it already exists.
      * @param fileEnding The format of the file. NOTE: Without leading point.
      * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.

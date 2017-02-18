@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.exception;
 
 /**
@@ -42,15 +41,14 @@ public class SchemeCreationException extends Exception {
     }
 
     /**
-     * Constructs a new exception with the specified detail message and
-     * cause.  <p>Note that the detail message associated with
-     * {@code cause} is <i>not</i> automatically incorporated in
-     * this exception's detail message.
+     * Constructs a new exception with the specified detail message and cause.
+     * <p>
+     * Note that the detail message associated with {@code cause} is <i>not</i> automatically incorporated in this
+     * exception's detail message.
      *
      * @param message The detail message.
-     * @param cause   The cause.  (A <tt>null</tt> value is
-     *                permitted, and indicates that the cause is nonexistent or
-     *                unknown.)
+     * @param cause The cause. (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
+     * unknown.)
      */
     public SchemeCreationException(String message, Throwable cause) {
         super(message, cause);

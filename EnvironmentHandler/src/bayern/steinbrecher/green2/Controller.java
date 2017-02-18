@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2;
 
 import javafx.fxml.Initializable;
@@ -31,14 +30,13 @@ public abstract class Controller implements Initializable {
      */
     protected Stage stage = null;
     /**
-     * Only {@code true} when the user explicitly aborted his input. (E.g.
-     * pressing the X of the window.)
+     * Only {@code true} when the user explicitly aborted his input. (E.g. pressing the X of the window.)
      */
     private boolean userAborted = false;
 
     /**
-     * Sets the stage the controller can refer to. (E.g. for closing the stage)
-     * NOTE: It overrides {@link Stage#onCloseRequest}.
+     * Sets the stage the controller can refer to. (E.g. for closing the stage) NOTE: It overrides
+     * {@link Stage#onCloseRequest}.
      *
      * @param stage The stage to refer to.
      */

@@ -13,12 +13,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.connection;
 
 import bayern.steinbrecher.green2.exception.AuthException;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
-
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -49,12 +47,11 @@ public final class DefaultConnection extends DBConnection {
     /**
      * Constructs a new database connection.
      *
-     * @param databaseHost     The address of the database host.
+     * @param databaseHost The address of the database host.
      * @param databaseUsername The username for the database.
-     * @param databasePasswd   The password for the database.
-     * @param databaseName     The name of the database to connect to.
-     * @throws AuthException        Is thrown if some username, password or address is
-     *                              wrong.
+     * @param databasePasswd The password for the database.
+     * @param databaseName The name of the database to connect to.
+     * @throws AuthException Is thrown if some username, password or address is wrong.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      */
     public DefaultConnection(String databaseHost, String databaseUsername, String databasePasswd, String databaseName)
@@ -64,8 +61,8 @@ public final class DefaultConnection extends DBConnection {
                 databaseHost += "/";
             }
             connection = DriverManager.getConnection(DRIVER_PROTOCOL + databaseHost + databaseName
-                            + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
-                            + "&serverTimezone=UTC",
+                    + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
+                    + "&serverTimezone=UTC",
                     databaseUsername, databasePasswd);
         } catch (SQLException ex) {
             Logger.getLogger(DefaultConnection.class.getName()).log(Level.SEVERE, null, ex);

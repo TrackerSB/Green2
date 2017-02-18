@@ -13,21 +13,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.textfields;
 
+import java.nio.charset.Charset;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.TextField;
 
-import java.nio.charset.Charset;
-
 /**
- * Represents a {@link TextField} for entering a {@link Charset}. It also checks whether the current system supports
- * the entered {@link Charset}.
+ * Represents a {@link TextField} for entering a {@link Charset}. It also checks whether the current system supports the
+ * entered {@link Charset}.
  */
 public final class CharsetTextField extends CheckedTextField {
+
     private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
 
     public CharsetTextField() {

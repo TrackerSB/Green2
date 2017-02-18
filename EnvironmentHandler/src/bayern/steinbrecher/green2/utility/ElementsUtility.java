@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import javafx.beans.property.BooleanProperty;
@@ -26,6 +25,7 @@ import javafx.scene.Parent;
  * Contains methods useful for many custom controls of {@code bayern.steinbrecher.green2.elements}.
  */
 public final class ElementsUtility {
+
     public static final String CSS_CLASS_INVALID_CONTENT = "invalidContent";
 
     private ElementsUtility() {
@@ -33,13 +33,13 @@ public final class ElementsUtility {
     }
 
     /**
-     * Adds {@code cssClass} to the style classes of {@code parent} if {@code observable} holds {@code true}.
-     * Otherwise it removes the style class. NOTE: When passing bindings directly make sure they are not garbage
-     * collected. It is recommended to pass a {@link BooleanProperty} which may be bound.
+     * Adds {@code cssClass} to the style classes of {@code parent} if {@code observable} holds {@code true}. Otherwise
+     * it removes the style class. NOTE: When passing bindings directly make sure they are not garbage collected. It is
+     * recommended to pass a {@link BooleanProperty} which may be bound.
      *
-     * @param parent     The parent to add/remove the given style class.
+     * @param parent The parent to add/remove the given style class.
      * @param observable The value to observe.
-     * @param cssClass   The style class to add/remove.
+     * @param cssClass The style class to add/remove.
      */
     public static void addCssClassIf(Parent parent, ObservableBooleanValue observable, String cssClass) {
         ChangeListener<Boolean> changeListener = (obs, oldVal, newVal) -> {

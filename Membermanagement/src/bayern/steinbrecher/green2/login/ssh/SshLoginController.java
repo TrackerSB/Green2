@@ -13,21 +13,19 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.login.ssh;
 
 import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
 import bayern.steinbrecher.green2.login.LoginKey;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
 
 /**
  * The controller for SshLogin.fxml.

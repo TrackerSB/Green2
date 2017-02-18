@@ -13,20 +13,9 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.data;
 
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.StringExpression;
-import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,6 +31,15 @@ import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.beans.InvalidationListener;
+import javafx.beans.binding.StringExpression;
+import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 
 /**
  * Contains all settings of a profile.
@@ -53,8 +51,7 @@ public class Profile {
     private static final String CONFIGFILE_FORMAT = ".conf";
     private static final String ORIGINATORFILE_FORMAT = ".properties";
     /**
-     * The symbol used to separate the config key on the left side and the value
-     * on the right side of profile files.
+     * The symbol used to separate the config key on the left side and the value on the right side of profile files.
      */
     public static final String VALUE_SEPARATOR = ":";
     /**
@@ -67,31 +64,29 @@ public class Profile {
      */
     private boolean allConfigurationsSet;
     /**
-     * Representing a function for calculating whether a person with a specific
-     * age gets notified.
+     * Representing a function for calculating whether a person with a specific age gets notified.
      */
     private IntFunction<Boolean> ageFunction;
     private StringProperty profileName = new SimpleStringProperty();
     private boolean newProfile;
     /**
-     * The path where the file containing information about the last valid
-     * inserted data about an originator of a SEPA direct debit. (There does
-     * need to be a file yet)
+     * The path where the file containing information about the last valid inserted data about an originator of a SEPA
+     * direct debit. (There does need to be a file yet)
      */
     private StringExpression originatorInfoPath
             = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
-            .concat("/")
-            .concat(profileName)
-            .concat(ORIGINATORFILE_FORMAT);
+                    .concat("/")
+                    .concat(profileName)
+                    .concat(ORIGINATORFILE_FORMAT);
     private Property<File> originatorInfoFile = new SimpleObjectProperty<>();
     /**
      * The path to the configfile. (May not exist, yet)
      */
     private StringExpression configFilePath
             = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
-            .concat("/")
-            .concat(profileName)
-            .concat(CONFIGFILE_FORMAT);
+                    .concat("/")
+                    .concat(profileName)
+                    .concat(CONFIGFILE_FORMAT);
     /**
      * The file to the configurations for Green2.
      */
@@ -232,9 +227,8 @@ public class Profile {
     }
 
     /**
-     * Renames the profile if no other profile with name {@code newName} exists.
-     * If this profile already is named {@code newName} nothing happens. This
-     * method will affect the profile immediately.
+     * Renames the profile if no other profile with name {@code newName} exists. If this profile already is named
+     * {@code newName} nothing happens. This method will affect the profile immediately.
      *
      * @param newName The new profile name.
      */
@@ -286,20 +280,20 @@ public class Profile {
     }
 
     /**
-     * Returns the value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
+     * Returns the value belonging to key {@code key} or {@code defaultValue} if {@code key} could not be found or is
+     * not specified.
      *
-     * @param <T>          The type of the value {@code key} holds.
-     * @param key          The key to search for.
+     * @param <T> The type of the value {@code key} holds.
+     * @param key The key to search for.
      * @param defaultValue The value to return when {@code key} was not found.
-     * @return The value belonging to key {@code key} or {@code defaultValue} if
-     * {@code key} could not be found or is not specified.
+     * @return The value belonging to key {@code key} or {@code defaultValue} if {@code key} could not be found or is
+     * not specified.
      */
     public <T> T getOrDefault(ConfigKey key, T defaultValue) {
         //FIXME Wait for JDK 9 in order to use generic enums
         if (!key.getValueClass().isAssignableFrom(defaultValue.getClass())) {
             throw new IllegalArgumentException("Type of defaultValue and the type of the value key represents have to "
-                    + "be the same. (Still waiting for generic enums to fix this on compile time... :-( )");
+                    + "be the same. (Still waiting for generic enums to check this on compile time... :-( )");
         }
         if (configurations.containsKey(key)) {
             String value = configurations.get(key).getValue();
@@ -332,9 +326,9 @@ public class Profile {
     /**
      * Sets a configuration.
      *
-     * @param key   The key of the configuration to set.
+     * @param key The key of the configuration to set.
      * @param value The value to set for {@code key}.
-     * @param <T>   The type of the value.
+     * @param <T> The type of the value.
      */
     public <T> void set(ConfigKey key, T value) {
         //FIXME Wait for JDK 9 in order to use generic enums
@@ -356,11 +350,9 @@ public class Profile {
     }
 
     /**
-     * Returns the function for calculating whether a person of a certain age
-     * has to be notified.
+     * Returns the function for calculating whether a person of a certain age has to be notified.
      *
-     * @return The function for calculating whether a person of a certain age
-     * has to be notified.
+     * @return The function for calculating whether a person of a certain age has to be notified.
      */
     public IntFunction<Boolean> getAgeFunction() {
         checkDeleted();
@@ -377,11 +369,11 @@ public class Profile {
     }
 
     /**
-     * Returns the file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not guaranteed that this file exists.
+     * Returns the file containing originator infos for SEPA Direct Debits. NOTE: It is not guaranteed that this file
+     * exists.
      *
-     * @return The file containing originator infos for SEPA Direct
-     * Debits. NOTE: It is not guaranteed that this file exists.
+     * @return The file containing originator infos for SEPA Direct Debits. NOTE: It is not guaranteed that this file
+     * exists.
      */
     public File getOriginatorInfoFile() {
         checkDeleted();

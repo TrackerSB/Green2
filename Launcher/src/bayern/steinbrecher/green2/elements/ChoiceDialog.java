@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -67,9 +66,8 @@ public class ChoiceDialog extends Application {
     }
 
     /**
-     * This method opens a window asking the user whether to install updates,
-     * blocks until the user closes the window or presses a button and returns
-     * the users choice.
+     * This method opens a window asking the user whether to install updates, blocks until the user closes the window or
+     * presses a button and returns the users choice.
      *
      * @return {@code true} only if the user presses "YES".
      */

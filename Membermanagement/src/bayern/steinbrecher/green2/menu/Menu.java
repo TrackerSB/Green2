@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.View;
@@ -36,8 +35,7 @@ public class Menu extends View<MenuController> {
     /**
      * Constructs a menu.
      *
-     * @param caller The object for calling the functions represented by the
-     *               menu.
+     * @param caller The object for calling the functions represented by the menu.
      */
     public Menu(MemberManagement caller) {
         this.caller = caller;

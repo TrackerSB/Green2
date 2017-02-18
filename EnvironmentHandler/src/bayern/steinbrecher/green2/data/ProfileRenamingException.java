@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.data;
 
 /**
@@ -22,6 +21,7 @@ package bayern.steinbrecher.green2.data;
  * @author Stefan Huber
  */
 public class ProfileRenamingException extends RuntimeException {
+
     /**
      * Creates an exception without detail message and no cause.
      */
@@ -42,7 +42,7 @@ public class ProfileRenamingException extends RuntimeException {
      * Creates an exception with detail message and cause.
      *
      * @param message The detail message.
-     * @param cause   The cause of this exception
+     * @param cause The cause of this exception
      */
     public ProfileRenamingException(String message, Throwable cause) {
         super(message, cause);

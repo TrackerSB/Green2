@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.textfields;
 
 import com.sun.javafx.scene.control.behavior.PasswordFieldBehavior;
@@ -22,8 +21,8 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 
 /**
- * Represents a password field which recognizes empty content and may set a css
- * class attribute to signal it. It also adds {@link CheckedPasswordField#CSS_CLASS_CHECKED_PASSWORD_FIELD}.
+ * Represents a password field which recognizes empty content and may set a css class attribute to signal it. It also
+ * adds {@link CheckedPasswordField#CSS_CLASS_CHECKED_PASSWORD_FIELD}.
  *
  * @author Stefan Huber
  */
@@ -35,16 +34,16 @@ public class CheckedPasswordField extends CheckedTextField {
     public static final String CSS_CLASS_CHECKED_PASSWORD_FIELD = "checked-password-field";
 
     /**
-     * Constructs a new {@link CheckedPasswordField} with an max input length
-     * of {@link Integer#MAX_VALUE} and no initial content.
+     * Constructs a new {@link CheckedPasswordField} with an max input length of {@link Integer#MAX_VALUE} and no
+     * initial content.
      */
     public CheckedPasswordField() {
         this(Integer.MAX_VALUE);
     }
 
     /**
-     * Constructs a new {@link CheckedPasswordField} with a maximum column
-     * count of {@code maxColumnCount} and no content.
+     * Constructs a new {@link CheckedPasswordField} with a maximum column count of {@code maxColumnCount} and no
+     * content.
      *
      * @param maxColumnCount The initial maximum column count.
      */
@@ -53,11 +52,11 @@ public class CheckedPasswordField extends CheckedTextField {
     }
 
     /**
-     * Constructs a new {@link CheckedPasswordField} with a maximum column
-     * count of {@code maxColumnCount} and initial content {@code text}.
+     * Constructs a new {@link CheckedPasswordField} with a maximum column count of {@code maxColumnCount} and initial
+     * content {@code text}.
      *
      * @param maxColumnCount The initial maximum column count.
-     * @param text           The initial content.
+     * @param text The initial content.
      */
     public CheckedPasswordField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
@@ -96,8 +95,7 @@ public class CheckedPasswordField extends CheckedTextField {
     }
 
     /**
-     * The Skin used to mask the checked passwordfield in order to hide the
-     * password itself.
+     * The Skin used to mask the checked passwordfield in order to hide the password itself.
      */
     private class PasswordFieldSkin extends TextFieldSkin {
 
@@ -111,11 +109,10 @@ public class CheckedPasswordField extends CheckedTextField {
         }
 
         /**
-         * Constructs a new skin for masking {@link CheckedPasswordField} with
-         * the given behavior.
+         * Constructs a new skin for masking {@link CheckedPasswordField} with the given behavior.
          *
          * @param checkedPasswordField The passwordfield to mask.
-         * @param behavior             The behavior for masking the passwordfield.
+         * @param behavior The behavior for masking the passwordfield.
          */
         public PasswordFieldSkin(CheckedPasswordField checkedPasswordField, PasswordFieldBehavior behavior) {
             super(checkedPasswordField, behavior);

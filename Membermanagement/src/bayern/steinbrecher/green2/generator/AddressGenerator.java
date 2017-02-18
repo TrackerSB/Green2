@@ -13,21 +13,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.generator;
 
 import bayern.steinbrecher.green2.people.Address;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Person;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a generator for generating a table of member with their names,
- * addresses and their salutation. The salutation uses given nicknames instead
- * of the real name.
+ * Represents a generator for generating a table of member with their names, addresses and their salutation. The
+ * salutation uses given nicknames instead of the real name.
  *
  * @author Stefan Huber
  */
@@ -41,11 +38,10 @@ public class AddressGenerator {
     }
 
     /**
-     * Generates a {@link String} representing a CSV-file of member with their
-     * addresses and their salutation. It also contains column labels and you
-     * can import it into Word for serial letters.
+     * Generates a {@link String} representing a CSV-file of member with their addresses and their salutation. It also
+     * contains column labels and you can import it into Word for serial letters.
      *
-     * @param member    The member to generate output for.
+     * @param member The member to generate output for.
      * @param nicknames The nicknames to use for addresses.
      * @return The content for the output CSV file.
      */
@@ -58,12 +54,10 @@ public class AddressGenerator {
     }
 
     /**
-     * Creates a list with salutations for the given member in the same order as
-     * the member.
+     * Creates a list with salutations for the given member in the same order as the member.
      *
-     * @param member    The member to create an salutations for.
-     * @param nicknames The map containing the nicknames used for the
-     *                  salutations.
+     * @param member The member to create an salutations for.
+     * @param nicknames The map containing the nicknames used for the salutations.
      * @return A list with appropriate salutations.
      */
     private static List<String> createSalutations(List<Member> member, Map<String, String> nicknames) {
@@ -79,12 +73,11 @@ public class AddressGenerator {
     }
 
     /**
-     * Creates output representing {@link Member}. The order is not guaranteed.
-     * But the first row will contain column labels (german).
+     * Creates output representing {@link Member}. The order is not guaranteed. But the first row will contain column
+     * labels (german).
      *
-     * @param member      The list of member to create output for.
-     * @param salutations The list containing the appropriate salutations for the
-     *                    member.
+     * @param member The list of member to create output for.
+     * @param salutations The list containing the appropriate salutations for the member.
      * @return A String representing the output.
      */
     private static String createOutput(List<Member> member, List<String> salutations) {

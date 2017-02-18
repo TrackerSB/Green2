@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.configDialog;
 
 import bayern.steinbrecher.green2.CheckedController;
@@ -24,14 +23,6 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.BooleanExpression;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +30,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.BooleanExpression;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 
 /**
  * Controller of the dialog for configuring Green2.
@@ -131,11 +129,9 @@ public class ConfigDialogController extends CheckedController {
     }
 
     /**
-     * Returns the property containing a value indicating whether the current
-     * profile could be renamed to given profile.
+     * Returns the property containing a value indicating whether the current profile could be renamed to given profile.
      *
-     * @return The property containing a value indicating whether the current
-     * profile could be renamed to given profile.
+     * @return The property containing a value indicating whether the current profile could be renamed to given profile.
      */
     public ReadOnlyBooleanProperty profileAlreadyExistsProperty() {
         return profileAlreadyExists;
@@ -144,8 +140,7 @@ public class ConfigDialogController extends CheckedController {
     /**
      * Checks whether the current profile could be renamed to given profile.
      *
-     * @return {@code true} only if the current profile could be renamed to
-     * given profile.
+     * @return {@code true} only if the current profile could be renamed to given profile.
      */
     public boolean isProfileAlreadyExists() {
         return profileAlreadyExists.get();

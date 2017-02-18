@@ -13,22 +13,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.contribution;
 
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Represents the contribution inserted.
@@ -49,8 +47,7 @@ public class Contribution extends WizardableView<Optional<Double>, ContributionC
     /**
      * Creates a contribution dialog.
      *
-     * @param owner The owner which causes this window to close if the owner is
-     *              closed. The owner is not blocked.
+     * @param owner The owner which causes this window to close if the owner is closed. The owner is not blocked.
      */
     public Contribution(Stage owner) {
         this.owner = owner;
@@ -74,12 +71,10 @@ public class Contribution extends WizardableView<Optional<Double>, ContributionC
     }
 
     /**
-     * Opens the contribution window if no other process yet opened one, blocks
-     * until the window is closed and returns the value entered in the
-     * {@link TextField}. Returns {@link Optional#empty()} if the user did not
-     * confirm the contribution. The window will only be opened ONCE; even if
-     * multiple threads are calling this function. They will be blocked until
-     * the window is closed.
+     * Opens the contribution window if no other process yet opened one, blocks until the window is closed and returns
+     * the value entered in the {@link TextField}. Returns {@link Optional#empty()} if the user did not confirm the
+     * contribution. The window will only be opened ONCE; even if multiple threads are calling this function. They will
+     * be blocked until the window is closed.
      *
      * @return The value entered in the the {@link TextField} if any.
      * @see ContributionController#getContribution()

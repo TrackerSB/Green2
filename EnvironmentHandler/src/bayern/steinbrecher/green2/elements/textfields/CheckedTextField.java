@@ -13,11 +13,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.textfields;
 
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -29,16 +30,11 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Represents text fields that detect whether their input text is longer than a
- * given maximum column count. These text fields do not stop users from entering
- * too long text. On the one hand they can tell you whether the input is too
- * long, on the other hand they set {@link #CSS_CLASS_TOO_LONG_CONTENT} when the
- * content is too long and {@link #CSS_CLASS_NO_CONTENT} when there´s no content
- * as one of their css classes if checked is set to {@code true}.
+ * Represents text fields that detect whether their input text is longer than a given maximum column count. These text
+ * fields do not stop users from entering too long text. On the one hand they can tell you whether the input is too
+ * long, on the other hand they set {@link #CSS_CLASS_TOO_LONG_CONTENT} when the content is too long and
+ * {@link #CSS_CLASS_NO_CONTENT} when there´s no content as one of their css classes if checked is set to {@code true}.
  * If any condition is false, {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} is set. Also
  * {@link #CSS_CLASS_CHECKED_TEXTFIELD} is added.
  *
@@ -51,13 +47,11 @@ public class CheckedTextField extends TextField {
      */
     public static final String CSS_CLASS_CHECKED_TEXTFIELD = "checked-textfield";
     /**
-     * Holds the string representation of the css class attribute added when the
-     * content of this text field is too long.
+     * Holds the string representation of the css class attribute added when the content of this text field is too long.
      */
     public static final String CSS_CLASS_TOO_LONG_CONTENT = "toLongContent";
     /**
-     * Holds the string representation of the css class attribute added when
-     * there´s no content in this field.
+     * Holds the string representation of the css class attribute added when there´s no content in this field.
      */
     public static final String CSS_CLASS_NO_CONTENT = "emptyTextField";
     /**
@@ -78,8 +72,8 @@ public class CheckedTextField extends TextField {
     private final BooleanProperty toLongContent = new SimpleBooleanProperty(this, "toLongContent");
     private final Property<ObservableBooleanValue> condition = new SimpleObjectProperty<>(this, "condition");
     /**
-     * Holds {@code true} only if the content is valid. {@code true} if one of
-     * the following is true (as implemented by this class):
+     * Holds {@code true} only if the content is valid. {@code true} if one of the following is true (as implemented by
+     * this class):
      * <ol>
      * <li>This field is not checked</li>
      * <li>It is not empty and the content is not too long</li>
@@ -91,16 +85,16 @@ public class CheckedTextField extends TextField {
     private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
 
     /**
-     * Constructs a new {@link CheckedTextField} with an max input length of
-     * {@link Integer#MAX_VALUE} and no initial content.
+     * Constructs a new {@link CheckedTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
+     * content.
      */
     public CheckedTextField() {
         this(Integer.MAX_VALUE);
     }
 
     /**
-     * Constructs a new {@link CheckedTextField} with an max input length of
-     * {@code maxColumnCount} and no initial content.
+     * Constructs a new {@link CheckedTextField} with an max input length of {@code maxColumnCount} and no initial
+     * content.
      *
      * @param maxColumnCount The initial max input length.
      */
@@ -109,11 +103,11 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Constructs a new {@link CheckedTextField} with an max input length of
-     * {@code maxColumnCount} and {@code text} as initial content.
+     * Constructs a new {@link CheckedTextField} with an max input length of {@code maxColumnCount} and {@code text} as
+     * initial content.
      *
      * @param maxColumnCount The initial max input length.
-     * @param text           The initial content.
+     * @param text The initial content.
      */
     public CheckedTextField(int maxColumnCount, String text) {
         super(text);
@@ -170,8 +164,7 @@ public class CheckedTextField extends TextField {
     /**
      * Represents whether this text field is checked or not.
      *
-     * @return The property representing whether this text field is checked or
-     * not.
+     * @return The property representing whether this text field is checked or not.
      */
     public BooleanProperty checkedProperty() {
         return checked;
@@ -189,8 +182,7 @@ public class CheckedTextField extends TextField {
     /**
      * Sets whether to check the content of this field or not.
      *
-     * @param checked {@code true} only if the content of this field has to be
-     *                checked.
+     * @param checked {@code true} only if the content of this field has to be checked.
      */
     public void setChecked(boolean checked) {
         this.checked.set(checked);
@@ -215,19 +207,17 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Returns the property representing whether the current content of the text
-     * field is too long.
+     * Returns the property representing whether the current content of the text field is too long.
      *
-     * @return The property representing whether the current content of the text
-     * field is too long.
+     * @return The property representing whether the current content of the text field is too long.
      */
     public ReadOnlyBooleanProperty toLongProperty() {
         return toLongContent;
     }
 
     /**
-     * Checks whether the currently inserted text is too long. The input may be
-     * too long even if it is valid. E.g. when the text field is not checked.
+     * Checks whether the currently inserted text is too long. The input may be too long even if it is valid. E.g. when
+     * the text field is not checked.
      *
      * @return {@code true} only if the current content is too long.
      */

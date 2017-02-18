@@ -13,14 +13,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.generator;
 
 import bayern.steinbrecher.green2.people.AccountHolder;
 import bayern.steinbrecher.green2.people.Address;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Person;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -45,9 +43,8 @@ public class MemberGenerator {
     /**
      * Generates a list of member out of {@code queryResult}.
      *
-     * @param queryResult The table that hold the member informations. First
-     *                    dimension has to be row; second column. Each row is treated as one
-     *                    member. First row has to contain the headings.
+     * @param queryResult The table that hold the member informations. First dimension has to be row; second column.
+     * Each row is treated as one member. First row has to contain the headings.
      * @return The resulting list of member.
      */
     public static List<Member> generateMemberList(List<List<String>> queryResult) {

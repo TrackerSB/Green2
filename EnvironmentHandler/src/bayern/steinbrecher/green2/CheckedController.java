@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2;
 
 import javafx.beans.property.BooleanProperty;
@@ -21,8 +20,8 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * This controller extends {@link Controller} with the properties
- * {@code anyMissingInput}, {@code anyInputToLong} and {@code valid}.
+ * This controller extends {@link Controller} with the properties {@code anyMissingInput}, {@code anyInputToLong} and
+ * {@code valid}.
  *
  * @author Stefan Huber
  */
@@ -32,11 +31,9 @@ public abstract class CheckedController extends WizardableController {
     protected final BooleanProperty anyInputMissing = new SimpleBooleanProperty(this, "anyInputMissing");
 
     /**
-     * Returns the property representing a boolean value indicating whether any
-     * input is to long.
+     * Returns the property representing a boolean value indicating whether any input is to long.
      *
-     * @return The property representing a boolean value indicating whether any
-     * input is to long.
+     * @return The property representing a boolean value indicating whether any input is to long.
      */
     public ReadOnlyBooleanProperty anyInputToLongProperty() {
         return anyInputToLong;
@@ -52,11 +49,9 @@ public abstract class CheckedController extends WizardableController {
     }
 
     /**
-     * Returns the property representing a boolean value indicating whether any
-     * input is missing.
+     * Returns the property representing a boolean value indicating whether any input is missing.
      *
-     * @return The property representing a boolean value indicating whether any
-     * input is missing.
+     * @return The property representing a boolean value indicating whether any input is missing.
      */
     public ReadOnlyBooleanProperty anyInputMissingProperty() {
         return anyInputMissing;
@@ -72,11 +67,9 @@ public abstract class CheckedController extends WizardableController {
     }
 
     /**
-     * Returns the property representing a boolean value indicating whether all
-     * input is valid.
+     * Returns the property representing a boolean value indicating whether all input is valid.
      *
-     * @return The property representing a boolean value indicating whether all
-     * input is valid.
+     * @return The property representing a boolean value indicating whether all input is valid.
      */
     public ReadOnlyBooleanProperty validProperty() {
         return valid;

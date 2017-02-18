@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2;
 
 import javafx.beans.property.BooleanProperty;
@@ -30,11 +29,9 @@ public abstract class WizardableController extends Controller {
     protected BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
 
     /**
-     * Returns the property containing whether the current input of this
-     * controller is valid.
+     * Returns the property containing whether the current input of this controller is valid.
      *
-     * @return The property containing whether the current input of this
-     * controller is valid.
+     * @return The property containing whether the current input of this controller is valid.
      */
     public ReadOnlyBooleanProperty validProperty() {
         return valid;

@@ -13,7 +13,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.people;
 
 /**
@@ -28,10 +27,10 @@ public class Address {
     /**
      * Constructs a new Address.
      *
-     * @param street      The street name.
+     * @param street The street name.
      * @param houseNumber The houseNumber
-     * @param postcode    The postal code.
-     * @param place       The village/town.
+     * @param postcode The postal code.
+     * @param place The village/town.
      */
     public Address(String street, String houseNumber, String postcode, String place) {
         this.street = street;

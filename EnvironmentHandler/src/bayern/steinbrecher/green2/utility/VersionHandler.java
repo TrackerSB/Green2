@@ -13,11 +13,9 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -26,8 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represents a class handling HTTP(S)-connections and handling the version
- * database.
+ * Represents a class handling HTTP(S)-connections and handling the version database.
  *
  * @author Stefan Huber
  */
@@ -38,22 +35,21 @@ public class VersionHandler {
      */
     public static final String PROGRAMFOLDER_PATH_ONLINE
             = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
-            .orElse("");
+                    .orElse("");
     /**
      * The key used in the preferences to store the current version.
      */
     private static final String VERSION_KEY = "version";
     /**
-     * The URL of the version file describing the version of the files at
-     * {@code PROGRAMFOLDER_PATH_ONLINE}.
+     * The URL of the version file describing the version of the files at {@code PROGRAMFOLDER_PATH_ONLINE}.
      */
     private static final String VERSIONFILE_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
 
     /**
      * Returns the version of the application on the repository.
      *
-     * @return The version of the application on the repository. Returns
-     * {@link Optional#empty()} only if the online version could not be read.
+     * @return The version of the application on the repository. Returns {@link Optional#empty()} only if the online
+     * version could not be read.
      */
     public static Optional<String> readOnlineVersion() {
         try {
@@ -69,9 +65,8 @@ public class VersionHandler {
     /**
      * Returns the currently installed version of this application.
      *
-     * @return The currently installed version of the application. Returns
-     * {@link Optional#empty()} if this application is not installed yet or the
-     * version could not be read.
+     * @return The currently installed version of the application. Returns {@link Optional#empty()} if this application
+     * is not installed yet or the version could not be read.
      */
     public static Optional<String> readLocalVersion() {
         return Optional.ofNullable(EnvironmentHandler.PREFERENCES_NODE.get(VERSION_KEY, null));

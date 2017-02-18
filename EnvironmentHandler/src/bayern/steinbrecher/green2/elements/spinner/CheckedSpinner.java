@@ -13,10 +13,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.utility.ElementsUtility;
+import java.security.PrivilegedActionException;
+import java.util.function.Function;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -24,16 +25,14 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
-import java.security.PrivilegedActionException;
-import java.util.function.Function;
-
 /**
- * Extends the class {@link Spinner<T>} with a valid property and sets
- * {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} if the content of the spinner is not valid.
+ * Extends the class {@link Spinner<T>} with a valid property and sets {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT}
+ * if the content of the spinner is not valid.
  *
  * @author Stefan Huber
  */
 public class CheckedSpinner<T> extends Spinner<T> {
+
     /**
      * {@link BooleanProperty} indicating whether the current value is valid.
      */
@@ -44,8 +43,8 @@ public class CheckedSpinner<T> extends Spinner<T> {
      * Constructs a new {@code CheckedSpinner}.
      *
      * @param factory The factory generating values.
-     * @param parser  The function to parse the content of the Spinner. (It throws a {@link ParseException} if the
-     *                value could not be parsed.)
+     * @param parser The function to parse the content of the Spinner. (It throws a {@link ParseException} if the value
+     * could not be parsed.)
      */
     public CheckedSpinner(SpinnerValueFactory<T> factory, ParseFunction<T> parser) {
         super(factory);
@@ -65,11 +64,9 @@ public class CheckedSpinner<T> extends Spinner<T> {
     }
 
     /**
-     * Returns the {@link BooleanProperty} representing whether the current
-     * value is valid or not.
+     * Returns the {@link BooleanProperty} representing whether the current value is valid or not.
      *
-     * @return The {@link BooleanProperty} representing whether the current
-     * value is valid or not.
+     * @return The {@link BooleanProperty} representing whether the current value is valid or not.
      */
     public ReadOnlyBooleanProperty validProperty() {
         return valid;
@@ -85,11 +82,11 @@ public class CheckedSpinner<T> extends Spinner<T> {
     }
 
     /**
-     * This interface is very similar to {@link Function} but it contains a method throwing a
-     * {@link ParseException}.
+     * This interface is very similar to {@link Function} but it contains a method throwing a {@link ParseException}.
      */
     @FunctionalInterface
     public interface ParseFunction<T> {
+
         /**
          * Parses the given String to T.
          *
@@ -103,6 +100,7 @@ public class CheckedSpinner<T> extends Spinner<T> {
      * Signals that the value of a Spinner&lt;T&gt; could not be parsed to T.
      */
     public static class ParseException extends Exception {
+
         /**
          * Constructs a new exception with {@code null} as its detail message and no cause.
          */
@@ -120,31 +118,27 @@ public class CheckedSpinner<T> extends Spinner<T> {
         }
 
         /**
-         * Constructs a new exception with the specified detail message and
-         * cause.  <p>Note that the detail message associated with
-         * {@code cause} is <i>not</i> automatically incorporated in
-         * this exception's detail message.
+         * Constructs a new exception with the specified detail message and cause.
+         * <p>
+         * Note that the detail message associated with {@code cause} is <i>not</i> automatically incorporated in this
+         * exception's detail message.
          *
          * @param message The detail message.
-         * @param cause   The cause.  (A <tt>null</tt> value is
-         *                permitted, and indicates that the cause is nonexistent or
-         *                unknown.)
+         * @param cause The cause. (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
+         * unknown.)
          */
         public ParseException(String message, Throwable cause) {
             super(message, cause);
         }
 
         /**
-         * Constructs a new exception with the specified cause and a detail
-         * message of <tt>(cause==null ? null : cause.toString())</tt> (which
-         * typically contains the class and detail message of <tt>cause</tt>).
-         * This constructor is useful for exceptions that are little more than
-         * wrappers for other throwables (for example, {@link PrivilegedActionException}).
+         * Constructs a new exception with the specified cause and a detail message of <tt>(cause==null ? null :
+         * cause.toString())</tt> (which typically contains the class and detail message of <tt>cause</tt>). This
+         * constructor is useful for exceptions that are little more than wrappers for other throwables (for example,
+         * {@link PrivilegedActionException}).
          *
-         * @param cause the cause (which is saved for later retrieval by the
-         *              {@link #getCause()} method).  (A <tt>null</tt> value is
-         *              permitted, and indicates that the cause is nonexistent or
-         *              unknown.)
+         * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A
+         * <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or unknown.)
          */
         public ParseException(Throwable cause) {
             super(cause);

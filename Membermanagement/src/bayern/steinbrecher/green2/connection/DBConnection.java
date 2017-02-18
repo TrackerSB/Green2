@@ -13,14 +13,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bayern.steinbrecher.green2.connection;
 
 import bayern.steinbrecher.green2.exception.SchemeCreationException;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.menu.Menu;
 import bayern.steinbrecher.green2.people.Member;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,8 +38,7 @@ import java.util.stream.Collectors;
 public abstract class DBConnection implements AutoCloseable {
 
     /**
-     * A list containing all names of needed columns for queries in the member
-     * table.
+     * A list containing all names of needed columns for queries in the member table.
      */
     public static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
             Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel", "istmaennlich", "istaktiv", "geburtstag",
@@ -92,8 +89,7 @@ public abstract class DBConnection implements AutoCloseable {
      * Executes a query and returns the result.
      *
      * @param sqlCode The sql code to execute.
-     * @return Table containing the results AND the headings of each column.
-     * First dimension rows; second columns.
+     * @return Table containing the results AND the headings of each column. First dimension rows; second columns.
      * @throws SQLException Thrown if the sql code is invalid.
      */
     public abstract List<List<String>> execQuery(String sqlCode) throws SQLException;
@@ -107,9 +103,8 @@ public abstract class DBConnection implements AutoCloseable {
     public abstract void execUpdate(String sqlCode) throws SQLException;
 
     /**
-     * Checks whether tables &bdquo;Mitglieder&ldquo; and
-     * &bdquo;Spitznamen&ldquo; exist. It DOES NOT check whether they have all
-     * needed columns and are configured right.
+     * Checks whether tables &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; exist. It DOES NOT check whether they
+     * have all needed columns and are configured right.
      *
      * @return {@code true} only if both tables exist.
      */
@@ -124,11 +119,10 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Creates table &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; if
-     * they not already exist.
+     * Creates table &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; if they not already exist.
      *
-     * @throws SchemeCreationException Thrown, only if there are tables missing
-     *                                 in the database and they could not be created.
+     * @throws SchemeCreationException Thrown, only if there are tables missing in the database and they could not be
+     * created.
      */
     public void createTablesIfNeeded() throws SchemeCreationException {
         if (!tablesExist()) {
@@ -142,8 +136,8 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Returns a list of all member accessible with {@code dbc}. The list
-     * contains all labels hold in {@link DBConnection#COLUMN_LABELS_MEMBER}.
+     * Returns a list of all member accessible with {@code dbc}. The list contains all labels hold in
+     * {@link DBConnection#COLUMN_LABELS_MEMBER}.
      *
      * @return The list with the member.
      */
@@ -173,11 +167,10 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Checks whether the given table of the configured database contains a
-     * specific column. You should NEVER call this function with parameters
-     * provided by the user in order to prohibit SQL INJECTION.
+     * Checks whether the given table of the configured database contains a specific column. You should NEVER call this
+     * function with parameters provided by the user in order to prohibit SQL INJECTION.
      *
-     * @param table  The name of the table to search for the column.
+     * @param table The name of the table to search for the column.
      * @param column The column name to search for.
      * @return {@code true} only if the given table contains the given column.
      */
@@ -196,8 +189,8 @@ public abstract class DBConnection implements AutoCloseable {
     /**
      * Reads the individual contributions of every member - if specified.
      *
-     * @return A Optional containing the individual contributions or
-     * {@link Optional#empty()} if individual contributions are not specified.
+     * @return A Optional containing the individual contributions or {@link Optional#empty()} if individual
+     * contributions are not specified.
      */
     public Optional<Map<Integer, Double>> readIndividualContributions() {
         if (checkColumn("Mitglieder", "Beitrag")) {
@@ -207,7 +200,7 @@ public abstract class DBConnection implements AutoCloseable {
                 result.parallelStream()
                         .skip(1)
                         .forEach(row -> contributions.put(
-                                Integer.parseInt(row.get(0)), Double.parseDouble(row.get(1).replaceAll(",", "."))));
+                        Integer.parseInt(row.get(0)), Double.parseDouble(row.get(1).replaceAll(",", "."))));
                 return Optional.of(contributions);
             } catch (SQLException ex) {
                 Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
