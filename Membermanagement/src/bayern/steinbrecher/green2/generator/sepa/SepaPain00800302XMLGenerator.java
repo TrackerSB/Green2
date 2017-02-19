@@ -21,7 +21,7 @@ import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import java.io.File;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +137,7 @@ public final class SepaPain00800302XMLGenerator {
                 .append(originator.getMsgId())
                 .append("</MsgId>\n")
                 .append("     <CreDtTm>")
-                .append(SepaUtility.getSepaDate(new Date()))
+                .append(SepaUtility.getSepaDate(LocalDateTime.now()))
                 .append("</CreDtTm>\n")
                 .append("     <NbOfTxs>")
                 .append(numberOfTransactions)

@@ -16,8 +16,8 @@
 package bayern.steinbrecher.green2.utility;
 
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 /**
@@ -52,7 +52,6 @@ public final class SepaUtility {
      * The maximum length of the name of the party creating the SEPA Direct Debit.
      */
     public static final int MAX_CHAR_NAME_OF_CREATOR = 70;
-    private static final SimpleDateFormat SEPA_DATETIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
      * Length of countrycode (CC);
@@ -147,7 +146,11 @@ public final class SepaUtility {
      * @param date The date to convert.
      * @return The valid representation of the given date.
      */
-    public static String getSepaDate(Date date) {
-        return SEPA_DATETIME_FORMATTER.format(date);
+    public static String getSepaDate(LocalDateTime date) {
+        /*
+         * The DateTimeFormatter could accept any subtype of TemporalAccessor but a Sepa Direct Debit only accepts
+         * DateTime values.
+         */
+        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(date);
     }
 }
