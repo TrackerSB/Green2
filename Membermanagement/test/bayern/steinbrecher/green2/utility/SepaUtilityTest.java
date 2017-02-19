@@ -9,7 +9,8 @@ import java.util.Date;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,22 +20,29 @@ import org.junit.Test;
  * @author Stefan Huber
  */
 public class SepaUtilityTest {
-    
+
+    private static final String VALID_IBAN = "DE02100500000024290661";
+    private static final String INVALID_IBAN = "DE021005000000w24290661";
+    private static final String VALID_CREDITORID = "DE98ZZZ09999999999";
+    private static final String VALID_MESSAGEID = "2017-02-02 Membercontributions";
+    private static final Date SEPA_TEST_DATE = new Date(2017, 2, 20, 12, 0, 0);
+    private static final String SEPA_TEST_DATE_STRING = "2017-02-20T12:00:00";
+
     public SepaUtilityTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -44,13 +52,15 @@ public class SepaUtilityTest {
      */
     @Test
     public void testIsValidIban() {
-        System.out.println("isValidIban");
-        String iban = "";
-        boolean expResult = false;
-        boolean result = SepaUtility.isValidIban(iban);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(SepaUtility.isValidIban(VALID_IBAN));
+    }
+
+    /**
+     * Test of isValidIban method, of class SepaUtility.
+     */
+    @Test
+    public void testIsValidIban_unallowedCharacter() {
+        assertFalse(SepaUtility.isValidIban(INVALID_IBAN));
     }
 
     /**
@@ -58,13 +68,15 @@ public class SepaUtilityTest {
      */
     @Test
     public void testIsValidCreditorId() {
-        System.out.println("isValidCreditorId");
-        String creditorId = "";
-        boolean expResult = false;
-        boolean result = SepaUtility.isValidCreditorId(creditorId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(SepaUtility.isValidCreditorId(VALID_CREDITORID));
+    }
+
+    /**
+     * Test of isValidCreditorId method, of class SepaUtility.
+     */
+    @Test
+    public void testIsValidCreditorId_fail() {
+        assertFalse(SepaUtility.isValidCreditorId(VALID_IBAN));
     }
 
     /**
@@ -72,13 +84,7 @@ public class SepaUtilityTest {
      */
     @Test
     public void testIsValidMessageId() {
-        System.out.println("isValidMessageId");
-        String messageId = "";
-        boolean expResult = false;
-        boolean result = SepaUtility.isValidMessageId(messageId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(SepaUtility.isValidMessageId(VALID_MESSAGEID));
     }
 
     /**
@@ -86,13 +92,6 @@ public class SepaUtilityTest {
      */
     @Test
     public void testGetSepaDate() {
-        System.out.println("getSepaDate");
-        Date date = new Date();
-        String expResult = "";
-        String result = SepaUtility.getSepaDate(date);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(SEPA_TEST_DATE_STRING, SepaUtility.getSepaDate(SEPA_TEST_DATE));
     }
-    
 }
