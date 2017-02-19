@@ -1,9 +1,9 @@
 language: java
 install:
-  - ant -buildfile EnvironmentHandler/build.xml -lib EnvironmentHandler/lib
-  - ant -buildfile ConfigurationDialog/build.xml -lib ConfigurationDialog/lib
-  - ant -buildfile Launcher/build.xml -lib Launcher/lib
-  - ant -buildfile Membermanagement/build.xml -lib Membermanagement/lib
+  - ant -buildfile EnvironmentHandler/build.xml -lib EnvironmentHandler/lib test
+  - ant -buildfile ConfigurationDialog/build.xml -lib ConfigurationDialog/lib test
+  - ant -buildfile Launcher/build.xml -lib Launcher/lib test
+  - ant -buildfile Membermanagement/build.xml -lib Membermanagement/lib test
 
 jdk:
   - oraclejdk8
