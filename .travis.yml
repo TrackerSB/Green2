@@ -1,5 +1,8 @@
 language: java
-install:
+
+install: true
+
+script:
   - ant -buildfile EnvironmentHandler/build.xml -lib EnvironmentHandler/lib
   - ant -buildfile ConfigurationDialog/build.xml -lib ConfigurationDialog/lib
   - ant -buildfile Launcher/build.xml -lib Launcher/lib
