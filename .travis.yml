@@ -19,3 +19,10 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
+
+notifications:
+  email:
+    recipients:
+      - junktogo@web.de
+    on_success: change
+    on_failure: always
