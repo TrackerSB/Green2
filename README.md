@@ -1,3 +1,9 @@
+[![Build Status](https://travis-ci.org/TrackerSB/Green2.svg?branch=master)](https://travis-ci.org/TrackerSB/Green2)
+![](https://img.shields.io/badge/release-not yet released-lightgray.svg)
+![](https://img.shields.io/badge/coverage-unknown-lightgray.svg)
+![](https://img.shields.io/badge/Java-8-blue.svg)
+![](https://img.shields.io/badge/CSS-3-blue.svg)
+
 # Green2
 A client for creating serial letters, Sepa Direct Debits, etc.
 
