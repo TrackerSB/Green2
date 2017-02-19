@@ -19,7 +19,8 @@
                 <root id="src.resources.dir" name="Resource Packages"/>
             </source-roots>
             <test-roots>
-                <root id="test.test.dir" name="Test Packages"/>
+                <root id="test.whitebox.dir" name="Whitebox Tests"/>
+                <root id="test.blackbox.dir" name="Blackbox Tests"/>
             </test-roots>
         </data>
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
