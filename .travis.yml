@@ -2,11 +2,14 @@ language: java
 
 install: true
 
+env:
+  - MODULE=EnvironmentHandler
+  - MODULE=ConfigurationDialog
+  - MODULE=Launcher
+  - MODULE=Membermanagement
+
 script:
-  - ant -buildfile EnvironmentHandler/build.xml -lib EnvironmentHandler/lib
-  - ant -buildfile ConfigurationDialog/build.xml -lib ConfigurationDialog/lib
-  - ant -buildfile Launcher/build.xml -lib Launcher/lib
-  - ant -buildfile Membermanagement/build.xml -lib Membermanagement/lib
+  - ant -buildfile $MODULE/build.xml -lib $MODULE/lib
 
 jdk:
   - oraclejdk8
