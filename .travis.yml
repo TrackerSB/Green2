@@ -8,9 +8,6 @@ env:
   - MODULE=Launcher
   - MODULE=Membermanagement
 
-script:
-  - ant -buildfile $MODULE/build.xml -lib $MODULE/lib
-
 jdk:
   - oraclejdk8
 
