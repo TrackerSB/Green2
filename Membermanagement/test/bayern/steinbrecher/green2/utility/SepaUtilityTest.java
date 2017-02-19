@@ -87,7 +87,7 @@ public class SepaUtilityTest {
     @Test
     public void testGetSepaDate() {
         System.out.println("getSepaDate");
-        Date date = null;
+        Date date = new Date();
         String expResult = "";
         String result = SepaUtility.getSepaDate(date);
         assertEquals(expResult, result);
