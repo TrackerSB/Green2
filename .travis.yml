@@ -2,12 +2,6 @@ language: java
 
 install: true
 
-env:
-  - MODULE=EnvironmentHandler
-  - MODULE=ConfigurationDialog
-  - MODULE=Launcher
-  - MODULE=Membermanagement
-
 jdk:
   - oraclejdk8
 
