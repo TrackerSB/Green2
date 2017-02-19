@@ -26,10 +26,11 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
 /**
- * Extends the class {@link Spinner<T>} with a valid property and sets {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT}
- * if the content of the spinner is not valid.
+ * Extends the class {@link Spinner} with a valid property and sets {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} if
+ * the content of the spinner is not valid.
  *
  * @author Stefan Huber
+ * @param <T> The type of the values to spin.
  */
 public class CheckedSpinner<T> extends Spinner<T> {
 
@@ -83,6 +84,8 @@ public class CheckedSpinner<T> extends Spinner<T> {
 
     /**
      * This interface is very similar to {@link Function} but it contains a method throwing a {@link ParseException}.
+     *
+     * @param <T> The type of the value to parse the given {@link String} to.
      */
     @FunctionalInterface
     public interface ParseFunction<T> {
@@ -91,6 +94,7 @@ public class CheckedSpinner<T> extends Spinner<T> {
          * Parses the given String to T.
          *
          * @param value The String to parse.
+         * @return The parsed value.
          * @throws ParseException Thrown only if {@code value} could not be parsed to T.
          */
         T apply(String value) throws ParseException;
