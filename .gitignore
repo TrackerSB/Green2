@@ -7,3 +7,6 @@ UPDATED.TXT
 **/.jacocoverage/*
 **/report.html/*
 Launcher/SingleJarLauncher/*
+/ModuleTest/branding/target/
+/ModuleTest/application/target/
+/ModuleTest/JavafxProjectMavenTest/target/
