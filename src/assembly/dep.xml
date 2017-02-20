@@ -1,6 +1,6 @@
-    <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" 
+    <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.0.0" 
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+              xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
     <id>Green2</id>
     <formats>
         <!--<format>tar.gz</format>
@@ -75,11 +75,17 @@
         <fileSet>
             <directory>Installationattachments</directory>
             <outputDirectory></outputDirectory>
+            <includes>
+                <include>*.png</include>
+                <include>*.ico</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>Installationattachments</directory>
+            <outputDirectory></outputDirectory>
             <lineEnding>dos</lineEnding>
             <includes>
                 <include>*.vbs</include>
-                <include>*.png</include>
-                <include>*.ico</include>
             </includes>
         </fileSet>
     </fileSets>
