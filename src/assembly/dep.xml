@@ -68,6 +68,8 @@
             <lineEnding>unix</lineEnding>
             <excludes>
                 <exclude>*.vbs</exclude>
+                <exclude>*.png</exclude>
+                <exclude>*.ico</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -76,6 +78,8 @@
             <lineEnding>dos</lineEnding>
             <includes>
                 <include>*.vbs</include>
+                <include>*.png</include>
+                <include>*.ico</include>
             </includes>
         </fileSet>
     </fileSets>
