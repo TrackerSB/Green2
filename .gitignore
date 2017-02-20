@@ -8,3 +8,4 @@ UPDATED.TXT
 **/report.html/*
 Launcher/SingleJarLauncher/*
 **/target/*
+/target/
