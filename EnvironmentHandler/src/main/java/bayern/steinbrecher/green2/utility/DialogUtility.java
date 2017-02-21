@@ -18,6 +18,8 @@ package bayern.steinbrecher.green2.utility;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -37,6 +39,8 @@ import javafx.stage.Window;
  * @author Stefan Huber
  */
 public final class DialogUtility {
+
+    private static final int NUMBER_USED_PARAMETERS = 3;
 
     private DialogUtility() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
@@ -82,12 +86,18 @@ public final class DialogUtility {
      * @param owner The owner of the alert or {@code null} if no owner has to be set.
      * @param args The arguments containing the content, title and the header header. NOTE: The order is important. If
      * you specify less elements or an element is {@code null} these elements will have the default value according to
-     * {@link Alert}.
+     * {@link Alert}. If you specify more elements they will be ignored.
      * @return The created {@link Alert}.
      */
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
         Alert alert = addStyleAndIcon(initOwner(new Alert(alertType), owner));
-        switch (args.length) {
+        int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;
+        if (parameterCount > NUMBER_USED_PARAMETERS) {
+            Logger.getLogger(DialogUtility.class.getName())
+                    .log(Level.WARNING, "You passed more than {0} parameters. Only the first {0} will be used.",
+                            NUMBER_USED_PARAMETERS);
+        }
+        switch (parameterCount) {
             case 3:
                 if (args[2] != null) {
                     alert.setHeaderText(args[2]);
