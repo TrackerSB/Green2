@@ -436,13 +436,13 @@ public class MemberManagement extends Application {
             pages.put(WizardPage.FIRST_PAGE_KEY, sepaFormPage);
             pages.put("selection", selectionPage);
             pages.put("contribution", contributionPage);
-            Wizard wizard = new Wizard(pages);
             Stage wizardStage = new Stage();
             wizardStage.initOwner(menuStage);
             wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
             wizardStage.setResizable(false);
             wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-            wizard.start(wizardStage);
+            Wizard wizard = new Wizard(pages, wizardStage);
+            wizard.init();
             wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
             wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {

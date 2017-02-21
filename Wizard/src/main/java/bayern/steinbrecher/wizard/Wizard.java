@@ -16,16 +16,6 @@
  */
 package bayern.steinbrecher.wizard;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,11 +24,19 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.concurrent.Callable;
+import javafx.application.Platform;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
- * Represents a wizard for showing a sequence of {@code Pane}s. You can step
- * back and forward on these {@code Panes} and only can close is on the last
- * page.<br>
+ * Represents a wizard for showing a sequence of {@code Pane}s. You can step back and forward on these {@code Panes} and
+ * only can close is on the last page.<br>
  * You also can style it using CSS. Following CSS classes are available:<br>
  * <ul>
  * <li>wizard</li>
@@ -48,27 +46,21 @@ import java.util.concurrent.Callable;
  *
  * @author Stefan Huber
  */
-public class Wizard extends Application {
+public class Wizard {
 
-    private StringProperty currentIndex
-            = new SimpleStringProperty(this, "currentIndex");
-    private Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(
-            this, "currentPage", new WizardPage<>());
-    private MapProperty<String, WizardPage<?>> pages
-            = new SimpleMapProperty<>();
-    private BooleanProperty atBeginnng
-            = new SimpleBooleanProperty(this, "atBeginning", true);
+    private StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
+    private Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
+    private MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
+    private BooleanProperty atBeginnng = new SimpleBooleanProperty(this, "atBeginning", true);
     private BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
-    private BooleanProperty finished
-            = new SimpleBooleanProperty(this, "finished", false);
+    private BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
     private WizardController controller;
     private Stage stage;
     private Stack<String> history = new Stack<>();
 
     private void checkPages(Map<String, WizardPage<?>> pages) {
         if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
-            throw new IllegalArgumentException(
-                    "Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
+            throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
         }
     }
 
@@ -80,14 +72,19 @@ public class Wizard extends Application {
     }
 
     /**
-     * Constructs a wizard with showing {@code pages} and using default
-     * stylesheet.
+     * Constructs a wizard with showing {@code pages} and using default stylesheet.
      *
      * @param pages The pages to show.
+     * @param stage The stage to use.
+     *
      */
-    public Wizard(Map<String, WizardPage<?>> pages) {
+    public Wizard(Map<String, WizardPage<?>> pages, Stage stage) {
         checkPages(pages);
         this.pages.set(FXCollections.observableMap(pages));
+        this.stage = stage;
+        stage.sceneProperty().addListener((obs, oldVal, newVal) -> {
+            newVal.getStylesheets().addListener((Change<? extends String> c) -> stage.sizeToScene());
+        });
 
         currentIndex.addListener((obs, oldVal, newVal) -> {
             WizardPage<?> newPage = pages.get(newVal);
@@ -97,12 +94,14 @@ public class Wizard extends Application {
     }
 
     /**
-     * {@inheritDoc}
+     * Initializes the wizard. That contains adding pages resizing stage and setting the first page. NOTE: Stylehsheets
+     * should be added using {@link Wizard#Wizard(java.util.Map, javafx.stage.Stage, java.lang.String...)}. Before
+     * calling {@link #init()} the scene to add them to is {@code null} and when adding the stylesheets after this
+     * method the wizard may not resize correctly.
+     *
+     * @throws IOException May be thrown by {@link FXMLLoader#load()}.
      */
-    @Override
-    public void start(Stage stage) throws IOException {
-        this.stage = stage;
-
+    public void init() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Wizard.fxml"));
         fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
         Parent root = fxmlLoader.load();
@@ -144,7 +143,6 @@ public class Wizard extends Application {
         history.push(WizardPage.FIRST_PAGE_KEY);
         updatePage();
         stage.show();
-        stage.sizeToScene();
     }
 
     private void updatePage() {
@@ -175,7 +173,7 @@ public class Wizard extends Application {
                 if (!pages.containsKey(nextIndex)) {
                     throw new IllegalPageException(
                             "Wizard contains no page with key \""
-                                    + nextIndex + "\".");
+                            + nextIndex + "\".");
                 }
                 currentIndex.set(nextIndex);
                 history.push(currentIndex.get());
@@ -184,7 +182,7 @@ public class Wizard extends Application {
             } catch (Exception ex) {
                 throw new IllegalCallableException(
                         "A valid function or a next function of page \""
-                                + currentIndex.get() + "\" has thrown an exception",
+                        + currentIndex.get() + "\" has thrown an exception",
                         ex);
             }
         }
@@ -221,10 +219,9 @@ public class Wizard extends Application {
     /**
      * Returns the results of all pages visited in a sequence to an end.
      *
-     * @return {@code Optional.empty()} only if the wizard is not finished yet,
-     * otherwise the results of the visited pages.
-     * @throws IllegalCallableException Only thrown if thrown by one of the
-     *                                  result functions of the visited pages.
+     * @return {@code Optional.empty()} only if the wizard is not finished yet, otherwise the results of the visited
+     * pages.
+     * @throws IllegalCallableException Only thrown if thrown by one of the result functions of the visited pages.
      */
     public Optional<Map<String, ?>> getResults() {
         if (isFinished()) {
@@ -236,8 +233,8 @@ public class Wizard extends Application {
                 } catch (Exception ex) {
                     throw new IllegalCallableException(
                             "The result function of wizard page \""
-                                    + key
-                                    + "\" has thrown an exception", ex);
+                            + key
+                            + "\" has thrown an exception", ex);
                 }
             });
             return Optional.of(results);
@@ -247,8 +244,7 @@ public class Wizard extends Application {
     }
 
     /**
-     * Property containing a boolean value representing whether the current page
-     * shown is the first one.
+     * Property containing a boolean value representing whether the current page shown is the first one.
      *
      * @return {@code true} only if the current page is the first one.
      */
@@ -257,8 +253,7 @@ public class Wizard extends Application {
     }
 
     /**
-     * Returns a boolean value representing whether the current page shown is
-     * the first one.
+     * Returns a boolean value representing whether the current page shown is the first one.
      *
      * @return {@code true} only if the current page is the first one.
      */
@@ -267,8 +262,7 @@ public class Wizard extends Application {
     }
 
     /**
-     * Property containing a boolean value representing whether the current page
-     * shown is a last one.
+     * Property containing a boolean value representing whether the current page shown is a last one.
      *
      * @return {@code true} only if the current page is a last one.
      */
@@ -277,8 +271,7 @@ public class Wizard extends Application {
     }
 
     /**
-     * Returns a boolean value representing whether the current page shown is a
-     * last one.
+     * Returns a boolean value representing whether the current page shown is a last one.
      *
      * @return {@code true} only if the current page is a last one.
      */
