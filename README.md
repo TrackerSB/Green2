@@ -4,7 +4,7 @@
 [![](https://img.shields.io/badge/Java-8u121-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/JavaFX-8-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
-[![](https://img.shields.io/badge/JaCoCo-0.7.6-blue.svg)](https://github.com/TrackerSB/Green2)
+[![](https://img.shields.io/badge/JaCoCo-0.7.8-blue.svg)](https://github.com/TrackerSB/Green2)
 
 # Green2
 A client for creating serial letters, Sepa Direct Debits, etc.
@@ -35,7 +35,6 @@ Currently people seem to be happy about the features already included so some ot
 This projects coding conventions are exactly Java coding conventions [(http://www.oracle.com/technetwork/java/codeconventions-150003.pdf)](http://www.oracle.com/technetwork/java/codeconventions-150003.pdf) but the recommended maximum line length mentioned in section 4.1 is extended to 120 characters.
 
 ## Badges
-[![forthebadge](http://forthebadge.com/images/badges/uses-html.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/uses-css.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/uses-git.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/uses-badges.svg)](http://forthebadge.com)
