@@ -9,3 +9,7 @@ UPDATED.TXT
 Launcher/SingleJarLauncher/*
 **/target/*
 /target/
+/Wizard/nbproject/
+/Launcher/nbproject/
+/EnvironmentHandler/nbproject/
+/ConfigurationDialog/nbproject/
