@@ -83,7 +83,7 @@ public class Wizard {
         this.pages.set(FXCollections.observableMap(pages));
         this.stage = stage;
         stage.sceneProperty().addListener((obs, oldVal, newVal) -> {
-            newVal.getStylesheets().addListener((Change<? extends String> c) -> stage.sizeToScene());
+            newVal.getStylesheets().addListener((Change<? extends String> c) -> updateContentSize());
         });
 
         currentIndex.addListener((obs, oldVal, newVal) -> {
@@ -91,6 +91,39 @@ public class Wizard {
             atFinish.set(newPage.isFinish());
             currentPage.setValue(newPage);
         });
+    }
+
+    private void updateContentSize() {
+        double maxWidth = -1;
+        double maxHeight = -1;
+
+        boolean wasOpened = stage.isShowing();
+        //TODO Think about whether this is really needed.
+        boolean previousImplicitExit = Platform.isImplicitExit();
+        Platform.setImplicitExit(false);
+
+        for (Entry<String, WizardPage<?>> entry : pages.get().entrySet()) {
+            Pane pane = entry.getValue().getRoot();
+            pane.getChildren().forEach(n -> n.getStyleClass().add("wizard-inner-content"));
+            controller.setContent(pane);
+            stage.show();
+            stage.close();
+
+            double paneWidth = pane.getWidth();
+            double paneHeight = pane.getHeight();
+            if (paneWidth > maxWidth) {
+                maxWidth = paneWidth;
+            }
+            if (paneHeight > maxHeight) {
+                maxHeight = paneHeight;
+            }
+        }
+
+        if (wasOpened) {
+            stage.show();
+        }
+        Platform.setImplicitExit(previousImplicitExit);
+        controller.setContentSize(maxWidth, maxHeight);
     }
 
     /**
@@ -106,37 +139,11 @@ public class Wizard {
         fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
+        stage.setScene(scene);
         controller = fxmlLoader.getController();
         controller.setCaller(this);
 
-        double maxWidth = -1;
-        double maxHeight = -1;
-
-        //TODO Think about whether this is really needed.
-        boolean previousImplicitExit = Platform.isImplicitExit();
-        Platform.setImplicitExit(false);
-
-        for (Entry<String, WizardPage<?>> entry : pages.get().entrySet()) {
-            Pane pane = entry.getValue().getRoot();
-            pane.getChildren().forEach(n -> n.getStyleClass().add("wizard-inner-content"));
-            controller.setContent(pane);
-            stage.setScene(scene);
-            stage.show();
-            stage.close();
-
-            double paneWidth = pane.getWidth();
-            double paneHeight = pane.getHeight();
-            if (paneWidth > maxWidth) {
-                maxWidth = paneWidth;
-            }
-            if (paneHeight > maxHeight) {
-                maxHeight = paneHeight;
-            }
-        }
-
-        Platform.setImplicitExit(previousImplicitExit);
-
-        controller.setContentSize(maxWidth, maxHeight);
+        updateContentSize();
 
         currentIndex.set(WizardPage.FIRST_PAGE_KEY);
         currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
