@@ -97,11 +97,11 @@ public class Wizard {
         double maxWidth = -1;
         double maxHeight = -1;
 
-        boolean wasOpened = stage.isShowing();
-        //TODO Think about whether this is really needed.
-        boolean previousImplicitExit = Platform.isImplicitExit();
-        Platform.setImplicitExit(false);
+        //Save settings
+        boolean wasShowing = stage.isShowing();
+        boolean wasImplicitExit = Platform.isImplicitExit();
 
+        Platform.setImplicitExit(false);
         for (Entry<String, WizardPage<?>> entry : pages.get().entrySet()) {
             Pane pane = entry.getValue().getRoot();
             pane.getChildren().forEach(n -> n.getStyleClass().add("wizard-inner-content"));
@@ -119,10 +119,12 @@ public class Wizard {
             }
         }
 
-        if (wasOpened) {
+        //Restore settings
+        if (wasShowing) {
             stage.show();
         }
-        Platform.setImplicitExit(previousImplicitExit);
+        Platform.setImplicitExit(wasImplicitExit);
+
         controller.setContentSize(maxWidth, maxHeight);
     }
 

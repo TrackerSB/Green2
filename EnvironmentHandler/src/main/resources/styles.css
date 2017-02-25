@@ -24,6 +24,7 @@
 * {
     /* CSS variables only working for colors. But may extended in future releases */
     -fx-main-color: forestgreen; /*#228B22*/
+    -fx-main-color-light: derive(-fx-main-color, 30%);
     -fx-main-error-color: red;
     -fx-main-radius: 3px;
     -fx-main-font-size: 12px;
@@ -58,7 +59,7 @@
 }
 
 .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:hover {
-    -fx-background-color: derive(-fx-main-color, 30%);
+    -fx-background-color: -fx-main-color-light;
 }
 
 /*******************************************
@@ -153,6 +154,14 @@
 *******************************************/
 .menu-bar {
     -fx-padding-bottom: 5px;
+}
+
+menu-item:showing, .menu:showing {
+    -fx-background-color: -fx-main-color;
+}
+
+.menu-item:hover, .menu:hover {
+    -fx-background-color: -fx-main-color-light;
 }
 
 #menuContent {
