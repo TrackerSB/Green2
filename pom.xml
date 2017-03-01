@@ -19,6 +19,7 @@
         <module>Launcher</module>
         <module>MemberManagement</module>
         <module>Wizard</module>
+        <module>PreferencesHelper</module>
     </modules>
     
     <properties>

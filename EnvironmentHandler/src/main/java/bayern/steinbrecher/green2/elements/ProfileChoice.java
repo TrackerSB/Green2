@@ -169,7 +169,7 @@ public class ProfileChoice extends Application {
             return Optional.ofNullable(choice.profile);
         } else {
             List<String> availableProfiles = Profile.getAvailableProfiles();
-            String lastProfile = EnvironmentHandler.PREFERENCES_NODE.get(LAST_PROFILE_KEY, null);
+            String lastProfile = EnvironmentHandler.PREFERENCES_USER_NODE.get(LAST_PROFILE_KEY, null);
             if (!availableProfiles.contains(lastProfile)) {
                 lastProfile = null;
             }
@@ -181,7 +181,7 @@ public class ProfileChoice extends Application {
 
             Optional<String> profileName = choiceDialog.showAndWait();
             if (profileName.isPresent()) {
-                EnvironmentHandler.PREFERENCES_NODE.put(LAST_PROFILE_KEY, profileName.get());
+                EnvironmentHandler.PREFERENCES_USER_NODE.put(LAST_PROFILE_KEY, profileName.get());
                 return Optional.of(new Profile(profileName.get(), false));
             } else {
                 return Optional.empty();

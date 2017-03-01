@@ -159,13 +159,22 @@ public final class Launcher extends Application {
     private Process install(File downloadedDir) throws IOException, InterruptedException {
         String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
+        Optional<String> optOnlineVersion = VersionHandler.readOnlineVersion();
+        String onlineVersion;
+        if (optOnlineVersion.isPresent()) {
+            onlineVersion = optOnlineVersion.get();
+        } else {
+            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, "Could not determine online version.");
+            onlineVersion = "couldNotDetermineOnlineVersion";
+        }
         switch (EnvironmentHandler.CURRENT_OS) {
             case WINDOWS:
-                command = new String[]{"cscript", dirPath + "/install.vbs"};
+                command = new String[]{"cscript", dirPath + "/install.vbs", onlineVersion};
                 break;
             case LINUX:
             default:
-                command = new String[]{"chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh"};
+                command = new String[]{
+                    "chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh", onlineVersion};
                 new ProcessBuilder(command).start().waitFor();
 
                 command = new String[]{"sh", dirPath + "/install.sh"};
@@ -210,7 +219,10 @@ public final class Launcher extends Application {
                 }
 
                 if (gotInstalled) {
-                    VersionHandler.updateLocalVersion(newVersion);
+                    //Following line is not working until Green2 was launched with admin rights.
+                    //The version is currently set by the installer.
+                    //VersionHandler.updateLocalVersion(newVersion);
+
                     Collector.sendData();
                 }
             } catch (InterruptedException | IOException ex) {

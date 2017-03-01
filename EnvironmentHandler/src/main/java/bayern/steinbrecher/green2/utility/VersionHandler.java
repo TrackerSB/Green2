@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represents a class handling HTTP(S)-connections and handling the version database.
+ * Represents a class handling the local and non-local versions.
  *
  * @author Stefan Huber
  */
@@ -69,16 +69,17 @@ public class VersionHandler {
      * is not installed yet or the version could not be read.
      */
     public static Optional<String> readLocalVersion() {
-        return Optional.ofNullable(EnvironmentHandler.PREFERENCES_NODE.get(VERSION_KEY, null));
+        return Optional.ofNullable(EnvironmentHandler.PREFERENCES_SYSTEM_NODE.get(VERSION_KEY, null));
     }
 
     /**
-     * Placed the version {@code newVersion} into the local version file.
+     * Placed the version {@code newVersion} into the local version file. NOTE: You need administrator permissions to
+     * successfully call this method.
      *
      * @param newVersion The new version to set as new local version.
      */
     public static void updateLocalVersion(String newVersion) {
-        EnvironmentHandler.PREFERENCES_NODE.put(VERSION_KEY, newVersion);
+        EnvironmentHandler.PREFERENCES_USER_NODE.put(VERSION_KEY, newVersion);
     }
 
     /**

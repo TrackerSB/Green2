@@ -66,10 +66,16 @@ public final class EnvironmentHandler {
      * The name of the folder containing the library jars.
      */
     private static final String LIBRARIES_FOLDER_NAME = "lib";
+    private static final String PREFERENCES_SUBKEY = "bayern/steinbrecher/green2";
     /**
      * The node of the user preferences where to put user specific settings of Green2.
      */
-    public static final Preferences PREFERENCES_NODE = Preferences.userRoot().node("bayern/steinbrecher/green2");
+    public static final Preferences PREFERENCES_USER_NODE = Preferences.userRoot().node(PREFERENCES_SUBKEY);
+    /**
+     * The node of the system preferences where to put settings belonging to Green2 and not to a specific user. NOTE:
+     * You are not allowed to write/change keys without administrator permissions.
+     */
+    public static final Preferences PREFERENCES_SYSTEM_NODE = Preferences.systemRoot().node(PREFERENCES_SUBKEY);
     private static final String LAST_SAVE_PATH_KEY = "lastSavePath";
     /**
      * The os currently operating on. (Only supported os can be set)
@@ -248,7 +254,7 @@ public final class EnvironmentHandler {
      * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.
      */
     public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding) {
-        File initialDirectory = new File(PREFERENCES_NODE.get(LAST_SAVE_PATH_KEY, DEFAULT_SAVE_PATH));
+        File initialDirectory = new File(PREFERENCES_USER_NODE.get(LAST_SAVE_PATH_KEY, DEFAULT_SAVE_PATH));
         if (!initialDirectory.exists()) {
             initialDirectory = new File(DEFAULT_SAVE_PATH);
         }
@@ -272,7 +278,7 @@ public final class EnvironmentHandler {
         chosenFile.ifPresent(file -> {
             String parentDir = file.getParent();
             if (parentDir != null) {
-                PREFERENCES_NODE.put(LAST_SAVE_PATH_KEY, parentDir);
+                PREFERENCES_USER_NODE.put(LAST_SAVE_PATH_KEY, parentDir);
             }
         });
         return chosenFile;

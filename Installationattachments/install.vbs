@@ -1,48 +1,60 @@
+'Check parameter count
+If WScript.Arguments.Count < 1 Then
+    WScript.Echo "Parameter holding the version to set is missing"
+    WScript.Quit
+End If
+
 'Request admin rights
 If Not WScript.Arguments.Named.Exists("elevate") Then
-  CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ /elevate", "", "runas", 1
+  CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ /elevate " & WScript.Arguments(0), "", "runas", 1
   WScript.Quit
 End If
 
 Set oWS = CreateObject("WScript.Shell")
-Set fso = CreateObject("Scripting.FileSystemObject")
-programFilesPath = oWS.ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
-menuEntryFolderPath = oWS.SpecialFolders("AllUsersPrograms") & "\Green2"
-configFolderPath = oWS.ExpandEnvironmentStrings("%AppData%") & "\Green2"
-oldProgramFilesPath = oWS.ExpandEnvironmentStrings("%ProgramFiles%") & "\Grün2_Mitgliederverwaltung"
-oldMenuEntryFolderPath = oWS.SpecialFolders("AllUsersPrograms") & "\Grün2_Mitgliederverwaltung"
-oldConfigFolderPath = oWS.ExpandEnvironmentStrings("%AppData%") & "\Grün2_Mitgliederverwaltung"
+With oWS
+    programFilesPath = .ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
+    menuEntryFolderPath = .SpecialFolders("AllUsersPrograms") & "\Green2"
+    configFolderPath = .ExpandEnvironmentStrings("%AppData%") & "\Green2"
+    oldProgramFilesPath = .ExpandEnvironmentStrings("%ProgramFiles%") & "\Grün2_Mitgliederverwaltung"
+    oldMenuEntryFolderPath = .SpecialFolders("AllUsersPrograms") & "\Grün2_Mitgliederverwaltung"
+    oldConfigFolderPath = .ExpandEnvironmentStrings("%AppData%") & "\Grün2_Mitgliederverwaltung"
+End With
 
 'Get the directory of the install script (May not be the current directory)
 downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
 
-'Delete files which are not needed for Windows
-fso.DeleteFile downloadedDir & "*.sh"
-fso.DeleteFile downloadedDir & "*.desktop"
+'Set version in registry
+oWS.RegWrite "HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Prefs\bayern\steinbrecher\green2\version", WScript.Arguments(1), "REG_SZ"
 
-'Delete start menu entries and program files of previous versions
-If fso.FolderExists(oldProgramFilesPath) Then
-    fso.DeleteFolder oldProgramFilesPath
-End If
-If fso.FolderExists(oldMenuEntryFolderPath) Then
-    fso.DeleteFolder oldMenuEntryFolderPath
-End If
-
-'Move configurations to new folder
-If fso.FolderExists(oldConfigFolderPath) Then
-    If NOT fso.FolderExists(configFolderPath) Then
-        fso.CreateFolder(configFolderPath)
-    End If
-    fso.CopyFile oldConfigFolderPath & "\*.*", configFolderPath
-    fso.DeleteFolder oldConfigFolderPath
-End If
-
-'Create program folder if needed
-If NOT fso.FolderExists(programFilesPath) Then
-	fso.CreateFolder(programFilesPath)
-End If
-
+Set fso = CreateObject("Scripting.FileSystemObject")
 With fso
+    'Delete files which are not needed for Windows
+    .DeleteFile downloadedDir & "*.sh"
+    .DeleteFile downloadedDir & "*.desktop"
+
+    'Delete start menu entries and program files of previous versions
+    If .FolderExists(oldProgramFilesPath) Then
+        .DeleteFolder oldProgramFilesPath
+    End If
+    If .FolderExists(oldMenuEntryFolderPath) Then
+        .DeleteFolder oldMenuEntryFolderPath
+    End If
+
+    'Move configurations to new folder
+    If .FolderExists(oldConfigFolderPath) Then
+        If NOT .FolderExists(configFolderPath) Then
+            .CreateFolder(configFolderPath)
+        End If
+        .CopyFile oldConfigFolderPath & "\*.*", configFolderPath
+        .DeleteFolder oldConfigFolderPath
+    End If
+
+    'Create program folder if needed
+    If NOT .FolderExists(programFilesPath) Then
+        .CreateFolder(programFilesPath)
+    End If
+
+
     'Move lib folder
     libpath = programFilesPath & "\lib"
     If NOT .FolderExists(libpath) Then
