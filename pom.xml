@@ -8,6 +8,11 @@
     <version>2u12</version>
     <packaging>pom</packaging>
     
+    <organization>
+        <name>Steinbrecher</name>
+        <url>http://www.steinbrecher.bayern</url>
+    </organization>
+    
     <modules>
         <module>EnvironmentHandler</module>
         <module>ConfigurationDialog</module>
@@ -157,4 +162,61 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <distribution>manuel</distribution>
+        </license>
+    </licenses>
+    
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/TrackerSB/Green2/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/TrackerSB/Green2</url>
+        <!--<notifiers>
+            <notifier>
+                <type>mail</type>
+                <sendOnError>true</sendOnError>
+                <sendOnFailure>true</sendOnFailure>
+                <sendOnSuccess>false</sendOnSuccess>
+                <sendOnWarning>false</sendOnWarning>
+                <configuration>
+                    <address>continuum@127.0.0.1</address>
+                </configuration>
+            </notifier>
+        </notifiers>-->
+    </ciManagement>
+    
+    <developers>
+        <developer>
+            <id>trackersb</id>
+            <name>Stefan Huber</name>
+            <email>stefan.huber.niedling@outlook.com</email>
+            <url>http://www.steinbrecher.bayern</url>
+            <organization>Steinbrecher</organization>
+            <organizationUrl>http://www.steinbrecher.bayern</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Berlin</timezone>
+        </developer>
+    </developers>
+    
+    <contributors>
+        <contributor>
+            <name>Lukas Jagemann</name>
+            <email>splamyn@gmail.com</email>
+            <url>http://splamy.de</url>
+            <roles>
+                <role>designer</role>
+            </roles>
+            <timezone>Europe/Berlin</timezone>
+        </contributor>
+    </contributors>
 </project>

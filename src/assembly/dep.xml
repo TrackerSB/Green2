@@ -31,7 +31,7 @@
             </includes>
         </fileSet>
         
-        <!-- libs -->
+        <!-- libs  -->
         <fileSet>
             <directory>Launcher/target/lib</directory>
             <outputDirectory>lib</outputDirectory>
@@ -88,4 +88,28 @@
             </includes>
         </fileSet>
     </fileSets>
+    
+    <!--<dependencySets>
+        <dependencySet>
+            <includes>
+                <include>bayern.steinbrecher.green2:ConfigurationDialog</include>
+                <include>bayern.steinbrecher.green2:Launcher</include>
+                <include>bayern.steinbrecher.green2:MemberManagement</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>-->
+    <moduleSets>
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>bayern.steinbrecher.green2:ConfigurationDialog</include>
+                <include>bayern.steinbrecher.green2:Launcher</include>
+                <include>bayern.steinbrecher.green2:MemberManagement</include>
+            </includes>
+            <binaries>
+                <includeDependencies>true</includeDependencies>
+                <unpack>false</unpack>
+            </binaries>
+        </moduleSet>
+    </moduleSets>
 </assembly>
