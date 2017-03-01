@@ -84,8 +84,8 @@ public final class DialogUtility {
      *
      * @param alertType The type of the alert.
      * @param owner The owner of the alert or {@code null} if no owner has to be set.
-     * @param args The arguments containing the content, title and the header header. NOTE: The order is important. If
-     * you specify less elements or an element is {@code null} these elements will have the default value according to
+     * @param args The arguments containing the content, title and the header. NOTE: The order is important. If you
+     * specify less elements or an element is {@code null} these elements will have the default value according to
      * {@link Alert}. If you specify more elements they will be ignored.
      * @return The created {@link Alert}.
      */

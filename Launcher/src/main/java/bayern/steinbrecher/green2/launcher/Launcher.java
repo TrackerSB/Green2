@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.launcher;
 import bayern.steinbrecher.green2.data.Collector;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
+import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
@@ -113,6 +114,9 @@ public final class Launcher extends Application {
         } else if (isInstalled) {
             ProgramCaller.startGreen2();
         } else {
+            String installError = EnvironmentHandler.getResourceValue("installError");
+            DialogUtility.createErrorAlert(
+                    stage, EnvironmentHandler.getResourceValue("installErrorMessage"), installError, installError);
             throw new IllegalStateException(
                     "Green2 is currently not installed and there´s no connection to install it.");
         }
