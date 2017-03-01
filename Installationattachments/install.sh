@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [[ $# -lt 1 ]]; then
+    (>&2 echo "You have to specify the version to set after install.")
+fi
+
 # Determine sudo command
 KdeSudoExists=$(command -v kdesudo >/dev/null)
 GkSudoExists=$(command -v gksudo >/dev/null)
@@ -38,7 +42,17 @@ mv -f $TempDir/*.desktop $MenuEntryFolder/;
 mv -f $TempDir/* $ProgramFolder/;
 rm $ProgramFolder/*.xml;
 rm $ProgramFolder/*.bat;
-rm $ProgramFolder/*.vbs;
-touch $TempDir/installed;"
+rm $ProgramFolder/*.vbs;"
+
+# Update version saved in Java preferences
+registryPath = $(java -jar PreferencesHelper.jar) + "/prefs.xml"
+$SudoCommand -c "echo '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
+<!DOCTYPE map SYSTEM \"http://java.sun.com/dtd/preferences.dtd\">
+<map MAP_XML_VERSION=\"1.0\">
+  <entry key=\"version\" value=\"$1\"/>
+</map>' > $registryPath;"
+
+# Create install successful file
+$SudoCommand -c "touch $TempDir/installed;"
 
 echo "Green2 was installed/updated"

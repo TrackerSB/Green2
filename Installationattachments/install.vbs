@@ -23,8 +23,11 @@ End With
 'Get the directory of the install script (May not be the current directory)
 downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
 
-'Set version in registry
-oWS.RegWrite "HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Prefs\bayern\steinbrecher\green2\version", WScript.Arguments(1), "REG_SZ"
+Set jarExec = oWS.Exec("java -jar " & downloadedDir & "PreferencesHelper.jar")
+registryPath = ""
+Do Until jarExec.StdOut.AtEndOfStream
+    registryPath = registryPath & jarExec.StdOut.Read(1)
+Loop
 
 Set fso = CreateObject("Scripting.FileSystemObject")
 With fso
@@ -96,6 +99,9 @@ Sub createLink(linkname, workingDir, fileOfWorkingDir)
         .Save
     End With
 End Sub
+
+'Set version in registry
+oWS.RegWrite registryPath & "\version", WScript.Arguments(1), "REG_SZ"
 
 'Create file to show success
 fso.CreateTextFile(downloadedDir & "installed")
