@@ -16,9 +16,11 @@
 package bayern.steinbrecher.green2.configDialog;
 
 import bayern.steinbrecher.green2.CheckedController;
+import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.data.ConfigKey;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
+import bayern.steinbrecher.green2.elements.CheckedComboBox;
 import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
@@ -35,6 +37,7 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 
@@ -60,10 +63,12 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedTextField profileNameTextField;
     @FXML
+    private CheckedComboBox<DBConnection.SupportedDatabase> dbmsComboBox;
+    @FXML
     private CheckedRegexTextField birthdayExpressionTextField;
-    private List<CheckedTextField> checkedTextFields = new ArrayList<>();
+    private final List<CheckedTextField> checkedTextFields = new ArrayList<>();
     private Profile profile;
-    private BooleanProperty profileAlreadyExists = new SimpleBooleanProperty(this, "profileAlreadyExists");
+    private final BooleanProperty profileAlreadyExists = new SimpleBooleanProperty(this, "profileAlreadyExists");
 
     /**
      * {@inheritDoc}
@@ -84,14 +89,16 @@ public class ConfigDialogController extends CheckedController {
 
         anyInputMissing.bind(checkedTextFields.stream()
                 .map(CheckedTextField::emptyProperty)
-                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
+                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or)
+                .or(dbmsComboBox.nothingSelectedProperty()));
         anyInputToLong.bind(checkedTextFields.stream()
                 .map(CheckedTextField::toLongProperty)
                 .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
         valid.bind(checkedTextFields.stream()
                 .map(CheckedTextField::validProperty)
                 .reduce(BindingUtility.TRUE_BINDING, BooleanExpression::and, BooleanBinding::and)
-                .and(profileAlreadyExists.not()));
+                .and(profileAlreadyExists.not())
+                .and(dbmsComboBox.nothingSelectedProperty().not()));
 
         //Load settings
         profile = EnvironmentHandler.getProfile();
@@ -103,6 +110,8 @@ public class ConfigDialogController extends CheckedController {
         profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
         sshCharsetTextField.setText(profile.getOrDefault(ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
+        dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(DBConnection.SupportedDatabase.values())));
+        dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ConfigKey.DBMS, null));
     }
 
     @FXML
@@ -117,6 +126,7 @@ public class ConfigDialogController extends CheckedController {
             profile.renameProfile(profileNameTextField.getText());
             profile.set(ConfigKey.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());
             profile.set(ConfigKey.SSH_CHARSET, Charset.forName(sshCharsetTextField.getText()));
+            profile.set(ConfigKey.DBMS, dbmsComboBox.getSelectionModel().getSelectedItem());
             profile.saveSettings();
             stage.close();
         }

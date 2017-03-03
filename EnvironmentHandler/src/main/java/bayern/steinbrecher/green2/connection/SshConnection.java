@@ -30,7 +30,10 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -46,6 +49,12 @@ public final class SshConnection extends DBConnection {
      * The default port for ssh.
      */
     public static final int DEFAULT_SSH_PORT = 22;
+    private static final Map<SupportedDatabase, String> COMMANDS = new HashMap<SupportedDatabase, String>() {
+        {
+            put(SupportedDatabase.MY_SQL, "mysql");
+        }
+    };
+    private final Map<SupportedDatabase, Function<String, String>> sqlCommands = new HashMap<>();
     /**
      * The name of the database.
      */
@@ -96,10 +105,12 @@ public final class SshConnection extends DBConnection {
      * @param charset The charset used by ssh response.
      * @throws AuthException Thrown if some of username, password or host is wrong or not reachable.
      * @throws UnknownHostException Is thrown if the host is not reachable.
+     * @throws UnsupportedDatabaseException Thrown only if no supported database was found.
+     * @see SupportedDatabase
      */
     public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost,
             String databaseUsername, String databasePasswd, String databaseName, Charset charset)
-            throws AuthException, UnknownHostException {
+            throws AuthException, UnknownHostException, UnsupportedDatabaseException {
         this.databaseHost = databaseHost;
         this.databaseUsername = databaseUsername;
         this.databasePasswd = databasePasswd;
@@ -107,8 +118,26 @@ public final class SshConnection extends DBConnection {
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.charset = charset;
 
+        sqlCommands.put(SupportedDatabase.MY_SQL, query -> COMMANDS.get(SupportedDatabase.MY_SQL)
+                + " -u" + databaseUsername
+                + " -p" + databasePasswd
+                + " -h" + databaseHost
+                + " -e'" + query + "' " + databaseName);
+
         try {
             this.sshSession.connect();
+
+            String result;
+            try {
+                result = execCommand("command -v "
+                        + COMMANDS.get(DATABASE.getValue()) + " >/dev/null 2>&1 || { echo \"Not installed\"; }");
+            } catch (CommandException ex) {
+                throw new UnsupportedDatabaseException(
+                        "The command to check existence of the correct database failed.", ex);
+            }
+            if (result.contains("Not installed")) {
+                throw new UnsupportedDatabaseException("The configured database is not supported by the SSH host.");
+            }
 
             //Check sql-host connection
             execQuery("SELECT 1");
@@ -143,21 +172,13 @@ public final class SshConnection extends DBConnection {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<List<String>> execQuery(String sqlCode) throws SQLException {
+    private String execCommand(String command) throws JSchException, CommandException {
         try {
             ChannelExec channel = (ChannelExec) sshSession.openChannel("exec");
             ByteArrayOutputStream errStream = new ByteArrayOutputStream();
             channel.setErrStream(errStream);
             channel.setInputStream(null);
-            channel.setCommand("mysql"
-                    + " -u" + databaseUsername
-                    + " -p" + databasePasswd
-                    + " -h" + databaseHost
-                    + " -e'" + sqlCode + "' " + databaseName);
+            channel.setCommand(command);
             InputStream in = channel.getInputStream();
 
             channel.connect();
@@ -166,8 +187,26 @@ public final class SshConnection extends DBConnection {
 
             String errorMessage = errStream.toString();
             if (errorMessage.toLowerCase().contains("error")) {
-                throw new SQLException(errorMessage);
+                throw new CommandException("The given command returned following error:\n" + errorMessage);
             }
+
+            channel.disconnect();
+
+            return result;
+        } catch (IOException ex) {
+            Logger.getLogger(SshConnection.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<List<String>> execQuery(String sqlCode) throws SQLException {
+        try {
+            String result = execCommand(sqlCommands.get(DATABASE.getValue()).apply(sqlCode));
+
             String[] rows = result.split("\n");
             List<List<String>> resultTable = Arrays.stream(rows)
                     .map(row -> splitUp(row, '\t'))
@@ -176,12 +215,9 @@ public final class SshConnection extends DBConnection {
                     .collect(Collectors.toList()))
                     .collect(Collectors.toList());
 
-            channel.disconnect();
-
             return resultTable;
-        } catch (JSchException | IOException ex) {
-            Logger.getLogger(SshConnection.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        } catch (JSchException | CommandException ex) {
+            throw new SQLException(ex);
         }
     }
 

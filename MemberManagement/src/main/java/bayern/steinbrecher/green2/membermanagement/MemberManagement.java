@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.membermanagement;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.DefaultConnection;
 import bayern.steinbrecher.green2.connection.SshConnection;
+import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
 import bayern.steinbrecher.green2.contribution.Contribution;
 import bayern.steinbrecher.green2.data.ConfigKey;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -295,6 +296,9 @@ public class MemberManagement extends Application {
                 ThreadUtility.waitWhile(this, login.wouldShowBinding().not());
 
                 return getConnection(login, waitScreen);
+            } catch (UnsupportedDatabaseException ex) {
+                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+                DialogUtility.createErrorAlert(null, EnvironmentHandler.getResourceValue("noSupportedDatabase"));
             }
         }
 

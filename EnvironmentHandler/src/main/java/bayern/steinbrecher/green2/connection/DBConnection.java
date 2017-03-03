@@ -15,10 +15,13 @@
  */
 package bayern.steinbrecher.green2.connection;
 
+import bayern.steinbrecher.green2.data.ConfigKey;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.exception.SchemeCreationException;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
-import bayern.steinbrecher.green2.menu.Menu;
 import bayern.steinbrecher.green2.people.Member;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +32,9 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * Represents a database connection.
@@ -37,6 +43,7 @@ import java.util.stream.Collectors;
  */
 public abstract class DBConnection implements AutoCloseable {
 
+    private static final Map<SupportedDatabase, Map<Query, String>> QUERIES = new HashMap<>();
     /**
      * A list containing all names of needed columns for queries in the member table.
      */
@@ -46,38 +53,48 @@ public abstract class DBConnection implements AutoCloseable {
                     "kontoinhabernachname", "mandaterstellt"));
     private static final String ALL_COLUMN_LABELS_MEMBER
             = COLUMN_LABELS_MEMBER.stream().collect(Collectors.joining(","));
-    private static final String EXIST_TEST = "SELECT 1 FROM Mitglieder, Spitznamen;";
-    private static final String CREATE_MITGLIEDER = "CREATE TABLE Mitglieder ("
-            + "Mitgliedsnummer INTEGER PRIMARY KEY,"
-            + "Titel VARCHAR(255) NOT NULL,"
-            + "Vorname VARCHAR(255) NOT NULL,"
-            + "Nachname VARCHAR(255) NOT NULL,"
-            + "istAktiv BOOLEAN NOT NULL,"
-            + "istMaennlich BOOLEAN NOT NULL,"
-            + "Geburtstag DATE NOT NULL,"
-            + "Strasse VARCHAR(255) NOT NULL,"
-            + "Hausnummer VARCHAR(255) NOT NULL,"
-            + "PLZ VARCHAR(255) NOT NULL,"
-            + "Ort VARCHAR(255) NOT NULL,"
-            + "AusgetretenSeit DATE DEFAULT NULL,"
-            + "IBAN VARCHAR(255) NOT NULL,"
-            + "BIC VARCHAR(255) NOT NULL,"
-            + "MandatErstellt DATE NOT NULL,"
-            + "KontoinhaberVorname VARCHAR(255) NOT NULL,"
-            + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
-            + "istBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
-            + "Beitrag FLOAT NOT NULL);";
-    private static final String CREATE_SPITZNAMEN = "CREATE TABLE Spitznamen ("
-            + "Name VARCHAR(255) PRIMARY KEY,"
-            + "Spitzname VARCHAR(255) NOT NULL);";
-    private static final String QUERY_ALL_MEMBER
-            = "SELECT " + ALL_COLUMN_LABELS_MEMBER
-            + " FROM Mitglieder "
-            + "WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;"; //0000-00-00 legacy check
-    private static final String QUERY_ALL_NICKNAMES
-            = "SELECT Name, Spitzname FROM Spitznamen;";
-    private static final String QUERY_ALL_CONTRIBUTIONS
-            = "SELECT Mitgliedsnummer, Beitrag FROM Mitglieder;";
+    protected static final Property<SupportedDatabase> DATABASE = new SimpleObjectProperty<>();
+
+    static {
+        DATABASE.bind(Bindings.createObjectBinding(() -> {
+            Profile profile = EnvironmentHandler.getProfile();
+            return profile == null ? null : profile.getOrDefault(ConfigKey.DBMS, null);
+        }, EnvironmentHandler.loadedProfileProperty(), EnvironmentHandler.getProfile().getProperty(ConfigKey.DBMS)));
+    }
+
+    static {
+        Map<Query, String> mysql = new HashMap<>(Query.values().length);
+        mysql.put(Query.CREATE_MEMBER_TABLE, "CREATE TABLE Mitglieder ("
+                + "Mitgliedsnummer INTEGER PRIMARY KEY,"
+                + "Titel VARCHAR(255) NOT NULL,"
+                + "Vorname VARCHAR(255) NOT NULL,"
+                + "Nachname VARCHAR(255) NOT NULL,"
+                + "istAktiv BOOLEAN NOT NULL,"
+                + "istMaennlich BOOLEAN NOT NULL,"
+                + "Geburtstag DATE NOT NULL,"
+                + "Strasse VARCHAR(255) NOT NULL,"
+                + "Hausnummer VARCHAR(255) NOT NULL,"
+                + "PLZ VARCHAR(255) NOT NULL,"
+                + "Ort VARCHAR(255) NOT NULL,"
+                + "AusgetretenSeit DATE DEFAULT NULL,"
+                + "IBAN VARCHAR(255) NOT NULL,"
+                + "BIC VARCHAR(255) NOT NULL,"
+                + "MandatErstellt DATE NOT NULL,"
+                + "KontoinhaberVorname VARCHAR(255) NOT NULL,"
+                + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
+                + "istBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
+                + "Beitrag FLOAT NOT NULL);");
+        mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE Spitznamen ("
+                + "Name VARCHAR(255) PRIMARY KEY,"
+                + "Spitzname VARCHAR(255) NOT NULL);");
+        mysql.put(Query.QUERY_ALL_CONTRIBUTIONS, "SELECT Mitgliedsnummer, Beitrag FROM Mitglieder;");
+        mysql.put(Query.QUERY_ALL_MEMBER, "SELECT " + ALL_COLUMN_LABELS_MEMBER
+                + " FROM Mitglieder "
+                + "WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;");
+        mysql.put(Query.QUERY_ALL_NICKNAMES, "SELECT Name, Spitzname FROM Spitznamen;");
+        mysql.put(Query.TABLES_EXIST_TEST, "SELECT 1 FROM Mitglieder, Spitznamen;");
+        QUERIES.put(SupportedDatabase.MY_SQL, mysql);
+    }
 
     /**
      * Closes this connection.
@@ -110,7 +127,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean tablesExist() {
         try {
-            execQuery(EXIST_TEST);
+            execQuery(getQuery(Query.TABLES_EXIST_TEST));
             return true;
             //FIXME Avoid using SQLException as control flow.
         } catch (SQLException ex) {
@@ -127,8 +144,8 @@ public abstract class DBConnection implements AutoCloseable {
     public void createTablesIfNeeded() throws SchemeCreationException {
         if (!tablesExist()) {
             try {
-                execUpdate(CREATE_MITGLIEDER);
-                execUpdate(CREATE_SPITZNAMEN);
+                execUpdate(getQuery(Query.CREATE_MEMBER_TABLE));
+                execUpdate(getQuery(Query.CREATE_NICKNAMES_TABLE));
             } catch (SQLException ex) {
                 throw new SchemeCreationException("Could not create database tables", ex);
             }
@@ -143,7 +160,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public List<Member> getAllMember() {
         try {
-            return MemberGenerator.generateMemberList(execQuery(QUERY_ALL_MEMBER));
+            return MemberGenerator.generateMemberList(execQuery(getQuery(Query.QUERY_ALL_MEMBER)));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
@@ -156,7 +173,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public Map<String, String> getAllNicknames() {
         try {
-            List<List<String>> queriedNicknames = execQuery(QUERY_ALL_NICKNAMES);
+            List<List<String>> queriedNicknames = execQuery(getQuery(Query.QUERY_ALL_NICKNAMES));
 
             Map<String, String> mappedNicknames = new HashMap<>();
             queriedNicknames.parallelStream()
@@ -197,7 +214,7 @@ public abstract class DBConnection implements AutoCloseable {
     public Optional<Map<Integer, Double>> readIndividualContributions() {
         if (checkColumn("Mitglieder", "Beitrag")) {
             try {
-                List<List<String>> result = execQuery(QUERY_ALL_CONTRIBUTIONS);
+                List<List<String>> result = execQuery(getQuery(Query.QUERY_ALL_CONTRIBUTIONS));
                 Map<Integer, Double> contributions = new HashMap<>();
                 result.parallelStream()
                         .skip(1)
@@ -205,9 +222,47 @@ public abstract class DBConnection implements AutoCloseable {
                         Integer.parseInt(row.get(0)), Double.parseDouble(row.get(1).replaceAll(",", "."))));
                 return Optional.of(contributions);
             } catch (SQLException ex) {
-                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return Optional.empty();
+    }
+
+    private String getQuery(Query query) {
+        if (DATABASE.getValue() == null) {
+            throw new IllegalStateException("The type of the database is not set.");
+        } else {
+            return QUERIES.get(DATABASE.getValue()).get(query);
+        }
+    }
+
+    private enum Query {
+        TABLES_EXIST_TEST(false), CREATE_MEMBER_TABLE(false), CREATE_NICKNAMES_TABLE(false), QUERY_ALL_MEMBER(false),
+        QUERY_ALL_NICKNAMES(false), QUERY_ALL_CONTRIBUTIONS(false);
+
+        private final boolean containsVariables;
+
+        private Query(boolean containsVariables) {
+            this.containsVariables = containsVariables;
+        }
+
+        /**
+         * Checks whether this query contains variables to be used as {@link PreparedStatement}.
+         *
+         * @return {@code true} only if this query contains variables.
+         */
+        public boolean containsVariables() {
+            return containsVariables;
+        }
+    }
+
+    public enum SupportedDatabase {
+        MY_SQL("My SQL");
+
+        private final String displayName;
+
+        private SupportedDatabase(String displayName) {
+            this.displayName = displayName;
+        }
     }
 }

@@ -24,7 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,9 +38,14 @@ import java.util.logging.Logger;
 public final class DefaultConnection extends DBConnection {
 
     /**
-     * The protocol used as the beginning of the location of the database.
+     * The protocols of the supported databases.
      */
-    private static final String DRIVER_PROTOCOL = "jdbc:mysql://";
+    private static final Map<SupportedDatabase, String> DRIVER_PROTOCOLS
+            = new HashMap<SupportedDatabase, String>(SupportedDatabase.values().length) {
+        {
+            put(SupportedDatabase.MY_SQL, "jdbc:mysql://");
+        }
+    };
     /**
      * The created connection used to execute queries.
      */
@@ -60,8 +67,8 @@ public final class DefaultConnection extends DBConnection {
             if (!databaseHost.endsWith("/")) {
                 databaseHost += "/";
             }
-            connection = DriverManager.getConnection(DRIVER_PROTOCOL + databaseHost + databaseName
-                    + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
+            connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(DATABASE.getValue()) + databaseHost
+                    + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
                     + "&serverTimezone=UTC",
                     databaseUsername, databasePasswd);
         } catch (SQLException ex) {

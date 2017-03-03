@@ -15,7 +15,11 @@
  */
 package bayern.steinbrecher.green2.data;
 
+import bayern.steinbrecher.green2.connection.DBConnection;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -118,6 +122,14 @@ public enum ConfigKey {
             //FIXME Second operand of && is redundant. Charset.forName(..) already checks support...
             return (getValueClass().isInstance(value)) && Charset.isSupported(((Charset) value).name());
         }
+    },
+    DBMS(Enum.class) {
+        @Override
+        public <T> boolean isValid(T value) {
+            //FIXME Need to wait until Java 9 arrives. Then finally I can use this enum directly.
+            return (getValueClass().isInstance(value)) && Arrays.asList(DBConnection.SupportedDatabase.values())
+                    .contains((DBConnection.SupportedDatabase) value);
+        }
     };
 
     /**
@@ -194,8 +206,17 @@ public enum ConfigKey {
             return (T) valueClass.cast(value);
         } else if (Charset.class.isAssignableFrom(valueClass)) {
             return (T) valueClass.cast(Charset.forName(value));
+        } else if (Enum.class.isAssignableFrom(valueClass)) {
+            //FIXME Need to wait until Java 9 arrives
+            try {
+                return (T) DBConnection.SupportedDatabase.valueOf(value);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(ConfigKey.class.getName())
+                        .log(Level.WARNING, "Could not find SupportedDatabase {0}", value);
+                return null;
+            }
         } else {
-            throw new UnsupportedOperationException(value.getClass().getSimpleName() + " is not supported.");
+            throw new UnsupportedOperationException(valueClass.getSimpleName() + " is not supported.");
         }
     }
 }

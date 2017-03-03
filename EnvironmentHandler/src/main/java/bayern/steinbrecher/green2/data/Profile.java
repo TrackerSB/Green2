@@ -15,6 +15,7 @@
  */
 package bayern.steinbrecher.green2.data;
 
+import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,7 +58,7 @@ public class Profile {
     /**
      * The configurations found in a profile file.
      */
-    //FIXME Java 9: Replace Property<String> with Property<?>
+    //FIXME Java 9: Replace Property<String> with Property<T>
     private ObservableMap<ConfigKey, Property<String>> configurations = FXCollections.observableHashMap();
     /**
      * {@code true} only if all allowed configurations are specified.
@@ -291,7 +292,7 @@ public class Profile {
      */
     public <T> T getOrDefault(ConfigKey key, T defaultValue) {
         //FIXME Wait for JDK 9 in order to use generic enums
-        if (!key.getValueClass().isAssignableFrom(defaultValue.getClass())) {
+        if (defaultValue != null && !key.getValueClass().isAssignableFrom(defaultValue.getClass())) {
             throw new IllegalArgumentException("Type of defaultValue and the type of the value key represents have to "
                     + "be the same. (Still waiting for generic enums to check this on compile time... :-( )");
         }
@@ -303,6 +304,10 @@ public class Profile {
                 return (T) Boolean.valueOf(value.equalsIgnoreCase("ja") || value.equalsIgnoreCase("true"));
             } else if (defaultValue instanceof Charset) {
                 return (T) Charset.forName(value);
+            } else if (defaultValue == null) { //FIXME Crucial specialcase until JDK 9 arrives...
+                return (T) DBConnection.SupportedDatabase.valueOf(value);
+            } else if (defaultValue instanceof DBConnection.SupportedDatabase) {
+                return (T) DBConnection.SupportedDatabase.valueOf(value);
             } else {
                 throw new UnsupportedOperationException("Type \"" + defaultValue.getClass().getSimpleName()
                         + "\" not supported.");

@@ -31,6 +31,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -112,7 +114,7 @@ public final class EnvironmentHandler {
      */
     public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
             ? "/AppData/Roaming/" : "/.") + APPLICATION_FOLDER_NAME;
-    private static Profile loadedProfile;
+    private static Property<Profile> loadedProfile = new SimpleObjectProperty<>();
 
     static {
         //Create configDir if not existing
@@ -195,13 +197,22 @@ public final class EnvironmentHandler {
     }
 
     /**
+     * Returns the property holding the currently loaded profile.
+     *
+     * @return The property holding the currently loaded profile. Contains {@code null} if no profile is loaded.
+     */
+    public static Property<Profile> loadedProfileProperty() {
+        return loadedProfile;
+    }
+
+    /**
      * Returns the loaded profile.
      *
      * @return Returns the loaded profile.
      */
     public static Profile getProfile() {
         if (isLoaded()) {
-            return loadedProfile;
+            return loadedProfile.getValue();
         } else {
             throw new IllegalStateException("No profile loaded yet.");
         }
@@ -225,7 +236,7 @@ public final class EnvironmentHandler {
      * @return The profile itself. (This may be used for chaining)
      */
     public static Profile loadProfile(Profile profile) {
-        loadedProfile = profile;
+        loadedProfile.setValue(profile);
         return profile;
     }
 
