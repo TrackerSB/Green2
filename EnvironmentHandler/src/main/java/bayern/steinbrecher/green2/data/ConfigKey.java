@@ -182,6 +182,8 @@ public enum ConfigKey {
             return (String) value;
         } else if (value instanceof Charset) {
             return ((Charset) value).name();
+        } else if (value instanceof DBConnection.SupportedDatabase) {
+            return ((DBConnection.SupportedDatabase) value).name();
         } else {
             throw new UnsupportedOperationException(value.getClass().getSimpleName() + " is not supported.");
         }

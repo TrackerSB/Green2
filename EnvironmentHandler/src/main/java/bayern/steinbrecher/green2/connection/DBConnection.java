@@ -264,5 +264,13 @@ public abstract class DBConnection implements AutoCloseable {
         private SupportedDatabase(String displayName) {
             this.displayName = displayName;
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            return displayName;
+        }
     }
 }
