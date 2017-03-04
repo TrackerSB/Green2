@@ -177,7 +177,7 @@ public enum ConfigKey {
             throw new IllegalArgumentException("value must not be null");
         }
         if (value instanceof Boolean) {
-            return (Boolean) value ? "yes" : "no";
+            return (Boolean) value ? "true" : "false";
         } else if (value instanceof String) {
             return (String) value;
         } else if (value instanceof Charset) {
@@ -203,7 +203,8 @@ public enum ConfigKey {
             throw new IllegalArgumentException("value must not be null");
         }
         if (Boolean.class.isAssignableFrom(valueClass)) {
-            return (T) valueClass.cast(value.equalsIgnoreCase("yes"));
+            //FIXME yes legacy check
+            return (T) valueClass.cast(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"));
         } else if (String.class.isAssignableFrom(valueClass)) {
             return (T) valueClass.cast(value);
         } else if (Charset.class.isAssignableFrom(valueClass)) {

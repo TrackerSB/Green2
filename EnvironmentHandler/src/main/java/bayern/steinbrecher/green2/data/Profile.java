@@ -209,7 +209,7 @@ public class Profile {
     }
 
     private String generateLine(ConfigKey key) {
-        return key.name() + VALUE_SEPARATOR + key.getStringFromValue(configurations.get(key).getValue());
+        return key.name() + VALUE_SEPARATOR + key.getStringFromValue(key.getValueFromString(configurations.get(key).getValue()));
     }
 
     /**
@@ -341,7 +341,13 @@ public class Profile {
             throw new IllegalArgumentException("The given value is not valid for the given key");
         }
         configurations.putIfAbsent(key, new SimpleObjectProperty<>());
-        configurations.get(key).setValue(value.toString());
+        String valueString;
+        if (value instanceof DBConnection.SupportedDatabase) {
+            valueString = ((DBConnection.SupportedDatabase) value).name();
+        } else {
+            valueString = value.toString();
+        }
+        configurations.get(key).setValue(valueString);
     }
 
     /**
