@@ -31,7 +31,7 @@ public class Member implements Comparable<Member> {
     private Person person;
     private Address home;
     private AccountHolder accountHolder;
-    private boolean active;
+    private Optional<Boolean> active;
     private boolean contributionfree;
     private Optional<Double> contribution;
 
@@ -46,18 +46,19 @@ public class Member implements Comparable<Member> {
      * @param person The person itself.
      * @param home The homelocation.
      * @param accountHolder The owner of the account to book off the contribution.
-     * @param isActive {@code true} only if this member is an active one.
+     * @param isActive {@code true} only if this member is an active one or {@code null} if the database does not
+     * provide such information.
      * @param isContributionfree {@code true} only if this member does not have to pay contribution.
      * @param contribution The contribution this member has to pay. {@code null} indicates that the database has no
      * information about that.
      */
-    public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder, boolean isActive,
+    public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder, Boolean isActive,
             boolean isContributionfree, Double contribution) {
         this.membershipnumber = membershipnumber;
         this.person = person;
         this.home = home;
         this.accountHolder = accountHolder;
-        this.active = isActive;
+        this.active = Optional.ofNullable(isActive);
         this.contributionfree = isContributionfree;
         this.contribution = Optional.ofNullable(contribution);
     }
@@ -137,9 +138,10 @@ public class Member implements Comparable<Member> {
     /**
      * Checks whether this member is an active one.
      *
-     * @return {@code true} only if this member is active.
+     * @return {@code true} only if this member is active. Returns {@link Optional#empty()} if the database does not
+     * provide such information.
      */
-    public boolean isActive() {
+    public Optional<Boolean> isActive() {
         return active;
     }
 
@@ -148,8 +150,8 @@ public class Member implements Comparable<Member> {
      *
      * @param active {@code true} only if this member is an active member.
      */
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setActive(Boolean active) {
+        this.active = Optional.ofNullable(active);
     }
 
     /**
@@ -187,7 +189,7 @@ public class Member implements Comparable<Member> {
      * @param contribution The contribution this member has to pay or {@code null} if the database does not provide
      * information about this.
      */
-    public void setContribution(double contribution) {
+    public void setContribution(Double contribution) {
         this.contribution = Optional.ofNullable(contribution);
     }
 

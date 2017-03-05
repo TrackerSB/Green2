@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -72,51 +73,81 @@ public class BirthdayGenerator {
 
         member.sort(SORTING);
 
+        boolean distinguishActivePassive = member.parallelStream().anyMatch(m -> m.isActive().isPresent());
+
         StringBuilder output = new StringBuilder("Geburtstage " + year);
         List<Member> currentActive = new ArrayList<>();
         List<Member> currentPassive = new ArrayList<>();
+        List<Member> currentNeither = new ArrayList<>();
         int currentAge = year - member.get(0).getPerson().getBirthday().getYear();
         for (Member m : member) {
             if (year - m.getPerson().getBirthday().getYear() != currentAge) {
-                tryAppendMember(output, currentAge, currentActive, currentPassive);
+                appendMember(
+                        output, currentAge, currentActive, currentPassive, currentNeither, distinguishActivePassive);
                 currentActive.clear();
                 currentPassive.clear();
                 currentAge = year - m.getPerson().getBirthday().getYear();
             }
-            if (m.isActive()) {
-                currentActive.add(m);
+            Optional<Boolean> active = m.isActive();
+            if (active.isPresent()) {
+                if (active.get()) {
+                    currentActive.add(m);
+                } else {
+                    currentPassive.add(m);
+                }
             } else {
-                currentPassive.add(m);
+                currentNeither.add(m);
             }
         }
 
-        tryAppendMember(output, currentAge, currentActive, currentPassive);
+        appendMember(output, currentAge, currentActive, currentPassive, currentNeither, distinguishActivePassive);
 
         return output.toString();
     }
 
     /**
      * Appends all member of {@code currentAgeActive} and {@code currentAgePassiv} to {@code output} if the lists are
-     * not empty.
+     * not empty. The order of every list remains unchanged. The order of the lists printed is:
+     * <ul>
+     * <li>{@code currentAgeActive}</li>
+     * <li>{@code currentAgePassive}</li>
+     * <li>{@code currentAgeNeither}</li>
+     * </ul>
      *
      * @param output The {@link StringBuilder} to append the output to.
      * @param currentAge The age of the member in the given lists.
      * @param currentAgeActive The list of active member which are {@code currentAge} years old.
      * @param currentAgePassive The list of passive member which are {@code currentAge} years old.
+     * @param currentAgeNeither The list of member whose status (active/passive) is unknown.
+     * @param distinguishActivePassive {@code true} if the given lists should not be merged.
      */
-    private static void tryAppendMember(StringBuilder output, int currentAge, List<Member> currentAgeActive,
-            List<Member> currentAgePassive) {
-        if (!currentAgeActive.isEmpty() || !currentAgePassive.isEmpty()) {
+    private static void appendMember(StringBuilder output, int currentAge, List<Member> currentAgeActive,
+            List<Member> currentAgePassive, List<Member> currentAgeNeither, boolean distinguishActivePassive) {
+        if (!currentAgeActive.isEmpty() || !currentAgePassive.isEmpty() || !currentAgeNeither.isEmpty()) {
             output.append("\n\n").append(currentAge).append("ter Geburtstag\n");
-            if (!currentAgeActive.isEmpty()) {
-                output.append("Aktiv:\n")
-                        .append("Vorname;Nachname;Geburtstag\n")
-                        .append(currentAgeActive.stream().map(PRINT_LINE).reduce("", String::concat));
-            }
-            if (!currentAgePassive.isEmpty()) {
+
+            if (distinguishActivePassive) {
+                if (!currentAgeActive.isEmpty()) {
+                    output.append("Aktiv:\n")
+                            .append("Vorname;Nachname;Geburtstag\n")
+                            .append(currentAgeActive.stream().map(PRINT_LINE).reduce("", String::concat));
+                }
+                if (!currentAgePassive.isEmpty()) {
+                    output.append("Passiv:\n")
+                            .append("Vorname;Nachname;Geburtstag\n")
+                            .append(currentAgePassive.stream().map(PRINT_LINE).reduce("", String::concat));
+                }
+                if (!currentAgeNeither.isEmpty()) {
+                    output.append("Unbekannt:\n")
+                            .append("Vorname;Nachname;Geburtstag\n")
+                            .append(currentAgeNeither.stream().map(PRINT_LINE).reduce("", String::concat));
+                }
+            } else {
                 output.append("Passiv:\n")
                         .append("Vorname;Nachname;Geburtstag\n")
-                        .append(currentAgePassive.stream().map(PRINT_LINE).reduce("", String::concat));
+                        .append(currentAgeActive.stream().map(PRINT_LINE).reduce("", String::concat))
+                        .append(currentAgePassive.stream().map(PRINT_LINE).reduce("", String::concat))
+                        .append(currentAgeNeither.stream().map(PRINT_LINE).reduce("", String::concat));
             }
         }
     }

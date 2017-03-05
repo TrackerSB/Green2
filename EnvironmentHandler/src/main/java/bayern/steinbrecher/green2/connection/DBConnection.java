@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -202,29 +201,6 @@ public abstract class DBConnection implements AutoCloseable {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-    }
-
-    /**
-     * Reads the individual contributions of every member - if specified.
-     *
-     * @return A Optional containing the individual contributions or {@link Optional#empty()} if individual
-     * contributions are not specified.
-     */
-    public Optional<Map<Integer, Double>> readIndividualContributions() {
-        if (columnExists("Mitglieder", "Beitrag")) {
-            try {
-                List<List<String>> result = execQuery(getQuery(Query.QUERY_ALL_CONTRIBUTIONS));
-                Map<Integer, Double> contributions = new HashMap<>();
-                result.parallelStream()
-                        .skip(1)
-                        .forEach(row -> contributions.put(
-                        Integer.parseInt(row.get(0)), Double.parseDouble(row.get(1).replaceAll(",", "."))));
-                return Optional.of(contributions);
-            } catch (SQLException ex) {
-                Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return Optional.empty();
     }
 
     private String getQuery(Query query) {

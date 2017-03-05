@@ -15,8 +15,10 @@
  */
 package bayern.steinbrecher.green2.membermanagement;
 
+import bayern.steinbrecher.green2.connection.AuthException;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.DefaultConnection;
+import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
 import bayern.steinbrecher.green2.contribution.Contribution;
@@ -26,8 +28,6 @@ import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.ProfileChoice;
 import bayern.steinbrecher.green2.elements.Splashscreen;
 import bayern.steinbrecher.green2.elements.WaitScreen;
-import bayern.steinbrecher.green2.connection.AuthException;
-import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.generator.AddressGenerator;
 import bayern.steinbrecher.green2.generator.BirthdayGenerator;
 import bayern.steinbrecher.green2.generator.sepa.SepaPain00800302XMLGenerator;
@@ -95,7 +95,6 @@ public class MemberManagement extends Application {
     private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
     private Future<List<Member>> memberNonContributionfree;
     private Future<Map<String, String>> nicknames;
-    private Future<Optional<Map<Integer, Double>>> individualContributions;
     private DBConnection dbConnection = null;
 
     /**
@@ -323,7 +322,6 @@ public class MemberManagement extends Application {
                 .filter(m -> !m.isContributionfree())
                 .collect(Collectors.toList()));
         nicknames = exserv.submit(() -> dbConnection.getAllNicknames());
-        individualContributions = exserv.submit(() -> dbConnection.readIndividualContributions());
     }
 
     /**
@@ -414,7 +412,7 @@ public class MemberManagement extends Application {
 
     private void generateSepa(Future<List<Member>> memberToSelectFuture, boolean useMemberContributions,
             SequenceType sequenceType) {
-        checkNull(individualContributions, memberToSelectFuture);
+        checkNull(memberToSelectFuture);
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
 

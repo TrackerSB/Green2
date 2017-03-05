@@ -91,7 +91,7 @@ public class MemberGenerator {
             LocalDate birthday = parseString(row.get(birthdayIndex));
             LocalDate mandatsigned = parseString(row.get(mandatCreatedIndex));
             boolean isMale = row.get(isMaleIndex).equalsIgnoreCase("1");
-            boolean isActive = row.get(isActiveIndex).equalsIgnoreCase("1");
+            Boolean isActive = isActiveIndex < 0 ? null : row.get(isActiveIndex).equalsIgnoreCase("1");
             boolean isContributionfree = row.get(isContributionfreeIndex).equalsIgnoreCase("1");
             int membershipnumber = 0;
             try {
