@@ -40,6 +40,21 @@ public class MemberGenerator {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
     }
 
+    private static LocalDate parseString(String dateString) {
+        LocalDate date = null;
+        try {
+            if (dateString == null) {
+                throw new DateTimeParseException("Can´t parse null", "null", 0);
+            } else {
+                date = LocalDate.parse(dateString);
+            }
+        } catch (DateTimeParseException ex) {
+            Logger.getLogger(MemberGenerator.class.getName())
+                    .log(Level.WARNING, dateString + " is invalid birthdaydate", ex);
+        }
+        return date;
+    }
+
     /**
      * Generates a list of member out of {@code queryResult}.
      *
@@ -69,34 +84,12 @@ public class MemberGenerator {
         int membershipnumberIndex = labels.indexOf("mitgliedsnummer");
         int accountholderPrenameIndex = labels.indexOf("kontoinhabervorname");
         int accountholderLastnameIndex = labels.indexOf("kontoinhabernachname");
+        int contributionIndex = labels.indexOf("beitrag");
 
         return queryResult.parallelStream().skip(1).map(row -> {
             //Read attributes
-            LocalDate birthday = null;
-            try {
-                String birthdayString = row.get(birthdayIndex);
-                if (birthdayString == null) {
-                    throw new DateTimeParseException(
-                            "Can´t parse null", "null", 0);
-                } else {
-                    birthday = LocalDate.parse(birthdayString);
-                }
-            } catch (DateTimeParseException ex) {
-                Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.WARNING, row.get(birthdayIndex) + " is invalid birthdaydate", ex);
-            }
-            LocalDate mandatsigned = null;
-            try {
-                String mandatSignedString = row.get(mandatCreatedIndex);
-                if (mandatSignedString == null) {
-                    throw new DateTimeParseException("Can´t parse null", "null", 0);
-                } else {
-                    mandatsigned = LocalDate.parse(mandatSignedString);
-                }
-            } catch (DateTimeParseException ex) {
-                Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.WARNING, row.get(birthdayIndex) + " is invalid mandatSignedDate", ex);
-            }
+            LocalDate birthday = parseString(row.get(birthdayIndex));
+            LocalDate mandatsigned = parseString(row.get(mandatCreatedIndex));
             boolean isMale = row.get(isMaleIndex).equalsIgnoreCase("1");
             boolean isActive = row.get(isActiveIndex).equalsIgnoreCase("1");
             boolean isContributionfree = row.get(isContributionfreeIndex).equalsIgnoreCase("1");
@@ -115,6 +108,7 @@ public class MemberGenerator {
             if (accountholderLastname.isEmpty()) {
                 accountholderLastname = row.get(lastnameIndex);
             }
+            Double contribution = contributionIndex < 0 ? 0 : Double.parseDouble(row.get(contributionIndex));
 
             //Connect attributes
             Person p = new Person(row.get(prenameIndex), row.get(lastnameIndex), row.get(titleIndex), birthday, isMale);
@@ -123,7 +117,7 @@ public class MemberGenerator {
                     accountholderPrename, accountholderLastname, row.get(titleIndex), birthday, isMale);
             Address ad = new Address(row.get(streetIndex), row.get(housenumberIndex), row.get(postcodeIndex),
                     row.get(placeIndex));
-            return new Member(membershipnumber, p, ad, ah, isActive, isContributionfree);
+            return new Member(membershipnumber, p, ad, ah, isActive, isContributionfree, contribution);
         }).collect(Collectors.toList());
     }
 }

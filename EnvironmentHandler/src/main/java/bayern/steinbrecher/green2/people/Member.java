@@ -17,6 +17,7 @@ package bayern.steinbrecher.green2.people;
 
 import java.text.Collator;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Represents member of a Trachtenverein.
@@ -25,13 +26,18 @@ import java.util.Locale;
  */
 public class Member implements Comparable<Member> {
 
-    private static final Collator COLLATOR
-            = Collator.getInstance(Locale.GERMAN);
-    private final int membershipnumber;
-    private final Person person;
-    private final Address home;
-    private final AccountHolder accountHolder;
-    private final boolean active, contributionfree;
+    private static final Collator COLLATOR = Collator.getInstance(Locale.GERMAN);
+    private int membershipnumber;
+    private Person person;
+    private Address home;
+    private AccountHolder accountHolder;
+    private boolean active;
+    private boolean contributionfree;
+    private Optional<Double> contribution;
+
+    static {
+        COLLATOR.setStrength(Collator.SECONDARY);
+    }
 
     /**
      * Constructs a new member.
@@ -42,16 +48,18 @@ public class Member implements Comparable<Member> {
      * @param accountHolder The owner of the account to book off the contribution.
      * @param isActive {@code true} only if this member is an active one.
      * @param isContributionfree {@code true} only if this member does not have to pay contribution.
+     * @param contribution The contribution this member has to pay. {@code null} indicates that the database has no
+     * information about that.
      */
     public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder, boolean isActive,
-            boolean isContributionfree) {
-        COLLATOR.setStrength(Collator.SECONDARY);
+            boolean isContributionfree, Double contribution) {
         this.membershipnumber = membershipnumber;
         this.person = person;
         this.home = home;
         this.accountHolder = accountHolder;
         this.active = isActive;
         this.contributionfree = isContributionfree;
+        this.contribution = Optional.ofNullable(contribution);
     }
 
     /**
@@ -64,12 +72,30 @@ public class Member implements Comparable<Member> {
     }
 
     /**
+     * Sets the membershipnumer of this member.
+     *
+     * @param membershipnumber The membershipnumber of this member.
+     */
+    public void setMembershipnumber(int membershipnumber) {
+        this.membershipnumber = membershipnumber;
+    }
+
+    /**
      * Returns the person itself.
      *
      * @return The person representing this member.
      */
     public Person getPerson() {
         return person;
+    }
+
+    /**
+     * Sets the person associated with this member.
+     *
+     * @param person The person holding some of the information about this member.
+     */
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     /**
@@ -82,12 +108,30 @@ public class Member implements Comparable<Member> {
     }
 
     /**
+     * Sets the address of this member.
+     *
+     * @param home The address of this member.
+     */
+    public void setHome(Address home) {
+        this.home = home;
+    }
+
+    /**
      * Returns the holder of the account where to book off contribution.
      *
      * @return The account holder.
      */
     public AccountHolder getAccountHolder() {
         return accountHolder;
+    }
+
+    /**
+     * The account holder who pays the contributions of this member.
+     *
+     * @param accountHolder The account holder who pays the contributions of this member.
+     */
+    public void setAccountHolder(AccountHolder accountHolder) {
+        this.accountHolder = accountHolder;
     }
 
     /**
@@ -100,12 +144,51 @@ public class Member implements Comparable<Member> {
     }
 
     /**
+     * Sets whether this member is an active or a passive member.
+     *
+     * @param active {@code true} only if this member is an active member.
+     */
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /**
      * Checks whether this member has to pay contribution.
      *
      * @return {@code true} only if this member has NOT to pay contribution.
      */
     public boolean isContributionfree() {
         return contributionfree;
+    }
+
+    /**
+     * Sets whether this member has to pay contributions.
+     *
+     * @param contributionfree {@code false} only if this member has to pay contributions.
+     */
+    public void setContributionfree(boolean contributionfree) {
+        this.contributionfree = contributionfree;
+    }
+
+    /**
+     * Returns the contribution of this member.
+     *
+     * @return The contribution of this member or {@link Optional#empty()} if the contribution is unknown. (A reason may
+     * be it is not saved by the database.) It contains 0 if this member has not to pay contributions.
+     * @see #setContributionfree(boolean)
+     */
+    public Optional<Double> getContribution() {
+        return isContributionfree() ? Optional.of(0d) : contribution;
+    }
+
+    /**
+     * Sets the contribution this member has to pay.
+     *
+     * @param contribution The contribution this member has to pay or {@code null} if the database does not provide
+     * information about this.
+     */
+    public void setContribution(double contribution) {
+        this.contribution = Optional.ofNullable(contribution);
     }
 
     /**

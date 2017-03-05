@@ -24,7 +24,6 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -57,16 +56,15 @@ public final class SepaPain00800302XMLGenerator {
      * @return A list containing member which are not included in the outputfile. These are member which have no iban or
      * no bic.
      */
-    public static List<Member> createXMLFile(List<Member> member, Map<Integer, Double> contributions,
-            Originator originator, SequenceType sequenceType, File outputfile,
-            boolean sepaWithBom) {
+    public static List<Member> createXMLFile(List<Member> member, Originator originator, SequenceType sequenceType,
+            File outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
         List<Member> missingContribution = member.stream()
-                .filter(m -> !contributions.containsKey(m.getMembershipnumber()))
+                .filter(m -> !m.getContribution().isPresent())
                 .collect(Collectors.toList());
         if (missingContribution.isEmpty()) {
             IOStreamUtility.printContent(
-                    createXML(member, originator, contributions, sequenceType), outputfile, sepaWithBom);
+                    createXML(member, originator, sequenceType), outputfile, sepaWithBom);
             return invalidMember;
         } else {
             throw new IllegalArgumentException(missingContribution.stream()
@@ -116,11 +114,10 @@ public final class SepaPain00800302XMLGenerator {
      * @param contributions The mapping of membershipnumbers to contributions.
      * @return The {@link String} representing the xml file content.
      */
-    private static String createXML(List<Member> member, Originator originator, Map<Integer, Double> contributions,
-            SequenceType sequenceType) {
+    private static String createXML(List<Member> member, Originator originator, SequenceType sequenceType) {
         int numberOfTransactions = member.size();
         double controlSum = member.parallelStream()
-                .mapToDouble(m -> contributions.get(m.getMembershipnumber()))
+                .mapToDouble(m -> m.getContribution().get())
                 .sum();
         //Eliminate double precision inaccuracy arose from IntStream
         controlSum = Math.rint(controlSum * 100) / 100;
@@ -218,7 +215,7 @@ public final class SepaPain00800302XMLGenerator {
                     .append("         <EndToEndId>NOTPROVIDED</EndToEndId>\n")
                     .append("       </PmtId>\n")
                     .append("       <InstdAmt Ccy=\"EUR\">")
-                    .append(contributions.get(m.getMembershipnumber()))
+                    .append(m.getContribution().get())
                     .append("</InstdAmt>\n")
                     .append("       <DrctDbtTx>\n")
                     .append("         <MndtRltdInf>\n")

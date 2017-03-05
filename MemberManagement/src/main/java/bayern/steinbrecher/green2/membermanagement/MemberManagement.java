@@ -418,12 +418,8 @@ public class MemberManagement extends Application {
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
 
-            Map<Integer, Double> contributions = new HashMap<>(); //FIXME These lines may be simplified.
-            Optional<Map<Integer, Double>> optContributions = individualContributions.get();
-            boolean askForContribution = !(useMemberContributions && optContributions.isPresent());
-            if (useMemberContributions) {
-                optContributions.ifPresent(contributions::putAll);
-            }
+            boolean askForContribution = !(useMemberContributions
+                    && dbConnection.columnExists("Mitglieder", "Beitrag"));
 
             WizardPage<Optional<Originator>> sepaFormPage = new SepaForm(menuStage).getWizardPage();
             sepaFormPage.setNextFunction(() -> "selection");
@@ -454,14 +450,14 @@ public class MemberManagement extends Application {
                     List<Member> selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
                     if (askForContribution) {
                         double contribution = ((Optional<Double>) results.get("contribution")).get();
-                        selectedMember.stream().forEach(m -> contributions.put(m.getMembershipnumber(), contribution));
+                        selectedMember.stream().forEach(m -> m.setContribution(contribution));
                     }
                     Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
                     EnvironmentHandler.askForSavePath(menuStage, "Sepa", "xml").ifPresent(file -> {
                         List<Member> invalidMember
-                                = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, contributions, originator,
-                                        sequenceType, file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
+                                = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, originator, sequenceType,
+                                        file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
                         String message = invalidMember.stream()
                                 .map(Member::toString)
                                 .collect(Collectors.joining("\n"));

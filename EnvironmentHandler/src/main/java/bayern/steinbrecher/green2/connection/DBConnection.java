@@ -193,7 +193,7 @@ public abstract class DBConnection implements AutoCloseable {
      * @param column The column name to search for.
      * @return {@code true} only if the given table contains the given column.
      */
-    public boolean checkColumn(String table, String column) {
+    public boolean columnExists(String table, String column) {
         try {
             List<String> headings = execQuery("SELECT * FROM " + table + " WHERE 0;").get(0);
             return headings.stream()
@@ -212,7 +212,7 @@ public abstract class DBConnection implements AutoCloseable {
      * contributions are not specified.
      */
     public Optional<Map<Integer, Double>> readIndividualContributions() {
-        if (checkColumn("Mitglieder", "Beitrag")) {
+        if (columnExists("Mitglieder", "Beitrag")) {
             try {
                 List<List<String>> result = execQuery(getQuery(Query.QUERY_ALL_CONTRIBUTIONS));
                 Map<Integer, Double> contributions = new HashMap<>();
