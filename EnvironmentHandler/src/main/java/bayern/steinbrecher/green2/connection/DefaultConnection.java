@@ -15,7 +15,6 @@
  */
 package bayern.steinbrecher.green2.connection;
 
-import bayern.steinbrecher.green2.exception.AuthException;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import java.net.UnknownHostException;
 import java.sql.Connection;

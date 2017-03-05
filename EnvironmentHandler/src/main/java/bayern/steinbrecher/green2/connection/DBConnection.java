@@ -18,7 +18,6 @@ package bayern.steinbrecher.green2.connection;
 import bayern.steinbrecher.green2.data.ConfigKey;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
-import bayern.steinbrecher.green2.exception.SchemeCreationException;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.people.Member;
 import java.sql.PreparedStatement;

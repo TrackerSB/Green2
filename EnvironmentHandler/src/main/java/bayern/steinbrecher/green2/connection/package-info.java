@@ -15,6 +15,6 @@
  */
 /**
  * This package contains all classes for creating and establishing connections
- * to a database.
+ * to databases.
  */
 package bayern.steinbrecher.green2.connection;

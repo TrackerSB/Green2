@@ -13,21 +13,21 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.exception;
+package bayern.steinbrecher.green2.connection;
 
 /**
- * Indicating that a database scheme could not be created.
+ * Indicating that a try to authenticate somewhere failed.
  *
  * @author Stefan Huber
  */
-public class SchemeCreationException extends Exception {
+public class AuthException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new exception with {@code null} as its detail message and no cause.
      */
-    public SchemeCreationException() {
+    public AuthException() {
         super();
     }
 
@@ -36,7 +36,7 @@ public class SchemeCreationException extends Exception {
      *
      * @param message The detail message.
      */
-    public SchemeCreationException(String message) {
+    public AuthException(String message) {
         super(message);
     }
 
@@ -50,7 +50,7 @@ public class SchemeCreationException extends Exception {
      * @param cause The cause. (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
      * unknown.)
      */
-    public SchemeCreationException(String message, Throwable cause) {
+    public AuthException(String message, Throwable cause) {
         super(message, cause);
     }
 }

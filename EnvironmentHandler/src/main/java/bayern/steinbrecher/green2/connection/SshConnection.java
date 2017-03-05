@@ -15,7 +15,6 @@
  */
 package bayern.steinbrecher.green2.connection;
 
-import bayern.steinbrecher.green2.exception.AuthException;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
