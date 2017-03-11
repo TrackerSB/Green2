@@ -17,6 +17,8 @@
         <module>../ConfigurationDialog</module>
         <module>../Launcher</module>
         <module>../MemberManagement</module>
+        <module>../EnvironmentHandler</module>
+        <module>../Wizard</module>
     </modules>
     <name>Green2Aggregation</name>
     
