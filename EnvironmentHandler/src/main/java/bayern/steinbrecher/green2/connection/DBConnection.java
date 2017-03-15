@@ -22,7 +22,6 @@ import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.people.Member;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -42,15 +41,6 @@ import javafx.beans.property.SimpleObjectProperty;
 public abstract class DBConnection implements AutoCloseable {
 
     private static final Map<SupportedDatabase, Map<Query, String>> QUERIES = new HashMap<>();
-    /**
-     * A list containing all names of needed columns for queries in the member table.
-     */
-    public static final List<String> COLUMN_LABELS_MEMBER = new ArrayList<>(
-            Arrays.asList("mitgliedsnummer", "vorname", "nachname", "titel", "istmaennlich", "istaktiv", "geburtstag",
-                    "strasse", "hausnummer", "plz", "ort", "istbeitragsfrei", "iban", "bic", "kontoinhabervorname",
-                    "kontoinhabernachname", "mandaterstellt"));
-    private static final String ALL_COLUMN_LABELS_MEMBER
-            = COLUMN_LABELS_MEMBER.stream().collect(Collectors.joining(","));
     protected static final Property<SupportedDatabase> DATABASE = new SimpleObjectProperty<>();
 
     static {
@@ -85,11 +75,11 @@ public abstract class DBConnection implements AutoCloseable {
         mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE Spitznamen ("
                 + "Name VARCHAR(255) PRIMARY KEY,"
                 + "Spitzname VARCHAR(255) NOT NULL);");
-        mysql.put(Query.QUERY_ALL_CONTRIBUTIONS, "SELECT Mitgliedsnummer, Beitrag FROM Mitglieder;");
-        mysql.put(Query.QUERY_ALL_MEMBER, "SELECT " + ALL_COLUMN_LABELS_MEMBER
+//FIXME Remove 0000-00-00 legacy check
+        mysql.put(Query.QUERY_ALL_MEMBER, "SELECT " + Tables.MEMBER.getAllColumns()
                 + " FROM Mitglieder "
                 + "WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;");
-        mysql.put(Query.QUERY_ALL_NICKNAMES, "SELECT Name, Spitzname FROM Spitznamen;");
+        mysql.put(Query.QUERY_ALL_NICKNAMES, "SELECT " + Tables.NICKNAMES.getAllColumns() + " FROM Spitznamen;");
         mysql.put(Query.TABLES_EXIST_TEST, "SELECT 1 FROM Mitglieder, Spitznamen;");
         QUERIES.put(SupportedDatabase.MY_SQL, mysql);
     }
@@ -191,12 +181,13 @@ public abstract class DBConnection implements AutoCloseable {
      * @param column The column name to search for.
      * @return {@code true} only if the given table contains the given column.
      */
-    public boolean columnExists(String table, String column) {
+    public boolean columnExists(Tables table, Columns column) {
         try {
-            List<String> headings = execQuery("SELECT * FROM " + table + " WHERE 0;").get(0);
+            List<String> headings = execQuery("SELECT * FROM " + table.getRealTableName() + " WHERE 0;").get(0);
             return headings.stream()
                     .map(String::toLowerCase)
-                    .anyMatch(s -> s.equalsIgnoreCase(column));
+                    .anyMatch(s -> s.equalsIgnoreCase(column.getRealColumnName()));
+            //FIXME Try not to use SQLException for controlling the flow.
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -212,8 +203,36 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     private enum Query {
-        TABLES_EXIST_TEST(false), CREATE_MEMBER_TABLE(false), CREATE_NICKNAMES_TABLE(false), QUERY_ALL_MEMBER(false),
-        QUERY_ALL_NICKNAMES(false), QUERY_ALL_CONTRIBUTIONS(false);
+        /**
+         * Checks whether all tables exist.
+         */
+        TABLES_EXIST_TEST(false),
+        /**
+         * Creates the database for member with all columns.
+         */
+        CREATE_MEMBER_TABLE(false),
+        /**
+         * Creates the database for nicknames with all columns.
+         */
+        CREATE_NICKNAMES_TABLE(false),
+        /**
+         * A query for returning all informations about member.
+         */
+        QUERY_ALL_MEMBER(false),
+        /**
+         * A query for returning all informations about nicknames.
+         */
+        QUERY_ALL_NICKNAMES(false),
+        /**
+         * Checks whether the nickname table contains all columns needed. NOTE: It is not neccessary that all columns
+         * have to be existent.
+         */
+        NICKNAME_TABLE_COMPLETE(false),
+        /**
+         * Checks whether the member table contains all columns needed. NOTE: It is not neccessary that all columns have
+         * to be existent.
+         */
+        MEMBER_TABLE_COMPLETE(false);
 
         private final boolean containsVariables;
 
@@ -231,6 +250,9 @@ public abstract class DBConnection implements AutoCloseable {
         }
     }
 
+    /**
+     * This enum lists all supported databases like MySQL.
+     */
     public enum SupportedDatabase {
         MY_SQL("My SQL");
 
@@ -246,6 +268,91 @@ public abstract class DBConnection implements AutoCloseable {
         @Override
         public String toString() {
             return displayName;
+        }
+    }
+
+    /**
+     * This enum lists all tables needed for Green2.
+     */
+    public enum Tables {
+        MEMBER("Mitglieder", Columns.MEMBERSHIPNUMBER, Columns.IS_ACTIVE, Columns.PRENAME, Columns.LASTNAME,
+                Columns.TITLE, Columns.IS_MALE, Columns.BIRTHDAY, Columns.STREET, Columns.HOUSENUMBER,
+                Columns.CITY_CODE, Columns.CITY, Columns.IS_CONTRIBUTIONFREE, Columns.IBAN, Columns.BIC,
+                Columns.ACCOUNTHOLDER_PRENAME, Columns.ACCOUNTHOLDER_LASTNAME, Columns.MANDAT_SIGNED,
+                Columns.CONTRIBUTION),
+        NICKNAMES("Spitznamen", Columns.NAME, Columns.NICKNAME);
+
+        private final List<Columns> columns;
+        private final String allColumns;
+        private final String realTableName;
+        private final Map<Columns, Boolean> requiredMap;
+
+        private Tables(String realTableName, Map<Columns, Boolean> requiredMap, Columns... columns) {
+            this.realTableName = realTableName;
+            this.requiredMap = requiredMap;
+            this.columns = Arrays.asList(columns);
+            allColumns = this.columns.stream()
+                    .map(Columns::getRealColumnName)
+                    .collect(Collectors.joining(","));
+        }
+
+        private Tables(String realTableName, Columns... columns) {
+            this(realTableName, null, columns);
+        }
+
+        /**
+         * Checks whether the scheme of this table contains the given column. NOTE: This does not confirm that the table
+         * contains this column. It only states that the scheme can have such a column.
+         *
+         * @param column The column to check.
+         * @return {@code true} only if this table contains {@code column}.
+         */
+        public boolean contains(Columns column) {
+            return columns.contains(column);
+        }
+
+        /**
+         * Returns a {@link String} listing all columns of this table separated by a column.
+         *
+         * @return A {@link String} listing all columns of this table separated by a column.
+         */
+        public String getAllColumns() {
+            return allColumns;
+        }
+
+        /**
+         * Returns the name of the table in the database scheme.
+         *
+         * @return The name of the table in the database scheme.
+         */
+        public String getRealTableName() {
+            return realTableName;
+        }
+    }
+
+    /**
+     * This enum lists all columns which a table can have.
+     */
+    public enum Columns {
+        MEMBERSHIPNUMBER("Mitgliedsnummer"), IS_ACTIVE("IstAktiv"), PRENAME("Vorname"), LASTNAME("Nachname"),
+        TITLE("Titel"), IS_MALE("IstMaennlich"), BIRTHDAY("Geburtstag"), STREET("Strasse"), HOUSENUMBER("Hausnummer"),
+        CITY_CODE("PLZ"), CITY("Ort"), IS_CONTRIBUTIONFREE("IstBeitragsfrei"), IBAN("Iban"), BIC("Bic"),
+        ACCOUNTHOLDER_PRENAME("KontoinhaberVorname"), ACCOUNTHOLDER_LASTNAME("KontoinhaberNachname"),
+        MANDAT_SIGNED("MandatErstellt"), CONTRIBUTION("Beitrag"), NAME("Name"), NICKNAME("Spitzname");
+
+        private final String realColumnName;
+
+        private Columns(String realColumnName) {
+            this.realColumnName = realColumnName;
+        }
+
+        /**
+         * Returns the name of this column in the database scheme.
+         *
+         * @return The name of this column in the database scheme.
+         */
+        public String getRealColumnName() {
+            return realColumnName;
         }
     }
 }

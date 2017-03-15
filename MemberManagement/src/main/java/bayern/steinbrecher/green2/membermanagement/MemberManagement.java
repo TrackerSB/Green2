@@ -17,6 +17,8 @@ package bayern.steinbrecher.green2.membermanagement;
 
 import bayern.steinbrecher.green2.connection.AuthException;
 import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.DBConnection.Columns;
+import bayern.steinbrecher.green2.connection.DBConnection.Tables;
 import bayern.steinbrecher.green2.connection.DefaultConnection;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
@@ -417,7 +419,7 @@ public class MemberManagement extends Application {
             List<Member> memberToSelect = memberToSelectFuture.get();
 
             boolean askForContribution = !(useMemberContributions
-                    && dbConnection.columnExists("Mitglieder", "Beitrag"));
+                    && dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION));
 
             WizardPage<Optional<Originator>> sepaFormPage = new SepaForm(menuStage).getWizardPage();
             sepaFormPage.setNextFunction(() -> "selection");
