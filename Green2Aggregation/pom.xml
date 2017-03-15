@@ -31,7 +31,7 @@
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
-                        <descriptor>src/assembly/dep.xml</descriptor>
+                        <descriptor>src/assembly/Green2.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
