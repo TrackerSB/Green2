@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/TrackerSB/Green2.svg?branch=master)](https://travis-ci.org/TrackerSB/Green2)
-[![](https://img.shields.io/badge/release-not yet released-lightgray.svg)](https://github.com/TrackerSB/Green2)
+[![](https://img.shields.io/badge/release-2u12-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/coverage-unknown-lightgray.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/Java-8u121-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/JavaFX-8-blue.svg)](https://github.com/TrackerSB/Green2)
