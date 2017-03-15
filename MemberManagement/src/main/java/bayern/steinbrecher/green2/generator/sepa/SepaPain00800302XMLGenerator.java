@@ -48,7 +48,6 @@ public final class SepaPain00800302XMLGenerator {
      * it will be created.
      *
      * @param member The member to collect money via direct debit from.
-     * @param contributions The mapping of membershipnumbers to contributions.
      * @param originator The originator of the direct debit.
      * @param sequenceType The sequence type of the direct debit.
      * @param outputfile The path to the file to print the xml to.

@@ -129,10 +129,7 @@ public class Wizard {
     }
 
     /**
-     * Initializes the wizard. That contains adding pages resizing stage and setting the first page. NOTE: Stylehsheets
-     * should be added using {@link Wizard#Wizard(java.util.Map, javafx.stage.Stage, java.lang.String...)}. Before
-     * calling {@link #init()} the scene to add them to is {@code null} and when adding the stylesheets after this
-     * method the wizard may not resize correctly.
+     * Initializes the wizard. That contains adding pages resizing stage and setting the first page.
      *
      * @throws IOException May be thrown by {@link FXMLLoader#load()}.
      */
