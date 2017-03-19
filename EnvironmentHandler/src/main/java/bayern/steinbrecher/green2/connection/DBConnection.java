@@ -24,8 +24,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -52,7 +55,7 @@ public abstract class DBConnection implements AutoCloseable {
 
     static {
         Map<Query, String> mysql = new HashMap<>(Query.values().length);
-        mysql.put(Query.CREATE_MEMBER_TABLE, "CREATE TABLE Mitglieder ("
+        mysql.put(Query.CREATE_MEMBER_TABLE, "CREATE TABLE " + Tables.MEMBER.getRealTableName() + " ("
                 + "Mitgliedsnummer INTEGER PRIMARY KEY,"
                 + "Titel VARCHAR(255) NOT NULL,"
                 + "Vorname VARCHAR(255) NOT NULL,"
@@ -72,15 +75,12 @@ public abstract class DBConnection implements AutoCloseable {
                 + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
                 + "istBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
                 + "Beitrag FLOAT NOT NULL);");
-        mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE Spitznamen ("
+        mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE " + Tables.NICKNAMES.getRealTableName() + " ("
                 + "Name VARCHAR(255) PRIMARY KEY,"
                 + "Spitzname VARCHAR(255) NOT NULL);");
-//FIXME Remove 0000-00-00 legacy check
-        mysql.put(Query.QUERY_ALL_MEMBER, "SELECT " + Tables.MEMBER.getAllColumns()
-                + " FROM Mitglieder "
-                + "WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;");
-        mysql.put(Query.QUERY_ALL_NICKNAMES, "SELECT " + Tables.NICKNAMES.getAllColumns() + " FROM Spitznamen;");
-        mysql.put(Query.TABLES_EXIST_TEST, "SELECT 1 FROM Mitglieder, Spitznamen;");
+//FIXME Remove 0000-00-00 legacy check at some point in the future
+        mysql.put(Query.TABLES_EXIST_TEST, "SELECT 1 FROM " + Arrays.stream(Tables.values())
+                .map(Tables::getRealTableName).collect(Collectors.joining(",")) + ";");
         QUERIES.put(SupportedDatabase.MY_SQL, mysql);
     }
 
@@ -106,6 +106,38 @@ public abstract class DBConnection implements AutoCloseable {
      * @throws SQLException Thrown if the sql code is invalid.
      */
     public abstract void execUpdate(String sqlCode) throws SQLException;
+
+    /**
+     * Returns a {@link Map} containing entries assigning the entries of {@code headings} which contain the headings of
+     * a query the number of the column. It stores no entry if this entry of {@code headings} contains a column which is
+     * not part of the scheme. It also stores no entry if an entry of the scheme is not found in {@code headings}.
+     *
+     * @param table The table containing the scheme to use.
+     * @param headings The headings of the query to map column numbers to.
+     * @return The {@link Map} containing entries assigning the entries of {@code headings} which contain the headings
+     * of a query the number of the column.
+     */
+    public static Map<Columns, Integer> generateColumnMapping(Tables table, List<String> headings) {
+        Map<Columns, Integer> columnsMapping = new HashMap<>();
+        table.getAllColumns().forEach(column -> {
+            for (int i = 0; i < headings.size(); i++) {
+                if (column.getRealColumnName().equalsIgnoreCase(headings.get(i))) {
+                    columnsMapping.put(column, i);
+                    break;
+                }
+            }
+        });
+
+        return columnsMapping;
+    }
+
+    private String getQuery(Query query) {
+        if (DATABASE.getValue() == null) {
+            throw new IllegalStateException("The type of the database is not set.");
+        } else {
+            return QUERIES.get(DATABASE.getValue()).get(query);
+        }
+    }
 
     /**
      * Checks whether tables &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; exist. It DOES NOT check whether they
@@ -148,7 +180,10 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public List<Member> getAllMember() {
         try {
-            return MemberGenerator.generateMemberList(execQuery(getQuery(Query.QUERY_ALL_MEMBER)));
+            return MemberGenerator.generateMemberList(execQuery(
+                    Tables.MEMBER.generateQuery(this, Tables.MEMBER.getAllColumnsAsArray()).get()
+                            //FIXME Remove that concatination when the column AusgetretenSeit has vanished.
+                            .concat(" WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;")));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
@@ -161,11 +196,12 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public Map<String, String> getAllNicknames() {
         try {
-            List<List<String>> queriedNicknames = execQuery(getQuery(Query.QUERY_ALL_NICKNAMES));
+            List<List<String>> queriedNicknames
+                    = execQuery(Tables.NICKNAMES.generateQuery(this, Tables.NICKNAMES.getAllColumnsAsArray()).get());
 
             Map<String, String> mappedNicknames = new HashMap<>();
             queriedNicknames.parallelStream()
-                    .skip(1)
+                    .skip(1) //Skip headings
                     .forEach(row -> mappedNicknames.put(row.get(0), row.get(1)));
             return mappedNicknames;
         } catch (SQLException ex) {
@@ -175,7 +211,9 @@ public abstract class DBConnection implements AutoCloseable {
 
     /**
      * Checks whether the given table of the configured database contains a specific column. You should NEVER call this
-     * function with parameters provided by the user in order to prohibit SQL INJECTION.
+     * function with parameters provided by the user in order to prohibit SQL INJECTION. NOTE: For this function to work
+     * for sure the table should have at least one row. When having no rows the database may return nothing not even the
+     * headings.
      *
      * @param table The name of the table to search for the column.
      * @param column The column name to search for.
@@ -183,22 +221,14 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean columnExists(Tables table, Columns column) {
         try {
-            List<String> headings = execQuery("SELECT * FROM " + table.getRealTableName() + " WHERE 0;").get(0);
+            List<String> headings = execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;").get(0);
             return headings.stream()
                     .map(String::toLowerCase)
                     .anyMatch(s -> s.equalsIgnoreCase(column.getRealColumnName()));
-            //FIXME Try not to use SQLException for controlling the flow.
+            //FIXME Try not to use SQLException for checking whether the table exists.
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
             return false;
-        }
-    }
-
-    private String getQuery(Query query) {
-        if (DATABASE.getValue() == null) {
-            throw new IllegalStateException("The type of the database is not set.");
-        } else {
-            return QUERIES.get(DATABASE.getValue()).get(query);
         }
     }
 
@@ -215,14 +245,6 @@ public abstract class DBConnection implements AutoCloseable {
          * Creates the database for nicknames with all columns.
          */
         CREATE_NICKNAMES_TABLE(false),
-        /**
-         * A query for returning all informations about member.
-         */
-        QUERY_ALL_MEMBER(false),
-        /**
-         * A query for returning all informations about nicknames.
-         */
-        QUERY_ALL_NICKNAMES(false),
         /**
          * Checks whether the nickname table contains all columns needed. NOTE: It is not neccessary that all columns
          * have to be existent.
@@ -275,49 +297,97 @@ public abstract class DBConnection implements AutoCloseable {
      * This enum lists all tables needed for Green2.
      */
     public enum Tables {
-        MEMBER("Mitglieder", Columns.MEMBERSHIPNUMBER, Columns.IS_ACTIVE, Columns.PRENAME, Columns.LASTNAME,
+        MEMBER("Mitglieder", new HashSet<>(Arrays.asList(Columns.MEMBERSHIPNUMBER, Columns.PRENAME, Columns.LASTNAME,
                 Columns.TITLE, Columns.IS_MALE, Columns.BIRTHDAY, Columns.STREET, Columns.HOUSENUMBER,
                 Columns.CITY_CODE, Columns.CITY, Columns.IS_CONTRIBUTIONFREE, Columns.IBAN, Columns.BIC,
-                Columns.ACCOUNTHOLDER_PRENAME, Columns.ACCOUNTHOLDER_LASTNAME, Columns.MANDAT_SIGNED,
-                Columns.CONTRIBUTION),
-        NICKNAMES("Spitznamen", Columns.NAME, Columns.NICKNAME);
+                Columns.ACCOUNTHOLDER_PRENAME, Columns.ACCOUNTHOLDER_LASTNAME, Columns.MANDAT_SIGNED)),
+                new HashSet<>(Arrays.asList(Columns.CONTRIBUTION, Columns.IS_ACTIVE))),
+        NICKNAMES("Spitznamen", new HashSet<>(Arrays.asList(Columns.NAME, Columns.NICKNAME)), new HashSet<>());
 
-        private final List<Columns> columns;
-        private final String allColumns;
+        private final Set<Columns> requiredColumns;
+        private final Set<Columns> optionalColumns;
+        private final Set<Columns> allColumns;
         private final String realTableName;
-        private final Map<Columns, Boolean> requiredMap;
 
-        private Tables(String realTableName, Map<Columns, Boolean> requiredMap, Columns... columns) {
+        private Tables(String realTableName, Set<Columns> requiredColumns, Set<Columns> optionalColumns) {
+            if (requiredColumns.stream().anyMatch(c -> optionalColumns.contains(c))) {
+                throw new IllegalArgumentException(
+                        "Found a column which is required AND optional in table " + realTableName);
+            }
             this.realTableName = realTableName;
-            this.requiredMap = requiredMap;
-            this.columns = Arrays.asList(columns);
-            allColumns = this.columns.stream()
-                    .map(Columns::getRealColumnName)
-                    .collect(Collectors.joining(","));
+            this.requiredColumns = requiredColumns;
+            this.optionalColumns = optionalColumns;
+            allColumns = new HashSet<>(requiredColumns);
+            allColumns.addAll(optionalColumns);
         }
 
-        private Tables(String realTableName, Columns... columns) {
-            this(realTableName, null, columns);
+        private void throwIfInvalid(DBConnection connection) {
+            if (!isValid(connection)) {
+                throw new IllegalStateException(realTableName + " is missing required columns.");
+            }
         }
 
         /**
-         * Checks whether the scheme of this table contains the given column. NOTE: This does not confirm that the table
-         * contains this column. It only states that the scheme can have such a column.
+         * Checks whether the scheme of this table contains the given column. NOTE: This does not confirm that the this
+         * column exists in the real table. It only states that the scheme can have such a column.
          *
          * @param column The column to check.
          * @return {@code true} only if this table contains {@code column}.
          */
         public boolean contains(Columns column) {
-            return columns.contains(column);
+            return allColumns.contains(column);
         }
 
         /**
-         * Returns a {@link String} listing all columns of this table separated by a column.
+         * Checks whether this table exists and has all required columns when using the given connection.
          *
-         * @return A {@link String} listing all columns of this table separated by a column.
+         * @param connection The connection to use for checking.
+         * @return {@code true} only if the table accessible using {@code connection} exists and has all required
+         * columns.
          */
-        public String getAllColumns() {
-            return allColumns;
+        public boolean isValid(DBConnection connection) {
+            return requiredColumns.stream().allMatch(c -> connection.columnExists(this, c));
+        }
+
+        /**
+         * Checks whether the given column is an optional column of this table.
+         *
+         * @param column The column to check.
+         * @return {@code true} only if this column is an optional column of this table.
+         */
+        public boolean isOptional(Columns column) {
+            if (contains(column)) {
+                return optionalColumns.contains(column);
+            } else {
+                throw new IllegalArgumentException(column + " is no column of " + realTableName);
+            }
+        }
+
+        /**
+         * Returns a {@link String} containing a statement with select and from but without where and also without a
+         * semicolon and no trailing space at the end. The select statement contains only columns existing when using
+         * {@code connection}.
+         *
+         * @param connection The connection to use.
+         * @param columnsToSelect The columns to select when they exist.
+         * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns
+         * {@link Optional#empty()} if {@code columnsToSelect} contains no column which exists. NOTE: If
+         * {@code columnsToSelect} contains at least one required column this method won´t return
+         * {@link Optional#empty()} otherwise the table accessible using {@code connection} is not valid.
+         */
+        public Optional<String> generateQuery(DBConnection connection, Columns... columnsToSelect) {
+            throwIfInvalid(connection);
+            List<Columns> existingColumns = Arrays.stream(columnsToSelect)
+                    .filter(c -> connection.columnExists(this, c))
+                    .collect(Collectors.toList());
+            if (existingColumns.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of("SELECT " + existingColumns.stream()
+                        .map(Columns::getRealColumnName)
+                        .collect(Collectors.joining(","))
+                        + " FROM " + realTableName);
+            }
         }
 
         /**
@@ -328,11 +398,25 @@ public abstract class DBConnection implements AutoCloseable {
         public String getRealTableName() {
             return realTableName;
         }
+
+        /**
+         * Returns the {@link Set} containing all columns this table can have according to its scheme.
+         *
+         * @return The {@link Set} containing all columns this table can have according to its scheme.
+         */
+        public Set<Columns> getAllColumns() {
+            return allColumns;
+        }
+
+        private Columns[] getAllColumnsAsArray() {
+            return allColumns.toArray(new Columns[0]);
+        }
     }
 
     /**
      * This enum lists all columns which a table can have.
      */
+    //FIXME Waiting for JDK 9 making it generic.
     public enum Columns {
         MEMBERSHIPNUMBER("Mitgliedsnummer"), IS_ACTIVE("IstAktiv"), PRENAME("Vorname"), LASTNAME("Nachname"),
         TITLE("Titel"), IS_MALE("IstMaennlich"), BIRTHDAY("Geburtstag"), STREET("Strasse"), HOUSENUMBER("Hausnummer"),

@@ -35,15 +35,15 @@ public class AccountHolder extends Person {
      * @param bic The BIC of the account holder.
      * @param mandateSigned The date when he signed his mandate.
      * @param hasMandateChanged {@code true}, only if his mandate changed since last transfer.
-     * @param firstName The firstName of the account holder.
-     * @param lastName The last name of the account holder.
+     * @param prename The firstName of the account holder.
+     * @param lastname The last name of the account holder.
      * @param title The title of the account holder if any.
      * @param birthday The birthday date of the account holder.
-     * @param isMale {@code true} only if the account holder is male.
+     * @param male {@code true} only if the account holder is male.
      */
-    public AccountHolder(String iban, String bic, LocalDate mandateSigned, boolean hasMandateChanged, String firstName,
-            String lastName, String title, LocalDate birthday, boolean isMale) {
-        super(firstName, lastName, title, birthday, isMale);
+    public AccountHolder(String iban, String bic, LocalDate mandateSigned, boolean hasMandateChanged, String prename,
+            String lastname, String title, LocalDate birthday, boolean male) {
+        super(prename, lastname, title, birthday, male);
         this.iban = iban;
         this.bic = bic;
         this.mandateSigned = mandateSigned;

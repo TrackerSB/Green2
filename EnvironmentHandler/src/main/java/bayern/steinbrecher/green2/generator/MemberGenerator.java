@@ -15,6 +15,7 @@
  */
 package bayern.steinbrecher.green2.generator;
 
+import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.people.AccountHolder;
 import bayern.steinbrecher.green2.people.Address;
 import bayern.steinbrecher.green2.people.Member;
@@ -22,6 +23,8 @@ import bayern.steinbrecher.green2.people.Person;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -55,6 +58,49 @@ public class MemberGenerator {
         return date;
     }
 
+    private static Optional<String> getOptionally(List<String> row, Integer index) {
+        if (index == null || index < 0) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(row.get(index));
+        }
+    }
+
+    /*
+     * Picks the correct column and parses it to the specified type.
+     */
+    //FIXME Waiting for JDK 9
+    private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns, Integer> columnMapping,
+            DBConnection.Tables table, DBConnection.Columns column, Class<T> clazz) {
+        /*Class<T> typeT = (Class<T>) ((ParameterizedType) DBConnection.Columns.class.getGenericSuperclass())
+                .getActualTypeArguments()[0];*/
+        Optional<String> optionalField = getOptionally(row, columnMapping.get(column));
+        if (optionalField.isPresent()) {
+            T value;
+            if (Boolean.class.isAssignableFrom(clazz)) {
+                value = (T) (Boolean) optionalField.get().equalsIgnoreCase("1");
+            } else if (LocalDate.class.isAssignableFrom(clazz)) {
+                value = (T) parseString(optionalField.get());
+            } else if (Integer.class.isAssignableFrom(clazz)) {
+                value = (T) (Integer) Integer.parseInt(optionalField.get());
+            } else if (Double.class.isAssignableFrom(clazz)) {
+                value = (T) (Double) Double.parseDouble(optionalField.get());
+            } else if (String.class.isAssignableFrom(clazz)) {
+                value = (T) optionalField.get();
+            } else {
+                throw new IllegalArgumentException("Type " + clazz.getSimpleName() + " not supported.");
+            }
+            return value;
+        } else {
+            if (table.isOptional(column)) {
+                return null;
+            } else {
+                throw new IllegalStateException(
+                        column.getRealColumnName() + " is no optional column but has no mapping.");
+            }
+        }
+    }
+
     /**
      * Generates a list of member out of {@code queryResult}.
      *
@@ -63,60 +109,61 @@ public class MemberGenerator {
      * @return The resulting list of member.
      */
     public static List<Member> generateMemberList(List<List<String>> queryResult) {
-        List<String> labels = queryResult.get(0).stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
-
-        int prenameIndex = labels.indexOf("vorname");
-        int lastnameIndex = labels.indexOf("nachname");
-        int titleIndex = labels.indexOf("titel");
-        int birthdayIndex = labels.indexOf("geburtstag");
-        int isMaleIndex = labels.indexOf("istmaennlich");
-        int ibanIndex = labels.indexOf("iban");
-        int bicIndex = labels.indexOf("bic");
-        int mandatCreatedIndex = labels.indexOf("mandaterstellt");
-        int streetIndex = labels.indexOf("strasse");
-        int housenumberIndex = labels.indexOf("hausnummer");
-        int postcodeIndex = labels.indexOf("plz");
-        int placeIndex = labels.indexOf("ort");
-        int isActiveIndex = labels.indexOf("istaktiv");
-        int isContributionfreeIndex = labels.indexOf("istbeitragsfrei");
-        int membershipnumberIndex = labels.indexOf("mitgliedsnummer");
-        int accountholderPrenameIndex = labels.indexOf("kontoinhabervorname");
-        int accountholderLastnameIndex = labels.indexOf("kontoinhabernachname");
-        int contributionIndex = labels.indexOf("beitrag");
+        Map<DBConnection.Columns, Integer> columnMapping
+                = DBConnection.generateColumnMapping(DBConnection.Tables.MEMBER, queryResult.get(0));
 
         return queryResult.parallelStream().skip(1).map(row -> {
             //Read attributes
-            LocalDate birthday = parseString(row.get(birthdayIndex));
-            LocalDate mandatsigned = parseString(row.get(mandatCreatedIndex));
-            boolean isMale = row.get(isMaleIndex).equalsIgnoreCase("1");
-            Boolean isActive = isActiveIndex < 0 ? null : row.get(isActiveIndex).equalsIgnoreCase("1");
-            boolean isContributionfree = row.get(isContributionfreeIndex).equalsIgnoreCase("1");
-            int membershipnumber = 0;
-            try {
-                membershipnumber = Integer.parseInt(row.get(membershipnumberIndex));
-            } catch (NumberFormatException ex) {
-                Logger.getLogger(MemberGenerator.class.getName())
-                        .log(Level.SEVERE, "Could not parse " + row.get(membershipnumberIndex) + " as a number", ex);
+            //FIXME Waiting for JDK 9
+            LocalDate birthday = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY, LocalDate.class);
+            LocalDate mandatsigned = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY, LocalDate.class);
+            Boolean male = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_MALE, Boolean.class);
+            Boolean isActive = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_ACTIVE, Boolean.class);
+            Boolean isContributionfree = MemberGenerator.pickAndConvert(row,
+                    columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_CONTRIBUTIONFREE, Boolean.class);
+            Integer membershipnumber = MemberGenerator.pickAndConvert(row,
+                    columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.MEMBERSHIPNUMBER, Integer.class);
+            String prename = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.PRENAME, String.class);
+            String lastname = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.LASTNAME, String.class);
+            String title = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.TITLE, String.class);
+            String iban = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IBAN, String.class);
+            String bic = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIC, String.class);
+            String accountholderPrename = MemberGenerator.pickAndConvert(row, columnMapping,
+                    DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_PRENAME, String.class);
+            if (accountholderPrename == null || accountholderPrename.isEmpty()) {
+                accountholderPrename = prename;
             }
-            String accountholderPrename = row.get(accountholderPrenameIndex);
-            if (accountholderPrename.isEmpty()) {
-                accountholderPrename = row.get(prenameIndex);
+            String accountholderLastname = MemberGenerator.pickAndConvert(row, columnMapping,
+                    DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_LASTNAME, String.class);
+            if (accountholderLastname == null || accountholderLastname.isEmpty()) {
+                accountholderLastname = lastname;
             }
-            String accountholderLastname = row.get(accountholderLastnameIndex);
-            if (accountholderLastname.isEmpty()) {
-                accountholderLastname = row.get(lastnameIndex);
-            }
-            Double contribution = contributionIndex < 0 ? 0 : Double.parseDouble(row.get(contributionIndex));
+            Double contribution = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CONTRIBUTION, Double.class);
+            String street = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.STREET, String.class);
+            String housenumber = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.HOUSENUMBER, String.class);
+            String cityCode = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY_CODE, String.class);
+            String city = MemberGenerator.pickAndConvert(
+                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY, String.class);
 
             //Connect attributes
-            Person p = new Person(row.get(prenameIndex), row.get(lastnameIndex), row.get(titleIndex), birthday, isMale);
+            Person p = new Person(lastname, lastname, title, birthday, male);
             //FIXME mandateChanged has not to be always false
-            AccountHolder ah = new AccountHolder(row.get(ibanIndex), row.get(bicIndex), mandatsigned, false,
-                    accountholderPrename, accountholderLastname, row.get(titleIndex), birthday, isMale);
-            Address ad = new Address(row.get(streetIndex), row.get(housenumberIndex), row.get(postcodeIndex),
-                    row.get(placeIndex));
+            AccountHolder ah = new AccountHolder(
+                    iban, bic, mandatsigned, false, accountholderPrename, accountholderLastname, title, birthday, male);
+            Address ad = new Address(street, housenumber, cityCode, city);
             return new Member(membershipnumber, p, ad, ah, isActive, isContributionfree, contribution);
         }).collect(Collectors.toList());
     }
