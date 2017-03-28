@@ -11,10 +11,11 @@
                 
             </goals>
             <properties>
-                <exec.args>-classpath %classpath ${packageClassName}</exec.args>
-                <exec.executable>java</exec.executable>
+                <runfx.args>-jar "${project.build.directory}/${project.build.finalName}.jar"</runfx.args>
                 
-                <exec.workingdir>G:\Documents\NetBeansProjects\Green2\MemberManagement</exec.workingdir>
+                
+                
+                
                 
                 
             </properties>

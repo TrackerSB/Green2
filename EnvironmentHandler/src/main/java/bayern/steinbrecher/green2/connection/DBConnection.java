@@ -45,6 +45,10 @@ public abstract class DBConnection implements AutoCloseable {
 
     private static final Map<SupportedDatabase, Map<Query, String>> QUERIES = new HashMap<>();
     protected static final Property<SupportedDatabase> DATABASE = new SimpleObjectProperty<>();
+    /**
+     * Caches existing columns of tables. All column names are lowercase.
+     */
+    private final Map<Tables, List<String>> EXISTING_HEADINGS_CACHE = new HashMap<>();
 
     static {
         DATABASE.bind(Bindings.createObjectBinding(() -> {
@@ -221,9 +225,25 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean columnExists(Tables table, Columns column) {
         try {
-            List<String> headings = execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;").get(0);
-            return headings.stream()
-                    .map(String::toLowerCase)
+            synchronized (EXISTING_HEADINGS_CACHE) {
+                if (!EXISTING_HEADINGS_CACHE.containsKey(table)) {
+                    EXISTING_HEADINGS_CACHE
+                            /*
+                             * FIXME When the database is empty it may happen that the result contains nothing.
+                             * Not even the column names.
+                             */
+                            /*
+                             * NOTE Don´t use putIfAbsent(...). If you do execQuery(...) will always be evaluated
+                             * because of missing lazy evaluation.
+                             */
+                            .put(table, execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;")
+                                    .get(0)
+                                    .stream()
+                                    .map(String::toLowerCase)
+                                    .collect(Collectors.toList()));
+                }
+            }
+            return EXISTING_HEADINGS_CACHE.get(table).stream()
                     .anyMatch(s -> s.equalsIgnoreCase(column.getRealColumnName()));
             //FIXME Try not to use SQLException for checking whether the table exists.
         } catch (SQLException ex) {

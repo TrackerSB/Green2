@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -178,6 +179,7 @@ public class ProfileChoice extends Application {
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
             dialogPane.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
             ((Stage) dialogPane.getScene().getWindow()).getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+            Platform.runLater(() -> dialogPane.lookupButton(ButtonType.OK).requestFocus());
 
             Optional<String> profileName = choiceDialog.showAndWait();
             if (profileName.isPresent()) {
