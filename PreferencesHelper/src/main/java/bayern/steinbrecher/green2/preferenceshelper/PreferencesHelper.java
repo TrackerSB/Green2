@@ -40,15 +40,19 @@ public class PreferencesHelper {
                 } else {
                     path = "HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\Prefs";
                 }
+                //TODO Try appending the registry path using the node of EnvironmentHandler
+                path += "\\bayern\\steinbrecher\\green2";
                 break;
             case LINUX:
                 path = System.getProperty("java.util.prefs.systemRoot",
-                        System.getProperty("java.home") + "/.systemPrefs");
+                        System.getProperty("java.home") + "/.systemPrefs")
+                        + "/bayern/steinbrecher/green2";
                 break;
             default:
                 throw new IllegalArgumentException("OS not supported by PreferencesHelper.");
         }
 
-        System.out.println(path);
+        //NOTE Never print a newline character
+        System.out.print(path);
     }
 }
