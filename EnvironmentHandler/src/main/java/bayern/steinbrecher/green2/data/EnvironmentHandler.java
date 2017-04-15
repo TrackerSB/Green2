@@ -51,23 +51,16 @@ public final class EnvironmentHandler {
     public static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle("bayern.steinbrecher.green2.data.language.language");
     private static final int SPLASHSCREEN_PREFFERED_WIDTH = 800;
+    private static final String RESOURCE_BASE_PATH = "/bayern/steinbrecher/green2/";
     /**
      * The path of the file containing all styles.
      */
-    public static final String DEFAULT_STYLESHEET = "styles.css";
-    /**
-     * The name of the folder which should contain the application.
-     */
-    public static final String APPLICATION_FOLDER_NAME = "Green2";
-    private static final String BASIC_ICON_DIR_PATH = "/";
+    public static final String DEFAULT_STYLESHEET = RESOURCE_BASE_PATH + "styles/styles.css";
+    private static final String BASIC_ICON_DIR_PATH = RESOURCE_BASE_PATH + "icons/";
     /**
      * The name of the folder containing the licenses of Green2.
      */
     private static final String LICENSES_FOLDER_NAME = "licenses";
-    /**
-     * The name of the folder containing the library jars.
-     */
-    private static final String LIBRARIES_FOLDER_NAME = "lib";
     private static final String PREFERENCES_SUBKEY = "bayern/steinbrecher/green2";
     /**
      * The node of the user preferences where to put user specific settings of Green2.
@@ -109,6 +102,10 @@ public final class EnvironmentHandler {
      * The path of the folder containing the licenses of Green2.
      */
     private static final Path LICENSES_PATH = Paths.get(APPLICATION_ROOT.toString(), LICENSES_FOLDER_NAME);
+    /**
+     * The name of the folder which should contain the application.
+     */
+    public static final String APPLICATION_FOLDER_NAME = "Green2";
     /**
      * The path of the folder where to put user specific data of the application.
      */
@@ -351,24 +348,24 @@ public final class EnvironmentHandler {
      */
     public enum ImageSet {
 
-        ADD("icons/add.png", false),
-        EDIT("icons/edit.png", false),
-        TRASH("icons/trash.png", false),
-        INFO("icons/info.png", true),
-        ERROR("icons/error.png", true),
-        WARNING("icons/warning.png", true),
+        ADD("add.png", false),
+        EDIT("edit.png", false),
+        TRASH("trash.png", false),
+        INFO("info.png", true),
+        ERROR("error.png", true),
+        WARNING("warning.png", true),
         /**
          * An image for confirmations or checklists.
          */
-        CHECKED("icons/checked.png", true),
-        KEY("icons/key.png", false),
-        LOCKED("icons/locked.png", false),
-        ID_CARD("icons/id-card.png", false),
-        NEXT("icons/next.png", false),
-        BACK("icons/back.png", false),
-        SUCCESS("icons/success.png", false),
-        CREDIT_CARD("icons/credit-card.png", false),
-        BANK("icons/back.png", false);
+        CHECKED("checked.png", true),
+        KEY("key.png", false),
+        LOCKED("locked.png", false),
+        ID_CARD("id-card.png", false),
+        NEXT("next.png", false),
+        BACK("back.png", false),
+        SUCCESS("success.png", false),
+        CREDIT_CARD("credit-card.png", false),
+        BANK("back.png", false);
 
         private Image image;
         private boolean isBig;

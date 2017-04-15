@@ -76,7 +76,7 @@ public class HelpButton extends Button {
      */
     public HelpButton(String text, String helpMessage, Node graphic) {
         super(text, graphic);
-        //NOTE Needs to be separate method in order to show the correct message.
+        //NOTE Needs to be separate method (showHelpMessage()) in order to show the correct message.
         setOnAction(aevt -> showHelpMessage());
         this.helpMessage.set(helpMessage);
         setFocusTraversable(false);

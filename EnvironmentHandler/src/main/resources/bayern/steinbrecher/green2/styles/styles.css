@@ -111,42 +111,42 @@
 }
 
 .checked-textfield {
-    -fx-background-image: url("icons/next.png");
+    -fx-background-image: url("/bayern/steinbrecher/green2/icons/next.png");
 }
 
 .checked-password-field {
-    -fx-background-image: url(icons/locked.png);
+    -fx-background-image: url(/bayern/steinbrecher/green2/icons/locked.png);
 }
 
 .name-textfield {
-    -fx-background-image: url("icons/id-card.png");
+    -fx-background-image: url("/bayern/steinbrecher/green2/icons/id-card.png");
 }
 
 .iban-textfield {
-    -fx-background-image: url("icons/credit-card.png");
+    -fx-background-image: url("/bayern/steinbrecher/green2/icons/credit-card.png");
 }
 
 .creditorid-textfield {
-    -fx-background-image: url("icons/credit-card.png");
+    -fx-background-image: url("/bayern/steinbrecher/green2/icons/credit-card.png");
 }
 
 .bic-textfield {
-    -fx-background-image: url("icons/bank.png");
+    -fx-background-image: url("/bayern/steinbrecher/green2/icons/bank.png");
 }
 
 /*******************************************
 //Wizard
 *******************************************/
 #wizardControlPrevious {
-    -fx-graphic: url("icons/back.png");
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/back.png");
 }
 
 #wizardControlNext {
-    -fx-graphic: url("icons/next.png");
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/next.png");
 }
 
 #wizardControlFinish {
-    -fx-graphic: url("icons/success.png");
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/success.png");
 }
 
 /*******************************************
