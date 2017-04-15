@@ -32,6 +32,7 @@ public class PreferencesHelper {
     public static void main(String[] args) {
         //This method is implemented according to http://stackoverflow.com/questions/1320709/preference-api-storage
         String path;
+        String subkeyPath = EnvironmentHandler.PREFERENCES_SYSTEM_NODE.absolutePath();
         switch (EnvironmentHandler.CURRENT_OS) {
             case WINDOWS:
                 if ("32".equals(System.getProperty("sun.arch.data.model"))
@@ -40,13 +41,12 @@ public class PreferencesHelper {
                 } else {
                     path = "HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\Prefs";
                 }
-                //TODO Try appending the registry path using the node of EnvironmentHandler
-                path += "\\bayern\\steinbrecher\\green2";
+                path += subkeyPath.replaceAll("/", "\\\\");
                 break;
             case LINUX:
                 path = System.getProperty("java.util.prefs.systemRoot",
                         System.getProperty("java.home") + "/.systemPrefs")
-                        + "/bayern/steinbrecher/green2";
+                        + subkeyPath;
                 break;
             default:
                 throw new IllegalArgumentException("OS not supported by PreferencesHelper.");
