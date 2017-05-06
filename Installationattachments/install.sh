@@ -32,12 +32,12 @@ rm -r $ProgramFolder;
 rm -r $MenuEntryFolder/Grün_*;"
 
 # Move configurations of previous versions
-$SudoCommand -c "mkdir $ConfigDir;
+$SudoCommand -c "mkdir -p $ConfigDir;
 mv $HOME/.Grün2_Mitgliederverwaltung/* $ConfigDir;
 rm -r $HOME/.Grün2_Mitgliederverwaltung;"
 
 # Create program folder
-$SudoCommand -c "mkdir $ProgramFolder;
+$SudoCommand -c "mkdir -p $ProgramFolder;
 mv -f $TempDir/*.desktop $MenuEntryFolder/;
 mv -f $TempDir/* $ProgramFolder/;
 rm $ProgramFolder/*.xml;
@@ -45,12 +45,14 @@ rm $ProgramFolder/*.bat;
 rm $ProgramFolder/*.vbs;"
 
 # Update version saved in Java preferences
-registryPath = $(java -jar PreferencesHelper.jar) + "/prefs.xml"
-$SudoCommand -c "echo '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
+preferencesDir = $(java -jar PreferencesHelper.jar)
+preferencesPath = preferencesDir + "/prefs.xml"
+$SudoCommand -c "mkdir -p preferencesDir;
+echo '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
 <!DOCTYPE map SYSTEM \"http://java.sun.com/dtd/preferences.dtd\">
 <map MAP_XML_VERSION=\"1.0\">
   <entry key=\"version\" value=\"$1\"/>
-</map>' > $registryPath;"
+</map>' > $preferencesPath;"
 
 # Create install successful file
 $SudoCommand -c "touch $TempDir/installed;"
