@@ -191,6 +191,12 @@ public class MemberManagement extends Application {
                     Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.exit();
                 }
+                if (!dbConnection.hasValidSchemes()) {
+                    String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
+                    DialogUtility.createErrorAlert(null, invalidScheme, invalidScheme).showAndWait();
+                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, invalidScheme);
+                    Platform.exit();
+                }
 
                 executeQueries();
 

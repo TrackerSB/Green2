@@ -177,6 +177,25 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
+     * Checks whether all needed tables are accessible using this connection and have all required columns.
+     *
+     * @return {@code true} only if all needed tables and their required columns exist.
+     */
+    public boolean hasValidSchemes() {
+        //FIXME This flow is still somekind of dirty
+        if (tablesExist()) {
+            for (Tables table : Tables.values()) {
+                if (!table.isValid(this)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Returns a list of all member accessible with this connection. The list contains all columns returned by
      * {@link Tables#getAllColumns()} called on {@link Tables#MEMBER}.
      *
