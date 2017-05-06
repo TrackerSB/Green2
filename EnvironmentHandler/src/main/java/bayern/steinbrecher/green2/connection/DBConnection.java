@@ -182,17 +182,8 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if all needed tables and their required columns exist.
      */
     public boolean hasValidSchemes() {
-        //FIXME This flow is still somekind of dirty
-        if (tablesExist()) {
-            for (Tables table : Tables.values()) {
-                if (!table.isValid(this)) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return false;
-        }
+        return tablesExist() && Arrays.stream(Tables.values())
+                .anyMatch(table -> table.isValid(this));
     }
 
     /**
@@ -252,7 +243,7 @@ public abstract class DBConnection implements AutoCloseable {
                              * Not even the column names.
                              */
                             /*
-                             * NOTE Don´t use putIfAbsent(...). If you do execQuery(...) will always be evaluated
+                             * NOTE Don´t use putIfAbsent(...). If you do, execQuery(...) will always be evaluated
                              * because of missing lazy evaluation.
                              */
                             .put(table, execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;")

@@ -69,7 +69,44 @@ public class MemberGenerator {
     /*
      * Picks the correct column and parses it to the specified type.
      */
-    //FIXME Waiting for JDK 9
+    //FIXME Waiting for JDK 9.
+    private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns, Integer> columnMapping,
+            DBConnection.Tables table, DBConnection.Columns column) {
+        throw new UnsupportedOperationException("It is only supported in JDK9.");
+        /*Class<T> typeT = (Class<T>) ((ParameterizedType) DBConnection.Columns.class.getGenericSuperclass())
+                .getActualTypeArguments()[0];
+        Optional<String> optionalField = getOptionally(row, columnMapping.get(column));
+        if (optionalField.isPresent()) {
+            T value;
+            if (Boolean.class.isAssignableFrom(typeT)) {
+                value = (T) (Boolean) optionalField.get().equalsIgnoreCase("1");
+            } else if (LocalDate.class.isAssignableFrom(typeT)) {
+                value = (T) parseString(optionalField.get());
+            } else if (Integer.class.isAssignableFrom(typeT)) {
+                value = (T) (Integer) Integer.parseInt(optionalField.get());
+            } else if (Double.class.isAssignableFrom(typeT)) {
+                value = (T) (Double) Double.parseDouble(optionalField.get());
+            } else if (String.class.isAssignableFrom(typeT)) {
+                value = (T) optionalField.get();
+            } else {
+                throw new IllegalArgumentException("Type " + typeT.getSimpleName() + " not supported.");
+            }
+            return value;
+        } else {
+            if (table.isOptional(column)) {
+                return null;
+            } else {
+                throw new IllegalStateException(
+                        column.getRealColumnName() + " is no optional column but has no mapping.");
+            }
+        }*/
+    }
+
+    /*
+     * Picks the correct column and parses it to the specified type.
+     */
+    //FIXME Waiting for JDK 9.
+    @Deprecated
     private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns, Integer> columnMapping,
             DBConnection.Tables table, DBConnection.Columns column, Class<T> clazz) {
         /*Class<T> typeT = (Class<T>) ((ParameterizedType) DBConnection.Columns.class.getGenericSuperclass())

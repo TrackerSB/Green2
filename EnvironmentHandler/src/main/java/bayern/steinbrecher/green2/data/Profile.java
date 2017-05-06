@@ -290,6 +290,7 @@ public class Profile {
      * @return The value belonging to key {@code key} or {@code defaultValue} if {@code key} could not be found or is
      * not specified.
      */
+    @SuppressWarnings("UnnecessaryBoxing")
     public <T> T getOrDefault(ConfigKey key, T defaultValue) {
         //FIXME Wait for JDK 9 in order to use generic enums
         if (defaultValue != null && !key.getValueClass().isAssignableFrom(defaultValue.getClass())) {

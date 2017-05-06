@@ -203,7 +203,7 @@ public enum ConfigKey {
             throw new IllegalArgumentException("value must not be null");
         }
         if (Boolean.class.isAssignableFrom(valueClass)) {
-            //FIXME yes legacy check
+            //FIXME "yes" legacy check
             return (T) valueClass.cast(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"));
         } else if (String.class.isAssignableFrom(valueClass)) {
             return (T) valueClass.cast(value);

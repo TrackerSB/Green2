@@ -118,7 +118,7 @@ public class SelectionController<T extends Comparable<T>>
      * Returns the list of currently selected items. Returns {@link Optional#empty()} if the user didn't confirm the
      * selection yet.
      *
-     * @return An Optional containing the selection if any.
+     * @return An {@link Optional} containing the selection if any.
      */
     public Optional<List<T>> getSelection() {
         if (userAbborted()) {

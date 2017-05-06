@@ -231,7 +231,7 @@ public class Wizard {
      */
     public Optional<Map<String, ?>> getResults() {
         if (isFinished()) {
-            //FIXME Cannot use ? as type
+            //FIXME Cannot use ? as type. May use underscore in JDK9
             Map<String, Object> results = new HashMap<>();
             history.forEach(key -> {
                 try {
