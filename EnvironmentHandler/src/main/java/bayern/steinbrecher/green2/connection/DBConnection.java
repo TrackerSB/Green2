@@ -24,9 +24,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -317,28 +318,54 @@ public abstract class DBConnection implements AutoCloseable {
      * This enum lists all tables needed for Green2.
      */
     public enum Tables {
-        MEMBER("Mitglieder", new HashSet<>(Arrays.asList(Columns.MEMBERSHIPNUMBER, Columns.PRENAME, Columns.LASTNAME,
-                Columns.TITLE, Columns.IS_MALE, Columns.BIRTHDAY, Columns.STREET, Columns.HOUSENUMBER,
-                Columns.CITY_CODE, Columns.CITY, Columns.IS_CONTRIBUTIONFREE, Columns.IBAN, Columns.BIC,
-                Columns.ACCOUNTHOLDER_PRENAME, Columns.ACCOUNTHOLDER_LASTNAME, Columns.MANDAT_SIGNED)),
-                new HashSet<>(Arrays.asList(Columns.CONTRIBUTION, Columns.IS_ACTIVE))),
-        NICKNAMES("Spitznamen", new HashSet<>(Arrays.asList(Columns.NAME, Columns.NICKNAME)), new HashSet<>());
+        //FIXME JDK9 allows <> with anonymous inner classes.
+        MEMBER("Mitglieder", new HashMap<Columns, Boolean>() {
+            {
+                put(Columns.MEMBERSHIPNUMBER, true);
+                put(Columns.PRENAME, true);
+                put(Columns.LASTNAME, true);
+                put(Columns.TITLE, true);
+                put(Columns.IS_MALE, true);
+                put(Columns.BIRTHDAY, true);
+                put(Columns.STREET, true);
+                put(Columns.HOUSENUMBER, true);
+                put(Columns.CITY_CODE, true);
+                put(Columns.CITY, true);
+                put(Columns.IS_CONTRIBUTIONFREE, true);
+                put(Columns.IBAN, true);
+                put(Columns.BIC, true);
+                put(Columns.ACCOUNTHOLDER_PRENAME, true);
+                put(Columns.ACCOUNTHOLDER_LASTNAME, true);
+                put(Columns.MANDAT_SIGNED, true);
+                put(Columns.CONTRIBUTION, false);
+                put(Columns.IS_ACTIVE, false);
+            }
+        }),
+        //FIXME JDK9 allows <> with anonymous inner classes.
+        NICKNAMES("Spitznamen", new HashMap<Columns, Boolean>() {
+            {
+                put(Columns.NAME, true);
+                put(Columns.NICKNAME, true);
+            }
+        });
 
-        private final Set<Columns> requiredColumns;
-        private final Set<Columns> optionalColumns;
-        private final Set<Columns> allColumns;
+        private final Map<Columns, Boolean> columns;
         private final String realTableName;
 
-        private Tables(String realTableName, Set<Columns> requiredColumns, Set<Columns> optionalColumns) {
-            if (requiredColumns.stream().anyMatch(c -> optionalColumns.contains(c))) {
+        /**
+         * Creates a representation of a scheme of a table.
+         *
+         * @param realTableName The name of the table in a database.
+         * @param columns A map containing the columns of this table and whether they are required. {@code true} means
+         * required; {@code false} means optional.
+         */
+        private Tables(String realTableName, Map<Columns, Boolean> columns) {
+            if (columns.values().stream().anyMatch(Objects::isNull)) {
                 throw new IllegalArgumentException(
-                        "Found a column which is required AND optional in table " + realTableName);
+                        "Found a column which is neither marked as required nor as optional in table " + realTableName);
             }
             this.realTableName = realTableName;
-            this.requiredColumns = requiredColumns;
-            this.optionalColumns = optionalColumns;
-            allColumns = new HashSet<>(requiredColumns);
-            allColumns.addAll(optionalColumns);
+            this.columns = columns;
         }
 
         private void throwIfInvalid(DBConnection connection) {
@@ -355,7 +382,7 @@ public abstract class DBConnection implements AutoCloseable {
          * @return {@code true} only if this table contains {@code column}.
          */
         public boolean contains(Columns column) {
-            return allColumns.contains(column);
+            return columns.containsKey(column);
         }
 
         /**
@@ -366,7 +393,9 @@ public abstract class DBConnection implements AutoCloseable {
          * columns.
          */
         public boolean isValid(DBConnection connection) {
-            return requiredColumns.stream().allMatch(c -> connection.columnExists(this, c));
+            return columns.entrySet().stream()
+                    .filter(Entry::getValue)
+                    .allMatch(entry -> connection.columnExists(this, entry.getKey()));
         }
 
         /**
@@ -377,7 +406,10 @@ public abstract class DBConnection implements AutoCloseable {
          */
         public boolean isOptional(Columns column) {
             if (contains(column)) {
-                return optionalColumns.contains(column);
+                return columns.entrySet().stream()
+                        .filter(entry -> !entry.getValue())
+                        .map(Entry::getKey)
+                        .anyMatch(c -> c.equals(column));
             } else {
                 throw new IllegalArgumentException(column + " is no column of " + realTableName);
             }
@@ -425,11 +457,11 @@ public abstract class DBConnection implements AutoCloseable {
          * @return The {@link Set} containing all columns this table can have according to its scheme.
          */
         public Set<Columns> getAllColumns() {
-            return allColumns;
+            return columns.keySet();
         }
 
         private Columns[] getAllColumnsAsArray() {
-            return allColumns.toArray(new Columns[0]);
+            return columns.keySet().toArray(new Columns[0]);
         }
     }
 
