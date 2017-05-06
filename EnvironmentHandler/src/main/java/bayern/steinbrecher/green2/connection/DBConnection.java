@@ -72,7 +72,7 @@ public abstract class DBConnection implements AutoCloseable {
                 + "Hausnummer VARCHAR(255) NOT NULL,"
                 + "PLZ VARCHAR(255) NOT NULL,"
                 + "Ort VARCHAR(255) NOT NULL,"
-                + "AusgetretenSeit DATE DEFAULT NULL,"
+                //+ "AusgetretenSeit DATE DEFAULT NULL," //FIXME Remove AusgetretenSeit when the column is banished.
                 + "IBAN VARCHAR(255) NOT NULL,"
                 + "BIC VARCHAR(255) NOT NULL,"
                 + "MandatErstellt DATE NOT NULL,"
@@ -83,8 +83,7 @@ public abstract class DBConnection implements AutoCloseable {
         mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE " + Tables.NICKNAMES.getRealTableName() + " ("
                 + "Name VARCHAR(255) PRIMARY KEY,"
                 + "Spitzname VARCHAR(255) NOT NULL);");
-//FIXME Remove 0000-00-00 legacy check at some point in the future
-        mysql.put(Query.TABLES_EXIST_TEST, "SELECT 1 FROM " + Arrays.stream(Tables.values())
+        mysql.put(Query.TABLES_EXIST, "SELECT 1 FROM " + Arrays.stream(Tables.values())
                 .map(Tables::getRealTableName).collect(Collectors.joining(",")) + ";");
         QUERIES.put(SupportedDatabase.MY_SQL, mysql);
     }
@@ -152,7 +151,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean tablesExist() {
         try {
-            execQuery(getQuery(Query.TABLES_EXIST_TEST));
+            execQuery(getQuery(Query.TABLES_EXIST));
             return true;
             //FIXME Avoid using SQLException as control flow.
         } catch (SQLException ex) {
@@ -257,7 +256,7 @@ public abstract class DBConnection implements AutoCloseable {
         /**
          * Checks whether all tables exist.
          */
-        TABLES_EXIST_TEST(false),
+        TABLES_EXIST(false),
         /**
          * Creates the database for member with all columns.
          */
@@ -265,17 +264,7 @@ public abstract class DBConnection implements AutoCloseable {
         /**
          * Creates the database for nicknames with all columns.
          */
-        CREATE_NICKNAMES_TABLE(false),
-        /**
-         * Checks whether the nickname table contains all columns needed. NOTE: It is not neccessary that all columns
-         * have to be existent.
-         */
-        NICKNAME_TABLE_COMPLETE(false),
-        /**
-         * Checks whether the member table contains all columns needed. NOTE: It is not neccessary that all columns have
-         * to be existent.
-         */
-        MEMBER_TABLE_COMPLETE(false);
+        CREATE_NICKNAMES_TABLE(false);
 
         private final boolean containsVariables;
 
@@ -406,26 +395,22 @@ public abstract class DBConnection implements AutoCloseable {
          */
         public boolean isOptional(Columns column) {
             if (contains(column)) {
-                return columns.entrySet().stream()
-                        .filter(entry -> !entry.getValue())
-                        .map(Entry::getKey)
-                        .anyMatch(c -> c.equals(column));
+                return !columns.get(column);
             } else {
                 throw new IllegalArgumentException(column + " is no column of " + realTableName);
             }
         }
 
         /**
-         * Returns a {@link String} containing a statement with select and from but without where and also without a
-         * semicolon and no trailing space at the end. The select statement contains only columns existing when using
+         * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and
+         * no trailing space at the end. The select statement contains only columns existing when using
          * {@code connection}.
          *
          * @param connection The connection to use.
          * @param columnsToSelect The columns to select when they exist.
          * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns
-         * {@link Optional#empty()} if {@code columnsToSelect} contains no column which exists. NOTE: If
-         * {@code columnsToSelect} contains at least one required column this method won´t return
-         * {@link Optional#empty()} otherwise the table accessible using {@code connection} is not valid.
+         * {@link Optional#empty()} if {@code columnsToSelect} contains no column which exists in the scheme accessible
+         * through {@code connection}.
          */
         public Optional<String> generateQuery(DBConnection connection, Columns... columnsToSelect) {
             throwIfInvalid(connection);
