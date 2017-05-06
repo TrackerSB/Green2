@@ -48,8 +48,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- * Installs Green2 and checks for updates. (This application needs to be independent, so it contains EnvironmentHandler
- * project.).
+ * Installs Green2 and checks for updates.
  *
  * @author Stefan Huber
  */

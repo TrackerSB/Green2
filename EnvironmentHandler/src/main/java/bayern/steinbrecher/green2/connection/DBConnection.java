@@ -177,8 +177,8 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Returns a list of all member accessible with this connection. The list contains all columns queried by
-     * {@link Query#QUERY_ALL_MEMBER}.
+     * Returns a list of all member accessible with this connection. The list contains all columns returned by
+     * {@link Tables#getAllColumns()} called on {@link Tables#MEMBER}.
      *
      * @return The list with the member.
      */
