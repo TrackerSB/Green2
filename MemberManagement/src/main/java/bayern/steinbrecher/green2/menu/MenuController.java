@@ -163,14 +163,14 @@ public class MenuController extends Controller {
     private void showCredits() {
         String credits = EnvironmentHandler.getResourceValue("credits");
         Alert alert = DialogUtility.createMessageAlert(
-                stage, EnvironmentHandler.getResourceValue("creditsContent"), credits, credits);
+                stage, EnvironmentHandler.getResourceValue("creditsContent"), null, credits, credits);
         alert.show();
     }
 
     @FXML
     private void showVersion() {
         String version = EnvironmentHandler.getResourceValue("version");
-        Alert alert = DialogUtility.createInfoAlert(stage, VersionHandler.getVersion(), version, version);
+        Alert alert = DialogUtility.createInfoAlert(stage, VersionHandler.getVersion(), version, version, version);
         alert.show();
     }
 }
