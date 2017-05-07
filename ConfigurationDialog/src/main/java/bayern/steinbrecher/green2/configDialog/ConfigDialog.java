@@ -45,7 +45,8 @@ public class ConfigDialog extends Application {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfigDialog.fxml"));
                 fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
                 Parent root = fxmlLoader.load();
-                root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET, "/configDialog.css");
+                root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET,
+                        "/bayern/steinbrecher/green2/styles/configDialog.css");
 
                 ConfigDialogController controller = fxmlLoader.getController();
                 controller.setStage(stage);

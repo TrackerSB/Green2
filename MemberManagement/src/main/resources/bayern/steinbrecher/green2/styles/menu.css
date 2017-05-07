@@ -18,13 +18,10 @@
     Author     : Stefan Huber
 */
 
-/*******************************************
-//Glyph icons
-*******************************************/
-#saveSettings {
-    -fx-graphic: url("icons/save.png");
+#creditsMenuItem > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/check.png");
 }
 
-#saveAndContinue {
-    -fx-graphic: url("icons/fast-forward.png");
+#licensesMenu .menu-item > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/investment.png");
 }
