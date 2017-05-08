@@ -25,3 +25,7 @@
 #licensesMenu .menu-item > .label {
     -fx-graphic: url("/bayern/steinbrecher/green2/icons/investment.png");
 }
+
+.menu > .label {
+    /*TODO Think about how to resize menubuttons*/
+}

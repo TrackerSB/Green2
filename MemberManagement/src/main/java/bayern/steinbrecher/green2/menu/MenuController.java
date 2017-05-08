@@ -25,15 +25,17 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.EventObject;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 
 /**
@@ -46,17 +48,9 @@ public class MenuController extends Controller {
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
     private MemberManagement caller;
     @FXML
-    private Button generateContribution;
+    private MenuItem generateAddressesBirthday;
     @FXML
-    private Button generateAllAddresses;
-    @FXML
-    private Button generateUniversalSepa;
-    @FXML
-    private Button checkData;
-    @FXML
-    private Button generateAddressesBirthday;
-    @FXML
-    private Button generateBirthdayInfos;
+    private MenuItem generateBirthdayInfos;
     @FXML
     private CheckedIntegerSpinner yearSpinner;
     @FXML
@@ -111,51 +105,59 @@ public class MenuController extends Controller {
         }
     }
 
-    @FXML
-    private void generateContributionSepa() {
+    //FIXME How to pass a function which is for sure called on caller?
+    private void callOnCaller(EventObject aevt, Runnable run) {
         checkCaller();
-        generateContribution.setDisable(true);
-        caller.generateContributionSepa();
-        generateContribution.setDisable(false);
-    }
-
-    @FXML
-    private void generateUniversalSepa() {
-        checkCaller();
-        generateUniversalSepa.setDisable(true);
-        caller.generateUniversalSepa();
-        generateUniversalSepa.setDisable(false);
-    }
-
-    @FXML
-    private void checkData() {
-        checkCaller();
-        checkData.setDisable(true);
-        caller.checkData();
-        checkData.setDisable(false);
-    }
-
-    @FXML
-    private void generateAddressesAll() {
-        checkCaller();
-        generateAllAddresses.setDisable(true);
-        caller.generateAddressesAll();
-        generateAllAddresses.setDisable(false);
-    }
-
-    @FXML
-    private void generateAddressesBirthday() {
-        checkCaller();
-        if (yearSpinner.isValid()) {
-            caller.generateAddressesBirthday(yearSpinner.getValue());
+        Object sourceObj = aevt.getSource();
+        if (sourceObj instanceof Node) {
+            Node source = (Node) aevt.getSource();
+            if (source.disableProperty().isBound()) {
+                Logger.getLogger(MenuController.class.getName())
+                        .log(Level.WARNING, "Cannot disable Node. DisableProperty is bound.");
+                run.run();
+            } else {
+                source.setDisable(true);
+                run.run();
+                source.setDisable(false);
+            }
+        } else {
+            Logger.getLogger(MenuController.class.getName())
+                    .log(Level.WARNING, "The source of the ActionEvent is no Node.");
+            run.run();
         }
     }
 
     @FXML
-    private void generateBirthdayInfos() {
-        checkCaller();
+    private void generateContributionSepa(ActionEvent aevt) {
+        callOnCaller(aevt, () -> caller.generateContributionSepa());
+    }
+
+    @FXML
+    private void generateUniversalSepa(ActionEvent aevt) {
+        callOnCaller(aevt, () -> caller.generateUniversalSepa());
+    }
+
+    @FXML
+    private void checkData(ActionEvent aevt) {
+        callOnCaller(aevt, () -> caller.checkData());
+    }
+
+    @FXML
+    private void generateAddressesAll(ActionEvent aevt) {
+        callOnCaller(aevt, () -> caller.generateAddressesAll());
+    }
+
+    @FXML
+    private void generateAddressesBirthday(ActionEvent aevt) {
         if (yearSpinner.isValid()) {
-            caller.generateBirthdayInfos(yearSpinner.getValue());
+            callOnCaller(aevt, () -> caller.generateAddressesBirthday(yearSpinner.getValue()));
+        }
+    }
+
+    @FXML
+    private void generateBirthdayInfos(ActionEvent aevt) {
+        if (yearSpinner.isValid()) {
+            callOnCaller(aevt, () -> caller.generateBirthdayInfos(yearSpinner.getValue()));
         }
     }
 

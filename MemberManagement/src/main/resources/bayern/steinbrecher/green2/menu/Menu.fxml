@@ -23,6 +23,40 @@
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.menu.MenuController">
     <MenuBar>
+        <Menu>
+            <graphic>
+                <HBox>
+                    <Label text="%year"/>
+                    <CheckedIntegerSpinner fx:id="yearSpinner"
+                                           min="0"
+                                           max="5000"
+                                           amountToStepBy="1"
+                                           editable="true"/>
+                </HBox>
+            </graphic>
+        </Menu>
+        <Menu text="%allAboutSepa">
+            <MenuItem text="%contributions"
+                      onAction="#generateContributionSepa"/>
+            <MenuItem onAction="#generateUniversalSepa"
+                      text="%arbitrarySepaDirectDebit"/>
+        </Menu>
+        <Menu text="%addresses">
+            <MenuItem onAction="#generateAddressesAll"
+                      text="%ofAllMember"/>
+            <MenuItem fx:id="generateAddressesBirthday"
+                      onAction="#generateAddressesBirthday"
+                      disable="${!yearSpinner.valid}"/>
+        </Menu>
+        <Menu text="%birthdays">
+            <MenuItem fx:id="generateBirthdayInfos"
+                      onAction="#generateBirthdayInfos"
+                      disable="${!yearSpinner.valid}"/>
+        </Menu>
+        <Menu text="%check">
+            <MenuItem onAction="#checkData"
+                      text="%checkData"/>
+        </Menu>
         <Menu fx:id="licensesMenu"
               text="%licenses"/>
         <Menu text="%about">
@@ -33,49 +67,4 @@
                       onAction="#showVersion"/>
         </Menu>
     </MenuBar>
-    <VBox fx:id="menuContent">
-        <HBox>
-            <Label text="%year"/>
-            <CheckedIntegerSpinner fx:id="yearSpinner"
-                                   min="0"
-                                   max="5000"
-                                   amountToStepBy="1"
-                                   editable="true"/>
-            <Label visible="${!yearSpinner.valid}"
-                   text="%invalidOrMissingInput"
-                   styleClass="warningLabel"/>
-        </HBox>
-        <HBox>
-            <VBox>
-                <Label text="%allAboutSepa"
-                       styleClass="heading"/>
-                <Button fx:id="generateContribution"
-                        onAction="#generateContributionSepa"
-                        text="%contributions"/>
-                <Button fx:id="generateUniversalSepa"
-                        onAction="#generateUniversalSepa"
-                        text="%arbitrarySepaDirectDebit"/>
-                <Button fx:id="checkData"
-                        onAction="#checkData"
-                        text="%checkData"/>
-            </VBox>
-            <VBox>
-                <Label text="%getAddressesForWord"
-                       styleClass="heading"/>
-                <Button fx:id="generateAllAddresses"
-                        onAction="#generateAddressesAll"
-                        text="%ofAllMember"/>
-                <Button fx:id="generateAddressesBirthday"
-                        onAction="#generateAddressesBirthday"
-                        disable="${!yearSpinner.valid}"/>
-            </VBox>
-            <VBox>
-                <Label text="%getInformations"
-                       styleClass="heading"/>
-                <Button fx:id="generateBirthdayInfos"
-                        onAction="#generateBirthdayInfos"
-                        disable="${!yearSpinner.valid}"/>
-            </VBox>
-        </HBox>
-    </VBox>
 </VBox>

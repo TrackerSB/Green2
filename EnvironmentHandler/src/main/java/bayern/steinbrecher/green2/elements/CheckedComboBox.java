@@ -26,7 +26,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 
 /**
- * Extended version of {@link ComboBox}. Also contains {@link BooleanProperty} indicating
+ * Extended version of {@link ComboBox}. Also contains {@link BooleanProperty} indicating whether nothing is selected.
  *
  * @author Stefan Huber
  * @param <T> The type of the element of the ComboBox.
