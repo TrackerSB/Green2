@@ -8,15 +8,26 @@ Set oWS = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
 programFilesPath = oWS.ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
 menuEntryFolderPath = oWS.SpecialFolders("AllUsersPrograms") & "\Green2"
-versionFilePath = oWS.ExpandEnvironmentStrings("%AppData%") & "\Green2\version.txt"
+versionFilePath = oWS.ExpandEnvironmentStrings("%AppData%") & "\Green2\version.txt" 'Still legacy reason
 
 'Delete folder but configs (but version file)
-If fso.FileExists(versionFilePath) Then
-    fso.DeleteFile(versionFilePath)
-End If
-If fso.FolderExists(programFilesPath) Then
-    fso.DeleteFolder programFilesPath
-End If
-If fso.FolderExists(menuEntryFolderPath) Then
-    fso.DeleteFolder menuEntryFolderPath
-End If
+With fso
+    If .FileExists(versionFilePath) Then 'Still legacy reason
+        .DeleteFile(versionFilePath)
+    End If
+    If .FolderExists(programFilesPath) Then
+        .DeleteFolder programFilesPath
+    End If
+    If .FolderExists(menuEntryFolderPath) Then
+        .DeleteFolder menuEntryFolderPath
+    End If
+End With
+
+'Get the directory of the uninstall script (May not be the current directory)
+downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
+
+'Delete registry keys
+Set jarExec = oWS.Exec("java -jar " & downloadedDir & "PreferencesHelper.jar delete") 'current user
+registryBasePath = jarExec.StdOut.ReadLine
+registrySubkeyPath = jarExec.StdOut.ReadLine
+oWS.RegDelete registryBasePath & registrySubkeyPath & "\" 'local machine

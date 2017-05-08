@@ -24,10 +24,8 @@ End With
 downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
 
 Set jarExec = oWS.Exec("java -jar " & downloadedDir & "PreferencesHelper.jar")
-registryPath = ""
-Do Until jarExec.StdOut.AtEndOfStream
-    registryPath = registryPath & jarExec.StdOut.Read(1)
-Loop
+registryBasePath = jarExec.StdOut.ReadLine
+registrySubkeyPath = jarExec.StdOut.ReadLine
 
 Set fso = CreateObject("Scripting.FileSystemObject")
 With fso
@@ -101,7 +99,7 @@ Sub createLink(linkname, workingDir, fileOfWorkingDir)
 End Sub
 
 'Set version in registry
-oWS.RegWrite registryPath & "\version", WScript.Arguments(1), "REG_SZ"
+oWS.RegWrite registryBasePath & registrySubkeyPath & "\version", WScript.Arguments(1), "REG_SZ"
 
 'Create file to show success
 fso.CreateTextFile(downloadedDir & "installed")

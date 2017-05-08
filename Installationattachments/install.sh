@@ -45,9 +45,10 @@ rm $ProgramFolder/*.bat;
 rm $ProgramFolder/*.vbs;"
 
 # Update version saved in Java preferences
-preferencesDir = $(java -jar PreferencesHelper.jar)
+IFS=$'\n' read -ra preferencesDirParts <<< $(java -jar PreferencesHelper.jar)
+preferencesDir = preferencesDirParts[0] + preferencesDirParts[1]
 preferencesPath = preferencesDir + "/prefs.xml"
-$SudoCommand -c "mkdir -p preferencesDir;
+$SudoCommand -c "mkdir -p $preferencesDir;
 echo '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
 <!DOCTYPE map SYSTEM \"http://java.sun.com/dtd/preferences.dtd\">
 <map MAP_XML_VERSION=\"1.0\">
