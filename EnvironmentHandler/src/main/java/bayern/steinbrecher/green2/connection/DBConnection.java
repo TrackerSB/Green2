@@ -197,7 +197,8 @@ public abstract class DBConnection implements AutoCloseable {
             return MemberGenerator.generateMemberList(execQuery(
                     Tables.MEMBER.generateQuery(this, Tables.MEMBER.getAllColumnsAsArray()).get()
                             //FIXME Remove that concatination when the column AusgetretenSeit has vanished.
-                            .concat(" WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;")));
+                            .concat(columnExists(Tables.MEMBER, Columns.RESIGN_DATE)
+                                    ? " WHERE AusgetretenSeit='0000-00-00' OR AusgetretenSeit IS NULL;" : "")));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
@@ -225,9 +226,9 @@ public abstract class DBConnection implements AutoCloseable {
 
     /**
      * Checks whether the given table of the configured database contains a specific column. You should NEVER call this
-     * function with parameters provided by the user in order to prohibit SQL INJECTION. NOTE: For this function to work
-     * for sure the table should have at least one row. When having no rows the database may return nothing not even the
-     * headings.
+     * function with parameters provided by the user in order to prohibit SQL INJECTION. This method does not check
+     * whether the scheme of the given table contains the given column. NOTE: For this function to work for sure the
+     * table should have at least one row. When having no rows the database may return nothing not even the headings.
      *
      * @param table The name of the table to search for the column.
      * @param column The column name to search for.
@@ -240,7 +241,7 @@ public abstract class DBConnection implements AutoCloseable {
                     EXISTING_HEADINGS_CACHE
                             /*
                              * FIXME When the database is empty it may happen that the result contains nothing.
-                             * Not even the column names.
+                             * Not even the column names. (See also JavaDoc)
                              */
                             /*
                              * NOTE Don´t use putIfAbsent(...). If you do, execQuery(...) will always be evaluated
@@ -338,6 +339,7 @@ public abstract class DBConnection implements AutoCloseable {
                 put(Columns.MANDAT_SIGNED, true);
                 put(Columns.CONTRIBUTION, false);
                 put(Columns.IS_ACTIVE, false);
+                put(Columns.RESIGN_DATE, false); //FIXME Remove AusgetretenSeit at some point in the future.
             }
         }),
         //FIXME JDK9 allows <> with anonymous inner classes.
@@ -469,7 +471,8 @@ public abstract class DBConnection implements AutoCloseable {
         TITLE("Titel"), IS_MALE("IstMaennlich"), BIRTHDAY("Geburtstag"), STREET("Strasse"), HOUSENUMBER("Hausnummer"),
         CITY_CODE("PLZ"), CITY("Ort"), IS_CONTRIBUTIONFREE("IstBeitragsfrei"), IBAN("Iban"), BIC("Bic"),
         ACCOUNTHOLDER_PRENAME("KontoinhaberVorname"), ACCOUNTHOLDER_LASTNAME("KontoinhaberNachname"),
-        MANDAT_SIGNED("MandatErstellt"), CONTRIBUTION("Beitrag"), NAME("Name"), NICKNAME("Spitzname");
+        MANDAT_SIGNED("MandatErstellt"), CONTRIBUTION("Beitrag"), NAME("Name"), NICKNAME("Spitzname"),
+        RESIGN_DATE("AusgetretenSeit"); //FIXME Remove AusgetretenSeit at some point in the future.
 
         private final String realColumnName;
 
