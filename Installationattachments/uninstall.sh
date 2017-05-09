@@ -1,15 +1,31 @@
 #!/bin/bash -x
 
+# Determine sudo command
+KdeSudoExists=$(command -v kdesudo >/dev/null)
+GkSudoExists=$(command -v gksudo >/dev/null)
+if ! ($KdeSudoExists || $GkSudoExists)
+then
+    >&2 echo "You have to install kdesudo or gksudo"
+    return 1
+else
+    if $KdeSudoExists
+    then
+        SudoCommand=kdesudo
+    else
+        SudoCommand=gksudo
+    fi
+fi
+
 #Delete system preferences
 IFS=$'\n' read -ra preferencesDirParts <<< $(java -jar PreferencesHelper.jar delete)
 preferencesBaseDir=${preferencesDirParts[0]}
 preferencesSubDir=${preferencesDirParts[1]}
 preferencesDir="$preferencesBaseDir$preferencesSubDir"
-sudo rm -r "$preferencesDir"
+$SudoCommand -c "rm -r \"$preferencesDir\";
 
 #Delete application shortcuts
-sudo rm /usr/share/applications/Green2_*.desktop
+rm /usr/share/applications/Green2_*.desktop;
 
 #Delete folders
-sudo rm -r "/opt/Green2"
+rm -r \"/opt/Green2\""
 rm -r "$HOME/.Green2/"
