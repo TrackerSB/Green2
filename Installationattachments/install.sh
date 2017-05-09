@@ -46,7 +46,7 @@ rm $ProgramFolder/*.vbs;"
 
 # Update version saved in Java preferences
 IFS=$'\n' read -ra preferencesDirParts <<< $(java -jar PreferencesHelper.jar)
-preferencesDir = preferencesDirParts[0] + preferencesDirParts[1]
+preferencesDir = ${preferencesDirParts[0]} + ${preferencesDirParts[1]}
 preferencesPath = preferencesDir + "/prefs.xml"
 $SudoCommand -c "mkdir -p $preferencesDir;
 echo '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
