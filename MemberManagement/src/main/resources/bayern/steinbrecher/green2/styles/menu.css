@@ -26,6 +26,18 @@
     -fx-graphic: url("/bayern/steinbrecher/green2/icons/investment.png");
 }
 
+#sepaMenu .menu-item > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/money.png");
+}
+
+#birthdayMenu .menu-item > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/gift.png");
+}
+
+#addressesMenu .menu-item > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/worldwide.png");
+}
+
 .menu > .label {
     /*TODO Think about how to resize menubuttons*/
 }

@@ -35,20 +35,22 @@
                 </HBox>
             </graphic>
         </Menu>
-        <Menu text="%allAboutSepa">
+        <Menu fx:id="sepaMenu" text="%allAboutSepa">
             <MenuItem text="%contributions"
                       onAction="#generateContributionSepa"/>
             <MenuItem onAction="#generateUniversalSepa"
                       text="%arbitrarySepaDirectDebit"/>
         </Menu>
-        <Menu text="%addresses">
+        <Menu fx:id="addressesMenu"
+              text="%addresses">
             <MenuItem onAction="#generateAddressesAll"
                       text="%ofAllMember"/>
             <MenuItem fx:id="generateAddressesBirthday"
                       onAction="#generateAddressesBirthday"
                       disable="${!yearSpinner.valid}"/>
         </Menu>
-        <Menu text="%birthdays">
+        <Menu fx:id="birthdayMenu"
+              text="%birthdays">
             <MenuItem fx:id="generateBirthdayInfos"
                       onAction="#generateBirthdayInfos"
                       disable="${!yearSpinner.valid}"/>

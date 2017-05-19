@@ -156,7 +156,7 @@
     -fx-padding-bottom: 5px;
 }
 
-menu-item:showing, .menu:showing {
+.menu-item:focused, .menu-item:showing, .menu:showing {
     -fx-background-color: -fx-main-color;
 }
 
