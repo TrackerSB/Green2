@@ -127,7 +127,9 @@ public final class SepaUtility {
      * @return {@code true} only if the given creditor id is valid.
      */
     public static boolean isValidCreditorId(String creditorId) {
-        return creditorId.contains(SEPA_BUSINESS_CODE) && isValidIban(creditorId.replace(SEPA_BUSINESS_CODE, ""));
+        String trimmedCreditorId = creditorId.replaceAll(" ", "");
+        return trimmedCreditorId.contains(SEPA_BUSINESS_CODE)
+                && isValidIban(trimmedCreditorId.replace(SEPA_BUSINESS_CODE, ""));
     }
 
     /**

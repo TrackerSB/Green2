@@ -40,10 +40,11 @@ public class CheckedRegexTextField extends CheckedTextField {
     private StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
     private BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
     private ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
+    private BooleanProperty eliminateSpaces = new SimpleBooleanProperty(this, "eliminateSpaces", false);
 
     /**
      * Constructs a new {@link CheckedRegexTextField} without initial content, maximum column count of
-     * {@link Integer#MAX_VALUE} and a all accepting regex.
+     * {@link Integer#MAX_VALUE} and an all accepting regex.
      */
     public CheckedRegexTextField() {
         this("");
@@ -79,13 +80,31 @@ public class CheckedRegexTextField extends CheckedTextField {
      * @param regex The regex for validating the input.
      */
     public CheckedRegexTextField(int maxColumnCount, String text, String regex) {
+        this(maxColumnCount, text, regex, false);
+    }
+
+    /**
+     * Constructs a new {@link CheckedRegexTextField} with an max input length of {@code maxColumnCount}, {@code text}
+     * as initial content and regex {@code regex}.
+     *
+     * @param maxColumnCount The initial max input length.
+     * @param text The initial content.
+     * @param regex The regex for validating the input.
+     * @param eliminateSpaces Indicates whether spaces have to be removed before checking using the given regex.
+     */
+    public CheckedRegexTextField(int maxColumnCount, String text, String regex, boolean eliminateSpaces) {
         super(maxColumnCount, text);
         this.regex.set(regex);
+        this.eliminateSpaces.set(eliminateSpaces);
         pattern.bind(Bindings.createObjectBinding(() -> Pattern.compile(this.regex.get()), this.regex));
         regexValid.bind(Bindings.createBooleanBinding(() -> {
             Pattern patternValue = this.pattern.get();
-            return patternValue != null && patternValue.matcher(textProperty().get()).matches();
-        }, pattern, textProperty()));
+            String regexText = textProperty().get();
+            if (this.eliminateSpaces.get()) {
+                regexText = regexText.replaceAll(" ", "");
+            }
+            return patternValue != null && patternValue.matcher(regexText).matches();
+        }, pattern, textProperty(), this.eliminateSpaces));
         addValidCondition(regexValid);
         //ElementsUtility.addCssClassIf(this, regexValid.not(), CSS_CLASS_REGEX_NO_MATCH);
     }
@@ -134,5 +153,34 @@ public class CheckedRegexTextField extends CheckedTextField {
      */
     public boolean isRegexValid() {
         return regexValid.get();
+    }
+
+    /**
+     * Returns the property containing a value indicating whether spaces are eliminated before checking using the given
+     * regex.
+     *
+     * @return The property containing a value indicating whether spaces are eliminated before checking using the given
+     * regex.
+     */
+    public BooleanProperty eliminateSpacesProperty() {
+        return eliminateSpaces;
+    }
+
+    /**
+     * Checks whether currently spaces are removed before checking using the given regex.
+     *
+     * @return {@code true} only if spaces are removed before checking using the given regex.
+     */
+    public boolean isElininateSpaces() {
+        return eliminateSpaces.get();
+    }
+
+    /**
+     * Sets the value indicating whether spaces are removed before checking using the given regex.
+     *
+     * @param eliminateSpaces {@code true} only if spaces have to be removed before checking using the given regex.
+     */
+    public void setEliminateSpaces(boolean eliminateSpaces) {
+        this.eliminateSpaces.set(eliminateSpaces);
     }
 }

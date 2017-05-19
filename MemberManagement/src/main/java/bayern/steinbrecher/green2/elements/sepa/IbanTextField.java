@@ -48,7 +48,7 @@ public final class IbanTextField extends SpecificRegexTextField {
      * @param text The initial content.
      */
     public IbanTextField(String text) {
-        super(SepaUtility.MAX_CHAR_IBAN, text, SepaUtility.IBAN_REGEX);
+        super(SepaUtility.MAX_CHAR_IBAN, text, SepaUtility.IBAN_REGEX, true);
         ibanValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidIban(textProperty().get()), textProperty()));
         addValidCondition(ibanValid);

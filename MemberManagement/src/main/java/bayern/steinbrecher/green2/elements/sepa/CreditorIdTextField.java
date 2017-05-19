@@ -48,7 +48,7 @@ public final class CreditorIdTextField extends SpecificRegexTextField {
      * @param text The initial content of this field.
      */
     public CreditorIdTextField(String text) {
-        super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX);
+        super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX, true);
         creditorIdValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidCreditorId(textProperty().get()), textProperty()));
         addValidCondition(creditorIdValid);

@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * @author Stefan Huber
  */
 public class Originator {
-
+    
     private String creator,
             msgId,
             creditor,
@@ -53,7 +53,7 @@ public class Originator {
     private final File originatorFile;
     private static final Properties DEFAULT_PROPERTIES = new Properties() {
         private static final long serialVersionUID = 1L;
-
+        
         {
             put("creator", "");
             put("creditor", "");
@@ -104,7 +104,7 @@ public class Originator {
                         .forEach(f -> {
                             try {
                                 String property = originatorProps.getProperty(f.getName());
-
+                                
                                 if (f.getType() == LocalDate.class) {
                                     f.set(this, LocalDate.parse(property));
                                 } else if (f.getType() == String.class) {
@@ -226,7 +226,7 @@ public class Originator {
         if (!SepaUtility.isValidIban(iban)) {
             throw new IllegalArgumentException("\"" + iban + "\" is no valid iban.");
         }
-        this.iban = iban;
+        this.iban = iban.replaceAll(" ", "");
     }
 
     /**
@@ -265,7 +265,7 @@ public class Originator {
         if (!SepaUtility.isValidCreditorId(creditorId)) {
             throw new IllegalArgumentException("\"" + creditorId + "\" is no valid creditor id.");
         }
-        this.creditorId = creditorId;
+        this.creditorId = creditorId.replaceAll(" ", "");
     }
 
     /**

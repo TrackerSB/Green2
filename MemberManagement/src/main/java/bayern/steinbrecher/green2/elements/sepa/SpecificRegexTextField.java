@@ -48,6 +48,17 @@ public abstract class SpecificRegexTextField extends CheckedRegexTextField {
     }
 
     /**
+     * Only calls {@code super(...)}. Needed making subclasses beeing able to call {@code super}.
+     *
+     * {@inheritDoc}
+     *
+     * @see CheckedRegexTextField#CheckedRegexTextField(int, java.lang.String, java.lang.String, boolean)
+     */
+    protected SpecificRegexTextField(int maxColumnCount, String text, String regex, boolean eliminateSpaces) {
+        super(maxColumnCount, text, regex, eliminateSpaces);
+    }
+
+    /**
      * Unsupported operation. You're not allowed to change the regex used for IBANs.
      *
      * @return Nothing. UnsupportedOperationException thrown.
