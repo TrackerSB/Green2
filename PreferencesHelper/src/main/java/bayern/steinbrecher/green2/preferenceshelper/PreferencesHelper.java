@@ -71,7 +71,7 @@ public class PreferencesHelper {
                 throw new IllegalArgumentException("OS not supported by PreferencesHelper.");
         }
 
-        //NOTE Never print any unneeded character like a newline at the end
+        //NOTE Never print any unneeded character like a newline at the end to System.out
         System.out.print(path + '\n' + subkeyPath);
     }
 }
