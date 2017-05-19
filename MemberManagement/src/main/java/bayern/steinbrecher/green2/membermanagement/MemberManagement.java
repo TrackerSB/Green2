@@ -344,19 +344,22 @@ public class MemberManagement extends Application {
         }
     }
 
+    private void showNoMemberForOutputDialog() {
+        String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
+        Alert alert = DialogUtility.createInfoAlert(menuStage, noMemberForOutput, noMemberForOutput);
+        alert.showAndWait();
+    }
+
     private void generateAddresses(List<Member> member, File outputFile) {
         checkNull(nicknames);
         if (member.isEmpty()) {
-            String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
-            Alert alert = DialogUtility.createInfoAlert(menuStage, noMemberForOutput, noMemberForOutput);
-            alert.showAndWait();
-        } else {
-            try {
-                IOStreamUtility.printContent(
-                        AddressGenerator.generateAddressData(member, nicknames.get()), outputFile, true);
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            throw new IllegalArgumentException("Passed empty list to generateAddresses(...)");
+        }
+        try {
+            IOStreamUtility.printContent(
+                    AddressGenerator.generateAddressData(member, nicknames.get()), outputFile, true);
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -365,13 +368,18 @@ public class MemberManagement extends Application {
      */
     public void generateAddressesAll() {
         checkNull(member);
-        EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_alle", "csv").ifPresent(file -> {
-            try {
-                generateAddresses(member.get(), file);
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            List<Member> memberList = this.member.get();
+            if (memberList.isEmpty()) {
+                showNoMemberForOutputDialog();
+            } else {
+                EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_alle", "csv").ifPresent(file -> {
+                    generateAddresses(memberList, file);
+                });
             }
-        });
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -383,13 +391,17 @@ public class MemberManagement extends Application {
     public void generateAddressesBirthday(int year) {
         checkNull(memberBirthday);
         memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
-        EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_Geburtstag_" + year, "csv").ifPresent(file -> {
-            try {
-                generateAddresses(memberBirthday.get(year).get(), file);
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            List<Member> memberBirthdayList = memberBirthday.get(year).get();
+            if (memberBirthdayList.isEmpty()) {
+                showNoMemberForOutputDialog();
+            } else {
+                EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_Geburtstag_" + year, "csv")
+                        .ifPresent(file -> generateAddresses(memberBirthdayList, file));
             }
-        });
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -400,14 +412,11 @@ public class MemberManagement extends Application {
      */
     public void generateBirthdayInfos(int year) {
         checkNull(memberBirthday);
-        memberBirthday.putIfAbsent(
-                year, exserv.submit(() -> getBirthdayMember(year)));
+        memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             List<Member> birthdayList = memberBirthday.get(year).get();
             if (birthdayList.isEmpty()) {
-                String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
-                Alert alert = DialogUtility.createInfoAlert(menuStage, noMemberForOutput, noMemberForOutput);
-                alert.showAndWait();
+                showNoMemberForOutputDialog();
             } else {
                 EnvironmentHandler.askForSavePath(menuStage, "/Geburtstag_" + year, "csv").ifPresent(file -> {
                     IOStreamUtility.printContent(BirthdayGenerator.createGroupedOutput(birthdayList, year), file, true);
@@ -424,57 +433,61 @@ public class MemberManagement extends Application {
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
 
-            boolean askForContribution = !(useMemberContributions
-                    && dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION));
+            if (memberToSelect.isEmpty()) {
+                showNoMemberForOutputDialog();
+            } else {
+                boolean askForContribution = !(useMemberContributions
+                        && dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION));
 
-            WizardPage<Optional<Originator>> sepaFormPage = new SepaForm(menuStage).getWizardPage();
-            sepaFormPage.setNextFunction(() -> "selection");
-            WizardPage<Optional<List<Member>>> selectionPage
-                    = new Selection<>(memberToSelect, menuStage).getWizardPage();
-            selectionPage.setFinish(!askForContribution);
-            if (askForContribution) {
-                selectionPage.setNextFunction(() -> "contribution");
-            }
-            WizardPage<Optional<Double>> contributionPage = new Contribution(menuStage).getWizardPage();
-            contributionPage.setFinish(true);
-
-            Map<String, WizardPage<?>> pages = new HashMap<>();
-            pages.put(WizardPage.FIRST_PAGE_KEY, sepaFormPage);
-            pages.put("selection", selectionPage);
-            pages.put("contribution", contributionPage);
-            Stage wizardStage = new Stage();
-            wizardStage.initOwner(menuStage);
-            wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
-            wizardStage.setResizable(false);
-            wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-            Wizard wizard = new Wizard(pages, wizardStage);
-            wizard.init();
-            wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-            wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) {
-                    Map<String, ?> results = wizard.getResults().get();
-                    List<Member> selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
-                    if (askForContribution) {
-                        double contribution = ((Optional<Double>) results.get("contribution")).get();
-                        selectedMember.stream().forEach(m -> m.setContribution(contribution));
-                    }
-                    Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
-
-                    EnvironmentHandler.askForSavePath(menuStage, "Sepa", "xml").ifPresent(file -> {
-                        List<Member> invalidMember
-                                = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, originator, sequenceType,
-                                        file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
-                        String message = invalidMember.stream()
-                                .map(Member::toString)
-                                .collect(Collectors.joining("\n"));
-                        if (!message.isEmpty()) {
-                            Alert alert = DialogUtility.createErrorAlert(menuStage, message + "\n"
-                                    + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
-                            alert.show();
-                        }
-                    });
+                WizardPage<Optional<Originator>> sepaFormPage = new SepaForm(menuStage).getWizardPage();
+                sepaFormPage.setNextFunction(() -> "selection");
+                WizardPage<Optional<List<Member>>> selectionPage
+                        = new Selection<>(memberToSelect, menuStage).getWizardPage();
+                selectionPage.setFinish(!askForContribution);
+                if (askForContribution) {
+                    selectionPage.setNextFunction(() -> "contribution");
                 }
-            });
+                WizardPage<Optional<Double>> contributionPage = new Contribution(menuStage).getWizardPage();
+                contributionPage.setFinish(true);
+
+                Map<String, WizardPage<?>> pages = new HashMap<>();
+                pages.put(WizardPage.FIRST_PAGE_KEY, sepaFormPage);
+                pages.put("selection", selectionPage);
+                pages.put("contribution", contributionPage);
+                Stage wizardStage = new Stage();
+                wizardStage.initOwner(menuStage);
+                wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
+                wizardStage.setResizable(false);
+                wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+                Wizard wizard = new Wizard(pages, wizardStage);
+                wizard.init();
+                wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+                wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal) {
+                        Map<String, ?> results = wizard.getResults().get();
+                        List<Member> selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
+                        if (askForContribution) {
+                            double contribution = ((Optional<Double>) results.get("contribution")).get();
+                            selectedMember.stream().forEach(m -> m.setContribution(contribution));
+                        }
+                        Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
+
+                        EnvironmentHandler.askForSavePath(menuStage, "Sepa", "xml").ifPresent(file -> {
+                            List<Member> invalidMember
+                                    = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, originator,
+                                            sequenceType, file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
+                            String message = invalidMember.stream()
+                                    .map(Member::toString)
+                                    .collect(Collectors.joining("\n"));
+                            if (!message.isEmpty()) {
+                                Alert alert = DialogUtility.createErrorAlert(menuStage, message + "\n"
+                                        + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
+                                alert.show();
+                            }
+                        });
+                    }
+                });
+            }
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
             String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
