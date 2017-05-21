@@ -156,16 +156,28 @@
     -fx-padding-bottom: 5px;
 }
 
-.menu-item:focused, .menu-item:showing, .menu:showing {
+.menu-item:showing, .menu:showing {
     -fx-background-color: -fx-main-color;
+}
+
+.menu-item:focused{
+    -fx-background-color: transparent;
+}
+
+.menu-item:focused > .label{
+    -fx-text-fill: black;
 }
 
 .menu-item:hover, .menu:hover {
     -fx-background-color: -fx-main-color-light;
 }
 
-#menuContent {
-    -fx-padding: 10px;
+.menu-item:hover > .label, .menu:hover > .label{
+    -fx-text-fill: white;
+}
+
+.context-menu .accelerator-text{
+    -fx-graphic: none !important;
 }
 
 /*******************************************

@@ -37,14 +37,16 @@
         </Menu>
         <Menu fx:id="sepaMenu" text="%allAboutSepa">
             <MenuItem text="%contributions"
-                      onAction="#generateContributionSepa"/>
+                      onAction="#generateContributionSepa"
+                      accelerator="Alt+M"/>
             <MenuItem onAction="#generateUniversalSepa"
                       text="%arbitrarySepaDirectDebit"/>
         </Menu>
         <Menu fx:id="addressesMenu"
               text="%addresses">
             <MenuItem onAction="#generateAddressesAll"
-                      text="%ofAllMember"/>
+                      text="%ofAllMember"
+                      accelerator="Alt+A"/>
             <MenuItem fx:id="generateAddressesBirthday"
                       onAction="#generateAddressesBirthday"
                       disable="${!yearSpinner.valid}"/>
@@ -53,11 +55,13 @@
               text="%birthdays">
             <MenuItem fx:id="generateBirthdayInfos"
                       onAction="#generateBirthdayInfos"
-                      disable="${!yearSpinner.valid}"/>
+                      disable="${!yearSpinner.valid}"
+                      accelerator="Alt+G"/>
         </Menu>
         <Menu text="%check">
             <MenuItem onAction="#checkData"
-                      text="%checkData"/>
+                      text="%checkData"
+                      accelerator="Alt+P"/>
         </Menu>
         <Menu fx:id="licensesMenu"
               text="%licenses"/>
