@@ -24,22 +24,22 @@ import java.time.LocalDate;
  */
 public class Person {
 
-    private final String firstName, lastName, title;
+    private final String prename, lastname, title;
     private final LocalDate birthday;
     private final boolean male;
 
     /**
      * Constructs a new person.
      *
-     * @param firstName The first name of the person.
+     * @param prename The first name of the person.
      * @param lastName The last name of the person.
      * @param title The title of the person if any.
      * @param birthday The birthday date of the person.
      * @param male {@code true} only if the person is male.
      */
-    public Person(String firstName, String lastName, String title, LocalDate birthday, boolean male) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Person(String prename, String lastName, String title, LocalDate birthday, boolean male) {
+        this.prename = prename;
+        this.lastname = lastName;
         this.title = title;
         this.birthday = birthday;
         this.male = male;
@@ -50,8 +50,8 @@ public class Person {
      *
      * @return The first name.
      */
-    public String getFirstName() {
-        return firstName;
+    public String getPrename() {
+        return prename;
     }
 
     /**
@@ -59,8 +59,8 @@ public class Person {
      *
      * @return The last name.
      */
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 
     /**
@@ -69,7 +69,7 @@ public class Person {
      * @return last name and first name space separated.
      */
     public String getName() {
-        return getLastName() + " " + getFirstName();
+        return getLastname() + " " + getPrename();
     }
 
     /**

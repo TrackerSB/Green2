@@ -515,7 +515,6 @@ public class MemberManagement extends Application {
         List<Member> badIban = new ArrayList<>();
         try {
             badIban = member.get().parallelStream()
-                    .filter(m -> m.getAccountHolder().hasIban())
                     .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {

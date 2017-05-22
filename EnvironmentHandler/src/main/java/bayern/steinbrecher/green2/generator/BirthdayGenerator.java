@@ -48,7 +48,7 @@ public class BirthdayGenerator {
      */
     private static final Function<Member, String> PRINT_LINE = m -> {
         Person p = m.getPerson();
-        return p.getFirstName() + ';' + p.getLastName() + ';' + p.getBirthday() + '\n';
+        return p.getPrename() + ';' + p.getLastname() + ';' + p.getBirthday() + '\n';
     };
 
     /**

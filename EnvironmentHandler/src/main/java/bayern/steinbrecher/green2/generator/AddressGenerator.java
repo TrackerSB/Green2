@@ -64,7 +64,7 @@ public class AddressGenerator {
         List<String> addresses = new ArrayList<>(member.size());
         member.stream().forEach(m -> {
             String address = m.getPerson().isMale() ? "Lieber " : "Liebe ";
-            address += nicknames.getOrDefault(m.getPerson().getFirstName(), m.getPerson().getFirstName());
+            address += nicknames.getOrDefault(m.getPerson().getPrename(), m.getPerson().getPrename());
             addresses.add(address);
         });
         assert addresses.size() == member.size();
@@ -85,8 +85,8 @@ public class AddressGenerator {
         for (int i = 0; i < member.size(); i++) {
             Person currentPerson = member.get(i).getPerson();
             Address currentAddress = member.get(i).getHome();
-            output.append(currentPerson.getFirstName()).append(';')
-                    .append(currentPerson.getLastName()).append(';')
+            output.append(currentPerson.getPrename()).append(';')
+                    .append(currentPerson.getLastname()).append(';')
                     .append(currentAddress.getStreet()).append(';')
                     .append(currentAddress.getHouseNumber()).append(';')
                     .append(currentAddress.getPostcode()).append(';')

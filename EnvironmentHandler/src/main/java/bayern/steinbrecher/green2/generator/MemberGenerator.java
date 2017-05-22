@@ -196,7 +196,7 @@ public class MemberGenerator {
                     row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY, String.class);
 
             //Connect attributes
-            Person p = new Person(lastname, lastname, title, birthday, male);
+            Person p = new Person(prename, lastname, title, birthday, male);
             //FIXME mandateChanged has not to be always false
             AccountHolder ah = new AccountHolder(
                     iban, bic, mandatsigned, false, accountholderPrename, accountholderLastname, title, birthday, male);
