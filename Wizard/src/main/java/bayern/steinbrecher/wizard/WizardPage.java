@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.wizard;
 
+import java.util.concurrent.Callable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -23,8 +24,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Pane;
-
-import java.util.concurrent.Callable;
 
 /**
  * Represents a page of the wizard.
@@ -60,8 +59,7 @@ public final class WizardPage<T> {
      * @param root The root pane containing all controls.
      * @param nextFunction The function calculating the name of th enext page.
      * @param finish {@code true} only if this page is a last one.
-     * @param resultFunction The function calculating the result this page
-     * represents.
+     * @param resultFunction The function calculating the result this page represents.
      * @param valid A binding to bind this pages {@code valid} property to.
      */
     public WizardPage(Pane root, Callable<String> nextFunction, boolean finish,
@@ -72,14 +70,12 @@ public final class WizardPage<T> {
     }
 
     /**
-     * Creates a new page with given params. The {@code valid} property always
-     * contains {@code true}.
+     * Creates a new page with given params. The {@code valid} property always contains {@code true}.
      *
      * @param root The root pane containing all controls.
      * @param nextFunction The function calculating the name of th enext page.
      * @param finish {@code true} only if this page is a last one.
-     * @param resultFunction The function calculating the result this page
-     * represents.
+     * @param resultFunction The function calculating the result this page represents.
      */
     public WizardPage(Pane root, Callable<String> nextFunction, boolean finish,
             Callable<T> resultFunction) {
@@ -115,8 +111,7 @@ public final class WizardPage<T> {
     /**
      * The property containing the function calculating which page to show next.
      *
-     * @return The property containing the function calculating which page to
-     * show next.
+     * @return The property containing the function calculating which page to show next.
      */
     public Property<Callable<String>> nextFunctionProperty() {
         return nextFunction;
@@ -125,8 +120,7 @@ public final class WizardPage<T> {
     /**
      * Returns the function calculating the key of the next page.
      *
-     * @return The function calculating the key of the next page. Returns
-     * {@code null} if this page has no next one.
+     * @return The function calculating the key of the next page. Returns {@code null} if this page has no next one.
      */
     public Callable<String> getNextFunction() {
         return nextFunction.getValue();
@@ -171,8 +165,7 @@ public final class WizardPage<T> {
     /**
      * Sets a new function calculating the result this page represents.
      *
-     * @param resultFunction The function calculating the result this page
-     * represents.
+     * @param resultFunction The function calculating the result this page represents.
      */
     public void setResultFunction(Callable<T> resultFunction) {
         if (resultFunction == null) {
@@ -209,10 +202,22 @@ public final class WizardPage<T> {
         return valid.get();
     }
 
+    /**
+     * Returns the property holding {@code true} only if this page has a {@code nextFunction}.
+     *
+     * @return The property holding {@code true} only if this page has a {@code nextFunction}.
+     * @see #nextFunctionProperty()
+     */
     public ReadOnlyBooleanProperty hasNextFunctionProperty() {
         return hasNextFunction;
     }
 
+    /**
+     * Checks whether this page has a {@code nextFunction}.
+     *
+     * @return Returns {@code true} only if this page has a {@code nextFunction}.
+     * @see #nextFunctionProperty()
+     */
     public boolean isHasNextFunction() {
         return hasNextFunction.get();
     }
