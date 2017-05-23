@@ -474,7 +474,7 @@ public class MemberManagement extends Application {
 
                         EnvironmentHandler.askForSavePath(menuStage, "Sepa", "xml").ifPresent(file -> {
                             List<Member> invalidMember
-                                    = SepaPain00800302XMLGenerator.createXMLFile(memberToSelect, originator,
+                                    = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
                                             sequenceType, file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
                             String message = invalidMember.stream()
                                     .map(Member::toString)
