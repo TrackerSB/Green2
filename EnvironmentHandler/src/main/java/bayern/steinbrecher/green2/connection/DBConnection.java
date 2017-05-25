@@ -154,6 +154,7 @@ public abstract class DBConnection implements AutoCloseable {
             execQuery(getQuery(Query.TABLES_EXIST));
             return true;
             //FIXME Avoid using SQLException as control flow.
+            //FIXME When permissions to read are missing, also a SQLException is thrown.
         } catch (SQLException ex) {
             return false;
         }
