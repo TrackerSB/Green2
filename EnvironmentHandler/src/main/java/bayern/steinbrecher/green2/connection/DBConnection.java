@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.people.Member;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,8 +84,12 @@ public abstract class DBConnection implements AutoCloseable {
         mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE " + Tables.NICKNAMES.getRealTableName() + " ("
                 + "Name VARCHAR(255) PRIMARY KEY,"
                 + "Spitzname VARCHAR(255) NOT NULL);");
-        mysql.put(Query.TABLES_EXIST, "SELECT 1 FROM " + Arrays.stream(Tables.values())
-                .map(Tables::getRealTableName).collect(Collectors.joining(",")) + ";");
+        mysql.put(Query.TABLES_EXIST, "SELECT count(*) FROM information_schema.tables "
+                + "WHERE table_schema=\"{0}\" AND ("
+                + Arrays.stream(Tables.values())
+                        .map(t -> "table_name=\"" + t.getRealTableName() + "\"")
+                        .collect(Collectors.joining(" OR "))
+                + ");");
         QUERIES.put(SupportedDatabase.MY_SQL, mysql);
     }
 
@@ -137,7 +142,7 @@ public abstract class DBConnection implements AutoCloseable {
 
     private String getQuery(Query query) {
         if (DATABASE.getValue() == null) {
-            throw new IllegalStateException("The type of the database is not set.");
+            throw new IllegalStateException("The supported databases are not set.");
         } else {
             return QUERIES.get(DATABASE.getValue()).get(query);
         }
@@ -151,9 +156,14 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean tablesExist() {
         try {
-            execQuery(getQuery(Query.TABLES_EXIST));
-            return true;
-            //FIXME Avoid using SQLException as control flow.
+            Profile profile = EnvironmentHandler.getProfile();
+            if (profile == null) {
+                throw new IllegalStateException("Can't check. Currently no profile is loaded.");
+            } else {
+                String databaseName = profile.getOrDefault(ConfigKey.DATABASE_NAME, "database");
+                String query = MessageFormat.format(getQuery(Query.TABLES_EXIST), databaseName);
+                return Integer.parseInt(execQuery(query).get(1).get(0)) >= Tables.values().length;
+            }
             //FIXME When permissions to read are missing, also a SQLException is thrown.
         } catch (SQLException ex) {
             return false;
@@ -266,9 +276,11 @@ public abstract class DBConnection implements AutoCloseable {
 
     private enum Query {
         /**
-         * Checks whether all tables exist.
+         * Checks whether all tables exist.<br />
+         * Variables:<br />
+         * 0: database name
          */
-        TABLES_EXIST(false),
+        TABLES_EXIST(true),
         /**
          * Creates the database for member with all columns.
          */

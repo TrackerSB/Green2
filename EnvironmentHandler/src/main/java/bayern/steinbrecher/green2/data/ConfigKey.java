@@ -123,6 +123,9 @@ public enum ConfigKey {
             return (getValueClass().isInstance(value)) && Charset.isSupported(((Charset) value).name());
         }
     },
+    /**
+     * The type of the SQL database. (e.g. MySQL).
+     */
     DBMS(Enum.class) {
         @Override
         public <T> boolean isValid(T value) {
