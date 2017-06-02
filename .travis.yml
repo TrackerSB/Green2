@@ -5,6 +5,9 @@ install: true
 jdk:
   - oraclejdk8
 
+git:
+    submodules: false
+
 sudo: false
 addons:
   apt:
