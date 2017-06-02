@@ -1,3 +1,3 @@
 [submodule "native-utils"]
 	path = native-utils
-	url = git@github.com:TrackerSB/native-utils.git
+	url = https://github.com/TrackerSB/native-utils.git
