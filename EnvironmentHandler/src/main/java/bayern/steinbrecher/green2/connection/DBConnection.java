@@ -188,9 +188,10 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Checks whether all needed tables are accessible using this connection and have all required columns.
+     * Checks whether all needed tables are accessible using this connection and have all required columns which are
+     * also accessible.
      *
-     * @return {@code true} only if all needed tables and their required columns exist.
+     * @return {@code true} only if all needed tables and their required columns exist and are accessible.
      */
     public boolean hasValidSchemes() {
         return tablesExist() && Arrays.stream(Tables.values())
