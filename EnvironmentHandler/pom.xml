@@ -6,7 +6,7 @@
     <parent>
         <groupId>bayern.steinbrecher.green2</groupId>
         <artifactId>Green2</artifactId>
-        <version>2u12</version>
+        <version>2u13</version>
     </parent>
     
     <artifactId>EnvironmentHandler</artifactId>

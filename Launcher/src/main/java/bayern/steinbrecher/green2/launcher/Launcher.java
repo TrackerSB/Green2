@@ -92,17 +92,17 @@ public final class Launcher extends Application {
         this.stage = primaryStage;
 
         Optional<String> optOnlineVersion = VersionHandler.readOnlineVersion();
-        Optional<String> optLocalVersion = VersionHandler.readLocalVersion();
 
         Service<Void> serv = null;
-        boolean isInstalled = optLocalVersion.isPresent() && new File(ProgramCaller.PROGRAMFOLDER_PATH_LOCAL).exists();
+        boolean isInstalled = new File(ProgramCaller.PROGRAMFOLDER_PATH_LOCAL).exists();
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
             if (isInstalled) {
-                String localVersion = optLocalVersion.get();
-                if (!localVersion.equalsIgnoreCase(onlineVersion) && ChoiceDialog.askForUpdate()) {
+                if (!EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion) && ChoiceDialog.askForUpdate()) {
                     serv = downloadAndInstall(onlineVersion);
-                    serv.setOnSucceeded(evt -> ProgramCaller.startGreen2());
+                    serv.setOnSucceeded(evt -> {
+                        ProgramCaller.startGreen2();
+                    });
                 } else {
                     ProgramCaller.startGreen2();
                 }

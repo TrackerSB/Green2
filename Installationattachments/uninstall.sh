@@ -16,7 +16,7 @@ else
     fi
 fi
 
-#Delete system preferences
+#Delete system preferences (legacy since 2u13)
 IFS=$'\n' read -ra preferencesDirParts <<< $(java -jar PreferencesHelper.jar delete)
 preferencesBaseDir=${preferencesDirParts[0]}
 preferencesSubDir=${preferencesDirParts[1]}

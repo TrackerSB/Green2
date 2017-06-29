@@ -6,19 +6,19 @@
     <parent>
         <groupId>bayern.steinbrecher.green2</groupId>
         <artifactId>Green2</artifactId>
-        <version>2u12</version>
+        <version>2u13</version>
     </parent>
     
     <artifactId>Green2Aggregation</artifactId>
     <packaging>pom</packaging>
     
     <modules>
-        <module>../PreferencesHelper</module>
         <module>../ConfigurationDialog</module>
         <module>../Launcher</module>
         <module>../MemberManagement</module>
         <module>../EnvironmentHandler</module>
         <module>../Wizard</module>
+        <module>../Helper</module>
     </modules>
     <name>Green2Aggregation</name>
     

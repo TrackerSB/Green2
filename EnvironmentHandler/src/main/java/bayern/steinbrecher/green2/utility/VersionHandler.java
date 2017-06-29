@@ -63,11 +63,13 @@ public class VersionHandler {
     }
 
     /**
-     * Returns the currently installed version of this application.
+     * Returns the currently installed version of this application. NOTE: Since 2u13 the version is not stored in the
+     * registry anymore.
      *
      * @return The currently installed version of the application. Returns {@link Optional#empty()} if this application
      * is not installed yet or the version could not be read.
      */
+    @Deprecated
     public static Optional<String> readLocalVersion() {
         return Optional.ofNullable(EnvironmentHandler.PREFERENCES_SYSTEM_NODE.get(VERSION_KEY, null));
     }

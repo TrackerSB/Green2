@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>bayern.steinbrecher.green2</groupId>
     <artifactId>Green2</artifactId>
-    <version>2u12</version>
+    <version>2u13</version>
     <packaging>pom</packaging>
     
     <organization>

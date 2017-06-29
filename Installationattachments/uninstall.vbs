@@ -26,7 +26,7 @@ End With
 'Get the directory of the uninstall script (May not be the current directory)
 downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
 
-'Delete registry keys
+'Delete registry keys (legacy since 2u13)
 Set jarExec = oWS.Exec("java -jar " & downloadedDir & "PreferencesHelper.jar delete") 'current user
 registryBasePath = jarExec.StdOut.ReadLine
 registrySubkeyPath = jarExec.StdOut.ReadLine
