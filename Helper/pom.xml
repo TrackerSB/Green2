@@ -77,12 +77,11 @@
             </plugin>
         </plugins>
     </build>
-    
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>EnvironmentHandler</artifactId>
-            <version>2u12</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
