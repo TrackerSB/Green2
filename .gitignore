@@ -1,4 +1,5 @@
 **/build/*
+**/nbproject/*
 **/nbproject/private/*
 **/dist/*
 **/bin/*
@@ -8,8 +9,3 @@ UPDATED.TXT
 **/report.html/*
 Launcher/SingleJarLauncher/*
 **/target/*
-/target/
-/Wizard/nbproject/
-/Launcher/nbproject/
-/EnvironmentHandler/nbproject/
-/ConfigurationDialog/nbproject/
