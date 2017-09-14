@@ -27,7 +27,7 @@ End With
 downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
 
 'Delete registry keys (legacy since 2u13)
-Set jarExec = oWS.Exec("java -jar " & downloadedDir & "PreferencesHelper.jar delete") 'current user
+Set jarExec = oWS.Exec("java -jar " & downloadedDir & "Helper.jar delete_and_print_preferences") 'current user
 registryBasePath = jarExec.StdOut.ReadLine
 registrySubkeyPath = jarExec.StdOut.ReadLine
 oWS.RegDelete registryBasePath & registrySubkeyPath & "\" 'local machine

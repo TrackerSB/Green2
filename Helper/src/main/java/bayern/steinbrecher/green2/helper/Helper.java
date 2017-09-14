@@ -51,14 +51,21 @@ public final class Helper {
             throw new IllegalArgumentException("You have to specify an action you want to execute. (" + actions + ")");
         }
         try {
-            HelperAction.valueOf(args[0]).doHelperAction();
+            HelperAction.valueOf(args[0].toUpperCase()).doHelperAction();
         } catch (IllegalArgumentException ex) {
             throw new UnsupportedOperationException("Action " + args[0] + " not supported.", ex);
         }
     }
 
     public enum HelperAction {
+        /**
+         * Prints exactly two lines to stdout. First line: The path to the java preferences Second line: The path of
+         * keys within the java preferences
+         */
         PRINT_PREFERENCES {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void doHelperAction() {
                 //This method is implemented according to http://stackoverflow.com/questions/1320709/preference-api-storage
@@ -86,8 +93,18 @@ public final class Helper {
                 System.out.print(path + '\n' + subkeyPath);
             }
         },
+        /**
+         * Deletes the saved preferences and prints preferences paths.
+         *
+         * @deprecated Will be replaced.
+         * @see #UNINSTALL
+         * @see #PRINT_PREFERENCES
+         */
         @Deprecated
         DELETE_AND_PRINT_PREFERENCES {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void doHelperAction() {
                 try {
@@ -106,7 +123,13 @@ public final class Helper {
                 PRINT_PREFERENCES.doHelperAction();
             }
         },
+        /**
+         * Installs the program.
+         */
         INSTALL {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void doHelperAction() {
                 String path = EnvironmentHandler.APPLICATION_ROOT.getParent().toString();
@@ -114,7 +137,13 @@ public final class Helper {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         },
+        /**
+         * Removes the saved preferences and deletes all program files.
+         */
         UNINSTALL {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void doHelperAction() {
                 String path = EnvironmentHandler.APPLICATION_ROOT.toString() + File.pathSeparator + "-";

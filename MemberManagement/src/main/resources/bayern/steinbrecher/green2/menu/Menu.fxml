@@ -43,7 +43,7 @@
                       text="%arbitrarySepaDirectDebit"/>
         </Menu>
         <Menu fx:id="addressesMenu"
-              text="%addresses">
+              text="%serialLetters">
             <MenuItem onAction="#generateAddressesAll"
                       text="%ofAllMember"
                       accelerator="Alt+A"/>
