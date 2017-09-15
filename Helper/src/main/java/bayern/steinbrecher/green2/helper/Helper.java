@@ -16,15 +16,33 @@
 package bayern.steinbrecher.green2.helper;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import java.io.File;
-import java.io.FilePermission;
-import java.security.AccessController;
+import bayern.steinbrecher.green2.utility.DialogUtility;
+import bayern.steinbrecher.wizard.Wizard;
+import bayern.steinbrecher.wizard.WizardPage;
+import cz.adamh.utils.NativeUtils;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  * This class is only needed for the installer to determine where to put the version of Green2.
@@ -32,6 +50,32 @@ import java.util.stream.Collectors;
  * @author Stefan Huber
  */
 public final class Helper {
+
+    static {
+        String osname = EnvironmentHandler.CURRENT_OS.name();
+        String jvmarch = System.getProperty("os.arch");
+        Optional<String> fileformat = Optional.empty();
+        switch (EnvironmentHandler.CURRENT_OS) {
+            case LINUX:
+                fileformat = Optional.of("so");
+                break;
+            case WINDOWS:
+                fileformat = Optional.of("dll");
+                break;
+            default:
+                Logger.getLogger(Helper.class.getName())
+                        .log(Level.WARNING, "Loading a library for {} is not supported", EnvironmentHandler.CURRENT_OS);
+        }
+
+        fileformat.ifPresent(ff -> {
+            try {
+                NativeUtils.loadLibraryFromJar(
+                        "/bayern/steinbrecher/green2/helper/externalLibs/libHelper" + osname + jvmarch + "." + ff);
+            } catch (IOException ex) {
+                Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+    }
 
     private Helper() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
@@ -59,9 +103,15 @@ public final class Helper {
 
     public enum HelperAction {
         /**
-         * Prints exactly two lines to stdout. First line: The path to the java preferences Second line: The path of
-         * keys within the java preferences
+         * Prints exactly two lines to stdout.<br />
+         * First line: The path to the java system wide preferences<br />
+         * Second line: The path of keys within the java preferences
+         *
+         * @deprecated Until now the version was the only thing to save in the system wide preferences which is now
+         * saved directly within {@code EnvironmentHandler}.
+         * @see EnvironmentHandler#VERSION
          */
+        @Deprecated
         PRINT_PREFERENCES {
             /**
              * {@inheritDoc}
@@ -132,9 +182,7 @@ public final class Helper {
              */
             @Override
             public void doHelperAction() {
-                String path = EnvironmentHandler.APPLICATION_ROOT.getParent().toString();
-                AccessController.checkPermission(new FilePermission(path, "write"));
-                throw new UnsupportedOperationException("Not supported yet.");
+                install(EnvironmentHandler.APPLICATION_ROOT);
             }
         },
         /**
@@ -146,9 +194,93 @@ public final class Helper {
              */
             @Override
             public void doHelperAction() {
-                String path = EnvironmentHandler.APPLICATION_ROOT.toString() + File.pathSeparator + "-";
-                AccessController.checkPermission(new FilePermission(path, "delete"));
-                throw new UnsupportedOperationException("Not supported yet.");
+                CheckBox deletePreferences = new CheckBox(EnvironmentHandler.getResourceValue("deletePreferences"));
+                CheckBox deleteAppData = new CheckBox(EnvironmentHandler.getResourceValue("deleteAppData"));
+                Pane deleteUserSettings = new VBox(deletePreferences, deleteAppData);
+                WizardPage<Boolean[]> deletePreferencesPage
+                        = new WizardPage<>(deleteUserSettings, () -> "confirmUninstall", false,
+                                () -> new Boolean[]{deletePreferences.isSelected(), deleteAppData.isSelected()});
+
+                CheckBox deleteProgram = new CheckBox(EnvironmentHandler.getResourceValue("deleteProgram"));
+                Pane confirmUninstall = new VBox(deleteProgram);
+                WizardPage<Boolean> confirmUninstallPage
+                        = new WizardPage<>(confirmUninstall, null, true,
+                                () -> deleteProgram.isSelected(), deleteProgram.selectedProperty());
+
+                Map<String, WizardPage<?>> pages = new HashMap<>();
+                pages.put(WizardPage.FIRST_PAGE_KEY, deletePreferencesPage);
+                pages.put("confirmUninstall", confirmUninstallPage);
+
+                Platform.runLater(() -> {
+                    Stage stage = new Stage();
+                    Wizard uninstallWizard = new Wizard(pages, stage);
+                    try {
+                        uninstallWizard.init();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    uninstallWizard.finishedProperty()
+                            .addListener((obs, oldVal, newVal) -> {
+                                if (newVal) {
+                                    Map<String, ?> results = uninstallWizard.getResults().get();
+                                }
+                            });
+                });
+
+                askDeletePreferences();
+                askDeleteAppData();
+
+                uninstall(EnvironmentHandler.APPLICATION_ROOT);
+            }
+
+            private void askDeletePreferences() {
+                String deletePreferencesMessage = EnvironmentHandler.getResourceValue("deletePreferences");
+                Alert deletePreferencesAlert = DialogUtility.createAlert(
+                        Alert.AlertType.CONFIRMATION, deletePreferencesMessage, ButtonType.YES, ButtonType.NO);
+                boolean deletePreferences = deletePreferencesAlert.getResult() == ButtonType.YES;
+                if (deletePreferences) {
+                    Preferences currentNode = EnvironmentHandler.PREFERENCES_USER_NODE;
+                    try {
+                        do {
+                            try {
+                                currentNode.removeNode();
+                                currentNode = currentNode.parent();
+                            } catch (BackingStoreException ex) {
+                                Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+                                break;
+                            }
+                        } while (currentNode.childrenNames().length < 1);
+                    } catch (BackingStoreException ex) {
+                        Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            private void askDeleteAppData() {
+                String deleteAppDataMessage = EnvironmentHandler.getResourceValue("deleteAppData");
+                Alert deleteAppDataAlert = DialogUtility.createAlert(
+                        Alert.AlertType.CONFIRMATION, deleteAppDataMessage, ButtonType.YES, ButtonType.NO);
+                boolean deleteAppData = deleteAppDataAlert.getResult() == ButtonType.YES;
+                if (deleteAppData) {
+                    Path appDataRootPath = Paths.get(EnvironmentHandler.APP_DATA_PATH);
+                    try {
+                        Files.walkFileTree(appDataRootPath, new SimpleFileVisitor<Path>() {
+                            @Override
+                            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                                Files.delete(file);
+                                return FileVisitResult.CONTINUE;
+                            }
+
+                            @Override
+                            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                                Files.delete(dir);
+                                return FileVisitResult.CONTINUE;
+                            }
+                        });
+                    } catch (IOException ex) {
+                        Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         };
 
@@ -156,5 +288,9 @@ public final class Helper {
          * Executes the enums helper action.
          */
         public abstract void doHelperAction();
+
+        private static native void install(Path applicationRoot);
+
+        private static native void uninstall(Path applicationRootDir);
     }
 }

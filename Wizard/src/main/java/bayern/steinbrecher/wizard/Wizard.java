@@ -129,7 +129,7 @@ public class Wizard {
     }
 
     /**
-     * Initializes the wizard. That contains adding pages resizing stage and setting the first page.
+     * Initializes and shows the wizard. That contains adding pages resizing stage and setting the first page.
      *
      * @throws IOException May be thrown by {@link FXMLLoader#load()}.
      */

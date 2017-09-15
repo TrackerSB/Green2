@@ -74,7 +74,11 @@ public final class EnvironmentHandler {
     /**
      * The node of the system preferences where to put settings belonging to Green2 and not to a specific user. NOTE:
      * You are not allowed to write/change keys without administrator permissions.
+     *
+     * @deprecated Future version save the version within the program.
+     * @see EnvironmentHandler#VERSION
      */
+    @Deprecated
     public static final Preferences PREFERENCES_SYSTEM_NODE = Preferences.systemRoot().node(PREFERENCES_SUBKEY);
     private static final String LAST_SAVE_PATH_KEY = "lastSavePath";
     /**
@@ -112,7 +116,8 @@ public final class EnvironmentHandler {
      */
     public static final String APPLICATION_FOLDER_NAME = "Green2";
     /**
-     * The path of the folder where to put user specific data of the application.
+     * The root of the folder where to put user specific data of the application like profiles or information last time
+     * inserted in the SEPA form.
      */
     public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
             ? "/AppData/Roaming/" : "/.") + APPLICATION_FOLDER_NAME;

@@ -69,6 +69,8 @@ public class VersionHandler {
      *
      * @return The currently installed version of the application. Returns {@link Optional#empty()} if this application
      * is not installed yet or the version could not be read.
+     * @deprecated Future version save the version within the program.
+     * @see EnvironmentHandler#VERSION
      */
     @Deprecated
     public static Optional<String> readLocalVersion() {
