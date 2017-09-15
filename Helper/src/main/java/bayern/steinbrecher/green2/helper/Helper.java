@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -49,11 +50,11 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public final class Helper {
+public final class Helper extends Application {
 
     static {
         String osname = EnvironmentHandler.CURRENT_OS.name();
-        String jvmarch = System.getProperty("os.arch");
+        String jvmarch = System.getProperty("os.arch").endsWith("64") ? "64" : "32";
         Optional<String> fileformat = Optional.empty();
         switch (EnvironmentHandler.CURRENT_OS) {
             case LINUX:
@@ -79,6 +80,18 @@ public final class Helper {
 
     private Helper() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
+    }
+
+    /**
+     * Just needed to make the generated jar be directly executable. (Init of JavaFX)
+     *
+     * @param primaryStage Unused
+     * @deprecated Will be removed when direct testing of this file is not needed anymore.
+     */
+    @Override
+    @Deprecated
+    public void start(Stage primaryStage) {
+        //No-op
     }
 
     /**
@@ -213,9 +226,13 @@ public final class Helper {
 
                 Platform.runLater(() -> {
                     Stage stage = new Stage();
+                    stage.setTitle(EnvironmentHandler.getResourceValue("uninstall"));
+                    stage.setResizable(false);
+                    stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                     Wizard uninstallWizard = new Wizard(pages, stage);
                     try {
                         uninstallWizard.init();
+                        stage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
                     } catch (IOException ex) {
                         Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -223,14 +240,10 @@ public final class Helper {
                             .addListener((obs, oldVal, newVal) -> {
                                 if (newVal) {
                                     Map<String, ?> results = uninstallWizard.getResults().get();
+                                    uninstall(EnvironmentHandler.APPLICATION_ROOT);
                                 }
                             });
                 });
-
-                askDeletePreferences();
-                askDeleteAppData();
-
-                uninstall(EnvironmentHandler.APPLICATION_ROOT);
             }
 
             private void askDeletePreferences() {
@@ -289,7 +302,7 @@ public final class Helper {
          */
         public abstract void doHelperAction();
 
-        private static native void install(Path applicationRoot);
+        private static native void install(Path applicationRootDir);
 
         private static native void uninstall(Path applicationRootDir);
     }

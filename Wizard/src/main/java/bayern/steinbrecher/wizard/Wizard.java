@@ -129,7 +129,8 @@ public class Wizard {
     }
 
     /**
-     * Initializes and shows the wizard. That contains adding pages resizing stage and setting the first page.
+     * Initializes and shows the wizard. That contains adding pages resizing stage and setting the first page. NOTE: If
+     * you are plannung to your own stylesheet, it is very likley that you can add it only after calling this method.
      *
      * @throws IOException May be thrown by {@link FXMLLoader#load()}.
      */
