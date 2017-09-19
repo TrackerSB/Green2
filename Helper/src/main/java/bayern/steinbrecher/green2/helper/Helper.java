@@ -195,7 +195,7 @@ public final class Helper extends Application {
              */
             @Override
             public void doHelperAction() {
-                install(EnvironmentHandler.APPLICATION_ROOT);
+                install(EnvironmentHandler.APPLICATION_ROOT, EnvironmentHandler.getResourceValue("installMessage"));
             }
         },
         /**
@@ -240,7 +240,8 @@ public final class Helper extends Application {
                             .addListener((obs, oldVal, newVal) -> {
                                 if (newVal) {
                                     Map<String, ?> results = uninstallWizard.getResults().get();
-                                    uninstall(EnvironmentHandler.APPLICATION_ROOT);
+                                    uninstall(EnvironmentHandler.APPLICATION_ROOT,
+                                            EnvironmentHandler.getResourceValue("uninstallMessage"));
                                 }
                             });
                 });
@@ -302,8 +303,8 @@ public final class Helper extends Application {
          */
         public abstract void doHelperAction();
 
-        private static native void install(Path applicationRootDir);
+        private static native Optional<String> install(Path applicationRootDir, String description);
 
-        private static native void uninstall(Path applicationRootDir);
+        private static native Optional<String> uninstall(Path applicationRootDir, String description);
     }
 }
