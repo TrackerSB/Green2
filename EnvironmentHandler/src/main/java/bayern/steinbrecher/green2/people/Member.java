@@ -177,11 +177,10 @@ public class Member implements Comparable<Member> {
      * Returns the contribution of this member.
      *
      * @return The contribution of this member or {@link Optional#empty()} if the contribution is unknown. (A reason may
-     * be it is not saved by the database.) It contains 0 if this member has not to pay contributions.
-     * @see #setContributionfree(boolean)
+     * be it is not saved by the database.)
      */
     public Optional<Double> getContribution() {
-        return isContributionfree() ? Optional.of(0d) : contribution;
+        return contribution;
     }
 
     /**
