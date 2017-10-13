@@ -59,7 +59,7 @@ With fso
     End If
     .CopyFile downloadedDir & "lib\*.*", libpath
     .DeleteFolder downloadedDir & "lib"
-    
+
     'Move licences folder
     licencesPath = programFilesPath & "\licenses"
     If NOT .FolderExists(licencesPath) Then
@@ -67,7 +67,7 @@ With fso
     End If
     .CopyFile downloadedDir & "licenses\*.*", licencesPath
     .DeleteFolder downloadedDir & "licenses"
-    
+
     'Move files (including this file itself)
     .CopyFile downloadedDir & "*.*", programFilesPath, True
     .DeleteFile downloadedDir & "*.*"
