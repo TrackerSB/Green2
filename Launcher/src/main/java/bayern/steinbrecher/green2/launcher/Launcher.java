@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.launcher;
 import bayern.steinbrecher.green2.data.Collector;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
+import bayern.steinbrecher.green2.installHandler.InstallHandler;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
@@ -77,12 +78,6 @@ public final class Launcher extends Application {
         } catch (IOException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Default constructor.
-     */
-    public Launcher() {
     }
 
     /**
@@ -160,28 +155,20 @@ public final class Launcher extends Application {
         return tempFile;
     }
 
-    private Process install(File downloadedDir) throws IOException, InterruptedException {
+    private Process install(File downloadedDir, String newVersion) throws IOException, InterruptedException {
         String dirPath = downloadedDir.getAbsolutePath();
         String[] command;
-        Optional<String> optOnlineVersion = VersionHandler.readOnlineVersion();
-        String onlineVersion;
-        if (optOnlineVersion.isPresent()) {
-            onlineVersion = optOnlineVersion.get();
-        } else {
-            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, "Could not determine online version.");
-            onlineVersion = "couldNotDetermineOnlineVersion";
-        }
         switch (EnvironmentHandler.CURRENT_OS) {
             case WINDOWS:
-                command = new String[]{"cscript", dirPath + "/install.vbs", onlineVersion};
+//"powershell", "Start-Process \"wscript 'C:/Users/Stefan~1/Desktop/haha.vbs'\" -Verb runAs -Wait"
+                command = new String[]{"powershell", "Start-Process", "\"wscript '" + dirPath + "/install.vbs " + newVersion + "'\"", "-Verb runAs", "-Wait"};
                 break;
             case LINUX:
             default:
-                command = new String[]{
-                    "chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh", onlineVersion};
+                command = new String[]{"chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh"};
                 new ProcessBuilder(command).start().waitFor();
 
-                command = new String[]{"sh", dirPath + "/install.sh"};
+                command = new String[]{"sh", dirPath + "/install.sh", newVersion};
         }
 
         return new ProcessBuilder(command).start();
@@ -200,29 +187,23 @@ public final class Launcher extends Application {
                 ZipUtility.unzip(tempFile, tempDir, ZIP_CHARSET);
                 tempFile.delete();
 
-                Process installer = install(tempDir);
-
-                /* FIXME Doesn´t really wait for everything is completed on
-                 * windows.
-                 */
+                Process installer = install(tempDir, newVersion);
                 installer.waitFor();
-                Thread.sleep(2000);
 
-                //Check whether file "installed" was created.
-                boolean gotInstalled = Arrays.asList(tempDir.list())
-                        .contains("installed");
+                int installerExitValue = installer.exitValue();
                 tempDir.delete();
 
-                String errorMessage;
-                try (InputStream errorStream = installer.getErrorStream()) {
-                    errorMessage = IOStreamUtility.readAll(errorStream, Charset.defaultCharset());
-                }
-                if (!errorMessage.isEmpty()) {
-                    Logger.getLogger(Launcher.class.getName())
-                            .log(Level.WARNING, "The installer got follwing error:\n{0}", errorMessage);
-                }
+                if (installerExitValue != 0) {
+                    String errorMessage;
+                    try (InputStream errorStream = installer.getErrorStream()) {
+                        errorMessage = IOStreamUtility.readAll(errorStream, Charset.defaultCharset());
+                    }
+                    if (!errorMessage.isEmpty()) {
+                        Logger.getLogger(Launcher.class.getName())
+                                .log(Level.WARNING, "The installer got follwing error:\n{0}", errorMessage);
+                    }
 
-                if (gotInstalled) {
+                } else {
                     //Following line is not working until Green2 was launched with admin rights.
                     //The version is currently set by the installer.
                     //VersionHandler.updateLocalVersion(newVersion);

@@ -4,9 +4,9 @@ If WScript.Arguments.Count < 1 Then
     WScript.Quit
 End If
 
-'Request admin rights
+'Check admin rights
 If Not WScript.Arguments.Named.Exists("elevate") Then
-  CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ /elevate " & WScript.Arguments(0), "", "runas", 1
+  WScript.Echo "Die Installation benötigt Administrator Rechte."
   WScript.Quit
 End If
 
@@ -22,10 +22,6 @@ End With
 
 'Get the directory of the install script (May not be the current directory)
 downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
-
-Set jarExec = oWS.Exec("java -jar " & downloadedDir & "PreferencesHelper.jar")
-registryBasePath = jarExec.StdOut.ReadLine
-registrySubkeyPath = jarExec.StdOut.ReadLine
 
 Set fso = CreateObject("Scripting.FileSystemObject")
 With fso
@@ -97,9 +93,3 @@ Sub createLink(linkname, workingDir, fileOfWorkingDir)
         .Save
     End With
 End Sub
-
-'Set version in registry
-oWS.RegWrite registryBasePath & registrySubkeyPath & "\version", WScript.Arguments(1), "REG_SZ"
-
-'Create file to show success
-fso.CreateTextFile(downloadedDir & "installed")

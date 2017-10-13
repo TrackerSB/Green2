@@ -16,13 +16,7 @@ else
     fi
 fi
 
-#Delete system preferences (legacy since 2u13)
-IFS=$'\n' read -ra preferencesDirParts <<< $(java -jar PreferencesHelper.jar delete)
-preferencesBaseDir=${preferencesDirParts[0]}
-preferencesSubDir=${preferencesDirParts[1]}
-preferencesDir="$preferencesBaseDir$preferencesSubDir"
-$SudoCommand -c "rm -r \"$preferencesDir\";
-
+$SudoCommand -c "
 #Delete application shortcuts
 rm /usr/share/applications/Green2_*.desktop;
 
