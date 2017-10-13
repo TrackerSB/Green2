@@ -6,7 +6,7 @@ End If
 
 'Check admin rights
 If Not WScript.Arguments.Named.Exists("elevate") Then
-  WScript.Echo "Die Installation benötigt Administrator Rechte."
+  CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ /elevate", "", "runas", 1
   WScript.Quit
 End If
 

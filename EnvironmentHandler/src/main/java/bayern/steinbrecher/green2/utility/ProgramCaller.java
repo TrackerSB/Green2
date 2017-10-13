@@ -57,7 +57,7 @@ public final class ProgramCaller {
      * Starts Green2 and closes this application.
      */
     public static void startGreen2() {
-        startJar("Membermanagement.jar");
+        startJar("MemberManagement.jar");
     }
 
     /**
