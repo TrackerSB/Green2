@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.concurrent.Callable;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -46,7 +47,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Wizard {
+public class Wizard extends Application {
 
     private StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
     private Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
@@ -57,12 +58,6 @@ public class Wizard {
     private WizardController controller;
     private Stage stage;
     private Stack<String> history = new Stack<>();
-
-    private void checkPages(Map<String, WizardPage<?>> pages) {
-        if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
-            throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
-        }
-    }
 
     Wizard() {
         /*
@@ -75,22 +70,54 @@ public class Wizard {
      * Constructs a wizard with showing {@code pages} and using default stylesheet.
      *
      * @param pages The pages to show.
-     * @param stage The stage to use.
      *
      */
-    public Wizard(Map<String, WizardPage<?>> pages, Stage stage) {
+    public Wizard(Map<String, WizardPage<?>> pages) {
         checkPages(pages);
         this.pages.set(FXCollections.observableMap(pages));
-        this.stage = stage;
-        stage.sceneProperty().addListener((obs, oldVal, newVal) -> {
-            newVal.getStylesheets().addListener((Change<? extends String> c) -> updateContentSize());
-        });
 
         currentIndex.addListener((obs, oldVal, newVal) -> {
             WizardPage<?> newPage = pages.get(newVal);
             atFinish.set(newPage.isFinish());
             currentPage.setValue(newPage);
         });
+    }
+
+    /**
+     * Initializes the wizard. The wizard is not shown yet. NOTE: Add your own stylesheets only after calling this
+     * method.
+     *
+     * @param stage The stage to be used by the wizard.
+     * @throws java.io.IOException May be thrown when loading the wizard.
+     * @see FXMLLoader#load()
+     */
+    @Override
+    public void start(Stage stage) throws IOException {
+        this.stage = stage;
+        stage.sceneProperty().addListener((obs, oldVal, newVal) -> {
+            newVal.getStylesheets().addListener((Change<? extends String> c) -> updateContentSize());
+        });
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Wizard.fxml"));
+        fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
+        Parent root = fxmlLoader.load();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        controller = fxmlLoader.getController();
+        controller.setCaller(this);
+
+        updateContentSize(); //TODO Think about whether explicit call is needed.
+
+        currentIndex.set(WizardPage.FIRST_PAGE_KEY);
+        currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
+        history.push(WizardPage.FIRST_PAGE_KEY);
+        updatePage();
+    }
+
+    private void checkPages(Map<String, WizardPage<?>> pages) {
+        if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
+            throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
+        }
     }
 
     private void updateContentSize() {
@@ -126,30 +153,6 @@ public class Wizard {
         Platform.setImplicitExit(wasImplicitExit);
 
         controller.setContentSize(maxWidth, maxHeight);
-    }
-
-    /**
-     * Initializes and shows the wizard. That contains adding pages resizing stage and setting the first page. NOTE: If
-     * you are plannung to your own stylesheet, it is very likley that you can add it only after calling this method.
-     *
-     * @throws IOException May be thrown by {@link FXMLLoader#load()}.
-     */
-    public void init() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Wizard.fxml"));
-        fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        controller = fxmlLoader.getController();
-        controller.setCaller(this);
-
-        updateContentSize();
-
-        currentIndex.set(WizardPage.FIRST_PAGE_KEY);
-        currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
-        history.push(WizardPage.FIRST_PAGE_KEY);
-        updatePage();
-        stage.show();
     }
 
     private void updatePage() {
@@ -292,5 +295,14 @@ public class Wizard {
 
     public WizardPage<?> getCurrentPage() {
         return currentPage.getValue();
+    }
+
+    /**
+     * The main method.
+     *
+     * @param args The command line arguments.
+     */
+    public static void main(String[] args) {
+        launch(args);
     }
 }

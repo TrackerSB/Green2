@@ -460,9 +460,10 @@ public class MemberManagement extends Application {
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
                 wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-                Wizard wizard = new Wizard(pages, wizardStage);
-                wizard.init();
+                Wizard wizard = new Wizard(pages);
+                wizard.start(wizardStage);
                 wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+                wizardStage.show();
                 wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
                         Map<String, ?> results = wizard.getResults().get();
