@@ -502,7 +502,7 @@ public class MemberManagement extends Application {
      * Asks for contribution and for member to debit from.
      */
     public void generateUniversalSepa() {
-        generateSepa(member, false, SequenceType.FRST);
+        generateSepa(member, false, SequenceType.RCUR);
     }
 
     /**
