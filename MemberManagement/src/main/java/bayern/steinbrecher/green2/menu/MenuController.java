@@ -22,7 +22,7 @@ import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.VersionHandler;
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -62,13 +62,9 @@ public class MenuController extends Controller {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        StringBinding yearBinding = Bindings.createStringBinding(() -> {
-            String year = "?";
-            if (yearSpinner.isValid()) {
-                year = yearSpinner.getValue().toString();
-            }
-            return year;
-        }, yearSpinner.validProperty(), yearSpinner.valueProperty());
+        StringBinding yearBinding = Bindings.createStringBinding(
+                () -> yearSpinner.isValid() ? yearSpinner.getValue().toString() : "?",
+                yearSpinner.validProperty(), yearSpinner.valueProperty());
         generateBirthdayInfos.textProperty().bind(
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("groupedBirthdayMember") + " ")
                         .concat(yearBinding));
@@ -77,7 +73,7 @@ public class MenuController extends Controller {
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
-        EnvironmentHandler.getLicenses().stream().forEach((license) -> {
+        EnvironmentHandler.getLicenses().stream().forEach(license -> {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
                 try {

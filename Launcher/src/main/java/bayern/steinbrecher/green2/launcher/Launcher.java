@@ -34,7 +34,6 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
