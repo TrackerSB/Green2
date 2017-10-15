@@ -18,7 +18,6 @@
         <module>../MemberManagement</module>
         <module>../EnvironmentHandler</module>
         <module>../Wizard</module>
-        <module>../InstallHandler</module>
     </modules>
     <name>Green2Aggregation</name>
     

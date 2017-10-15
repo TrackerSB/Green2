@@ -19,7 +19,6 @@ package bayern.steinbrecher.green2.launcher;
 import bayern.steinbrecher.green2.data.Collector;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
-import bayern.steinbrecher.green2.installHandler.InstallHandler;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
