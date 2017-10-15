@@ -73,4 +73,6 @@
                       onAction="#showVersion"/>
         </Menu>
     </MenuBar>
+    <Label fx:id="dataLastUpdated"
+           text="%noData" />
 </VBox>

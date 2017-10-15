@@ -59,6 +59,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -78,6 +79,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -95,6 +99,7 @@ public class MemberManagement extends Application {
     private Stage menuStage;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
     private Future<List<Member>> member;
+    private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
     private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
     private Future<List<Member>> memberNonContributionfree;
     private Future<Map<String, String>> nicknames;
@@ -323,6 +328,14 @@ public class MemberManagement extends Application {
 
     private void executeQueries() {
         member = exserv.submit(() -> dbConnection.getAllMember());
+        exserv.submit(() -> {
+            try {
+                member.get();
+                dataLastUpdated.setValue(Optional.of(LocalDateTime.now()));
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
                 .forEach(y -> memberBirthday.put(y, exserv.submit(() -> getBirthdayMember(y))));
@@ -567,6 +580,26 @@ public class MemberManagement extends Application {
         String checkData = EnvironmentHandler.getResourceValue("checkData");
         Alert alert = DialogUtility.createMessageAlert(menuStage, message, checkData, checkData);
         alert.showAndWait();
+    }
+
+    /**
+     * Returns the property containing the date when the date was last updated.
+     *
+     * @return The property containing the date when the date was last updated.
+     * @see #getDataLastUpdated()
+     */
+    public ReadOnlyObjectProperty<Optional<LocalDateTime>> dataLastUpdatedProperty() {
+        return dataLastUpdated;
+    }
+
+    /**
+     * Returns an {@code Optional} containing the timestamp when the data was last updated.
+     *
+     * @return An {@code Optional} containing the timestamp when the data was last updated. Returns
+     * {@code Optional.empty()} if the data is not yet received.
+     */
+    public Optional<LocalDateTime> getDataLastUpdated() {
+        return dataLastUpdated.get();
     }
 
     /**

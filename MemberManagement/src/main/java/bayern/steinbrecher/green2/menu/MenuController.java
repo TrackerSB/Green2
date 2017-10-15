@@ -26,7 +26,10 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.EventObject;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +40,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 
 /**
@@ -56,6 +60,8 @@ public class MenuController extends Controller {
     private CheckedIntegerSpinner yearSpinner;
     @FXML
     private javafx.scene.control.Menu licensesMenu;
+    @FXML
+    private Label dataLastUpdated;
 
     /**
      * {@inheritDoc}
@@ -72,6 +78,19 @@ public class MenuController extends Controller {
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("birthdayExpression") + " ")
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
+
+        StringBinding dataLastUpdatedBinding = Bindings.createStringBinding(() -> {
+            Optional<LocalDateTime> dataLastUpdatedOptional = caller.getDataLastUpdated();
+            String text;
+            if (dataLastUpdatedOptional.isPresent()) {
+                text = EnvironmentHandler.getResourceValue("dataLastUpdated") + ": "
+                        + dataLastUpdatedOptional.get().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+            } else {
+                text = EnvironmentHandler.getResourceValue("noData");
+            }
+            return text;
+        }, caller.dataLastUpdatedProperty());
+        dataLastUpdated.textProperty().bind(dataLastUpdatedBinding);
 
         EnvironmentHandler.getLicenses().stream().forEach(license -> {
             MenuItem item = new MenuItem(license.getName());
