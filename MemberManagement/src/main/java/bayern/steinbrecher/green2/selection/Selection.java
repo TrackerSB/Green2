@@ -40,7 +40,6 @@ import javafx.stage.Stage;
 public class Selection<T extends Comparable<T>> extends WizardableView<Optional<List<T>>, SelectionController<T>> {
 
     private final List<T> options;
-    private Stage owner;
 
     /**
      * Creates a new Frame representing the given options as selectable {@link CheckBox} es and representing a
@@ -49,19 +48,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
      * @param options The options the user is allowed to select.
      */
     public Selection(List<T> options) {
-        this(options, null);
-    }
-
-    /**
-     * Creates a new Frame representing the given options as selectable {@link CheckBox}es and representing a
-     * {@link TextField} for entering a number.
-     *
-     * @param options The options the user is allowed to select.
-     * @param owner The owner which causes this window to close if the owner is closed. The owner is not blocked.
-     */
-    public Selection(List<T> options, Stage owner) {
         this.options = options;
-        this.owner = owner;
     }
 
     /**
@@ -85,7 +72,6 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
         Parent root = loadFXML("Selection.fxml");
         controller.setStage(stage);
 
-        stage.initOwner(owner);
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("selectionTitle"));
         stage.setResizable(false);

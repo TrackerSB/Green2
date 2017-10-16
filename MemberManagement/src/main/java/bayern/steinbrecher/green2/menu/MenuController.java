@@ -85,9 +85,9 @@ import javafx.stage.Stage;
  */
 public class MenuController extends Controller {
 
+    private static final int CURRENT_YEAR = LocalDate.now().getYear();
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
-    private static final int CURRENT_YEAR = LocalDate.now().getYear();
     //private MemberManagement caller;
     private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
     private Future<List<Member>> memberNonContributionfree;
@@ -256,15 +256,15 @@ public class MenuController extends Controller {
                 boolean askForContribution = !(useMemberContributions
                         && dbConnection.columnExists(DBConnection.Tables.MEMBER, DBConnection.Columns.CONTRIBUTION));
 
-                WizardPage<Optional<Originator>> sepaFormPage = new SepaForm(stage).getWizardPage();
+                WizardPage<Optional<Originator>> sepaFormPage = new SepaForm().getWizardPage();
                 sepaFormPage.setNextFunction(() -> "selection");
                 WizardPage<Optional<List<Member>>> selectionPage
-                        = new Selection<>(memberToSelect, stage).getWizardPage();
+                        = new Selection<>(memberToSelect).getWizardPage();
                 selectionPage.setFinish(!askForContribution);
                 if (askForContribution) {
                     selectionPage.setNextFunction(() -> "contribution");
                 }
-                WizardPage<Optional<Double>> contributionPage = new Contribution(stage).getWizardPage();
+                WizardPage<Optional<Double>> contributionPage = new Contribution().getWizardPage();
                 contributionPage.setFinish(true);
 
                 Map<String, WizardPage<?>> pages = new HashMap<>();

@@ -36,22 +36,10 @@ import javafx.stage.Stage;
  */
 public class SepaForm extends WizardableView<Optional<Originator>, SepaFormController> {
 
-    private Stage owner;
-
     /**
-     * Default constructor. Owner set to {@code null}.
+     * Default constructor. Represents a view for entering data needed by SEPA Direct Debits.
      */
     public SepaForm() {
-        this(null);
-    }
-
-    /**
-     * Creates a sepa form.
-     *
-     * @param owner The owner which causes this window to close if the owner is closed. The owner is not blocked.
-     */
-    public SepaForm(Stage owner) {
-        this.owner = owner;
     }
 
     /**
@@ -64,7 +52,6 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
         Parent root = loadFXML("SepaForm.fxml");
         controller.setStage(stage);
 
-        stage.initOwner(owner);
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("sepaFormTitle"));
         stage.setResizable(false);

@@ -36,22 +36,10 @@ import javafx.stage.Stage;
  */
 public class Contribution extends WizardableView<Optional<Double>, ContributionController> {
 
-    private Stage owner;
-
     /**
-     * Default constructor. Owner set to {@code null}.
+     * Default constructor. Represents a view for entering a value (in €).
      */
     public Contribution() {
-        this(null);
-    }
-
-    /**
-     * Creates a contribution dialog.
-     *
-     * @param owner The owner which causes this window to close if the owner is closed. The owner is not blocked.
-     */
-    public Contribution(Stage owner) {
-        this.owner = owner;
     }
 
     /**
@@ -64,7 +52,6 @@ public class Contribution extends WizardableView<Optional<Double>, ContributionC
         Parent root = loadFXML("Contribution.fxml");
         controller.setStage(stage);
 
-        stage.initOwner(owner);
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("contributionTitle"));
         stage.setResizable(false);
