@@ -18,7 +18,6 @@ package bayern.steinbrecher.green2.data;
 
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.URLUtility;
-import bayern.steinbrecher.green2.utility.VersionHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -166,7 +165,7 @@ public final class Collector {
              */
             @Override
             public String getValue() {
-                return VersionHandler.readLocalVersion().orElse("");
+                return EnvironmentHandler.VERSION;
             }
         };
 

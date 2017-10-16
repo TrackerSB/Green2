@@ -33,7 +33,6 @@ import bayern.steinbrecher.green2.sepaform.SepaForm;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
-import bayern.steinbrecher.green2.utility.VersionHandler;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
 import java.awt.Desktop;
@@ -466,7 +465,7 @@ public class MenuController extends Controller {
     @FXML
     private void showVersion() {
         String version = EnvironmentHandler.getResourceValue("version");
-        Alert alert = DialogUtility.createInfoAlert(stage, VersionHandler.getVersion(), version, version, version);
+        Alert alert = DialogUtility.createInfoAlert(stage, EnvironmentHandler.VERSION, version, version, version);
         alert.show();
     }
 

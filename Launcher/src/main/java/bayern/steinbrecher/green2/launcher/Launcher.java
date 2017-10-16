@@ -23,7 +23,7 @@ import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
-import bayern.steinbrecher.green2.utility.VersionHandler;
+import bayern.steinbrecher.green2.utility.URLUtility;
 import bayern.steinbrecher.green2.utility.ZipUtility;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,13 +55,23 @@ import javafx.stage.StageStyle;
 public final class Launcher extends Application {
 
     /**
+     * The URL of the online repository containing the installation files.
+     */
+    public static final String PROGRAMFOLDER_PATH_ONLINE
+            = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
+                    .orElse("");
+    /**
+     * The URL of the version file describing the version of the files at {@code PROGRAMFOLDER_PATH_ONLINE}.
+     */
+    private static final String VERSIONFILE_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
+    /**
      * The URL of the zip containing the installation files of the application.
      */
-    private static final String GREEN2_ZIP_URL = VersionHandler.PROGRAMFOLDER_PATH_ONLINE + "/Green2.zip";
+    private static final String GREEN2_ZIP_URL = PROGRAMFOLDER_PATH_ONLINE + "/Green2.zip";
     /**
      * The URL of the file containing the used charset of the zip and its files.
      */
-    private static final String CHARSET_PATH_ONLINE = VersionHandler.PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
+    private static final String CHARSET_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
     /**
      * Zipfile is currently delivered ISO-8859-1 (Latin-1) encoded.
      */
@@ -85,7 +95,7 @@ public final class Launcher extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.stage = primaryStage;
 
-        Optional<String> optOnlineVersion = VersionHandler.readOnlineVersion();
+        Optional<String> optOnlineVersion = readOnlineVersion();
 
         Service<Void> serv = null;
         boolean isInstalled = new File(ProgramCaller.PROGRAMFOLDER_PATH_LOCAL).exists();
@@ -119,6 +129,23 @@ public final class Launcher extends Application {
             showProgressWindow();
             serv.start();
         }
+    }
+
+    /**
+     * Returns the version of the application on the repository.
+     *
+     * @return The version of the application on the repository. Returns {@link Optional#empty()} only if the online
+     * version could not be read.
+     */
+    public static Optional<String> readOnlineVersion() {
+        try {
+            URL onlineVersionUrl = new URL(VERSIONFILE_PATH_ONLINE);
+            Scanner sc = new Scanner(onlineVersionUrl.openStream());
+            return Optional.of(sc.nextLine());
+        } catch (IOException ex) {
+            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Optional.empty();
     }
 
     private void showProgressWindow() {
