@@ -40,6 +40,7 @@ public class VersionHandler {
     /**
      * The key used in the preferences to store the current version.
      */
+    @Deprecated
     private static final String VERSION_KEY = "version";
     /**
      * The URL of the version file describing the version of the files at {@code PROGRAMFOLDER_PATH_ONLINE}.
@@ -83,6 +84,7 @@ public class VersionHandler {
      *
      * @param newVersion The new version to set as new local version.
      */
+    @Deprecated
     public static void updateLocalVersion(String newVersion) {
         EnvironmentHandler.PREFERENCES_USER_NODE.put(VERSION_KEY, newVersion);
     }
@@ -92,6 +94,7 @@ public class VersionHandler {
      *
      * @return A {@link String} containing the current version or &bdquo;version not found&ldquo; if it was not found.
      */
+    @Deprecated
     public static String getVersion() {
         return readLocalVersion().orElse(EnvironmentHandler.getResourceValue("versionNotFound"));
     }
