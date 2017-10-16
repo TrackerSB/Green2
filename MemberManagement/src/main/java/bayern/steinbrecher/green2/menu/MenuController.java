@@ -44,6 +44,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventObject;
@@ -125,8 +126,9 @@ public class MenuController extends Controller {
             Optional<LocalDateTime> dataLastUpdatedOptional = getDataLastUpdated();
             String text;
             if (dataLastUpdatedOptional.isPresent()) {
-                text = EnvironmentHandler.getResourceValue("dataLastUpdated") + ": "
-                        + dataLastUpdatedOptional.get().format(DateTimeFormatter.RFC_1123_DATE_TIME);
+                text = EnvironmentHandler.getResourceValue(
+                        "dataLastUpdated", dataLastUpdatedOptional.get()
+                                .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
             } else {
                 text = EnvironmentHandler.getResourceValue("noData");
             }
