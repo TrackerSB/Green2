@@ -18,70 +18,38 @@ package bayern.steinbrecher.green2.membermanagement;
 
 import bayern.steinbrecher.green2.connection.AuthException;
 import bayern.steinbrecher.green2.connection.DBConnection;
-import bayern.steinbrecher.green2.connection.DBConnection.Columns;
-import bayern.steinbrecher.green2.connection.DBConnection.Tables;
 import bayern.steinbrecher.green2.connection.DefaultConnection;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
-import bayern.steinbrecher.green2.contribution.Contribution;
 import bayern.steinbrecher.green2.data.ConfigKey;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.ProfileChoice;
 import bayern.steinbrecher.green2.elements.Splashscreen;
 import bayern.steinbrecher.green2.elements.WaitScreen;
-import bayern.steinbrecher.green2.generator.AddressGenerator;
-import bayern.steinbrecher.green2.generator.BirthdayGenerator;
-import bayern.steinbrecher.green2.generator.sepa.SepaPain00800302XMLGenerator;
-import bayern.steinbrecher.green2.generator.sepa.SequenceType;
 import bayern.steinbrecher.green2.login.Login;
 import bayern.steinbrecher.green2.login.LoginKey;
 import bayern.steinbrecher.green2.login.ssh.SshLogin;
 import bayern.steinbrecher.green2.login.standard.DefaultLogin;
 import bayern.steinbrecher.green2.menu.Menu;
-import bayern.steinbrecher.green2.people.Member;
-import bayern.steinbrecher.green2.people.Originator;
-import bayern.steinbrecher.green2.selection.Selection;
-import bayern.steinbrecher.green2.sepaform.SepaForm;
 import bayern.steinbrecher.green2.utility.DialogUtility;
-import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.ProgramCaller;
-import bayern.steinbrecher.green2.utility.SepaUtility;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
-import bayern.steinbrecher.wizard.Wizard;
-import bayern.steinbrecher.wizard.WizardPage;
-import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -97,12 +65,6 @@ public class MemberManagement extends Application {
     private static final long SPLASHSCREEN_MILLIS = 2500;
     private Profile profile;
     private Stage menuStage;
-    private final ExecutorService exserv = Executors.newWorkStealingPool();
-    private Future<List<Member>> member;
-    private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
-    private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
-    private Future<List<Member>> memberNonContributionfree;
-    private Future<Map<String, String>> nicknames;
     private DBConnection dbConnection = null;
 
     /**
@@ -204,8 +166,6 @@ public class MemberManagement extends Application {
                     Platform.exit();
                 }
 
-                executeQueries();
-
                 menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
                         waitScreen.close();
@@ -215,7 +175,7 @@ public class MemberManagement extends Application {
                 });
 
                 try {
-                    new Menu(this).start(menuStage);
+                    new Menu(dbConnection).start(menuStage);
                 } catch (Exception ex) {
                     Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -232,7 +192,6 @@ public class MemberManagement extends Application {
         if (dbConnection != null) {
             dbConnection.close();
         }
-        exserv.shutdownNow();
     }
 
     private void handleAuthException(Login login, WaitScreen waitScreen, Exception cause) {
@@ -316,290 +275,6 @@ public class MemberManagement extends Application {
         }
 
         return Optional.ofNullable(con);
-    }
-
-    private List<Member> getBirthdayMember(int year)
-            throws InterruptedException, ExecutionException {
-        return member.get()
-                .parallelStream()
-                .filter(m -> BirthdayGenerator.getsNotified(m, year))
-                .collect(Collectors.toList());
-    }
-
-    private void executeQueries() {
-        member = exserv.submit(() -> dbConnection.getAllMember());
-        exserv.submit(() -> {
-            try {
-                member.get();
-                dataLastUpdated.setValue(Optional.of(LocalDateTime.now()));
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        int currentYear = LocalDate.now().getYear();
-        IntStream.rangeClosed(currentYear - 1, currentYear + 1)
-                .forEach(y -> memberBirthday.put(y, exserv.submit(() -> getBirthdayMember(y))));
-        memberNonContributionfree = exserv.submit(() -> member.get()
-                .parallelStream()
-                .filter(m -> !m.isContributionfree())
-                .collect(Collectors.toList()));
-        nicknames = exserv.submit(() -> dbConnection.getAllNicknames());
-    }
-
-    /**
-     * Checks whether all objects are not {@code null}. If any is {@code null} it throws a {@link IllegalStateException}
-     * saying that the caller has to call {@link Application#start(Stage)} first.
-     *
-     * @param obj The objects to test.
-     */
-    private void checkNull(Object... obj) {
-        if (Arrays.stream(obj).anyMatch(Objects::isNull)) {
-            throw new IllegalStateException("You have to call start(...) first");
-        }
-    }
-
-    private void showNoMemberForOutputDialog() {
-        String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
-        Alert alert = DialogUtility.createInfoAlert(menuStage, noMemberForOutput, noMemberForOutput);
-        alert.showAndWait();
-    }
-
-    private void generateAddresses(List<Member> member, File outputFile) {
-        checkNull(nicknames);
-        if (member.isEmpty()) {
-            throw new IllegalArgumentException("Passed empty list to generateAddresses(...)");
-        }
-        try {
-            IOStreamUtility.printContent(
-                    AddressGenerator.generateAddressData(member, nicknames.get()), outputFile, true);
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Generates a file Serienbrief_alle.csv containing addresses of all member.
-     */
-    public void generateAddressesAll() {
-        checkNull(member);
-        try {
-            List<Member> memberList = this.member.get();
-            if (memberList.isEmpty()) {
-                showNoMemberForOutputDialog();
-            } else {
-                EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_alle", "csv").ifPresent(file -> {
-                    generateAddresses(memberList, file);
-                });
-            }
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Generates a file Serienbrief_Geburtstag_{@code year}.csv containing addresses of all member who get a birthday
-     * notification in year {@code year}.
-     *
-     * @param year The year to look for member.
-     */
-    public void generateAddressesBirthday(int year) {
-        checkNull(memberBirthday);
-        memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
-        try {
-            List<Member> memberBirthdayList = memberBirthday.get(year).get();
-            if (memberBirthdayList.isEmpty()) {
-                showNoMemberForOutputDialog();
-            } else {
-                EnvironmentHandler.askForSavePath(menuStage, "Serienbrief_Geburtstag_" + year, "csv")
-                        .ifPresent(file -> generateAddresses(memberBirthdayList, file));
-            }
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Generates a file Geburtstag_{@code year}.csv containing all member who get a birthday notification in year
-     * {@code year}.
-     *
-     * @param year The year to look for member.
-     */
-    public void generateBirthdayInfos(int year) {
-        checkNull(memberBirthday);
-        memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
-        try {
-            List<Member> birthdayList = memberBirthday.get(year).get();
-            if (birthdayList.isEmpty()) {
-                showNoMemberForOutputDialog();
-            } else {
-                EnvironmentHandler.askForSavePath(menuStage, "/Geburtstag_" + year, "csv").ifPresent(file -> {
-                    IOStreamUtility.printContent(BirthdayGenerator.createGroupedOutput(birthdayList, year), file, true);
-                });
-            }
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void generateSepa(Future<List<Member>> memberToSelectFuture, boolean useMemberContributions,
-            SequenceType sequenceType) {
-        checkNull(memberToSelectFuture);
-        try {
-            List<Member> memberToSelect = memberToSelectFuture.get();
-
-            if (memberToSelect.isEmpty()) {
-                showNoMemberForOutputDialog();
-            } else {
-                boolean askForContribution = !(useMemberContributions
-                        && dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION));
-
-                WizardPage<Optional<Originator>> sepaFormPage = new SepaForm(menuStage).getWizardPage();
-                sepaFormPage.setNextFunction(() -> "selection");
-                WizardPage<Optional<List<Member>>> selectionPage
-                        = new Selection<>(memberToSelect, menuStage).getWizardPage();
-                selectionPage.setFinish(!askForContribution);
-                if (askForContribution) {
-                    selectionPage.setNextFunction(() -> "contribution");
-                }
-                WizardPage<Optional<Double>> contributionPage = new Contribution(menuStage).getWizardPage();
-                contributionPage.setFinish(true);
-
-                Map<String, WizardPage<?>> pages = new HashMap<>();
-                pages.put(WizardPage.FIRST_PAGE_KEY, sepaFormPage);
-                pages.put("selection", selectionPage);
-                pages.put("contribution", contributionPage);
-                Stage wizardStage = new Stage();
-                wizardStage.initOwner(menuStage);
-                wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
-                wizardStage.setResizable(false);
-                wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-                Wizard wizard = new Wizard(pages);
-                wizard.start(wizardStage);
-                wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-                wizardStage.show();
-                wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        Map<String, ?> results = wizard.getResults().get();
-                        List<Member> selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
-                        if (askForContribution) {
-                            double contribution = ((Optional<Double>) results.get("contribution")).get();
-                            selectedMember.stream().forEach(m -> m.setContribution(contribution));
-                        }
-                        Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
-
-                        EnvironmentHandler.askForSavePath(menuStage, "Sepa", "xml").ifPresent(file -> {
-                            List<Member> invalidMember
-                                    = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
-                                            sequenceType, file, profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
-                            String message = invalidMember.stream()
-                                    .map(Member::toString)
-                                    .collect(Collectors.joining("\n"));
-                            if (!message.isEmpty()) {
-                                Alert alert = DialogUtility.createErrorAlert(menuStage, message + "\n"
-                                        + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
-                                alert.show();
-                            }
-                        });
-                    }
-                });
-            }
-        } catch (InterruptedException | ExecutionException | IOException ex) {
-            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-            String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
-            Alert alert = DialogUtility.createErrorAlert(menuStage, noSepaDebit, noSepaDebit);
-            alert.showAndWait();
-        }
-    }
-
-    /**
-     * Asks for contribution and for member to debit from.
-     */
-    public void generateUniversalSepa() {
-        generateSepa(member, false, SequenceType.RCUR);
-    }
-
-    /**
-     * Asks for contribution and for member (only non-contributionfree are shown) to debit from.
-     */
-    public void generateContributionSepa() {
-        generateSepa(memberNonContributionfree, true, SequenceType.RCUR);
-    }
-
-    private String checkIbans() {
-        checkNull(member);
-        List<Member> badIban = new ArrayList<>();
-        try {
-            badIban = member.get().parallelStream()
-                    .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
-                    .collect(Collectors.toList());
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (badIban.isEmpty()) {
-            return EnvironmentHandler.getResourceValue("correctIbans");
-        } else {
-            String noIban = EnvironmentHandler.getResourceValue("noIban");
-            String message = badIban.stream()
-                    .map(m -> {
-                        String iban = m.getAccountHolder().getIban();
-                        return m + ": \"" + (iban.isEmpty() ? noIban : iban) + "\"";
-                    })
-                    .collect(Collectors.joining("\n"));
-            return EnvironmentHandler.getResourceValue("memberBadIban") + "\n" + message;
-        }
-    }
-
-    private String checkDates(Function<Member, LocalDate> dateFunction, String invalidDatesIntro,
-            String allCorrectMessage) {
-        try {
-            String message = member.get().parallelStream()
-                    .filter(m -> dateFunction.apply(m) == null)
-                    .map(m -> m.toString() + ": \"" + dateFunction.apply(m) + "\"")
-                    .collect(Collectors.joining("\n"));
-            return message.isEmpty() ? allCorrectMessage
-                    : invalidDatesIntro + "\n" + message;
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-            return "";
-        }
-    }
-
-    /**
-     * Checks the correctness of all data and shows a dialog showing invalid data entries.
-     */
-    public void checkData() {
-        checkNull(member);
-        String message = checkIbans() + "\n\n"
-                + checkDates(m -> m.getPerson().getBirthday(),
-                        EnvironmentHandler.getResourceValue("memberBadBirthday"),
-                        EnvironmentHandler.getResourceValue("allBirthdaysCorrect"))
-                + "\n\n"
-                + checkDates(m -> m.getAccountHolder().getMandateSigned(),
-                        EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
-                        EnvironmentHandler.getResourceValue("allMandatSignedCorrect"));
-        String checkData = EnvironmentHandler.getResourceValue("checkData");
-        Alert alert = DialogUtility.createMessageAlert(menuStage, message, checkData, checkData);
-        alert.showAndWait();
-    }
-
-    /**
-     * Returns the property containing the date when the date was last updated.
-     *
-     * @return The property containing the date when the date was last updated.
-     * @see #getDataLastUpdated()
-     */
-    public ReadOnlyObjectProperty<Optional<LocalDateTime>> dataLastUpdatedProperty() {
-        return dataLastUpdated;
-    }
-
-    /**
-     * Returns an {@code Optional} containing the timestamp when the data was last updated.
-     *
-     * @return An {@code Optional} containing the timestamp when the data was last updated. Returns
-     * {@code Optional.empty()} if the data is not yet received.
-     */
-    public Optional<LocalDateTime> getDataLastUpdated() {
-        return dataLastUpdated.get();
     }
 
     /**

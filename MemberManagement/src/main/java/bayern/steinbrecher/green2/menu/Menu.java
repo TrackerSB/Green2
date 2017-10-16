@@ -17,8 +17,8 @@
 package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.View;
+import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.membermanagement.MemberManagement;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -30,15 +30,15 @@ import javafx.stage.Stage;
  */
 public class Menu extends View<MenuController> {
 
-    private final MemberManagement caller;
+    private DBConnection dbConnection = null;
 
     /**
-     * Constructs a menu.
+     * Creates a Menu which contains controls for all the functionality to be used by the user.
      *
-     * @param caller The object for calling the functions represented by the menu.
+     * @param dbConnection The connection to use for querying data.
      */
-    public Menu(MemberManagement caller) {
-        this.caller = caller;
+    public Menu(DBConnection dbConnection) {
+        this.dbConnection = dbConnection;
     }
 
     /**
@@ -55,13 +55,21 @@ public class Menu extends View<MenuController> {
         root.setStyle("-fx-padding: 0px");
 
         controller.setStage(stage);
-        controller.setCaller(caller);
+        controller.setConnection(dbConnection);
 
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("chooseProgram"));
         stage.setResizable(false);
         stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
         stage.show();
+    }
+
+    /**
+     * This method is called when the application should stop, destroys resources and prepares for application exit.
+     */
+    @Override
+    public void stop() {
+        controller.shutdownNow();
     }
 
     /**
