@@ -62,6 +62,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
@@ -148,12 +149,16 @@ public class MenuController extends Controller {
     }
 
     /**
-     * Sets the connection to use for querying data.
+     * Sets the connection to use for querying data and queries immediatly for new data using the given connection.
      *
      * @param dbConnection The connection to use for querying data.
      */
     public void setConnection(DBConnection dbConnection) {
+        if (dbConnection == null) {
+            throw new IllegalArgumentException("The connection must not be null.");
+        }
         this.dbConnection = dbConnection;
+        executeQueries();
     }
 
     /**
@@ -162,30 +167,11 @@ public class MenuController extends Controller {
      *
      * @param obj The objects to test.
      */
-    private void checkNull(Object... obj) {
+    private void checkQueriesInited(Object... obj) {
         if (Arrays.stream(obj).anyMatch(Objects::isNull)) {
-            throw new IllegalStateException("You have to call start(...) first");
+            throw new IllegalStateException(
+                    "You have to set a connection first before being able to operate on that data.");
         }
-    }
-
-    private void executeQueries() {
-        member = exserv.submit(() -> dbConnection.getAllMember());
-        exserv.submit(() -> {
-            try {
-                member.get();
-                dataLastUpdated.setValue(Optional.of(LocalDateTime.now()));
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        int currentYear = LocalDate.now().getYear();
-        IntStream.rangeClosed(currentYear - 1, currentYear + 1)
-                .forEach(y -> memberBirthday.put(y, exserv.submit(() -> getBirthdayMember(y))));
-        memberNonContributionfree = exserv.submit(() -> member.get()
-                .parallelStream()
-                .filter(m -> !m.isContributionfree())
-                .collect(Collectors.toList()));
-        nicknames = exserv.submit(() -> dbConnection.getAllNicknames());
     }
 
     private List<Member> getBirthdayMember(int year)
@@ -203,7 +189,7 @@ public class MenuController extends Controller {
     }
 
     private void generateAddresses(List<Member> member, File outputFile) {
-        checkNull(nicknames);
+        checkQueriesInited(nicknames);
         if (member.isEmpty()) {
             throw new IllegalArgumentException("Passed empty list to generateAddresses(...)");
         }
@@ -219,7 +205,7 @@ public class MenuController extends Controller {
      * Generates a file Serienbrief_alle.csv containing addresses of all member.
      */
     public void generateAddressesAll() {
-        checkNull(member);
+        checkQueriesInited(member);
         try {
             List<Member> memberList = this.member.get();
             if (memberList.isEmpty()) {
@@ -241,7 +227,7 @@ public class MenuController extends Controller {
      * @param year The year to look for member.
      */
     public void generateAddressesBirthday(int year) {
-        checkNull(memberBirthday);
+        checkQueriesInited(memberBirthday);
         memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             List<Member> memberBirthdayList = memberBirthday.get(year).get();
@@ -258,7 +244,7 @@ public class MenuController extends Controller {
 
     private void generateSepa(Future<List<Member>> memberToSelectFuture, boolean useMemberContributions,
             SequenceType sequenceType) {
-        checkNull(memberToSelectFuture);
+        checkQueriesInited(memberToSelectFuture);
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
 
@@ -362,6 +348,27 @@ public class MenuController extends Controller {
     }
 
     @FXML
+    private void executeQueries() {
+        member = exserv.submit(() -> dbConnection.getAllMember());
+        exserv.submit(() -> {
+            try {
+                member.get(); //Wait for data to be received.
+                Platform.runLater(() -> dataLastUpdated.setValue(Optional.of(LocalDateTime.now())));
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        int currentYear = LocalDate.now().getYear();
+        IntStream.rangeClosed(currentYear - 1, currentYear + 1)
+                .forEach(y -> memberBirthday.put(y, exserv.submit(() -> getBirthdayMember(y))));
+        memberNonContributionfree = exserv.submit(() -> member.get()
+                .parallelStream()
+                .filter(m -> !m.isContributionfree())
+                .collect(Collectors.toList()));
+        nicknames = exserv.submit(() -> dbConnection.getAllNicknames());
+    }
+
+    @FXML
     private void generateContributionSepa(ActionEvent aevt) {
         callOnDisabled(aevt, () -> generateSepa(memberNonContributionfree, true, SequenceType.RCUR));
     }
@@ -372,7 +379,7 @@ public class MenuController extends Controller {
     }
 
     private String checkIbans() {
-        checkNull(member);
+        checkQueriesInited(member);
         List<Member> badIban = new ArrayList<>();
         try {
             badIban = member.get().parallelStream()
@@ -413,7 +420,7 @@ public class MenuController extends Controller {
     @FXML
     private void checkData(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
-            checkNull(member);
+            checkQueriesInited(member);
             String message = checkIbans() + "\n\n"
                     + checkDates(m -> m.getPerson().getBirthday(),
                             EnvironmentHandler.getResourceValue("memberBadBirthday"),
@@ -444,7 +451,7 @@ public class MenuController extends Controller {
     private void generateBirthdayInfos(ActionEvent aevt) {
         if (yearSpinner.isValid()) {
             callOnDisabled(aevt, () -> {
-                checkNull(memberBirthday);
+                checkQueriesInited(memberBirthday);
                 Integer year = yearSpinner.getValue();
                 memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
                 try {
