@@ -38,6 +38,8 @@ import bayern.steinbrecher.wizard.WizardPage;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -333,20 +335,28 @@ public class MenuController extends Controller {
      */
     private void callOnDisabled(EventObject aevt, Runnable run) {
         Object sourceObj = aevt.getSource();
-        if (sourceObj instanceof Node) {
-            Node source = (Node) aevt.getSource();
-            if (source.disableProperty().isBound()) {
-                Logger.getLogger(MenuController.class.getName())
-                        .log(Level.WARNING, "Cannot disable Node. DisableProperty is bound.");
-                run.run();
-            } else {
-                source.setDisable(true);
-                run.run();
-                source.setDisable(false);
+        Class<?> sourceClass = sourceObj.getClass();
+        if (sourceClass.isAssignableFrom(Node.class) || sourceClass.isAssignableFrom(MenuItem.class)) {
+            try {
+                Method disablePropertyMethod = sourceClass.getMethod("disableProperty");
+                Method isBoundMethod = disablePropertyMethod.getReturnType().getMethod("isBound");
+                if ((boolean) isBoundMethod.invoke(disablePropertyMethod.invoke(sourceObj))) {
+                    //When getting here: sourceObj.disableProperty().isBound() == true
+                    Logger.getLogger(MenuController.class.getName())
+                            .log(Level.WARNING, "Cannot disable control. DisableProperty is bound.");
+                    run.run();
+                } else {
+                    Method setDisableMethod = sourceClass.getMethod("setDisable", Boolean.TYPE);
+                    setDisableMethod.invoke(sourceObj, true);
+                    run.run();
+                    setDisableMethod.invoke(sourceObj, true);
+                }
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            Logger.getLogger(MenuController.class.getName())
-                    .log(Level.WARNING, "The source of the ActionEvent is no Node.");
+            Logger.getLogger(MenuController.class.getName()).log(
+                    Level.WARNING, "The source of the ActionEvent is no Node and no MenuItem. It can´t be disabled.");
             run.run();
         }
     }
