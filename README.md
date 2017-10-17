@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/TrackerSB/Green2.svg?branch=master)](https://travis-ci.org/TrackerSB/Green2)
 [![](https://img.shields.io/badge/release-2u12-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/coverage-unknown-lightgray.svg)](https://github.com/TrackerSB/Green2)
-[![](https://img.shields.io/badge/Java-8u131-blue.svg)](https://github.com/TrackerSB/Green2)
+[![](https://img.shields.io/badge/Java-8u144-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/JavaFX-8-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/JaCoCo-0.7.8-blue.svg)](https://github.com/TrackerSB/Green2)
@@ -27,9 +27,6 @@ The reason for introducing such a client is providing a simple tool making it fo
 
 ## What´s next?
 What to do next is depending in first instance on the people using it. They just say something like "Wouldn´t it be great if..." And that´s the next goal!
-
-## Current goals
-Currently people seem to be happy about the features already included so some other improvments to the current features are made.
 
 ## Coding conventions
 This projects coding conventions are exactly Java coding conventions [(http://www.oracle.com/technetwork/java/codeconventions-150003.pdf)](http://www.oracle.com/technetwork/java/codeconventions-150003.pdf) but the recommended maximum line length mentioned in section 4.1 is extended to 120 characters.
