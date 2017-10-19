@@ -124,11 +124,11 @@ public class ConfigDialogController extends CheckedController {
             profile.set(ConfigKey.DATABASE_HOST, databaseHostTextField.getText());
             profile.set(ConfigKey.DATABASE_NAME, databaseNameTextField.getText());
             profile.set(ConfigKey.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getText());
-            profile.renameProfile(profileNameTextField.getText());
             profile.set(ConfigKey.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());
             profile.set(ConfigKey.SSH_CHARSET, Charset.forName(sshCharsetTextField.getText()));
             profile.set(ConfigKey.DBMS, dbmsComboBox.getSelectionModel().getSelectedItem());
             profile.saveSettings();
+            profile.renameProfile(profileNameTextField.getText());
             stage.close();
         }
     }

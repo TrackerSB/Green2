@@ -230,7 +230,8 @@ public class Profile {
 
     /**
      * Renames the profile if no other profile with name {@code newName} exists. If this profile already is named
-     * {@code newName} nothing happens. This method will affect the profile immediately.
+     * {@code newName} nothing happens. This method will affect the profile immediately. NOTE: When calling this method
+     * the renamed profile is read in again, so unsaved changes to this profile are lost.
      *
      * @param newName The new profile name.
      */
