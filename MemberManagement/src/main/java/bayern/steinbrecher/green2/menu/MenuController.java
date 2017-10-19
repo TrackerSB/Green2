@@ -278,8 +278,6 @@ public class MenuController extends Controller {
                 wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 Wizard wizard = new Wizard(pages);
                 wizard.start(wizardStage);
-                wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-                wizardStage.show();
                 wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
                         Map<String, ?> results = wizard.getResults().get();
@@ -306,6 +304,8 @@ public class MenuController extends Controller {
                         });
                     }
                 });
+                wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+                wizardStage.showAndWait();
             }
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
@@ -337,7 +337,7 @@ public class MenuController extends Controller {
                     Method setDisableMethod = sourceClass.getMethod("setDisable", Boolean.TYPE);
                     setDisableMethod.invoke(sourceObj, true);
                     run.run();
-                    setDisableMethod.invoke(sourceObj, true);
+                    setDisableMethod.invoke(sourceObj, false);
                 }
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
