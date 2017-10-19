@@ -59,17 +59,19 @@ public final class SepaPain00800302XMLGenerator {
     public static List<Member> createXMLFile(List<Member> member, Originator originator, SequenceType sequenceType,
             File outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
-        List<Member> missingContribution = member.stream()
+        List<Member> badContribution = member.stream()
                 .filter(m -> !m.getContribution().isPresent())
+                .filter(m -> m.getContribution().get() < 0)
                 .collect(Collectors.toList());
-        if (missingContribution.isEmpty()) {
+        if (badContribution.isEmpty()) {
             IOStreamUtility.printContent(
                     createXML(member, originator, sequenceType), outputfile, sepaWithBom);
             return invalidMember;
         } else {
-            throw new IllegalArgumentException(missingContribution.stream()
+            throw new IllegalArgumentException(badContribution.stream()
                     .map(Member::toString)
-                    .collect(Collectors.joining("\n", "Missing contributions for valid members:\n", "")));
+                    .collect(Collectors.joining(
+                            "\n", "Missing contributions or contributions < 0 for valid members:\n", "")));
         }
     }
 

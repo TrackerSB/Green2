@@ -54,6 +54,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.StringJoiner;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -406,6 +408,7 @@ public class MenuController extends Controller {
 
     private String checkDates(Function<Member, LocalDate> dateFunction, String invalidDatesIntro,
             String allCorrectMessage) {
+        checkQueriesInited(member);
         try {
             String message = member.get().parallelStream()
                     .filter(m -> dateFunction.apply(m) == null)
@@ -419,20 +422,61 @@ public class MenuController extends Controller {
         }
     }
 
+    private String checkContributions() {
+        checkQueriesInited(member);
+        List<Member> contributionDefined = new ArrayList<>();
+        try {
+            contributionDefined = member.get().parallelStream()
+                    .filter(m -> m.getContribution().isPresent())
+                    .collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (contributionDefined.isEmpty()) {
+            return EnvironmentHandler.getResourceValue("skipCheckingContribution");
+        } else {
+            String message = contributionDefined.parallelStream()
+                    .filter(m -> m.getContribution().get() < 0)
+                    .map(m -> m.toString() + ": " + m.getContribution())
+                    .collect(Collectors.joining("\n"));
+            message += contributionDefined.parallelStream()
+                    .filter(m -> !m.isContributionfree())
+                    .filter(m -> m.getContribution().get() == 0)
+                    .map(m -> EnvironmentHandler.getResourceValue("zeroContribution", m.toString()))
+                    .collect(Collectors.joining("\n"));
+            if (message.isEmpty()) {
+                return EnvironmentHandler.getResourceValue("correctContributions");
+            } else {
+                return EnvironmentHandler.getResourceValue("memberBadContributions") + "\n" + message;
+            }
+        }
+    }
+
     @FXML
     private void checkData(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
-            checkQueriesInited(member);
-            String message = checkIbans() + "\n\n"
-                    + checkDates(m -> m.getPerson().getBirthday(),
+            List<Callable<String>> checkFunctions = Arrays.asList(
+                    () -> checkIbans(),
+                    () -> checkDates(m -> m.getPerson().getBirthday(),
                             EnvironmentHandler.getResourceValue("memberBadBirthday"),
-                            EnvironmentHandler.getResourceValue("allBirthdaysCorrect"))
-                    + "\n\n"
-                    + checkDates(m -> m.getAccountHolder().getMandateSigned(),
+                            EnvironmentHandler.getResourceValue("allBirthdaysCorrect")),
+                    () -> checkDates(m -> m.getAccountHolder().getMandateSigned(),
                             EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
-                            EnvironmentHandler.getResourceValue("allMandatSignedCorrect"));
+                            EnvironmentHandler.getResourceValue("allMandatSignedCorrect")),
+                    () -> checkContributions());
+            StringJoiner messageJoiner = new StringJoiner("\n\n");
+            checkFunctions.forEach(cf -> {
+                try {
+                    String message = cf.call();
+                    if(!message.isEmpty()){
+                        messageJoiner.add(message);
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
             String checkData = EnvironmentHandler.getResourceValue("checkData");
-            Alert alert = DialogUtility.createMessageAlert(stage, message, checkData, checkData);
+            Alert alert = DialogUtility.createMessageAlert(stage, messageJoiner.toString(), checkData, checkData);
             alert.showAndWait();
         });
     }
