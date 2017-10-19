@@ -28,7 +28,7 @@ import javafx.scene.control.TextField;
  */
 public final class CharsetTextField extends CheckedTextField {
 
-    private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    private BooleanProperty validCharset = new SimpleBooleanProperty(this, "invalid");
 
     public CharsetTextField() {
         this(Integer.MAX_VALUE);
@@ -40,7 +40,8 @@ public final class CharsetTextField extends CheckedTextField {
 
     public CharsetTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
-        invalid.bind(Bindings.createBooleanBinding(() -> Charset.isSupported(textProperty().get()), textProperty()));
-        addValidCondition(invalid);
+        validCharset.bind(Bindings.createBooleanBinding(
+                () -> !textProperty().get().isEmpty() && Charset.isSupported(textProperty().get()), textProperty()));
+        addValidCondition(validCharset);
     }
 }
