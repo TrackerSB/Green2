@@ -88,6 +88,15 @@ import javafx.stage.Stage;
 public class MenuController extends Controller {
 
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
+    private final List<Callable<String>> checkFunctions = Arrays.asList(
+            () -> checkIbans(),
+            () -> checkDates(m -> m.getPerson().getBirthday(),
+                    EnvironmentHandler.getResourceValue("memberBadBirthday"),
+                    EnvironmentHandler.getResourceValue("allBirthdaysCorrect")),
+            () -> checkDates(m -> m.getAccountHolder().getMandateSigned(),
+                    EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
+                    EnvironmentHandler.getResourceValue("allMandatSignedCorrect")),
+            () -> checkContributions());
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
     //private MemberManagement caller;
@@ -455,20 +464,11 @@ public class MenuController extends Controller {
     @FXML
     private void checkData(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
-            List<Callable<String>> checkFunctions = Arrays.asList(
-                    () -> checkIbans(),
-                    () -> checkDates(m -> m.getPerson().getBirthday(),
-                            EnvironmentHandler.getResourceValue("memberBadBirthday"),
-                            EnvironmentHandler.getResourceValue("allBirthdaysCorrect")),
-                    () -> checkDates(m -> m.getAccountHolder().getMandateSigned(),
-                            EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
-                            EnvironmentHandler.getResourceValue("allMandatSignedCorrect")),
-                    () -> checkContributions());
             StringJoiner messageJoiner = new StringJoiner("\n\n");
             checkFunctions.forEach(cf -> {
                 try {
                     String message = cf.call();
-                    if(!message.isEmpty()){
+                    if (!message.isEmpty()) {
                         messageJoiner.add(message);
                     }
                 } catch (Exception ex) {
