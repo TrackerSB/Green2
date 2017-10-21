@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -88,16 +86,10 @@ public class ConfigDialogController extends CheckedController {
                     && Profile.getAvailableProfiles().contains(newVal));
         });
 
-        anyInputMissing.bind(checkedTextFields.stream()
-                .map(CheckedTextField::emptyProperty)
-                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or)
+        anyInputMissing.bind(BindingUtility.reduceOr(checkedTextFields.stream().map(CheckedTextField::emptyProperty))
                 .or(dbmsComboBox.nothingSelectedProperty()));
-        anyInputToLong.bind(checkedTextFields.stream()
-                .map(CheckedTextField::toLongProperty)
-                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
-        valid.bind(checkedTextFields.stream()
-                .map(CheckedTextField::validProperty)
-                .reduce(BindingUtility.TRUE_BINDING, BooleanExpression::and, BooleanBinding::and)
+        anyInputToLong.bind(BindingUtility.reduceOr(checkedTextFields.stream().map(CheckedTextField::toLongProperty)));
+        valid.bind(BindingUtility.reduceAnd(checkedTextFields.stream().map(CheckedTextField::validProperty))
                 .and(profileAlreadyExists.not())
                 .and(dbmsComboBox.nothingSelectedProperty().not()));
 

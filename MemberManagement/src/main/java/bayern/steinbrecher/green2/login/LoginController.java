@@ -47,15 +47,9 @@ public abstract class LoginController extends CheckedController {
      */
     protected void initProperties(CheckedTextField... fields) {
         textInputFields = Arrays.asList(fields);
-        anyInputMissing.bind(textInputFields.stream()
-                .map(CheckedTextField::emptyProperty)
-                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
-        anyInputToLong.bind(textInputFields.stream()
-                .map(CheckedTextField::toLongProperty)
-                .reduce(BindingUtility.FALSE_BINDING, BooleanExpression::or, BooleanBinding::or));
-        valid.bind(textInputFields.stream()
-                .map(CheckedTextField::validProperty)
-                .reduce(BindingUtility.TRUE_BINDING, BooleanExpression::and, BooleanBinding::and));
+        anyInputMissing.bind(BindingUtility.reduceOr(textInputFields.stream().map(CheckedTextField::emptyProperty)));
+        anyInputToLong.bind(BindingUtility.reduceOr(textInputFields.stream().map(CheckedTextField::toLongProperty)));
+        valid.bind(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));
     }
 
     /**
