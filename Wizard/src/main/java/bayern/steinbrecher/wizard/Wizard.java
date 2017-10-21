@@ -155,6 +155,19 @@ public class Wizard extends Application {
         controller.setContentSize(maxWidth, maxHeight);
     }
 
+    /**
+     * Adds the given page to the wizard and may replace already visited pages if they have the same key. This method
+     * can be used if a page of the wizard is depending on the result of a previous one. NOTE: The size of {@code page}
+     * is not considered if {@code start(...)} was already called.
+     *
+     * @param key The key the page is associated with.
+     * @param page The page to add to the wizard.
+     * @see Map#put(java.lang.Object, java.lang.Object)
+     */
+    public void put(String key, WizardPage<?> page) {
+        pages.putIfAbsent(key, page);
+    }
+
     private void updatePage() {
         controller.setContent(pages.get(currentIndex.get()).getRoot());
     }
