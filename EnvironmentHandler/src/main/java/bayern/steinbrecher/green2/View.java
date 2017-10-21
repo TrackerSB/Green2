@@ -62,7 +62,9 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * Loads the given FMXL resource.
+     * Loads the given FMXL resource. This method may be overidden if some informations have to passed to the
+     * controller. This should be done the following way:
+     * {@code P root = super.loadFXML(resource);controller.setSomeInput(input);return root;}
      *
      * @param <P> The concrete type of the root element of the given resource.
      * @param resource The FXML resource.

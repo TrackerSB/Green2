@@ -44,8 +44,7 @@ import javafx.scene.control.ListView;
  * @param <T> The type of the objects being able to select.
  * @author Stefan Huber
  */
-public class SelectionController<T extends Comparable<T>>
-        extends WizardableController {
+public class SelectionController<T extends Comparable<T>> extends WizardableController {
 
     private final ListProperty<T> optionsProperty
             = new SimpleListProperty<>(FXCollections.observableArrayList());

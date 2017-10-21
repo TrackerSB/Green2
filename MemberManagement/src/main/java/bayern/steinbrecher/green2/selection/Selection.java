@@ -39,7 +39,7 @@ import javafx.stage.Stage;
  */
 public class Selection<T extends Comparable<T>> extends WizardableView<Optional<List<T>>, SelectionController<T>> {
 
-    private final List<T> options;
+    private final List<T> options; //TODO May use Sets instead of Lists.
 
     /**
      * Creates a new Frame representing the given options as selectable {@link CheckBox} es and representing a
