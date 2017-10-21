@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2;
 
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
+import java.util.Optional;
 
 /**
  * Represents a class which can be in a {@link Wizard}.
@@ -26,7 +27,7 @@ import bayern.steinbrecher.wizard.WizardPage;
  * @param <C> The type of the controller used by the {@link View}.
  * @author Stefan Huber
  */
-public abstract class WizardableView<T, C extends WizardableController> extends View<C> {
+public abstract class WizardableView<T extends Optional<?>, C extends WizardableController> extends View<C> {
 
     /**
      * Creates a {@link WizardPage}. The nextFunction is set to {@code null} and isFinish is set to {@code false}.
