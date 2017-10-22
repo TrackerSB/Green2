@@ -37,6 +37,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /**
  * Represents controller for Selection.fxml.
@@ -84,6 +86,8 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
                 optionsListView.getItems().add(newItem);
             });
         });
+
+        HBox.setHgrow(optionsListView, Priority.ALWAYS);
     }
 
     /**

@@ -47,6 +47,14 @@
     -fx-padding: 0px;
 }
 
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > *{
+    -fx-background-color: transparent;
+}
+
 .progress-bar {
     -fx-accent: -fx-main-color;
 }

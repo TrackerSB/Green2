@@ -51,6 +51,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -179,6 +181,8 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
                 .concat(" (")
                 .concat(totalCount.subtract(selectedCount))
                 .concat(")"));
+
+        HBox.setHgrow(optionsListView, Priority.ALWAYS);
     }
 
     private void setCurrentGroupToCheckBox(T key) {
