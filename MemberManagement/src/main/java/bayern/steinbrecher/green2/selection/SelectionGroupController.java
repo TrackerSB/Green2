@@ -56,8 +56,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
+ * The controller of the SelectionGroup.
  *
  * @author Stefan Huber
+ * @see SelectionGroup
+ * @param <T> The type of the options to select.
  */
 public class SelectionGroupController<T extends Comparable<T>> extends WizardableController {
 
@@ -83,6 +86,9 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     @FXML
     private RadioButton unselectGroup;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         valid.bind(nothingSelected.not());
@@ -119,6 +125,15 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
                 }
             }
             if (change.wasRemoved()) { //TODO Check whether removing checkboxes works
+                //Remove from selectedPerGroup
+                options.forEach((key, pair) -> {
+                    if (pair.equals(change.getValueRemoved())) {
+                        IntegerProperty count = selectedPerGroup.get(pair.getColor().get());
+                        count.set(count.get() - 1);
+                    }
+                });
+
+                //Remove from ListView
                 List<CheckBox> checkboxes = optionsListView.getItems().stream()
                         .filter(cb -> cb.getText().equals(change.getKey().toString()))
                         .collect(Collectors.toList());
@@ -141,7 +156,6 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
                 addGroupRadioButton(change.getValueAdded().toString(), change.getKey(), false);
             }
             if (change.wasRemoved()) { //TODO Check whether removing radiobuttons works
-                selectedPerGroup.remove(change.getKey());
                 List<CheckBox> radiobuttons = groupsBox.getChildren().stream()
                         .map(node -> (CheckBox) node)
                         .filter(rb -> rb.getText().equals(change.getValueRemoved().toString()))
@@ -157,6 +171,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
                     }
                     groupsBox.getChildren().remove(radiobuttons.get(0));
                 }
+                selectedPerGroup.remove(change.getKey());
             }
         });
 
@@ -239,6 +254,11 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
         }
     }
 
+    /**
+     * Sets a new set of options. This clears all current options and resets the selected group to "unselect".
+     *
+     * @param options The new options to show.
+     */
     public void setOptions(Set<T> options) {
         this.options.clear();
         Optional<Color> previous = currentGroup.get();
@@ -247,23 +267,48 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
         currentGroup.set(previous);
     }
 
+    /**
+     * Returns the currently set options.
+     *
+     * @return The currently set options.
+     */
     public Set<T> getOptions() {
         return options.keySet();
     }
 
+    /**
+     * Sets a new set of groups. This clears all groups and all selections of any option.
+     *
+     * @param groups The new groups to set.
+     */
     public void setGroups(Map<Color, ?> groups) {
         this.groups.clear();
         this.groups.putAll(groups);
     }
 
+    /**
+     * Returns the currently set groups.
+     *
+     * @return The currently set groups.
+     */
     public Set<Color> getGroups() {
         return groups.keySet();
     }
 
+    /**
+     * Returns the property representing the currently set groups.
+     *
+     * @return The property representing the currently set groups.
+     */
     public ReadOnlyMapProperty selectedPerGroupProperty() {
         return selectedPerGroup;
     }
 
+    /**
+     * Returns the mapping between each group and the number of options associated with it.
+     *
+     * @return The mapping between each group and the number of options associated with it.
+     */
     public ObservableMap<Color, ReadOnlyIntegerProperty> getSelectedPerGroup() {
         return selectedPerGroupProperty().getValue();
     }

@@ -50,10 +50,13 @@ public class ContributionField extends HBox implements Initializable {
     private ColorPicker colorPicker;
     private ObjectProperty<ColorPicker> colorPickerProperty = new SimpleObjectProperty<>(this, "colorPicker");
 
-    public ContributionField(@NamedArg("min") double min,
-            @NamedArg("max") double max,
-            @NamedArg("initialValue") double initialValue,
-            @NamedArg("amountToStepBy") double amountToStepBy) {
+    /**
+     * Represents a combination of a spinner for entering a contribution and an associated color. The minimum value is
+     * 0, the maximum value is 5000, the initial value is 10 and the amountToStepBy is 1.
+     *
+     * @see CheckedDoubleSpinner#CheckedDoubleSpinner(double, double, double, double)
+     */
+    public ContributionField() {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("ContributionField.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
         try {
@@ -66,6 +69,9 @@ public class ContributionField extends HBox implements Initializable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contributionSpinnerProperty.set(contributionSpinner);
@@ -76,34 +82,74 @@ public class ContributionField extends HBox implements Initializable {
                 ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
+    /**
+     * Returns the property holding the currently inserted contribution.
+     *
+     * @return The property holding the currently inserted contribution.
+     */
     public ReadOnlyObjectProperty<Double> contributionProperty() {
         return contributionSpinner.valueProperty();
     }
 
+    /**
+     * Returns the currently inserted contribution.
+     *
+     * @return The currently inserted contribution.
+     */
     public double getContribution() {
         return contributionProperty().getValue();
     }
 
+    /**
+     * Returns the property holding the currently associated color.
+     *
+     * @return The property holding the currently associated color.
+     */
     public ReadOnlyObjectProperty<Color> colorProperty() {
         return colorPicker.valueProperty();
     }
 
+    /**
+     * Returns the currently associated color.
+     *
+     * @return The currently associated color.
+     */
     public Color getColor() {
         return colorProperty().get();
     }
 
+    /**
+     * Returns the property holding the currently used spinner for entering the contribution.
+     *
+     * @return The property holding the currently used spinner for entering the contribution.
+     */
     public ReadOnlyObjectProperty<CheckedDoubleSpinner> contributionSpinnerProperty() {
         return contributionSpinnerProperty;
     }
 
+    /**
+     * Returns the currently used spinner for entering the contribution.
+     *
+     * @return The currently used spinner for entering the contribution.
+     */
     public CheckedDoubleSpinner getContributionSpinner() {
         return contributionSpinnerProperty().get();
     }
 
+    /**
+     * Returns the property holding the currently used {@code ColorPicker} for choosing an associated color.
+     *
+     * @return The property holding the currently used {@code ColorPicker} for choosing an associated color.
+     */
     public ReadOnlyObjectProperty<ColorPicker> colorPickerProperty() {
         return colorPickerProperty;
     }
 
+    /**
+     * Returns the currently used {@code ColorPicker} for choosing an associated color.
+     *
+     * @return The currently used {@code ColorPicker} for choosing an associated color.
+     */
     public ColorPicker getColorPicker() {
         return colorPickerProperty().get();
     }

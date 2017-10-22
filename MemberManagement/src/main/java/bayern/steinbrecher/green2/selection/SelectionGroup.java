@@ -30,8 +30,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
+ * Represents a selection which allows to only select options but also to group them.
  *
  * @author Stefan Huber
+ * @param <T> The type of the options to select.
  */
 public class SelectionGroup<T extends Comparable<T>>
         extends WizardableView<Optional<Map<T, Color>>, SelectionGroupController<T>> {
@@ -39,11 +41,20 @@ public class SelectionGroup<T extends Comparable<T>>
     private final Set<T> options;
     private final Map<Color, ?> groups;
 
+    /**
+     * Creates a new SelectionGroup for selecting and grouping the given options into the given groups.
+     *
+     * @param options The options to select.
+     * @param groups The groups to group the options into.
+     */
     public SelectionGroup(Set<T> options, Map<Color, ?> groups) {
         this.options = options;
         this.groups = groups;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected <P extends Parent> P loadFXML(String resource) throws IOException {
         P root = super.loadFXML(resource);
@@ -52,12 +63,18 @@ public class SelectionGroup<T extends Comparable<T>>
         return root;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage) {
         throw new UnsupportedOperationException(
                 "Currently the SelectionGroup dialog can only be used within a Wizard.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public WizardPage<Optional<Map<T, Color>>> getWizardPage() {
         try {

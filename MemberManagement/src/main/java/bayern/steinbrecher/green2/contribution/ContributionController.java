@@ -50,10 +50,6 @@ import javafx.scene.paint.Color;
  */
 public class ContributionController extends WizardableController {
 
-    private static final double MIN = 0;
-    private static final double MAX = Double.MAX_VALUE;
-    private static final double INITIAL_VALUE = 10;
-    private static final double AMOUNT_TO_STEP_BY = 1;
     @FXML
     private VBox contributionFieldsBox;
     private ListProperty<ContributionField> contributionFields
@@ -120,7 +116,7 @@ public class ContributionController extends WizardableController {
 
     @FXML
     private void addContributionField() {
-        contributionFields.add(new ContributionField(MIN, MAX, INITIAL_VALUE, AMOUNT_TO_STEP_BY));
+        contributionFields.add(new ContributionField());
     }
 
     @FXML
