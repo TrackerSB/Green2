@@ -190,14 +190,21 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
         optNewColor.ifPresent(color -> selectedPerGroup.get(color).set(selectedPerGroup.get(color).get() + 1));
 
         valuePair.setColor(optNewColor);
-        Color newColor = optNewColor.orElse(Color.TRANSPARENT);
         assert valuePair.getCheckbox().isPresent() : "CheckBox has to be set before calling setColorToCheckBox";
-        valuePair.getCheckbox().get().setStyle(new StringJoiner(", ", "-fx-border-color: rgba(", ")")
-                .add(Double.toString(255 * newColor.getRed()))
-                .add(Double.toString(255 * newColor.getGreen()))
-                .add(Double.toString(255 * newColor.getBlue()))
-                .add(Double.toString(newColor.getOpacity()))
-                .toString());
+        if (optNewColor.isPresent()) {
+            //TODO Set style only for elements necessary
+            Color newColor = optNewColor.get();
+            valuePair.getCheckbox().get().getChildrenUnmodifiable().stream()
+                    .forEach(node -> node.setStyle(new StringJoiner(", ", "-fx-background-color: rgba(", ")")
+                    .add(Double.toString(255 * newColor.getRed()))
+                    .add(Double.toString(255 * newColor.getGreen()))
+                    .add(Double.toString(255 * newColor.getBlue()))
+                    .add(Double.toString(newColor.getOpacity()))
+                    .toString()));
+        } else {
+            //TODO Set style only for elements necessary
+            valuePair.getCheckbox().get().getChildrenUnmodifiable().forEach(node -> node.setStyle(""));
+        }
     }
 
     private void addGroupRadioButton(String text, Color color, boolean setSelected) {
