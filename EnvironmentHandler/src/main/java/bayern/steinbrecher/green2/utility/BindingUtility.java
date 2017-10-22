@@ -17,9 +17,11 @@
 package bayern.steinbrecher.green2.utility;
 
 import java.util.stream.Stream;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.IntegerBinding;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableNumberValue;
 
 /**
  * Contains methods for creating bindings.
@@ -31,6 +33,16 @@ public final class BindingUtility {
     private BindingUtility() {
         throw new UnsupportedOperationException("Construction of an objection not allowed.");
     }
+
+    /**
+     * Used as identity for sequence of sums.
+     */
+    public static final NumberBinding ZERO_BINDING = new IntegerBinding() {
+        @Override
+        protected int computeValue() {
+            return 0;
+        }
+    };
 
     /**
      * Used as identity for sequence of or bindings connected with OR.
@@ -50,6 +62,16 @@ public final class BindingUtility {
             return true;
         }
     };
+
+    /**
+     * Reduces the given stream summing up all its numerical values.
+     *
+     * @param observableValues The values to bind to a sum.
+     * @return The binding representing the sum of all values within the stream.
+     */
+    public static NumberBinding reduceSum(Stream<? extends ObservableNumberValue> observableValues) {
+        return observableValues.reduce(ZERO_BINDING, NumberBinding::add, NumberBinding::add);
+    }
 
     /**
      * Reduces given stream concatenating the elements of the given stream using {@code or}.
