@@ -19,24 +19,24 @@
 <?import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.contribution.ContributionController">
+    <ScrollPane>
+        <VBox spacing="10">
+            <Label text="%contributionInEuro"/>
+            <VBox fx:id="contributionFieldsBox" />
+        </VBox>
+    </ScrollPane>
     <HBox spacing="10">
-        <Label text="%contributionInEuro"/>
-        <CheckedDoubleSpinner fx:id="contributionSpinner"
-                              min="0"
-                              max="200"
-                              initialValue="10"
-                              amountToStepBy="1"
-                              editable="true"/>
-    </HBox>
-    <HBox spacing="10">
+        <Button text="%add"
+                onAction="#addContributionField" />
         <Button disable="${!contributionSpinner.valid}"
                 text="%ready"
                 defaultButton="true"
-                onAction="#select"/>
+                onAction="#submitContributions"/>
         <Label visible="${!contributionSpinner.valid}"
                text="%invalidOrMissingInput"
                styleClass="warningLabel"/>

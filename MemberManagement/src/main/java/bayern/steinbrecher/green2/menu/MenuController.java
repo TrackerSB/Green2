@@ -29,6 +29,7 @@ import bayern.steinbrecher.green2.generator.sepa.SequenceType;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.selection.Selection;
+import bayern.steinbrecher.green2.selection.SelectionGroup;
 import bayern.steinbrecher.green2.sepaform.SepaForm;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -65,6 +67,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
@@ -78,6 +81,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
@@ -268,34 +272,51 @@ public class MenuController extends Controller {
                         && dbConnection.columnExists(DBConnection.Tables.MEMBER, DBConnection.Columns.CONTRIBUTION));
 
                 WizardPage<Optional<Originator>> sepaFormPage = new SepaForm().getWizardPage();
-                sepaFormPage.setNextFunction(() -> "selection");
-                WizardPage<Optional<List<Member>>> selectionPage
-                        = new Selection<>(memberToSelect).getWizardPage();
-                selectionPage.setFinish(!askForContribution);
-                if (askForContribution) {
-                    selectionPage.setNextFunction(() -> "contribution");
-                }
-                WizardPage<Optional<Double>> contributionPage = new Contribution().getWizardPage();
-                contributionPage.setFinish(true);
+                sepaFormPage.setNextFunction(() -> askForContribution ? "contribution" : "selection");
+                WizardPage<Optional<Map<Color, Double>>> contributionPage = new Contribution().getWizardPage();
+                WizardPage<Optional<List<Member>>> selectionPage = new Selection<>(memberToSelect).getWizardPage();
+                selectionPage.setFinish(true);
 
                 Map<String, WizardPage<?>> pages = new HashMap<>();
                 pages.put(WizardPage.FIRST_PAGE_KEY, sepaFormPage);
-                pages.put("selection", selectionPage);
                 pages.put("contribution", contributionPage);
+                pages.put("selection", selectionPage);
+                Wizard wizard = new Wizard(pages);
+                contributionPage.setNextFunction(() -> {
+                    WizardPage<Optional<Map<Member, Color>>> selectionGroupPage
+                            = new SelectionGroup<>(new HashSet<>(memberToSelect),
+                                    contributionPage.getResultFunction().call().orElse(new HashMap<>()))
+                                    .getWizardPage();
+                    selectionGroupPage.setFinish(true);
+                    wizard.put("selectionGroup", selectionGroupPage);
+                    return "selectionGroup";
+                });
                 Stage wizardStage = new Stage();
                 wizardStage.initOwner(stage);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
                 wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-                Wizard wizard = new Wizard(pages);
                 wizard.start(wizardStage);
                 wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
                         Map<String, ?> results = wizard.getResults().get();
-                        List<Member> selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
+                        List<Member> selectedMember;
                         if (askForContribution) {
-                            double contribution = ((Optional<Double>) results.get("contribution")).get();
-                            selectedMember.stream().forEach(m -> m.setContribution(contribution));
+                            Map<Color, Double> contribution
+                                    = ((Optional<Map<Color, Double>>) results.get("contribution")).get();
+                            Map<Member, Color> groupedMember
+                                    = ((Optional<Map<Member, Color>>) results.get("selectionGroup")).get();
+                            selectedMember = groupedMember.entrySet().stream()
+                                    .map(entry -> {
+                                        Member m = entry.getKey();
+                                        assert contribution.containsKey(entry.getValue()) :
+                                                "SelectionGroup returned group which has no associated contribution";
+                                        m.setContribution(contribution.get(entry.getValue()));
+                                        return m;
+                                    })
+                                    .collect(Collectors.toList());
+                        } else {
+                            selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
                         }
                         Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 

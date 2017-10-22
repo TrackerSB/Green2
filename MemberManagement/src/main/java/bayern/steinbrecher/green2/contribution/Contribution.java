@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
@@ -34,10 +36,11 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Contribution extends WizardableView<Optional<Double>, ContributionController> {
+public class Contribution extends WizardableView<Optional<Map<Color, Double>>, ContributionController> {
 
     /**
-     * Default constructor. Represents a view for entering a value (in €).
+     * Default constructor. Represents a view for entering multiple values (in €) which are connected to a certain
+     * color.
      */
     public Contribution() {
     }
@@ -61,13 +64,13 @@ public class Contribution extends WizardableView<Optional<Double>, ContributionC
     /**
      * Opens the contribution window if no other process yet opened one, blocks until the window is closed and returns
      * the value entered in the {@link TextField}. Returns {@link Optional#empty()} if the user did not confirm the
-     * contribution. The window will only be opened ONCE; even if multiple threads are calling this function. They will
-     * be blocked until the window is closed.
+     * values. The window will only be opened ONCE; even if multiple threads are calling this function. They will be
+     * blocked until the window is closed.
      *
-     * @return The value entered in the the {@link TextField} if any.
+     * @return The values and colors entered if any.
      * @see ContributionController#getContribution()
      */
-    public Optional<Double> getContribution() {
+    public Optional<Map<Color, Double>> getContribution() {
         showOnceAndWait();
         return controller.getContribution();
     }
@@ -76,7 +79,7 @@ public class Contribution extends WizardableView<Optional<Double>, ContributionC
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<Double>> getWizardPage() {
+    public WizardPage<Optional<Map<Color, Double>>> getWizardPage() {
         try {
             Pane root = loadFXML("Contribution_Wizard.fxml");
             return new WizardPage<>(root, null, false, () -> controller.getContribution(), controller.validProperty());
