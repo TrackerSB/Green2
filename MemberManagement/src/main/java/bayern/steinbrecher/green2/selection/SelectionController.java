@@ -57,7 +57,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     private final BooleanProperty allSelected
             = new SimpleBooleanProperty(this, "allSelected");
     @FXML
-    private ListView<CheckBox> optionsListView;
+    private ListView<CheckBox> optionsListView; //TODO May use CheckBoxListCell
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> {
                 if (newVal) {
