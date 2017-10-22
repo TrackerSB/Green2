@@ -156,16 +156,18 @@ public class Wizard extends Application {
     }
 
     /**
-     * Adds the given page to the wizard and may replace already visited pages if they have the same key. This method
-     * can be used if a page of the wizard is depending on the result of a previous one. NOTE: The size of {@code page}
-     * is not considered if {@code start(...)} was already called.
+     * Adds the given page to the wizard and replaces pages with the same key but only if the page was not already
+     * visited. This method can be used if a page of the wizard is depending on the result of a previous one. NOTE: The
+     * size of {@code page} is not considered anymore after {@code start(...)} was called.
      *
      * @param key The key the page is associated with.
      * @param page The page to add to the wizard.
-     * @see Map#put(java.lang.Object, java.lang.Object)
      */
     public void put(String key, WizardPage<?> page) {
-        pages.putIfAbsent(key, page);
+        if (history.contains(key)) {
+            throw new IllegalStateException("A page already visited can not be replaced");
+        }
+        pages.put(key, page);
     }
 
     private void updatePage() {
@@ -194,7 +196,7 @@ public class Wizard extends Application {
             try {
                 String nextIndex = nextFunction.call();
                 if (!pages.containsKey(nextIndex)) {
-                    throw new IllegalPageException(
+                    throw new PageNotFoundException(
                             "Wizard contains no page with key \""
                             + nextIndex + "\".");
                 }
@@ -246,13 +248,12 @@ public class Wizard extends Application {
      * pages.
      * @throws IllegalCallableException Only thrown if thrown by one of the result functions of the visited pages.
      */
-    public Optional<Map<String, ?>> getResults() {
+    public <T> Optional<Map<String, T>> getResults() {
         if (isFinished()) {
-            //FIXME Cannot use ? as type. May use underscore in JDK9
-            Map<String, Object> results = new HashMap<>();
+            Map<String, T> results = new HashMap<>();
             history.forEach(key -> {
                 try {
-                    results.put(key, pages.get(key).getResultFunction().call());
+                    results.put(key, (T) pages.get(key).getResultFunction().call());
                 } catch (Exception ex) {
                     throw new IllegalCallableException(
                             "The result function of wizard page \""

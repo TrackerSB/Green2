@@ -21,46 +21,46 @@ package bayern.steinbrecher.wizard;
  *
  * @author Stefan Huber
  */
-public class IllegalPageException extends RuntimeException {
+public class PageNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructs an {@code IllegalPageException} without detail message and no
+     * Constructs an {@code PageNotFoundException} without detail message and no
      * cause.
      */
-    public IllegalPageException() {
+    public PageNotFoundException() {
         super();
     }
 
     /**
-     * Constructs an {@code IllegalPageException} with detail message but no
+     * Constructs an {@code PageNotFoundException} with detail message but no
      * cause.
      *
      * @param message The detail message to show.
      */
-    public IllegalPageException(String message) {
+    public PageNotFoundException(String message) {
         super(message);
     }
 
     /**
-     * Constructs an {@code IllegalPageException} with given detail message and
+     * Constructs an {@code PageNotFoundException} with given detail message and
      * cause.
      *
      * @param message The detail message to show.
      * @param cause The cause of this exception.
      */
-    public IllegalPageException(String message, Throwable cause) {
+    public PageNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Constructs an {@code IllegalPageException} without detail message but
+     * Constructs an {@code PageNotFoundException} without detail message but
      * with given cause.
      *
      * @param cause The cause of this exception.
      */
-    public IllegalPageException(Throwable cause) {
+    public PageNotFoundException(Throwable cause) {
         super(cause);
     }
 }

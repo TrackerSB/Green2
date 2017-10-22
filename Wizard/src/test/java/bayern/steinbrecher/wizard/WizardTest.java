@@ -139,7 +139,7 @@ public class WizardTest {
         System.out.println("getResults");
         Wizard instance = new Wizard();
         Optional<Map<String, ?>> expResult = null;
-        Optional<Map<String, ?>> result = instance.getResults();
+        Optional<Map<String, Object>> result = instance.getResults();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
