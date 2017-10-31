@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.elements.spinner;
 
+import java.util.Optional;
 import javafx.beans.NamedArg;
 import javafx.scene.control.SpinnerValueFactory;
 
@@ -28,9 +29,9 @@ public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
 
     private static final ParseFunction<Double> parseFunction = value -> {
         try {
-            return Double.parseDouble(value);
+            return Optional.of(Double.parseDouble(value.replace(',', '.')));
         } catch (NumberFormatException ex) {
-            throw new ParseException(ex);
+            return Optional.empty();
         }
     };
 
