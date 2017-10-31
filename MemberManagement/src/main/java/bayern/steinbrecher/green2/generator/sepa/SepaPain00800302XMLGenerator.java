@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Generates a Sepa.Pain.008.003.02.
@@ -44,9 +43,9 @@ public final class SepaPain00800302XMLGenerator {
     }
 
     /**
-     * Generates a xml-file containing all member of {@link Member}, which have a iban and a bic, and prints the
-     * generated output into {@code outputfile}. If {@code outputfile} already exists it will be replaced. If it don´t
-     * it will be created.
+     * Generates a xml-file containing all valid member of {@code member} and prints the generated output into
+     * {@code outputfile} if there are any. If {@code outputfile} already exists it will be replaced on generation. If
+     * it don´t it will be created.
      *
      * @param member The member to collect money via direct debit from.
      * @param originator The originator of the direct debit.
@@ -59,20 +58,10 @@ public final class SepaPain00800302XMLGenerator {
     public static List<Member> createXMLFile(List<Member> member, Originator originator, SequenceType sequenceType,
             File outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
-        List<Member> badContribution = member.stream()
-                .filter(m -> !m.getContribution().isPresent())
-                .filter(m -> m.getContribution().get() < 0)
-                .collect(Collectors.toList());
-        if (badContribution.isEmpty()) {
-            IOStreamUtility.printContent(
-                    createXML(member, originator, sequenceType), outputfile, sepaWithBom);
-            return invalidMember;
-        } else {
-            throw new IllegalArgumentException(badContribution.stream()
-                    .map(Member::toString)
-                    .collect(Collectors.joining(
-                            "\n", "Missing contributions or contributions < 0 for valid members:\n", "")));
+        if (member.isEmpty()) {
+            IOStreamUtility.printContent(createXML(member, originator, sequenceType), outputfile, sepaWithBom);
         }
+        return invalidMember;
     }
 
     /**
@@ -99,6 +88,15 @@ public final class SepaPain00800302XMLGenerator {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
                         .log(Level.WARNING, "{0} has a bad \"MandatErstellt\"", m);
+            }
+            if (!m.getContribution().isPresent()) {
+                valid = false;
+                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
+                        .log(Level.WARNING, "{0} has no assinged contribution.", m);
+            } else if (m.getContribution().get() <= 0) {
+                valid = false;
+                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
+                        .log(Level.WARNING, "{0} has a contribution <= 0.", m);
             }
             if (!valid) {
                 invalidMember.add(m);
