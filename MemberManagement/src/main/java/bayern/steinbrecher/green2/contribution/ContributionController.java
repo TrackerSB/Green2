@@ -60,9 +60,10 @@ public class ContributionController extends WizardableController {
         Set<Color> colors = new HashSet<>();
         uniqueColors.set(contributionFields.stream().allMatch(cf -> colors.add(cf.getColor())));
     };
-    private BooleanProperty allSpinnerValid = new SimpleBooleanProperty(this, "allSpinnerValid", true);
-    private final ChangeListener calculateAllSpinnerValid = (obs, oldVal, newVal) -> {
-        allSpinnerValid.set(contributionFields.stream().allMatch(cf -> cf.getContributionSpinner().isValid()));
+    private BooleanProperty allContributionFieldsValid
+            = new SimpleBooleanProperty(this, "allContributionFieldsValid", true);
+    private final ChangeListener calculateAllContributionFieldsValid = (obs, oldVal, newVal) -> {
+        allContributionFieldsValid.set(contributionFields.stream().allMatch(ContributionField::isValid));
     };
 
     /**
@@ -71,14 +72,14 @@ public class ContributionController extends WizardableController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contributionFields.addListener(calculateUniqueColors);
-        contributionFields.addListener(calculateAllSpinnerValid);
+        contributionFields.addListener(calculateAllContributionFieldsValid);
         contributionFields.addListener((ListChangeListener.Change<? extends ContributionField> change) -> {
             while (change.next()) {
                 change.getAddedSubList().forEach(cf -> {
                     cf.getContributionSpinner().getEditor().setOnAction(aevt -> submitContributions());
                     contributionFieldsBox.getChildren().add(createContributionRow(cf));
                     cf.colorProperty().addListener(calculateUniqueColors);
-                    cf.getContributionSpinner().validProperty().addListener(calculateAllSpinnerValid);
+                    cf.getContributionSpinner().validProperty().addListener(calculateAllContributionFieldsValid);
                 });
                 change.getRemoved().forEach(cds -> {
                     List<HBox> hboxes = contributionFieldsBox.getChildren().stream()
@@ -102,7 +103,7 @@ public class ContributionController extends WizardableController {
                 });
             }
         });
-        valid.bind(allSpinnerValid.and(uniqueColors).and(contributionFields.emptyProperty().not()));
+        valid.bind(allContributionFieldsValid.and(uniqueColors));
         addContributionField();
     }
 

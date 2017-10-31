@@ -23,9 +23,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.NamedArg;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,6 +51,8 @@ public class ContributionField extends HBox implements Initializable {
     @FXML
     private ColorPicker colorPicker;
     private ObjectProperty<ColorPicker> colorPickerProperty = new SimpleObjectProperty<>(this, "colorPicker");
+    private BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
+    private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
 
     /**
      * Represents a combination of a spinner for entering a contribution and an associated color. The minimum value is
@@ -74,12 +78,15 @@ public class ContributionField extends HBox implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        valid.bind(contributionSpinner.validProperty());
+        invalid.bind(valid.not());
+
         contributionSpinnerProperty.set(contributionSpinner);
         colorPickerProperty.set(colorPicker);
         colorPicker.setValue(Color.FORESTGREEN); //TODO Default color is set manually and to fixed value
 
-        ElementsUtility.addCssClassIf(contributionSpinner, contributionSpinner.validProperty().not(),
-                ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(contributionSpinner, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(colorPicker, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**
@@ -152,5 +159,23 @@ public class ContributionField extends HBox implements Initializable {
      */
     public ColorPicker getColorPicker() {
         return colorPickerProperty().get();
+    }
+
+    /**
+     * Returns the property containing whether the current input is valid.
+     *
+     * @return The property containing whether the current input is valid.
+     */
+    public ReadOnlyBooleanProperty validProperty() {
+        return valid;
+    }
+
+    /**
+     * Checks whether the current input is valid.
+     *
+     * @return {@code true} only if the current input is valid.
+     */
+    public boolean isValid() {
+        return valid.get();
     }
 }
