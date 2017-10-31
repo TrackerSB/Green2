@@ -37,7 +37,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
 /**
- * Represents a contribution spinner. It is a {@code CheckedDoubleSpinner} which has a further field for associating a
+ * Represents a contribution spinner. It is a {@link CheckedDoubleSpinner} which has a further field for associating a
  * color to the contribution.
  *
  * @author Stefan Huber
@@ -144,18 +144,18 @@ public class ContributionField extends HBox implements Initializable {
     }
 
     /**
-     * Returns the property holding the currently used {@code ColorPicker} for choosing an associated color.
+     * Returns the property holding the currently used {@link ColorPicker} for choosing an associated color.
      *
-     * @return The property holding the currently used {@code ColorPicker} for choosing an associated color.
+     * @return The property holding the currently used {@link ColorPicker} for choosing an associated color.
      */
     public ReadOnlyObjectProperty<ColorPicker> colorPickerProperty() {
         return colorPickerProperty;
     }
 
     /**
-     * Returns the currently used {@code ColorPicker} for choosing an associated color.
+     * Returns the currently used {@link ColorPicker} for choosing an associated color.
      *
-     * @return The currently used {@code ColorPicker} for choosing an associated color.
+     * @return The currently used {@link ColorPicker} for choosing an associated color.
      */
     public ColorPicker getColorPicker() {
         return colorPickerProperty().get();
