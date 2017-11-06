@@ -185,8 +185,8 @@ public final class Launcher extends Application {
         String[] command;
         switch (EnvironmentHandler.CURRENT_OS) {
             case WINDOWS:
-//"powershell", "Start-Process \"wscript 'C:/Users/Stefan~1/Desktop/haha.vbs'\" -Verb runAs -Wait"
-                command = new String[]{"powershell", "Start-Process", "\"wscript '" + dirPath + "/install.vbs " + newVersion + "'\"", "-Verb runAs", "-Wait"};
+                command = new String[]{"powershell", "Start-Process",
+                    "\"wscript '" + dirPath + "/install.vbs " + newVersion + "'\"", "-Verb runAs", "-Wait"};
                 break;
             case LINUX:
             default:
