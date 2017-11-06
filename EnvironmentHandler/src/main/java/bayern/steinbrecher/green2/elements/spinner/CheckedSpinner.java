@@ -17,7 +17,6 @@
 package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.utility.ElementsUtility;
-import java.security.PrivilegedActionException;
 import java.util.Optional;
 import java.util.function.Function;
 import javafx.beans.binding.Bindings;
