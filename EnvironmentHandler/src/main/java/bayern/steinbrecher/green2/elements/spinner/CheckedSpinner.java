@@ -48,7 +48,7 @@ public class CheckedSpinner<T> extends Spinner<T> {
      * @param factory The factory generating values.
      * @param parser The function to parse the content of the {@link Spinner}.
      */
-    public CheckedSpinner(SpinnerValueFactory<T> factory, ParseFunction<T> parser) {
+    public CheckedSpinner(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
         super(factory);
 
         valid.bind(Bindings.createBooleanBinding(() -> {
@@ -77,23 +77,5 @@ public class CheckedSpinner<T> extends Spinner<T> {
      */
     public boolean isValid() {
         return valid.get();
-    }
-
-    /**
-     * This interface is very similar to {@link Function} but it contains a method throwing a {@link ParseException}.
-     *
-     * @param <T> The type of the value to parse the given {@link String} to.
-     */
-    @FunctionalInterface
-    public interface ParseFunction<T> extends Function<String, Optional<T>> {
-
-        /**
-         * Parses the given String to T.
-         *
-         * @param value The String to parse.
-         * @return The parsed value.
-         */
-        @Override
-        Optional<T> apply(String value);
     }
 }

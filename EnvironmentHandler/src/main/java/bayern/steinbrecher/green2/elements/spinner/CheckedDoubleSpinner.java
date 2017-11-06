@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.elements.spinner;
 
 import java.util.Optional;
+import java.util.function.Function;
 import javafx.beans.NamedArg;
 
 /**
@@ -26,7 +27,7 @@ import javafx.beans.NamedArg;
  */
 public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
 
-    private static final ParseFunction<Double> parseFunction = value -> {
+    private static final Function<String, Optional<Double>> parseFunction = value -> {
         try {
             return Optional.of(Double.parseDouble(value.replace(',', '.')));
         } catch (NumberFormatException ex) {

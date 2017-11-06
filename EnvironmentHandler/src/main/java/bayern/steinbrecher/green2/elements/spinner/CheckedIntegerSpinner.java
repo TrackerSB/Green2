@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.elements.spinner;
 
 import java.util.Optional;
+import java.util.function.Function;
 import javafx.beans.NamedArg;
 import javafx.scene.control.SpinnerValueFactory;
 
@@ -27,7 +28,7 @@ import javafx.scene.control.SpinnerValueFactory;
  */
 public class CheckedIntegerSpinner extends CheckedSpinner<Integer> {
 
-    private static final ParseFunction<Integer> parseFunction = value -> {
+    private static final Function<String, Optional<Integer>> parseFunction = value -> {
         try {
             return Optional.of(Integer.parseInt(value));
         } catch (NumberFormatException ex) {
