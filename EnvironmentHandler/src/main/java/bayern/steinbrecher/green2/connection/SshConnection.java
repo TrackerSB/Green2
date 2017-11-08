@@ -86,6 +86,7 @@ public final class SshConnection extends DBConnection {
         JSch.setConfig("server_host_key", "ssh-rsa,ssh-dss");
         JSch.setConfig("StrictHostKeyChecking", "no");
         JSch.setConfig("lang.s2c", "");
+        JSch.setConfig("lang.c2s", "");
         JSch.setConfig("cipher.s2c", "3des-cbc,blowfish-cbc");
         JSch.setConfig("cipher.c2s", "3des-cbc,blowfish-cbc");
         JSch.setConfig("mac.s2c", "hmac-sha1,hmac-sha1-96,hmac-md5,hmac-md5-96");
