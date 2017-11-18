@@ -33,11 +33,7 @@
                 <fx:define>
                     <ToggleGroup fx:id="groupsToggleGroup" />
                 </fx:define>
-                <RadioButton fx:id="unselectGroup"
-                             text="%unselect"
-                             toggleGroup="$groupsToggleGroup"
-                             selected="true" />
-                </VBox>
+            </VBox>
         </ScrollPane>
     </HBox>
     <HBox>

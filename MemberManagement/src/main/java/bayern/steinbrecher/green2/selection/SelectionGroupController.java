@@ -30,6 +30,7 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.MapProperty;
@@ -85,7 +86,6 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     private ToggleGroup groupsToggleGroup;
     @FXML
     private VBox groupsBox;
-    @FXML
     private RadioButton unselectGroup;
 
     /**
@@ -97,6 +97,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(options.sizeProperty()));
 
+        unselectGroup = addGroupRadioButton(EnvironmentHandler.getResourceValue("unselect"), Optional.empty(), false);
         selectedPerGroup.addListener((MapChangeListener.Change<? extends Color, ? extends IntegerProperty> change) -> {
             selectedCount.bind(BindingUtility.reduceSum(selectedPerGroup.values().stream()));
         });
@@ -107,7 +108,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
                     CheckBox checkbox = new CheckBox(change.getKey().toString());
                     checkbox.selectedProperty().addListener((obs, oldVal, newVal) -> {
                         if (newVal) {
-                            setCurrentGroupToCheckBox(change.getKey());
+                            applyCurrentGroupToCheckBox(change.getKey());
                             checkbox.setSelected(currentGroup.get().isPresent());
                         } else {
                             boolean setSelected = currentGroup.get().isPresent()
@@ -115,14 +116,13 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
 
                             Optional<Color> previous = currentGroup.get();
                             currentGroup.set(Optional.empty());
-                            setCurrentGroupToCheckBox(change.getKey());
+                            applyCurrentGroupToCheckBox(change.getKey());
                             currentGroup.set(previous);
 
                             checkbox.setSelected(setSelected);
                         }
                     });
                     options.get(change.getKey()).setCheckbox(Optional.of(checkbox));
-                    setCurrentGroupToCheckBox(change.getKey());
                     optionsListView.getItems().add(checkbox);
                 }
             }
@@ -155,11 +155,16 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
         groups.addListener((MapChangeListener.Change<? extends Color, ?> change) -> {
             if (change.wasAdded()) {
                 selectedPerGroup.put(change.getKey(), new SimpleIntegerProperty(0));
-                addGroupRadioButton(change.getValueAdded().toString(), change.getKey(), false);
+                addGroupRadioButton(change.getValueAdded().toString(), Optional.of(change.getKey()), false);
+                if (groups.size() == 1) {
+                    Optional<RadioButton> aloneSelectGroup = streamGroupsRadioButtons()
+                            .filter(rb -> !rb.equals(unselectGroup))
+                            .findAny();
+                    aloneSelectGroup.get().setSelected(true);
+                }
             }
             if (change.wasRemoved()) { //TODO Check whether removing radiobuttons works
-                List<CheckBox> radiobuttons = groupsBox.getChildren().stream()
-                        .map(node -> (CheckBox) node)
+                List<RadioButton> radiobuttons = streamGroupsRadioButtons()
                         .filter(rb -> rb.getText().equals(change.getValueRemoved().toString()))
                         .collect(Collectors.toList());
                 if (radiobuttons.isEmpty()) {
@@ -171,21 +176,26 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
                                 .log(Level.WARNING, "Found multiple rows which contain CheckBox.\n"
                                         + "Only the first got removed.");
                     }
-                    groupsBox.getChildren().remove(radiobuttons.get(0));
+                    RadioButton radiobuttonToRemove = radiobuttons.get(0);
+                    groupsBox.getChildren().remove(radiobuttonToRemove);
+                    streamGroupsRadioButtons().findFirst()
+                            .orElse(unselectGroup)
+                            .setSelected(true);
                 }
                 selectedPerGroup.remove(change.getKey());
             }
         });
 
-        unselectGroup.textProperty().bind(new SimpleStringProperty(EnvironmentHandler.getResourceValue("unselect"))
-                .concat(" (")
-                .concat(totalCount.subtract(selectedCount))
-                .concat(")"));
-
         HBox.setHgrow(optionsListView, Priority.ALWAYS);
     }
 
-    private void setCurrentGroupToCheckBox(T key) {
+    private Stream<RadioButton> streamGroupsRadioButtons() {
+        return groupsBox.getChildren().stream()
+                .filter(n -> n instanceof RadioButton)
+                .map(n -> (RadioButton) n);
+    }
+
+    private void applyCurrentGroupToCheckBox(T key) {
         Optional<Color> optNewColor = currentGroup.get();
         CheckBoxGroupPair valuePair = options.get(key);
         Optional<Color> optOldColor = valuePair.getColor();
@@ -211,21 +221,21 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
         }
     }
 
-    private void addGroupRadioButton(String text, Color color, boolean setSelected) {
-        assert selectedPerGroup.containsKey(color) : "Cant bind text of group radiobutton to non existing group count";
+    private RadioButton addGroupRadioButton(String text, Optional<Color> color, boolean setSelected) {
         RadioButton radioButton = new RadioButton(text);
         radioButton.textProperty().bind(new SimpleStringProperty(text).concat(" (")
-                .concat(selectedPerGroup.get(color))
+                .concat(color.isPresent() ? selectedPerGroup.get(color.get()) : totalCount.subtract(selectedCount))
                 .concat(")"));
-        radioButton.setGraphic(new Rectangle(DEFAULT_RECT_SIZE, DEFAULT_RECT_SIZE, color));
+        radioButton.setGraphic(new Rectangle(DEFAULT_RECT_SIZE, DEFAULT_RECT_SIZE, color.orElse(Color.TRANSPARENT)));
         radioButton.setToggleGroup(groupsToggleGroup);
         radioButton.selectedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
-                currentGroup.set(Optional.of(color));
+                currentGroup.set(color);
             }
         });
         radioButton.setSelected(setSelected);
         groupsBox.getChildren().add(radioButton);
+        return radioButton;
     }
 
     @FXML
@@ -277,10 +287,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      */
     public void setOptions(Set<T> options) {
         this.options.clear();
-        Optional<Color> previous = currentGroup.get();
-        currentGroup.set(Optional.empty());
         options.stream().sorted().forEach(o -> this.options.put(o, new CheckBoxGroupPair()));
-        currentGroup.set(previous);
     }
 
     /**
@@ -293,7 +300,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     }
 
     /**
-     * Sets a new set of groups. This clears all groups and all selections of any option.
+     * Sets a new set of groups. This clears all groups but the unselect group and clears all selections of any option.
      *
      * @param groups The new groups to set.
      */
@@ -303,9 +310,9 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     }
 
     /**
-     * Returns the currently set groups.
+     * Returns the currently set groups but the unselect group.
      *
-     * @return The currently set groups.
+     * @return The currently set groups but the unselect group.
      */
     public Set<Color> getGroups() {
         return groups.keySet();
