@@ -22,20 +22,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.selection.SelectionGroupController">
-    <ListView fx:id="optionsListView"
-              maxHeight="300"
-              focusTraversable="false" />
-    <ScrollPane>
-        <VBox fx:id="groupsBox">
-            <fx:define>
-                <ToggleGroup fx:id="groupsToggleGroup" />
-            </fx:define>
-            <RadioButton fx:id="unselectGroup"
-                         text="%unselect"
-                         toggleGroup="$groupsToggleGroup"
-                         selected="true" />
-        </VBox>
-    </ScrollPane>
-</HBox>
+    <HBox>
+        <ListView fx:id="optionsListView"
+                  maxHeight="300"
+                  focusTraversable="false" />
+        <ScrollPane>
+            <VBox fx:id="groupsBox">
+                <fx:define>
+                    <ToggleGroup fx:id="groupsToggleGroup" />
+                </fx:define>
+                <RadioButton fx:id="unselectGroup"
+                             text="%unselect"
+                             toggleGroup="$groupsToggleGroup"
+                             selected="true" />
+                </VBox>
+        </ScrollPane>
+    </HBox>
+    <HBox>
+        <Button onAction="#selectAllOptions"
+                text="%selectAll"
+                disable="${controller.allSelected}" />
+        <Button onAction="#selectNoOption"
+                text="%selectNothing"
+                disable="${controller.nothingSelected}" />
+    </HBox>
+</VBox>

@@ -238,14 +238,19 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
 
     @FXML
     private void selectAllOptions() {
-        throw new UnsupportedOperationException("Not implemented yet");
-        //optionsListView.getItems().stream().forEach(cb -> cb.setSelected(true)); //TODO May be parallel?
+        optionsListView.getItems().stream()
+                .filter(cb -> !cb.isSelected())
+                .forEach(cb -> cb.setSelected(true)); //TODO May be parallel?
     }
 
     @FXML
     private void selectNoOption() {
-        throw new UnsupportedOperationException("Not implemented yet");
-        //optionsListView.getItems().stream().forEach(cb -> cb.setSelected(false)); //TODO May be parallel?
+        optionsListView.getItems().stream()
+                .forEach(cb -> cb.setSelected(false));
+        //When unselecting a checkbox it may reselect itself if the currently chosen group differs from its own group.
+        //So the options have to be unselected a second time.
+        optionsListView.getItems().stream()
+                .forEach(cb -> cb.setSelected(false));
     }
 
     /**
