@@ -96,11 +96,6 @@ public enum ConfigKey {
      * The expression to indicate which people get birthday notifications. Like =50,=60,=70,=75,&gt;=80
      */
     BIRTHDAY_EXPRESSION(String.class) {
-        /**
-         * The regex to check against the value containing the birthday expression.
-         */
-        private final Pattern BIRTHDAY_PATTERN
-                = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
 
         /**
          * {@inheritDoc}
@@ -138,6 +133,11 @@ public enum ConfigKey {
         }
     };
 
+    /**
+     * The regex to check against the value containing the birthday expression.
+     */
+    public static final Pattern BIRTHDAY_PATTERN
+            = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
     private final Class<?> valueClass;
 
     ConfigKey(Class<?> valueClass) {
