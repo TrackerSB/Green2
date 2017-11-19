@@ -20,59 +20,67 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="bayern.steinbrecher.green2.menu.MenuController">
-    <MenuBar>
-        <Menu>
-            <graphic>
-                <HBox>
-                    <Label text="%year"/>
-                    <CheckedIntegerSpinner fx:id="yearSpinner"
-                                           min="0"
-                                           max="5000"
-                                           amountToStepBy="1"
-                                           editable="true"/>
-                </HBox>
-            </graphic>
-        </Menu>
-        <Menu fx:id="sepaMenu" text="%allAboutSepa">
-            <MenuItem text="%contributions"
-                      onAction="#generateContributionSepa"
-                      accelerator="Alt+M"/>
-            <MenuItem onAction="#generateUniversalSepa"
-                      text="%arbitrarySepaDirectDebit"/>
-        </Menu>
-        <Menu fx:id="addressesMenu"
-              text="%serialLetters">
-            <MenuItem onAction="#generateAddressesAll"
-                      text="%ofAllMember"
-                      accelerator="Alt+A"/>
-            <MenuItem fx:id="generateAddressesBirthday"
-                      onAction="#generateAddressesBirthday"
-                      disable="${!yearSpinner.valid}"/>
-        </Menu>
-        <Menu fx:id="birthdayMenu"
-              text="%birthdays">
-            <MenuItem fx:id="generateBirthdayInfos"
-                      onAction="#generateBirthdayInfos"
-                      disable="${!yearSpinner.valid}"
-                      accelerator="Alt+G"/>
-        </Menu>
-        <Menu text="%check">
-            <MenuItem onAction="#checkData"
-                      text="%checkData"
-                      accelerator="Alt+P"/>
-        </Menu>
-        <Menu fx:id="licensesMenu"
-              text="%licenses"/>
-        <Menu text="%about">
-            <MenuItem fx:id="creditsMenuItem"
-                      text="%credits"
-                      onAction="#showCredits"/>
-            <MenuItem text="%version"
-                      onAction="#showVersion"/>
-        </Menu>
-    </MenuBar>
-    <Label fx:id="dataLastUpdatedLabel"
-           text="%noData" />
-</VBox>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="bayern.steinbrecher.green2.menu.MenuController">
+    <VBox>
+        <MenuBar>
+            <Menu>
+                <graphic>
+                    <HBox>
+                        <Label text="%year"/>
+                        <CheckedIntegerSpinner fx:id="yearSpinner"
+                                               min="0"
+                                               max="5000"
+                                               amountToStepBy="1"
+                                               editable="true"/>
+                    </HBox>
+                </graphic>
+            </Menu>
+            <Menu fx:id="sepaMenu" text="%allAboutSepa">
+                <MenuItem text="%contributions"
+                          onAction="#generateContributionSepa"
+                          accelerator="Alt+M"/>
+                <MenuItem onAction="#generateUniversalSepa"
+                          text="%arbitrarySepaDirectDebit"/>
+            </Menu>
+            <Menu fx:id="addressesMenu"
+                  text="%serialLetters">
+                <MenuItem onAction="#generateAddressesAll"
+                          text="%ofAllMember"
+                          accelerator="Alt+A"/>
+                <MenuItem fx:id="generateAddressesBirthday"
+                          onAction="#generateAddressesBirthday"
+                          disable="${!yearSpinner.valid}"/>
+            </Menu>
+            <Menu fx:id="birthdayMenu"
+                  text="%birthdays">
+                <MenuItem fx:id="generateBirthdayInfos"
+                          onAction="#generateBirthdayInfos"
+                          disable="${!yearSpinner.valid}"
+                          accelerator="Alt+G"/>
+            </Menu>
+            <Menu text="%check">
+                <MenuItem onAction="#checkData"
+                          text="%checkData"
+                          accelerator="Alt+P"/>
+            </Menu>
+            <Menu fx:id="licensesMenu"
+                  text="%licenses"/>
+            <Menu text="%about">
+                <MenuItem fx:id="creditsMenuItem"
+                          text="%credits"
+                          onAction="#showCredits"/>
+                <MenuItem text="%version"
+                          onAction="#showVersion"/>
+            </Menu>
+        </MenuBar>
+        <HBox>
+            <Label fx:id="dataLastUpdatedLabel"
+                   text="%noData" />
+            <Button onAction="#queryData"
+                    text="%update" />
+        </HBox>
+    </VBox>
+</StackPane>

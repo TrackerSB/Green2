@@ -175,7 +175,7 @@ public class MenuController extends Controller {
             throw new IllegalArgumentException("The connection must not be null.");
         }
         this.dbConnection = dbConnection;
-        executeQueries();
+        queryData();
     }
 
     /**
@@ -382,7 +382,7 @@ public class MenuController extends Controller {
     }
 
     @FXML
-    private void executeQueries() {
+    private void queryData() {
         member = exserv.submit(() -> dbConnection.getAllMember());
         exserv.submit(() -> {
             try {
