@@ -152,7 +152,6 @@ public class MemberGenerator {
 
         return queryResult.parallelStream().skip(1).map(row -> {
             //Read attributes
-            //FIXME Waiting for JDK 9
             LocalDate birthday = MemberGenerator.pickAndConvert(
                     row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY, LocalDate.class);
             LocalDate mandatsigned = MemberGenerator.pickAndConvert(

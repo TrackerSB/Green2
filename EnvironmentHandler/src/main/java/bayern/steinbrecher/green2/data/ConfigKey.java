@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
  * @author Stefan Huber
  */
 public enum ConfigKey {
+    //FIXME Add generic to enum when available (JDK9?)
 
     /**
      * Indicating whether to use SSH or not. Write "Yes" to use SSH. ("Ja" is also accepted because of legacy, but
@@ -64,7 +65,6 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
-            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && value != null;
         }
     },
@@ -77,7 +77,6 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
-            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && value != null;
         }
     },
@@ -90,7 +89,6 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
-            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && value != null;
         }
     },
@@ -99,11 +97,16 @@ public enum ConfigKey {
      */
     BIRTHDAY_EXPRESSION(String.class) {
         /**
+         * The regex to check against the value containing the birthday expression.
+         */
+        private final Pattern BIRTHDAY_PATTERN
+                = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
+
+        /**
          * {@inheritDoc}
          */
         @Override
         public <T> boolean isValid(T value) {
-            //FIXME Need to wait until Java 9 arrives
             return (getValueClass().isInstance(value)) && BIRTHDAY_PATTERN.matcher((String) value).matches();
         }
     },
@@ -119,7 +122,6 @@ public enum ConfigKey {
          */
         @Override
         public <T> boolean isValid(T value) {
-            //FIXME Need to wait until Java 9 arrives
             //FIXME Second operand of && is redundant. Charset.forName(..) already checks support...
             return (getValueClass().isInstance(value)) && Charset.isSupported(((Charset) value).name());
         }
@@ -130,18 +132,12 @@ public enum ConfigKey {
     DBMS(Enum.class) {
         @Override
         public <T> boolean isValid(T value) {
-            //FIXME Need to wait until Java 9 arrives. Then finally I can use this enum directly.
+            //FIXME Use this enum directly.
             return (getValueClass().isInstance(value)) && Arrays.asList(DBConnection.SupportedDatabase.values())
                     .contains((DBConnection.SupportedDatabase) value);
         }
     };
 
-    /**
-     * The regex to check against the value containing the birthday expression.
-     */
-    public static final Pattern BIRTHDAY_PATTERN
-            = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
-    //FIXME Move pattern into enum constant allowed?
     private final Class<?> valueClass;
 
     ConfigKey(Class<?> valueClass) {
@@ -155,7 +151,6 @@ public enum ConfigKey {
      */
     @Deprecated
     public Class<?> getValueClass() {
-        //FIXME Need to wait until Java 9 arrives
         return valueClass;
     }
 
