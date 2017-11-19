@@ -16,10 +16,9 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
-import com.sun.javafx.scene.control.behavior.PasswordFieldBehavior;
-import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
+import javafx.scene.control.skin.TextFieldSkin;
 
 /**
  * Represents a password field which recognizes empty content and may set a css class attribute to signal it. It also
@@ -110,16 +109,6 @@ public class CheckedPasswordField extends CheckedTextField {
         }
 
         /**
-         * Constructs a new skin for masking {@link CheckedPasswordField} with the given behavior.
-         *
-         * @param checkedPasswordField The passwordfield to mask.
-         * @param behavior The behavior for masking the passwordfield.
-         */
-        public PasswordFieldSkin(CheckedPasswordField checkedPasswordField, PasswordFieldBehavior behavior) {
-            super(checkedPasswordField, behavior);
-        }
-
-        /**
          * {@inheritDoc}
          */
         @Override
@@ -127,7 +116,7 @@ public class CheckedPasswordField extends CheckedTextField {
             int length = password.length();
             StringBuilder passwordBuilder = new StringBuilder();
             for (int i = 0; i < length; i++) {
-                passwordBuilder.append(TextFieldSkin.BULLET);
+                passwordBuilder.append('\u25cf'); //NOTE: TextFieldSkin.BULLET is package private
             }
             return passwordBuilder.toString();
         }
