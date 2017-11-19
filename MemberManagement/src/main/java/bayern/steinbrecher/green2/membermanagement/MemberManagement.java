@@ -46,11 +46,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -92,13 +93,69 @@ public class MemberManagement extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         menuStage = primaryStage;
-        Platform.setImplicitExit(false);
 
         if (profile.isAllConfigurationsSet()) {
+            //Show splashscreen
             Splashscreen.showSplashscreen(SPLASHSCREEN_MILLIS, new Stage());
+
+            //Show waitscreen
+            WaitScreen waitScreen = new WaitScreen();
+            waitScreen.start(new Stage());
+
+            //Show login
             Login login = createLogin();
-            WaitScreen waitScreen = createWaitScreen(login);
-            createConnectionService(login, waitScreen).start();
+            Stage loginStage = new Stage();
+            loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) {
+                    waitScreen.close();
+                } else if (!login.userAborted()) {
+                    waitScreen.show();
+                } else {
+                    Platform.exit();
+                }
+            });
+            login.start(loginStage);
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.submit(() -> {
+                //Create database connection
+                Optional<DBConnection> optDBConnection = getConnection(login, waitScreen);
+                if (optDBConnection.isPresent()) {
+                    dbConnection = optDBConnection.get();
+                    try {
+                        dbConnection.createTablesIfNeeded();
+                    } catch (SchemeCreationException ex) {
+                        String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
+                        DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme).showAndWait();
+                        Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+                        Platform.exit();
+                    }
+                    if (!dbConnection.hasValidSchemes()) {
+                        String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
+                        DialogUtility.createErrorAlert(null, invalidScheme, invalidScheme).showAndWait();
+                        Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, invalidScheme);
+                        Platform.exit();
+                    }
+
+                    menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                        if (newVal) {
+                            waitScreen.close();
+                        } else {
+                            Platform.exit();
+                        }
+                    });
+
+                    Platform.runLater(() -> {
+                        try {
+                            //Show main menu
+                            new Menu(dbConnection).start(menuStage);
+                        } catch (Exception ex) {
+                            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                }
+            });
+            executor.shutdown();
         } else {
             String badConfigs = MessageFormat.format(
                     EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName());
@@ -120,68 +177,6 @@ public class MemberManagement extends Application {
             login = new DefaultLogin();
         }
         return login;
-    }
-
-    /*
-     * This method creates a {@link WaitScreen}, connects {@code login} to it
-     * AND calls {@link Application#start(Stage)} of login.
-     */
-    private WaitScreen createWaitScreen(Login login) throws IOException {
-        WaitScreen waitScreen = new WaitScreen();
-        waitScreen.start(new Stage());
-        Stage loginStage = new Stage();
-        loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                waitScreen.close();
-            } else if (!login.userAborted()) {
-                waitScreen.show();
-            } else {
-                Platform.exit();
-            }
-        });
-        login.start(loginStage);
-        return waitScreen;
-    }
-
-    private Service<Optional<DBConnection>> createConnectionService(Login login, WaitScreen waitScreen) {
-        Service<Optional<DBConnection>> connectionService
-                = ServiceFactory.createService(() -> getConnection(login, waitScreen));
-
-        connectionService.setOnSucceeded(wse -> {
-            Optional<DBConnection> optDBConnection = connectionService.getValue();
-            if (optDBConnection.isPresent()) {
-                dbConnection = optDBConnection.get();
-                try {
-                    dbConnection.createTablesIfNeeded();
-                } catch (SchemeCreationException ex) {
-                    String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
-                    DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme).showAndWait();
-                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-                    Platform.exit();
-                }
-                if (!dbConnection.hasValidSchemes()) {
-                    String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
-                    DialogUtility.createErrorAlert(null, invalidScheme, invalidScheme).showAndWait();
-                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, invalidScheme);
-                    Platform.exit();
-                }
-
-                menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        waitScreen.close();
-                    } else {
-                        Platform.exit();
-                    }
-                });
-
-                try {
-                    new Menu(dbConnection).start(menuStage);
-                } catch (Exception ex) {
-                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        return connectionService;
     }
 
     /**
