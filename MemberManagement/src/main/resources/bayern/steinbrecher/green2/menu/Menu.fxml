@@ -21,6 +21,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="bayern.steinbrecher.green2.menu.MenuController">
@@ -83,4 +85,9 @@
                     text="%update" />
         </HBox>
     </VBox>
+    <Rectangle fx:id="overlayBackground"
+               visible="${!controller.allDataRequestable}" />
+    <Label fx:id="overlayText"
+           text="%dataGetsLoaded"
+           visible="${!controller.allDataRequestable}" />
 </StackPane>

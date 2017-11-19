@@ -41,3 +41,13 @@
 .menu > .label {
     /*TODO Think about how to resize menubuttons*/
 }
+
+#overlayBackground {
+    -fx-background-color: black;
+    -fx-opacity: 0.7;
+}
+
+#overlayText {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}

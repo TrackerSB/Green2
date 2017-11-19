@@ -53,7 +53,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.StringJoiner;
@@ -67,12 +66,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -82,6 +83,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 /**
@@ -104,11 +106,12 @@ public class MenuController extends Controller {
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
     //private MemberManagement caller;
-    private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
-    private Future<List<Member>> memberNonContributionfree;
-    private Future<Map<String, String>> nicknames;
     private final ExecutorService exserv = Executors.newWorkStealingPool();
-    private Future<List<Member>> member;
+    private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
+    private final FutureProperty<List<Member>> member = new FutureProperty<>();
+    private final FutureProperty<List<Member>> memberNonContributionfree = new FutureProperty<>();
+    private final FutureProperty<Map<String, String>> nicknames = new FutureProperty<>();
+    private BooleanProperty allDataRequestable = new SimpleBooleanProperty(this, "allDataRequestable");
 
     @FXML
     private MenuItem generateAddressesBirthday;
@@ -120,6 +123,8 @@ public class MenuController extends Controller {
     private javafx.scene.control.Menu licensesMenu;
     @FXML
     private Label dataLastUpdatedLabel;
+    @FXML
+    private Rectangle overlayBackground;
 
     /**
      * {@inheritDoc}
@@ -137,7 +142,10 @@ public class MenuController extends Controller {
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
-        StringBinding dataLastUpdatedBinding = Bindings.createStringBinding(() -> {
+        allDataRequestable.bind(member.requestableProperty()
+                .and(memberNonContributionfree.requestableProperty())
+                .and(nicknames.requestableProperty()));
+        dataLastUpdatedLabel.textProperty().bind(Bindings.createStringBinding(() -> {
             Optional<LocalDateTime> dataLastUpdatedOptional = getDataLastUpdated();
             String text;
             if (dataLastUpdatedOptional.isPresent()) {
@@ -148,8 +156,7 @@ public class MenuController extends Controller {
                 text = EnvironmentHandler.getResourceValue("noData");
             }
             return text;
-        }, dataLastUpdatedProperty());
-        dataLastUpdatedLabel.textProperty().bind(dataLastUpdatedBinding);
+        }, dataLastUpdatedProperty()));
 
         EnvironmentHandler.getLicenses().stream().forEach(license -> {
             MenuItem item = new MenuItem(license.getName());
@@ -166,6 +173,16 @@ public class MenuController extends Controller {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStage(Stage stage) {
+        overlayBackground.widthProperty().bind(stage.widthProperty());
+        overlayBackground.heightProperty().bind(stage.heightProperty());
+        super.setStage(stage);
+    }
+
+    /**
      * Sets the connection to use for querying data and queries immediatly for new data using the given connection.
      *
      * @param dbConnection The connection to use for querying data.
@@ -179,21 +196,18 @@ public class MenuController extends Controller {
     }
 
     /**
-     * Checks whether all objects are not {@code null}. If any is {@code null} it throws a {@link IllegalStateException}
-     * saying that the caller has to call {@link Application#start(Stage)} first.
+     * Checks whether all given properties contain futures which are not {@code null}. If any is {@code null} it throws
+     * a {@link IllegalStateException}.
      *
-     * @param obj The objects to test.
+     * @param properties The properties to test.
+     * @param <T> The type of result of the {@link Future}. This type parameter is currently not explicitely used.
      */
-    private void checkQueriesInited(Object... obj) {
-        if (Arrays.stream(obj).anyMatch(Objects::isNull)) {
-            throw new IllegalStateException(
-                    "You have to set a connection first before being able to operate on that data.");
-        }
-    }
+    /*private <T> void checkQueriesInitialized(ObjectProperty<Future<T>>... properties) {
 
+    }*/
     private List<Member> getBirthdayMember(int year)
             throws InterruptedException, ExecutionException {
-        return member.get()
+        return member.get().get()
                 .parallelStream()
                 .filter(m -> BirthdayGenerator.getsNotified(m, year))
                 .collect(Collectors.toList());
@@ -206,13 +220,12 @@ public class MenuController extends Controller {
     }
 
     private void generateAddresses(List<Member> member, File outputFile) {
-        checkQueriesInited(nicknames);
         if (member.isEmpty()) {
             throw new IllegalArgumentException("Passed empty list to generateAddresses(...)");
         }
         try {
             IOStreamUtility.printContent(
-                    AddressGenerator.generateAddressData(member, nicknames.get()), outputFile, true);
+                    AddressGenerator.generateAddressData(member, nicknames.get().get()), outputFile, true);
         } catch (InterruptedException | ExecutionException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -222,9 +235,8 @@ public class MenuController extends Controller {
      * Generates a file Serienbrief_alle.csv containing addresses of all member.
      */
     public void generateAddressesAll() {
-        checkQueriesInited(member);
         try {
-            List<Member> memberList = this.member.get();
+            List<Member> memberList = this.member.get().get();
             if (memberList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
@@ -244,7 +256,6 @@ public class MenuController extends Controller {
      * @param year The year to look for member.
      */
     public void generateAddressesBirthday(int year) {
-        checkQueriesInited(memberBirthday);
         memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             List<Member> memberBirthdayList = memberBirthday.get(year).get();
@@ -261,7 +272,6 @@ public class MenuController extends Controller {
 
     private void generateSepa(Future<List<Member>> memberToSelectFuture, boolean useMemberContributions,
             SequenceType sequenceType) {
-        checkQueriesInited(memberToSelectFuture);
         try {
             List<Member> memberToSelect = memberToSelectFuture.get();
 
@@ -383,10 +393,14 @@ public class MenuController extends Controller {
 
     @FXML
     private void queryData() {
-        member = exserv.submit(() -> dbConnection.getAllMember());
+        member.set(exserv.submit(() -> dbConnection.getAllMember()));
+        nicknames.set(exserv.submit(() -> dbConnection.getAllNicknames()));
+
         exserv.submit(() -> {
             try {
-                member.get(); //Wait for data to be received.
+                //Wait for data to be received.
+                member.get().get();
+                nicknames.get().get();
                 Platform.runLater(() -> dataLastUpdated.setValue(Optional.of(LocalDateTime.now())));
             } catch (InterruptedException | ExecutionException ex) {
                 Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
@@ -395,28 +409,26 @@ public class MenuController extends Controller {
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
                 .forEach(y -> memberBirthday.put(y, exserv.submit(() -> getBirthdayMember(y))));
-        memberNonContributionfree = exserv.submit(() -> member.get()
+        memberNonContributionfree.set(exserv.submit(() -> member.get().get()
                 .parallelStream()
                 .filter(m -> !m.isContributionfree())
-                .collect(Collectors.toList()));
-        nicknames = exserv.submit(() -> dbConnection.getAllNicknames());
+                .collect(Collectors.toList())));
     }
 
     @FXML
     private void generateContributionSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(memberNonContributionfree, true, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(memberNonContributionfree.get(), true, SequenceType.RCUR));
     }
 
     @FXML
     private void generateUniversalSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(member, false, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(member.get(), false, SequenceType.RCUR));
     }
 
     private String checkIbans() {
-        checkQueriesInited(member);
         List<Member> badIban = new ArrayList<>();
         try {
-            badIban = member.get().parallelStream()
+            badIban = member.get().get().parallelStream()
                     .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
@@ -438,9 +450,8 @@ public class MenuController extends Controller {
 
     private String checkDates(Function<Member, LocalDate> dateFunction, String invalidDatesIntro,
             String allCorrectMessage) {
-        checkQueriesInited(member);
         try {
-            String message = member.get().parallelStream()
+            String message = member.get().get().parallelStream()
                     .filter(m -> dateFunction.apply(m) == null)
                     .map(m -> m.toString() + ": \"" + dateFunction.apply(m) + "\"")
                     .collect(Collectors.joining("\n"));
@@ -453,10 +464,9 @@ public class MenuController extends Controller {
     }
 
     private String checkContributions() {
-        checkQueriesInited(member);
         List<Member> contributionDefined = new ArrayList<>();
         try {
-            contributionDefined = member.get().parallelStream()
+            contributionDefined = member.get().get().parallelStream()
                     .filter(m -> m.getContribution().isPresent())
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
@@ -518,7 +528,6 @@ public class MenuController extends Controller {
     private void generateBirthdayInfos(ActionEvent aevt) {
         if (yearSpinner.isValid()) {
             callOnDisabled(aevt, () -> {
-                checkQueriesInited(memberBirthday);
                 Integer year = yearSpinner.getValue();
                 memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
                 try {
@@ -578,5 +587,97 @@ public class MenuController extends Controller {
      */
     public Optional<LocalDateTime> getDataLastUpdated() {
         return dataLastUpdated.get();
+    }
+
+    /**
+     * Returns the property holding whether all data needed by the functions of the menu can be requested.
+     *
+     * @return The property holding whether all data needed by the functions of the menu can be requested.
+     */
+    public ReadOnlyBooleanProperty allDataRequestableProperty() {
+        return allDataRequestable;
+    }
+
+    /**
+     * Checks whether all data needed by the functions of the menu can be requested.
+     *
+     * @return {@code true} only if all data needed by the functions of the menu can be requested.
+     */
+    public boolean isAllDataRequestable() {
+        return allDataRequestable.get();
+    }
+
+    private class FutureProperty<T> extends SimpleObjectProperty<Future<T>> {
+
+        private BooleanProperty requestable = new SimpleBooleanProperty();
+
+        /**
+         * Creates a {@link FutureProperty} containing {@code null}.
+         */
+        public FutureProperty() {
+            this(null);
+        }
+
+        /**
+         * Creates a {@link FutureProperty} containing the given value.
+         *
+         * @param initialValue The initial value.
+         */
+        public FutureProperty(Future<T> initialValue) {
+            super(initialValue);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void set(Future<T> newValue) {
+            requestable.set(newValue != null);
+            super.set(newValue);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void setValue(Future<T> v) {
+            requestable.setValue(v != null);
+            super.setValue(v);
+        }
+
+        /**
+         * This method does the same as {@link SimpleObjectProperty#get()} but throws a {@link IllegalStateException}
+         * when trying to get its value but there is no requestable value (means it is {@code null}.
+         *
+         * @return The value hold by this property.
+         * @see SimpleObjectProperty#get()
+         */
+        @Override
+        public Future<T> get() {
+            Future<T> value = super.get();
+            if (value == null) {
+                throw new IllegalStateException("There is no data queried yet.\n"
+                        + "You have to set a connection first before being able to operate on that data.");
+            }
+            return value;
+        }
+
+        /**
+         * Returns the property holding whether a {@code Future} object can be requested.
+         *
+         * @return The property holding whether a {@code Future} object can be requested.
+         */
+        public ReadOnlyBooleanProperty requestableProperty() {
+            return requestable;
+        }
+
+        /**
+         * Checks whether a {@link Future} object can be requested.
+         *
+         * @return {@code true} only if a {@link Future} object can be requested.
+         */
+        public boolean isRequestable() {
+            return requestable.get();
+        }
     }
 }
