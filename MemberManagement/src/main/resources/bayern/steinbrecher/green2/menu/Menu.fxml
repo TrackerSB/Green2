@@ -82,12 +82,13 @@
             <Label fx:id="dataLastUpdatedLabel"
                    text="%noData" />
             <Button onAction="#queryData"
-                    text="%update" />
+                    text="%update"
+                    disable="${!controller.allDataAvailable}" />
         </HBox>
     </VBox>
     <Rectangle fx:id="overlayBackground"
-               visible="${!controller.allDataRequestable}" />
+               visible="${!controller.allDataAvailable}" />
     <Label fx:id="overlayText"
            text="%dataGetsLoaded"
-           visible="${!controller.allDataRequestable}" />
+           visible="${!controller.allDataAvailable}" />
 </StackPane>

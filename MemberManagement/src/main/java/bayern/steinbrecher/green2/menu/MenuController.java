@@ -57,6 +57,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.StringJoiner;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -111,7 +112,7 @@ public class MenuController extends Controller {
     private final FutureProperty<List<Member>> member = new FutureProperty<>();
     private final FutureProperty<List<Member>> memberNonContributionfree = new FutureProperty<>();
     private final FutureProperty<Map<String, String>> nicknames = new FutureProperty<>();
-    private BooleanProperty allDataRequestable = new SimpleBooleanProperty(this, "allDataRequestable");
+    private BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
 
     @FXML
     private MenuItem generateAddressesBirthday;
@@ -142,9 +143,9 @@ public class MenuController extends Controller {
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
-        allDataRequestable.bind(member.requestableProperty()
-                .and(memberNonContributionfree.requestableProperty())
-                .and(nicknames.requestableProperty()));
+        allDataAvailable.bind(member.availableProperty()
+                .and(memberNonContributionfree.availableProperty())
+                .and(nicknames.availableProperty()));
         dataLastUpdatedLabel.textProperty().bind(Bindings.createStringBinding(() -> {
             Optional<LocalDateTime> dataLastUpdatedOptional = getDataLastUpdated();
             String text;
@@ -590,26 +591,26 @@ public class MenuController extends Controller {
     }
 
     /**
-     * Returns the property holding whether all data needed by the functions of the menu can be requested.
+     * Returns the property holding whether all data needed by the functions of the menu is available.
      *
-     * @return The property holding whether all data needed by the functions of the menu can be requested.
+     * @return The property holding whether all data needed by the functions of the menu is available.
      */
-    public ReadOnlyBooleanProperty allDataRequestableProperty() {
-        return allDataRequestable;
+    public ReadOnlyBooleanProperty allDataAvailableProperty() {
+        return allDataAvailable;
     }
 
     /**
-     * Checks whether all data needed by the functions of the menu can be requested.
+     * Checks whether all data needed by the functions is available.
      *
-     * @return {@code true} only if all data needed by the functions of the menu can be requested.
+     * @return {@code true} only if all data needed by the functions of the menu is available.
      */
-    public boolean isAllDataRequestable() {
-        return allDataRequestable.get();
+    public boolean isAllDataAvailable() {
+        return allDataAvailable.get();
     }
 
     private class FutureProperty<T> extends SimpleObjectProperty<Future<T>> {
 
-        private BooleanProperty requestable = new SimpleBooleanProperty();
+        private final BooleanProperty available = new SimpleBooleanProperty();
 
         /**
          * Creates a {@link FutureProperty} containing {@code null}.
@@ -627,12 +628,25 @@ public class MenuController extends Controller {
             super(initialValue);
         }
 
+        private void updateAvailableProperty(Future<T> newValue) {
+            available.set(false);
+            CompletableFuture.runAsync(
+                    () -> {
+                        try {
+                            newValue.get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    })
+                    .thenRunAsync(() -> available.set(true));
+        }
+
         /**
          * {@inheritDoc}
          */
         @Override
         public void set(Future<T> newValue) {
-            requestable.set(newValue != null);
+            updateAvailableProperty(newValue);
             super.set(newValue);
         }
 
@@ -641,7 +655,7 @@ public class MenuController extends Controller {
          */
         @Override
         public void setValue(Future<T> v) {
-            requestable.setValue(v != null);
+            updateAvailableProperty(v);
             super.setValue(v);
         }
 
@@ -663,21 +677,21 @@ public class MenuController extends Controller {
         }
 
         /**
-         * Returns the property holding whether a {@code Future} object can be requested.
+         * Returns the property holding whether the data of the contained {@link Future} object is available.
          *
-         * @return The property holding whether a {@code Future} object can be requested.
+         * @return The property holding whether the data of the contained {@link Future} object is available.
          */
-        public ReadOnlyBooleanProperty requestableProperty() {
-            return requestable;
+        public ReadOnlyBooleanProperty availableProperty() {
+            return available;
         }
 
         /**
-         * Checks whether a {@link Future} object can be requested.
+         * Checks whether the data of the contained {@link Future} object is available.
          *
-         * @return {@code true} only if a {@link Future} object can be requested.
+         * @return {@code true} only if the data of the contained {@link Future} object is available.
          */
-        public boolean isRequestable() {
-            return requestable.get();
+        public boolean isAvailable() {
+            return available.get();
         }
     }
 }
