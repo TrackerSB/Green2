@@ -59,8 +59,6 @@ import java.util.StringJoiner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -106,12 +104,43 @@ public class MenuController extends Controller {
             () -> checkContributions());
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
-    //private MemberManagement caller;
-    private final ExecutorService exserv = Executors.newWorkStealingPool();
-    private final Map<Integer, Future<List<Member>>> memberBirthday = new HashMap<>(3);
-    private final FutureProperty<List<Member>> member = new FutureProperty<>();
-    private final FutureProperty<List<Member>> memberNonContributionfree = new FutureProperty<>();
-    private final FutureProperty<Map<String, String>> nicknames = new FutureProperty<>();
+    //FIXME For <> JDK 9 is needed
+    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday
+            = new HashMap<Integer, CompletableFuture<List<Member>>>(3) {
+        /**
+         * Returns the value hold at key {@code key}. In contrast to {@link HashMap#get(java.lang.Object)} this method
+         * never returns {@code null}. When the searched element is not found the appropriate data is generated, put and
+         * returned.
+         *
+         * @param key The key to search for.
+         * @return The {@link CompletableFuture} put for the given key.
+         * @see HashMap#get(java.lang.Object)
+         */
+        @Override
+        @SuppressWarnings("element-type-mismatch")
+        public CompletableFuture<List<Member>> get(Object key) {
+            if (super.containsKey(key)) {
+                return super.get(key);
+            } else if (key instanceof Integer) {
+                int year = (Integer) key;
+                putIfAbsent(year, CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return getBirthdayMember(year);
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                        return null;
+                    }
+                }));
+                return super.get(key);
+            } else {
+                throw new IllegalStateException("There is no entry for the given key " + key
+                        + " and no entry can be generated due it is no Integer.");
+            }
+        }
+    };
+    private final CompletableFutureProperty<List<Member>> member = new CompletableFutureProperty<>();
+    private final CompletableFutureProperty<List<Member>> memberNonContributionfree = new CompletableFutureProperty<>();
+    private final CompletableFutureProperty<Map<String, String>> nicknames = new CompletableFutureProperty<>();
     private BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
 
     @FXML
@@ -206,8 +235,7 @@ public class MenuController extends Controller {
     /*private <T> void checkQueriesInitialized(ObjectProperty<Future<T>>... properties) {
 
     }*/
-    private List<Member> getBirthdayMember(int year)
-            throws InterruptedException, ExecutionException {
+    private List<Member> getBirthdayMember(int year) throws InterruptedException, ExecutionException {
         return member.get().get()
                 .parallelStream()
                 .filter(m -> BirthdayGenerator.getsNotified(m, year))
@@ -257,7 +285,6 @@ public class MenuController extends Controller {
      * @param year The year to look for member.
      */
     public void generateAddressesBirthday(int year) {
-        memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
         try {
             List<Member> memberBirthdayList = memberBirthday.get(year).get();
             if (memberBirthdayList.isEmpty()) {
@@ -394,26 +421,19 @@ public class MenuController extends Controller {
 
     @FXML
     private void queryData() {
-        member.set(exserv.submit(() -> dbConnection.getAllMember()));
-        nicknames.set(exserv.submit(() -> dbConnection.getAllNicknames()));
+        member.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllMember()));
+        nicknames.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllNicknames()));
+        CompletableFuture.allOf(member.get(), nicknames.get())
+                .thenRunAsync(() -> Platform.runLater(() -> dataLastUpdated.set(Optional.of(LocalDateTime.now()))));
+        memberNonContributionfree.set(member.get().thenApplyAsync(
+                ml -> ml.parallelStream()
+                        .filter(m -> !m.isContributionfree())
+                        .collect(Collectors.toList())));
 
-        exserv.submit(() -> {
-            try {
-                //Wait for data to be received.
-                member.get().get();
-                nicknames.get().get();
-                Platform.runLater(() -> dataLastUpdated.setValue(Optional.of(LocalDateTime.now())));
-            } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
+        //Precalculate memberBirthday for commonly used years
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
-                .forEach(y -> memberBirthday.put(y, exserv.submit(() -> getBirthdayMember(y))));
-        memberNonContributionfree.set(exserv.submit(() -> member.get().get()
-                .parallelStream()
-                .filter(m -> !m.isContributionfree())
-                .collect(Collectors.toList())));
+                .forEach(memberBirthday::get);
     }
 
     @FXML
@@ -530,7 +550,6 @@ public class MenuController extends Controller {
         if (yearSpinner.isValid()) {
             callOnDisabled(aevt, () -> {
                 Integer year = yearSpinner.getValue();
-                memberBirthday.putIfAbsent(year, exserv.submit(() -> getBirthdayMember(year)));
                 try {
                     List<Member> birthdayList = memberBirthday.get(year).get();
                     if (birthdayList.isEmpty()) {
@@ -561,13 +580,6 @@ public class MenuController extends Controller {
         String version = EnvironmentHandler.getResourceValue("version");
         Alert alert = DialogUtility.createInfoAlert(stage, EnvironmentHandler.VERSION, version, version, version);
         alert.show();
-    }
-
-    /**
-     * Shuts the controller down now.
-     */
-    void shutdownNow() {
-        exserv.shutdownNow();
     }
 
     /**
@@ -608,27 +620,27 @@ public class MenuController extends Controller {
         return allDataAvailable.get();
     }
 
-    private class FutureProperty<T> extends SimpleObjectProperty<Future<T>> {
+    private class CompletableFutureProperty<T> extends SimpleObjectProperty<CompletableFuture<T>> {
 
         private final BooleanProperty available = new SimpleBooleanProperty();
 
         /**
-         * Creates a {@link FutureProperty} containing {@code null}.
+         * Creates a {@link CompletableFutureProperty} containing {@code null}.
          */
-        public FutureProperty() {
+        public CompletableFutureProperty() {
             this(null);
         }
 
         /**
-         * Creates a {@link FutureProperty} containing the given value.
+         * Creates a {@link CompletableFutureProperty} containing the given value.
          *
          * @param initialValue The initial value.
          */
-        public FutureProperty(Future<T> initialValue) {
+        public CompletableFutureProperty(CompletableFuture<T> initialValue) {
             super(initialValue);
         }
 
-        private void updateAvailableProperty(Future<T> newValue) {
+        private void updateAvailableProperty(CompletableFuture<T> newValue) {
             available.set(false);
             CompletableFuture.runAsync(
                     () -> {
@@ -645,7 +657,7 @@ public class MenuController extends Controller {
          * {@inheritDoc}
          */
         @Override
-        public void set(Future<T> newValue) {
+        public void set(CompletableFuture<T> newValue) {
             updateAvailableProperty(newValue);
             super.set(newValue);
         }
@@ -654,7 +666,7 @@ public class MenuController extends Controller {
          * {@inheritDoc}
          */
         @Override
-        public void setValue(Future<T> v) {
+        public void setValue(CompletableFuture<T> v) {
             updateAvailableProperty(v);
             super.setValue(v);
         }
@@ -667,8 +679,8 @@ public class MenuController extends Controller {
          * @see SimpleObjectProperty#get()
          */
         @Override
-        public Future<T> get() {
-            Future<T> value = super.get();
+        public CompletableFuture<T> get() {
+            CompletableFuture<T> value = super.get();
             if (value == null) {
                 throw new IllegalStateException("There is no data queried yet.\n"
                         + "You have to set a connection first before being able to operate on that data.");

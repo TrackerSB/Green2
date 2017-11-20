@@ -65,14 +65,6 @@ public class Menu extends View<MenuController> {
     }
 
     /**
-     * This method is called when the application should stop, destroys resources and prepares for application exit.
-     */
-    @Override
-    public void stop() {
-        controller.shutdownNow();
-    }
-
-    /**
      * Not implemented. There´s no data to be aborted by the user.
      *
      * @return Nothing.
