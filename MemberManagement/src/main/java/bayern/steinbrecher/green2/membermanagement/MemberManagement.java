@@ -48,6 +48,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -127,12 +128,21 @@ public class MemberManagement extends Application {
                         Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                         Platform.exit();
                     }
-                    if (!dbConnection.hasValidSchemes()) {
+
+                    dbConnection.getMissingColumns().ifPresent(mc -> {
                         String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
-                        DialogUtility.createErrorAlert(null, invalidScheme, invalidScheme).showAndWait();
-                        Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, invalidScheme);
+                        String message = invalidScheme + "\n" + mc.entrySet().parallelStream()
+                                .map(entry -> entry.getKey().getRealTableName() + ":\n"
+                                + entry.getValue().parallelStream()
+                                        .map(DBConnection.Columns::getRealColumnName)
+                                        .map(col -> EnvironmentHandler.getResourceValue("columnMissing", col))
+                                        .collect(Collectors.joining("\n")))
+                                .collect(Collectors.joining("\n"));
+
+                        DialogUtility.createErrorAlert(null, message, invalidScheme).showAndWait();
+                        Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, message);
                         Platform.exit();
-                    }
+                    });
 
                     menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
                         if (newVal) {

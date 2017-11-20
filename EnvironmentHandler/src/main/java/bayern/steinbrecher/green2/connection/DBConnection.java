@@ -195,8 +195,26 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if all needed tables and their required columns exist and are accessible.
      */
     public boolean hasValidSchemes() {
-        return tablesExist() && Arrays.stream(Tables.values())
-                .anyMatch(table -> table.isValid(this));
+        return !getMissingColumns().isPresent();
+    }
+
+    /**
+     * Checks whether all needed tables are accessible using this connection and have all required columns which are
+     * also accessible.
+     *
+     * @return {@link Optional#empty()} if all tables have all required columns. Otherwise returns an {@link Optional}
+     * mapping invalid tables to the required columns missing.
+     */
+    public Optional<Map<Tables, List<Columns>>> getMissingColumns() {
+        Map<Tables, List<Columns>> missingColumns = new HashMap<>();
+        for (Tables table : Tables.values()) {
+            table.getMissingColumns(this).ifPresent(mc -> missingColumns.put(table, mc));
+        }
+        if (missingColumns.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(missingColumns);
+        }
     }
 
     /**
@@ -409,9 +427,27 @@ public abstract class DBConnection implements AutoCloseable {
          * columns.
          */
         public boolean isValid(DBConnection connection) {
-            return columns.entrySet().stream()
+            return !getMissingColumns(connection).isPresent();
+        }
+
+        /**
+         * Returns all required but missing or unaccessible columns of this table using the given connection.
+         *
+         * @param connection The connection to use.
+         * @return {@link Optional#empty()} if no required column is missing or unaccessible. Otherwise an
+         * {@link Optional} containing a list of these columns.
+         */
+        public Optional<List<Columns>> getMissingColumns(DBConnection connection) {
+            List<Columns> missingColumns = columns.entrySet().stream()
                     .filter(Entry::getValue)
-                    .allMatch(entry -> connection.columnExists(this, entry.getKey()));
+                    .map(Entry::getKey)
+                    .filter(column -> !connection.columnExists(this, column))
+                    .collect(Collectors.toList());
+            if (missingColumns.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(missingColumns);
+            }
         }
 
         /**
