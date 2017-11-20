@@ -46,8 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -116,8 +114,7 @@ public class MemberManagement extends Application {
             });
             login.start(loginStage);
 
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.submit(() -> {
+            ThreadUtility.passSingleTaskAsync(() -> {
                 //Create database connection
                 Optional<DBConnection> optDBConnection = getConnection(login, waitScreen);
                 if (optDBConnection.isPresent()) {
@@ -155,7 +152,6 @@ public class MemberManagement extends Application {
                     });
                 }
             });
-            executor.shutdown();
         } else {
             String badConfigs = MessageFormat.format(
                     EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName());

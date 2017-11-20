@@ -16,6 +16,10 @@
  */
 package bayern.steinbrecher.green2.utility;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.BooleanExpression;
@@ -52,5 +56,38 @@ public final class ThreadUtility {
                 Logger.getLogger(ThreadUtility.class.getName()).log(Level.WARNING, null, ex1);
             }
         }
+    }
+
+    /**
+     * Creates an {@link ExecutorService}, passes {@code task} to it and returns the resulting {@link Future}. NOTE:
+     * Handling the {@link ExecutorService} manually should be the preffered way due it may be expensive to create and
+     * shutdown new {@link ExecutorService}s many times.
+     *
+     * @param <T> The type of the result.
+     * @param task The task to execute asynchroniously.
+     * @return The {@link Future} returned from the {@link ExecutorService}.
+     * @see Executors#newSingleThreadExecutor()
+     */
+    public static <T> Future<T> passSingleTaskAsync(Callable<T> task) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<T> result = executor.submit(task);
+        executor.shutdown();
+        return result;
+    }
+
+    /**
+     * Creates an {@link ExecutorService}, passes {@code task} to it and returns the resulting {@link Future}. NOTE:
+     * Handling the {@link ExecutorService} manually should be the preffered way due it may be expensive to create and
+     * shutdown new {@link ExecutorService}s many times.
+     *
+     * @param task The task to execute asynchroniously.
+     * @return The {@link Future} returned from the {@link ExecutorService}.
+     * @see Executors#newSingleThreadExecutor()
+     */
+    public static Future<?> passSingleTaskAsync(Runnable task) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<?> result = executor.submit(task);
+        executor.shutdown();
+        return result;
     }
 }
