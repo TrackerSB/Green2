@@ -48,7 +48,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${java.home}/../bin/javapackager</executable>
+                            <executable>${java.home}/bin/javapackager</executable>
                             <arguments>
                                 <argument>-createjar</argument>
                                 <argument>-nocss2bin</argument>
@@ -77,11 +77,4 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>EnvironmentHandler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>
