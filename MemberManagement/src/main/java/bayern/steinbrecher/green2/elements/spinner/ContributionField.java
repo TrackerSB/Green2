@@ -78,15 +78,19 @@ public class ContributionField extends HBox implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        valid.bind(contributionSpinner.validProperty());
+        contributionSpinnerProperty.addListener((obs, oldVal, newVal) -> {
+            valid.bind(newVal.validProperty());
+            ElementsUtility.addCssClassIf(newVal, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        });
+        colorPickerProperty.addListener((obs, oldVal, newVal) -> {
+            ElementsUtility.addCssClassIf(newVal, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        });
         invalid.bind(valid.not());
 
         contributionSpinnerProperty.set(contributionSpinner);
         colorPickerProperty.set(colorPicker);
-        colorPicker.setValue(Color.FORESTGREEN); //TODO Default color is set manually and to fixed value
 
-        ElementsUtility.addCssClassIf(contributionSpinner, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
-        ElementsUtility.addCssClassIf(colorPicker, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        colorPicker.setValue(Color.FORESTGREEN); //TODO Default color is set manually and to fixed value
     }
 
     /**
