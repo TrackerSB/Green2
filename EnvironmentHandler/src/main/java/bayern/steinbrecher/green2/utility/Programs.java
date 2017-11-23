@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.installHandler.InstallHandler;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;
@@ -28,7 +29,12 @@ import javafx.application.Platform;
  *
  * @author Stefan Huber
  */
-public final class ProgramCaller {
+public enum Programs {
+    MEMBER_MANAGEMENT("MemberManagement.jar"),
+    LAUNCHER("Launcher.jar"),
+    CONFIGURATION_DIALOG("ConfigurationDialog.jar"),
+    INSTALLER("InstallHandler.jar", InstallHandler.Actions.INSTALL.name()),
+    UNINSTALLER("InstallHandler.jar", InstallHandler.Actions.UNINSTALL.name());
 
     /**
      * The path of the local folder where to save the application itself.
@@ -37,40 +43,29 @@ public final class ProgramCaller {
             = (EnvironmentHandler.CURRENT_OS == EnvironmentHandler.OS.WINDOWS
                     ? System.getenv("ProgramFiles").replaceAll("\\\\", "/") + "/" : "/opt/")
             + EnvironmentHandler.APPLICATION_FOLDER_NAME;
+    private final String jarname;
+    private final String[] options;
 
-    private ProgramCaller() {
-        throw new UnsupportedOperationException("Construction of an object not allowed");
+    private Programs(String jarname, String... options) {
+        this.jarname = jarname;
+        this.options = options;
     }
 
-    private static void startJar(String jarname) {
+    /**
+     * Calls the given program and closes the program calling this method.
+     */
+    public void call() {
+        String[] args = new String[options.length + 3];
+        args[0] = "java";
+        args[1] = "-jar";
+        args[2] = Paths.get((EnvironmentHandler.IS_USED_AS_LIBRARY
+                ? EnvironmentHandler.APPLICATION_ROOT : PROGRAMFOLDER_PATH_LOCAL).toString(), jarname).toString();
+        System.arraycopy(options, 0, args, 3, options.length);
         try {
-            new ProcessBuilder("java", "-jar", Paths.get((EnvironmentHandler.IS_USED_AS_LIBRARY
-                    ? EnvironmentHandler.APPLICATION_ROOT : PROGRAMFOLDER_PATH_LOCAL).toString(), jarname).toString())
-                    .start();
+            new ProcessBuilder(args).start();
             Platform.exit();
         } catch (IOException ex) {
-            Logger.getLogger(ProgramCaller.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Programs.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Starts Green2 and closes this application.
-     */
-    public static void startGreen2() {
-        startJar("MemberManagement.jar");
-    }
-
-    /**
-     * Starts Green2 launcher and closes this application.
-     */
-    public static void startGreen2Launcher() {
-        startJar("Launcher.jar");
-    }
-
-    /**
-     * Starts Green2 configuration dialog and closes this application.
-     */
-    public static void startGreen2ConfigDialog() {
-        startJar("ConfigurationDialog.jar");
     }
 }

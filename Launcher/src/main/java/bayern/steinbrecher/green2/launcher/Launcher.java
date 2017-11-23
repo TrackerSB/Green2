@@ -21,7 +21,7 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
-import bayern.steinbrecher.green2.utility.ProgramCaller;
+import bayern.steinbrecher.green2.utility.Programs;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.URLUtility;
 import bayern.steinbrecher.green2.utility.ZipUtility;
@@ -98,24 +98,22 @@ public final class Launcher extends Application {
         Optional<String> optOnlineVersion = readOnlineVersion();
 
         Service<Void> serv = null;
-        boolean isInstalled = new File(ProgramCaller.PROGRAMFOLDER_PATH_LOCAL).exists();
+        boolean isInstalled = new File(Programs.PROGRAMFOLDER_PATH_LOCAL).exists();
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
             if (isInstalled) {
                 if (!EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion) && ChoiceDialog.askForUpdate()) {
                     serv = downloadAndInstall(onlineVersion);
-                    serv.setOnSucceeded(evt -> {
-                        ProgramCaller.startGreen2();
-                    });
+                    serv.setOnSucceeded(evt -> Programs.MEMBER_MANAGEMENT.call());
                 } else {
-                    ProgramCaller.startGreen2();
+                    Programs.MEMBER_MANAGEMENT.call();
                 }
             } else {
                 serv = downloadAndInstall(onlineVersion);
-                serv.setOnSucceeded(evt -> ProgramCaller.startGreen2ConfigDialog());
+                serv.setOnSucceeded(evt -> Programs.CONFIGURATION_DIALOG.call());
             }
         } else if (isInstalled) {
-            ProgramCaller.startGreen2();
+            Programs.MEMBER_MANAGEMENT.call();
         } else {
             String installError = EnvironmentHandler.getResourceValue("installError");
             DialogUtility.createErrorAlert(

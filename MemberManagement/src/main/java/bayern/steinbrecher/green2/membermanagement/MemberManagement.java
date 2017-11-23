@@ -34,7 +34,7 @@ import bayern.steinbrecher.green2.login.ssh.SshLogin;
 import bayern.steinbrecher.green2.login.standard.DefaultLogin;
 import bayern.steinbrecher.green2.menu.Menu;
 import bayern.steinbrecher.green2.utility.DialogUtility;
-import bayern.steinbrecher.green2.utility.ProgramCaller;
+import bayern.steinbrecher.green2.utility.Programs;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class MemberManagement extends Application {
     public MemberManagement() {
         List<String> availableProfiles = Profile.getAvailableProfiles();
         if (availableProfiles.size() < 1) {
-            ProgramCaller.startGreen2ConfigDialog();
+            Programs.CONFIGURATION_DIALOG.call();
         } else if (availableProfiles.size() == 1) {
             profile = EnvironmentHandler.loadProfile(availableProfiles.get(0), false);
         } else {
@@ -170,7 +170,7 @@ public class MemberManagement extends Application {
                     .showAndWait()
                     .ifPresent(buttontype -> {
                         if (buttontype == ButtonType.OK) {
-                            ProgramCaller.startGreen2ConfigDialog();
+                            Programs.CONFIGURATION_DIALOG.call();
                         }
                     });
         }

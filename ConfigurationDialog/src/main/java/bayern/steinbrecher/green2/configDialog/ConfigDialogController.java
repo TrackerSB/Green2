@@ -25,7 +25,7 @@ import bayern.steinbrecher.green2.elements.CheckedComboBox;
 import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
-import bayern.steinbrecher.green2.utility.ProgramCaller;
+import bayern.steinbrecher.green2.utility.Programs;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -128,7 +128,7 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private void saveSettingsAndContinue() {
         saveSettings();
-        ProgramCaller.startGreen2();
+        Programs.MEMBER_MANAGEMENT.call();
     }
 
     /**

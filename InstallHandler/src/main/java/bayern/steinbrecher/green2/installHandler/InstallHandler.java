@@ -15,40 +15,12 @@
  */
 package bayern.steinbrecher.green2.installHandler;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.utility.DialogUtility;
-import bayern.steinbrecher.green2.utility.ServiceFactory;
-import bayern.steinbrecher.wizard.Wizard;
-import bayern.steinbrecher.wizard.WizardPage;
-import cz.adamh.utils.NativeUtils;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.concurrent.Worker;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -58,295 +30,70 @@ import javafx.stage.Stage;
  */
 public final class InstallHandler extends Application {
 
-    static {
-        String osname = EnvironmentHandler.CURRENT_OS.name();
-        String jvmarch = System.getProperty("os.arch").endsWith("64") ? "64" : "32";
-        Optional<String> fileformat = Optional.empty();
-        switch (EnvironmentHandler.CURRENT_OS) {
-            case LINUX:
-                fileformat = Optional.of("so");
-                break;
-            case WINDOWS:
-                fileformat = Optional.of("dll");
-                break;
-            default:
-                Logger.getLogger(InstallHandler.class.getName())
-                        .log(Level.WARNING, "Loading a library for {} is not supported", EnvironmentHandler.CURRENT_OS);
-        }
-
-        fileformat.ifPresent(ff -> {
-            try {
-                NativeUtils.loadLibraryFromJar(
-                        "/bayern/steinbrecher/green2/helper/externalLibs/libHelper" + osname + jvmarch + "." + ff);
-            } catch (IOException ex) {
-                Logger.getLogger(InstallHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-    }
-
-    private InstallHandler() {
-        throw new UnsupportedOperationException("Construction of an object is not allowed.");
-    }
-
     /**
-     * Just needed to make the generated jar be directly executable. (Init of JavaFX)
-     *
-     * @param primaryStage Unused
-     * @deprecated Will be removed when direct testing of this file is not needed anymore.
+     * {@inheritDoc}
      */
     @Override
-    @Deprecated
     public void start(Stage primaryStage) {
-        //No-op
+        List<String> parameters = getParameters().getRaw();
+        if (parameters.isEmpty()) {
+            Logger.getLogger(InstallHandler.class.getName())
+                    .log(Level.SEVERE, "You need to specify an action.\nAllowed actions: {0}", getActionsListing());
+        } else {
+            String specifiedAction = parameters.get(0).toUpperCase();
+            try {
+                Actions.valueOf(specifiedAction).call();
+                //TODO Try to avoid flow control by exception.
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(InstallHandler.class.getName())
+                        .log(Level.SEVERE,
+                                "The action\"" + specifiedAction + "\".\nAllowed actions: " + getActionsListing(), ex);
+            }
+        }
+    }
+
+    private static String getActionsListing() {
+        return Arrays.stream(Actions.values()).map(Actions::name).collect(Collectors.joining(", "));
     }
 
     /**
-     * The main method. Prints the absolute path of the system node of Green2.
+     * The main method.
      *
-     * @param args The command line arguments. If "delete" is passed as first argument, this program deletes the Green2
-     * registry keys of the current user.
+     * @param args The commandline arguments.
      */
     public static void main(String[] args) {
-        if (args.length < 1) {
-            String actions = Arrays.stream(Action.values())
-                    .map(Action::name)
-                    .collect(Collectors.joining(", "));
-            throw new IllegalArgumentException("You have to specify an action you want to execute. (" + actions + ")");
-        }
-        try {
-            Action.valueOf(args[0].toUpperCase()).doAction();
-        } catch (IllegalArgumentException ex) {
-            throw new UnsupportedOperationException("Action " + args[0] + " not supported.", ex);
-        }
+        launch(args);
     }
 
-    //FIXME Java9: Add generic for return type of action
-    public enum Action {
+    public enum Actions {
         /**
-         * Prints exactly two lines to stdout.<br />
-         * First line: The path to the java system wide preferences<br />
-         * Second line: The path of keys within the java preferences
-         *
-         * @deprecated Until now the version was the only thing to save in the system wide preferences which is now
-         * saved directly within {@code EnvironmentHandler}.
-         * @see EnvironmentHandler#VERSION
-         */
-        @Deprecated
-        PRINT_PREFERENCES {
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public <T> T doAction() {
-                //This method is implemented according to http://stackoverflow.com/questions/1320709/preference-api-storage
-                String path;
-                String subkeyPath = EnvironmentHandler.PREFERENCES_SYSTEM_NODE.absolutePath();
-                switch (EnvironmentHandler.CURRENT_OS) {
-                    case WINDOWS:
-                        if ("32".equals(System.getProperty("sun.arch.data.model"))
-                                && "64".equals(System.getProperty("os.arch"))) {
-                            path = "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\JavaSoft\\Prefs";
-                        } else {
-                            path = "HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\Prefs";
-                        }
-                        subkeyPath = subkeyPath.replaceAll("/", "\\\\");
-                        break;
-                    case LINUX:
-                        path = System.getProperty("java.util.prefs.systemRoot",
-                                System.getProperty("java.home") + "/.systemPrefs");
-                        break;
-                    default:
-                        throw new IllegalArgumentException("OS not supported by PreferencesHelper.");
-                }
-
-                //NOTE Never print any unneeded character like a newline at the end to System.out
-                System.out.print(path + '\n' + subkeyPath);
-                return (T) Void.TYPE;
-            }
-        },
-        /**
-         * Deletes the saved preferences and prints preferences paths.
-         *
-         * @deprecated Will be replaced.
-         * @see #UNINSTALL
-         * @see #PRINT_PREFERENCES
-         */
-        @Deprecated
-        DELETE_AND_PRINT_PREFERENCES {
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public <T> T doAction() {
-                try {
-                    Preferences currentNode = EnvironmentHandler.PREFERENCES_USER_NODE;
-                    do {
-                        Preferences parent = currentNode.parent();
-                        if (currentNode.nodeExists("")) {
-                            currentNode.removeNode();
-                        }
-                        currentNode = parent;
-                    } while (currentNode != null && currentNode.childrenNames().length == 0);
-                } catch (BackingStoreException ex) {
-                    Logger.getLogger(InstallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                PRINT_PREFERENCES.doAction();
-                return (T) Void.TYPE;
-            }
-        },
-        /**
-         * Installs the program.
+         * Represents the installation process.
          */
         INSTALL {
             /**
              * {@inheritDoc}
              */
             @Override
-            public <T> T doAction() {
-                return (T) install(
-                        EnvironmentHandler.APPLICATION_ROOT, EnvironmentHandler.getResourceValue("installMessage"));
+            public void call() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         },
         /**
-         * Removes the saved preferences and deletes all program files.
+         * Represents the uninstallation process.
          */
         UNINSTALL {
             /**
              * {@inheritDoc}
              */
             @Override
-            public <T> T doAction() {
-                return (T) (Boolean) waitForInstall();
-            }
-
-            private void askDeletePreferences() {
-                String deletePreferencesMessage = EnvironmentHandler.getResourceValue("deletePreferences");
-                Alert deletePreferencesAlert = DialogUtility.createAlert(
-                        Alert.AlertType.CONFIRMATION, deletePreferencesMessage, ButtonType.YES, ButtonType.NO);
-                boolean deletePreferences = deletePreferencesAlert.getResult() == ButtonType.YES;
-                if (deletePreferences) {
-                    Preferences currentNode = EnvironmentHandler.PREFERENCES_USER_NODE;
-                    try {
-                        do {
-                            try {
-                                currentNode.removeNode();
-                                currentNode = currentNode.parent();
-                            } catch (BackingStoreException ex) {
-                                Logger.getLogger(InstallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                                break;
-                            }
-                        } while (currentNode.childrenNames().length < 1);
-                    } catch (BackingStoreException ex) {
-                        Logger.getLogger(InstallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-
-            private void askDeleteAppData() {
-                String deleteAppDataMessage = EnvironmentHandler.getResourceValue("deleteAppData");
-                Alert deleteAppDataAlert = DialogUtility.createAlert(
-                        Alert.AlertType.CONFIRMATION, deleteAppDataMessage, ButtonType.YES, ButtonType.NO);
-                boolean deleteAppData = deleteAppDataAlert.getResult() == ButtonType.YES;
-                if (deleteAppData) {
-                    Path appDataRootPath = Paths.get(EnvironmentHandler.APP_DATA_PATH);
-                    try {
-                        Files.walkFileTree(appDataRootPath, new SimpleFileVisitor<Path>() {
-                            @Override
-                            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                                Files.delete(file);
-                                return FileVisitResult.CONTINUE;
-                            }
-
-                            @Override
-                            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                                Files.delete(dir);
-                                return FileVisitResult.CONTINUE;
-                            }
-                        });
-                    } catch (IOException ex) {
-                        Logger.getLogger(InstallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-
-            private boolean waitForInstall() {
-                CheckBox deletePreferences = new CheckBox(EnvironmentHandler.getResourceValue("deletePreferences"));
-                CheckBox deleteAppData = new CheckBox(EnvironmentHandler.getResourceValue("deleteAppData"));
-                Pane deleteUserSettings = new VBox(deletePreferences, deleteAppData);
-                WizardPage<Boolean[]> deletePreferencesPage
-                        = new WizardPage<>(deleteUserSettings, () -> "confirmUninstall", false,
-                                () -> new Boolean[]{deletePreferences.isSelected(), deleteAppData.isSelected()});
-
-                CheckBox deleteProgram = new CheckBox(EnvironmentHandler.getResourceValue("deleteProgram"));
-                Pane confirmUninstall = new VBox(deleteProgram);
-                WizardPage<Boolean> confirmUninstallPage = new WizardPage<>(confirmUninstall, null, true,
-                        () -> deleteProgram.isSelected(), deleteProgram.selectedProperty());
-
-                Map<String, WizardPage<?>> pages = new HashMap<>();
-                pages.put(WizardPage.FIRST_PAGE_KEY, deletePreferencesPage);
-                pages.put("confirmUninstall", confirmUninstallPage);
-                Wizard uninstallWizard = new Wizard(pages);
-
-                Service<Optional<String>> uninstallService = ServiceFactory.createService(() -> {
-                    //TODO React on results
-                    Map<String, ?> results = uninstallWizard.getResults().get();
-                    return uninstall(EnvironmentHandler.APPLICATION_ROOT,
-                            EnvironmentHandler.getResourceValue("uninstallMessage"));
-                });
-                EventHandler<WorkerStateEvent> notifyWaitingForService = event -> {
-                    synchronized (this) {
-                        notifyAll();
-                    }
-                };
-                uninstallService.setOnCancelled(notifyWaitingForService);
-                uninstallService.setOnFailed(notifyWaitingForService);
-                uninstallService.setOnSucceeded(notifyWaitingForService);
-
-                Platform.runLater(() -> {
-                    Stage stage = new Stage();
-                    stage.setTitle(EnvironmentHandler.getResourceValue("uninstall"));
-                    stage.setResizable(false);
-                    stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-                    try {
-                        uninstallWizard.start(stage);
-                        stage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-                        stage.show();
-                        stage.setOnHidden(event -> uninstallService.start());
-                    } catch (IOException ex) {
-                        Logger.getLogger(InstallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                });
-
-                //TODO Think about where to place synchronized exactly.
-                synchronized (this) {
-                    List<Worker.State> endStates
-                            = Arrays.asList(Worker.State.CANCELLED, Worker.State.FAILED, Worker.State.SUCCEEDED);
-                    while (!endStates.contains(uninstallService.getState())) {
-                        try {
-                            wait();
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(InstallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-
-                Optional<String> errorMessage = uninstallService.getValue();
-                errorMessage.ifPresent(message -> {
-                    Logger.getLogger(Action.class.getName())
-                            .log(Level.SEVERE, "Uninstall raised an error: {}", message);
-                });
-                return errorMessage.isPresent();
+            public void call() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
 
         /**
-         * Executes the enums helper action.
+         * Calls the action represented by this enum.
          */
-        public abstract <T> T doAction();
-
-        private static native Optional<String> install(Path applicationRootDir, String description);
-
-        private static native Optional<String> uninstall(Path applicationRootDir, String description);
+        public abstract void call();
     }
 }
