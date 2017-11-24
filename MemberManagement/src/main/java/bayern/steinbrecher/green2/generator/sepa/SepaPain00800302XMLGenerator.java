@@ -58,7 +58,10 @@ public final class SepaPain00800302XMLGenerator {
     public static List<Member> createXMLFile(List<Member> member, Originator originator, SequenceType sequenceType,
             File outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
-        if (!member.isEmpty()) {
+        if (member.isEmpty()) {
+            Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
+                    .log(Level.WARNING, "There are no valid members left to generate output for.");
+        } else {
             IOStreamUtility.printContent(createXML(member, originator, sequenceType), outputfile, sepaWithBom);
         }
         return invalidMember;
