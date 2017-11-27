@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -34,8 +36,19 @@ import java.util.zip.ZipInputStream;
  */
 public final class ZipUtility {
 
-    private static final Charset VBS_CHARSET = Charset.forName("Windows-1252");
-    private static final Charset JAR_ICO_PNG_CHARSET = StandardCharsets.ISO_8859_1;
+    /**
+     * The charset used when unzipping binary files.
+     */
+    private static final Charset BINARY_CHARSET = StandardCharsets.ISO_8859_1;
+    public static final Map<String, Charset> SPECIAL_CHARSETS = new HashMap<>();
+
+    static {
+        SPECIAL_CHARSETS.put("jar", BINARY_CHARSET);
+        SPECIAL_CHARSETS.put("ico", BINARY_CHARSET);
+        SPECIAL_CHARSETS.put("png", BINARY_CHARSET);
+        SPECIAL_CHARSETS.put("vbs", Charset.forName("Windows-1252"));
+        SPECIAL_CHARSETS.put("pdf", BINARY_CHARSET);
+    }
 
     private ZipUtility() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
@@ -46,28 +59,37 @@ public final class ZipUtility {
      *
      * @param zippedFile The file to unzip.
      * @param outputDir The directory where to put the unzipped files.
-     * @param charset The charset of the zip and its files. NOTE: VBS files will be unzipped using Windows-1252 and JAR,
-     * PNG and ICO using ISO-8859-1.
+     * @param charset The charset of the zip and its files. NOTE: For some files like vbs, jar, ico, png and pdf always
+     * a special charset is taken which may defer from the given one in order to guarantee the correctness of the
+     * unzipped files.
      * @throws IOException Thrown only if no temporary directory could be created.
+     * @see #SPECIAL_CHARSETS
      */
     public static void unzip(File zippedFile, File outputDir, Charset charset) throws IOException {
         String outDirPath = outputDir.getAbsolutePath();
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zippedFile), charset);
-                InputStreamReader isr = new InputStreamReader(zis, charset);
-                InputStreamReader isrVBS = new InputStreamReader(zis, VBS_CHARSET);
-                InputStreamReader isrLatin = new InputStreamReader(zis, JAR_ICO_PNG_CHARSET)) {
+                InputStreamReader isr = new InputStreamReader(zis, charset);) {
             ZipEntry zipEntry;
-            boolean vbs;
-            boolean jar;
             while ((zipEntry = zis.getNextEntry()) != null) {
                 String zipEntryName = zipEntry.getName();
-                jar = zipEntryName.endsWith(".jar") || zipEntryName.endsWith(".ico") || zipEntryName.endsWith(".png");
-                vbs = zipEntryName.endsWith(".vbs");
+                String[] zipEntryNameParts = zipEntryName.split("\\.");
+                String zipEntryNameFormat = zipEntryNameParts[zipEntryNameParts.length - 1];
+
+                InputStreamReader currentIsr;
+                Charset currentCharset;
+                if (SPECIAL_CHARSETS.containsKey(zipEntryNameFormat)) {
+                    currentCharset = SPECIAL_CHARSETS.get(zipEntryNameFormat);
+                    currentIsr = new InputStreamReader(zis, currentCharset);
+                } else {
+                    currentCharset = charset;
+                    currentIsr = isr;
+                }
+
                 File unzippedFile = new File(outDirPath + "/" + zipEntryName);
                 unzippedFile.getParentFile().mkdirs();
-                try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(unzippedFile),
-                        vbs ? VBS_CHARSET : (jar ? JAR_ICO_PNG_CHARSET : charset))) {
-                    IOStreamUtility.transfer(vbs ? isrVBS : (jar ? isrLatin : isr), osw);
+                try (OutputStreamWriter osw
+                        = new OutputStreamWriter(new FileOutputStream(unzippedFile), currentCharset)) {
+                    IOStreamUtility.transfer(currentIsr, osw);
                 }
             }
         }
