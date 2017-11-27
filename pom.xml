@@ -3,15 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
     <groupId>bayern.steinbrecher.green2</groupId>
-    <artifactId>Green2</artifactId>
+    <artifactId>Parent</artifactId>
     <version>2u13</version>
     <packaging>pom</packaging>
     
-    <organization>
-        <name>Steinbrecher</name>
-        <url>http://www.steinbrecher.bayern</url>
-    </organization>
+    <modules>
+        <module>ParentExecutables</module>
+    </modules>
+    <name>Parent</name>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,25 +22,6 @@
     
     <build>
         <finalName>${project.artifactId}</finalName>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addClasspath>true</addClasspath>
-                                <classpathPrefix>lib/</classpathPrefix>
-                                <classpathLayoutType>custom</classpathLayoutType>
-                                <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout> 
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         
         <plugins>
             <plugin>
@@ -77,9 +59,10 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
-                    <compilerArguments>
+                    <!-- Is bootclasspath needed?-->
+                    <!--<compilerArguments>
                         <bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>
-                    </compilerArguments>
+                    </compilerArguments>-->
                     <compilerArgs>
                         <arg>-Xlint:unchecked</arg>
                     </compilerArgs>
@@ -98,6 +81,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <classpathLayoutType>custom</classpathLayoutType>
+                            <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout> 
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -137,6 +131,11 @@
         </dependency>
     </dependencies>
     
+    <organization>
+        <name>Steinbrecher</name>
+        <url>http://www.steinbrecher.bayern</url>
+    </organization>
+    
     <licenses>
         <license>
             <name>GNU General Public License, Version 3</name>
@@ -172,9 +171,9 @@
             <id>trackersb</id>
             <name>Stefan Huber</name>
             <email>stefan.huber.niedling@outlook.com</email>
-            <url>http://www.steinbrecher.bayern</url>
+            <url>https://www.steinbrecher.bayern</url>
             <organization>Steinbrecher</organization>
-            <organizationUrl>http://www.steinbrecher.bayern</organizationUrl>
+            <organizationUrl>https://www.steinbrecher.bayern</organizationUrl>
             <roles>
                 <role>developer</role>
             </roles>
@@ -186,12 +185,11 @@
         <contributor>
             <name>Lukas Jagemann</name>
             <email>splamyn@gmail.com</email>
-            <url>http://splamy.de</url>
+            <url>https://splamy.de</url>
             <roles>
                 <role>designer</role>
             </roles>
             <timezone>Europe/Berlin</timezone>
         </contributor>
     </contributors>
-    <name>Green2Parent</name>
 </project>
