@@ -124,7 +124,12 @@ public final class Launcher extends Application {
         }
 
         if (serv != null) {
-            serv.setOnFailed(evt -> Platform.exit());
+            serv.setOnFailed(evt -> {
+                Throwable thrown = evt.getSource().getException();
+                Logger.getLogger(Launcher.class.getName())
+                        .log(Level.SEVERE, "The downloadAndInstall service failed.", thrown);
+                Platform.exit();
+            });
             showProgressWindow();
             serv.start();
         }
