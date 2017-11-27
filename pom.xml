@@ -3,26 +3,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>bayern.steinbrecher.green2</groupId>
     <artifactId>Parent</artifactId>
     <version>2u13</version>
     <packaging>pom</packaging>
-    
+
     <modules>
         <module>ParentExecutables</module>
     </modules>
     <name>Parent</name>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.9</maven.compiler.source>
         <maven.compiler.target>1.9</maven.compiler.target>
     </properties>
-    
+
     <build>
         <finalName>${project.artifactId}</finalName>
-        
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -88,7 +88,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                             <classpathLayoutType>custom</classpathLayoutType>
-                            <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout> 
+                            <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
                         </manifest>
                     </archive>
                 </configuration>
@@ -115,7 +115,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -130,12 +130,12 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
     <organization>
         <name>Steinbrecher</name>
         <url>http://www.steinbrecher.bayern</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>GNU General Public License, Version 3</name>
@@ -143,12 +143,12 @@
             <distribution>manuel</distribution>
         </license>
     </licenses>
-    
+
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/TrackerSB/Green2/issues</url>
     </issueManagement>
-    
+
     <ciManagement>
         <system>Travis CI</system>
         <url>https://travis-ci.org/TrackerSB/Green2</url>
@@ -165,7 +165,7 @@
             </notifier>
         </notifiers>-->
     </ciManagement>
-    
+
     <developers>
         <developer>
             <id>trackersb</id>
@@ -180,7 +180,7 @@
             <timezone>Europe/Berlin</timezone>
         </developer>
     </developers>
-    
+
     <contributors>
         <contributor>
             <name>Lukas Jagemann</name>
