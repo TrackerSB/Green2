@@ -55,14 +55,14 @@ public class ContributionController extends WizardableController {
     private ListProperty<ContributionField> contributionFields
             = new SimpleListProperty<>(this, "contributionSpinner", FXCollections.observableArrayList());
     private BooleanProperty uniqueColors = new SimpleBooleanProperty(this, "uniqueColors", true);
-    private final ChangeListener calculateUniqueColors = (obs, oldVal, newVal) -> {
+    private final ChangeListener<Object> calculateUniqueColors = (obs, oldVal, newVal) -> {
         //Check for duplicate colors
         Set<Color> colors = new HashSet<>();
         uniqueColors.set(contributionFields.stream().allMatch(cf -> colors.add(cf.getColor())));
     };
     private BooleanProperty allContributionFieldsValid
             = new SimpleBooleanProperty(this, "allContributionFieldsValid", true);
-    private final ChangeListener calculateAllContributionFieldsValid = (obs, oldVal, newVal) -> {
+    private final ChangeListener<Object> calculateAllContributionFieldsValid = (obs, oldVal, newVal) -> {
         allContributionFieldsValid.set(contributionFields.stream().allMatch(ContributionField::isValid));
     };
 

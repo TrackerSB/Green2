@@ -49,15 +49,15 @@ import javafx.stage.Stage;
  */
 public class Wizard extends Application {
 
-    private StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
-    private Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
-    private MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
-    private BooleanProperty atBeginnng = new SimpleBooleanProperty(this, "atBeginning", true);
-    private BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
-    private BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
+    private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
+    private final Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
+    private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
+    private final BooleanProperty atBeginnng = new SimpleBooleanProperty(this, "atBeginning", true);
+    private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
+    private final BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
     private WizardController controller;
     private Stage stage;
-    private Stack<String> history = new Stack<>();
+    private final Stack<String> history = new Stack<>();
 
     Wizard() {
         /*
@@ -248,12 +248,12 @@ public class Wizard extends Application {
      * pages.
      * @throws IllegalCallableException Only thrown if thrown by one of the result functions of the visited pages.
      */
-    public <T> Optional<Map<String, T>> getResults() {
+    public Optional<Map<String, ?>> getResults() {
         if (isFinished()) {
-            Map<String, T> results = new HashMap<>();
+            Map<String, Object> results = new HashMap<>();
             history.forEach(key -> {
                 try {
-                    results.put(key, (T) pages.get(key).getResultFunction().call());
+                    results.put(key, pages.get(key).getResultFunction().call());
                 } catch (Exception ex) {
                     throw new IllegalCallableException(
                             "The result function of wizard page \""

@@ -37,12 +37,10 @@ public final class WizardPage<T> {
      * The key of the page to be used as first one.
      */
     public static final String FIRST_PAGE_KEY = "first";
-    private BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
-    private BooleanProperty hasNextFunction
-            = new SimpleBooleanProperty(this, "hasNextFunction");
+    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
+    private final BooleanProperty hasNextFunction = new SimpleBooleanProperty(this, "hasNextFunction");
     private Pane root;
-    private Property<Callable<String>> nextFunction
-            = new SimpleObjectProperty<>(this, "nextFunction");
+    private final Property<Callable<String>> nextFunction = new SimpleObjectProperty<>(this, "nextFunction");
     private boolean finish;
     private Callable<T> resultFunction;
 

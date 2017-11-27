@@ -69,7 +69,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
 
     private static final int DEFAULT_RECT_SIZE = 10;
     private final MapProperty<T, CheckBoxGroupPair> options
-            = new SimpleMapProperty(this, "options", FXCollections.observableHashMap());
+            = new SimpleMapProperty<>(this, "options", FXCollections.observableHashMap());
     private final ReadOnlyIntegerProperty totalCount = options.sizeProperty();
     private final MapProperty<Color, Object> groups //FIXME Try using ? or _ in JDK 9 instead of Object
             = new SimpleMapProperty<>(this, "groups", FXCollections.observableHashMap());
@@ -323,7 +323,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      *
      * @return The property representing the currently set groups.
      */
-    public ReadOnlyMapProperty selectedPerGroupProperty() {
+    public ReadOnlyMapProperty<Color, ? extends ReadOnlyIntegerProperty> selectedPerGroupProperty() {
         return selectedPerGroup;
     }
 
@@ -332,7 +332,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      *
      * @return The mapping between each group and the number of options associated with it.
      */
-    public ObservableMap<Color, ReadOnlyIntegerProperty> getSelectedPerGroup() {
+    public ObservableMap<Color, ? extends ReadOnlyIntegerProperty> getSelectedPerGroup() {
         return selectedPerGroupProperty().getValue();
     }
 
