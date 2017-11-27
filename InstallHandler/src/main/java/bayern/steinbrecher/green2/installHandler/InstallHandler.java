@@ -47,7 +47,7 @@ public final class InstallHandler extends Application {
             } catch (IllegalArgumentException ex) {
                 Logger.getLogger(InstallHandler.class.getName())
                         .log(Level.SEVERE,
-                                "The action\"" + specifiedAction + "\".\nAllowed actions: " + getActionsListing(), ex);
+                                "The action \"" + specifiedAction + "\".\nAllowed actions: " + getActionsListing(), ex);
             }
         }
     }
