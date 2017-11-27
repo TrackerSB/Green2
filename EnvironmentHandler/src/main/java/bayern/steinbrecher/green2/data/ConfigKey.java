@@ -140,7 +140,7 @@ public enum ConfigKey {
             = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
     private final Class<?> valueClass;
 
-    ConfigKey(Class<?> valueClass) {
+    private ConfigKey(Class<?> valueClass) {
         this.valueClass = valueClass;
     }
 
