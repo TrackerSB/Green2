@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -33,7 +34,7 @@ import javafx.stage.StageStyle;
  */
 public class ChoiceDialog extends Application {
 
-    private boolean installUpdates = false;
+    private Optional<Boolean> installUpdates = Optional.empty();
 
     /**
      * {@inheritDoc}
@@ -45,12 +46,15 @@ public class ChoiceDialog extends Application {
         Button yesButton = new Button(EnvironmentHandler.getResourceValue("yes"));
         yesButton.setDefaultButton(true);
         yesButton.setOnAction(evt -> {
-            installUpdates = true;
+            installUpdates = Optional.of(true);
             stage.close();
         });
 
         Button noButton = new Button(EnvironmentHandler.getResourceValue("no"));
-        noButton.setOnAction(evt -> stage.close());
+        noButton.setOnAction(evt -> {
+            installUpdates = Optional.of(false);
+            stage.close();
+        });
 
         HBox hbox = new HBox(yesButton, noButton);
         hbox.setSpacing(10);
@@ -70,9 +74,9 @@ public class ChoiceDialog extends Application {
      * This method opens a window asking the user whether to install updates, blocks until the user closes the window or
      * presses a button and returns the users choice.
      *
-     * @return {@code true} only if the user presses "YES".
+     * @return {@link Optional#empty()} only if the user closed the window without clicking yes or no.
      */
-    public static boolean askForUpdate() {
+    public static Optional<Boolean> askForUpdate() {
         ChoiceDialog cd = new ChoiceDialog();
         cd.start(new Stage());
         return cd.installUpdates;

@@ -102,9 +102,16 @@ public final class Launcher extends Application {
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
             if (isInstalled) {
-                if (!EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion) && ChoiceDialog.askForUpdate()) {
-                    serv = createDownloadAndInstallService(onlineVersion);
-                    serv.setOnSucceeded(evt -> Programs.MEMBER_MANAGEMENT.call());
+                if (!EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion)) {
+                    Optional<Boolean> installUpdates = ChoiceDialog.askForUpdate();
+                    if (installUpdates.isPresent()) {
+                        if (installUpdates.get()) {
+                            serv = createDownloadAndInstallService(onlineVersion);
+                            serv.setOnSucceeded(evt -> Programs.MEMBER_MANAGEMENT.call());
+                        } else {
+                            Programs.MEMBER_MANAGEMENT.call();
+                        }
+                    }
                 } else {
                     Programs.MEMBER_MANAGEMENT.call();
                 }
