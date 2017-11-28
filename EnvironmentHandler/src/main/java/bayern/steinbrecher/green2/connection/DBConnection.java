@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.connection;
 
-import bayern.steinbrecher.green2.data.ConfigKey;
+import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
@@ -56,8 +56,8 @@ public abstract class DBConnection implements AutoCloseable {
     static {
         DATABASE.bind(Bindings.createObjectBinding(() -> {
             Profile profile = EnvironmentHandler.getProfile();
-            return profile == null ? null : profile.getOrDefault(ConfigKey.DBMS, null);
-        }, EnvironmentHandler.loadedProfileProperty(), EnvironmentHandler.getProfile().getProperty(ConfigKey.DBMS)));
+            return profile == null ? null : profile.getOrDefault(ProfileSettings.DBMS, null);
+        }, EnvironmentHandler.loadedProfileProperty(), EnvironmentHandler.getProfile().getProperty(ProfileSettings.DBMS)));
     }
 
     static {
@@ -161,7 +161,7 @@ public abstract class DBConnection implements AutoCloseable {
             if (profile == null) {
                 throw new IllegalStateException("Can't check. Currently no profile is loaded.");
             } else {
-                String databaseName = profile.getOrDefault(ConfigKey.DATABASE_NAME, "database");
+                String databaseName = profile.getOrDefault(ProfileSettings.DATABASE_NAME, "database");
                 String query = MessageFormat.format(getQuery(Query.TABLES_EXIST), databaseName);
                 return Integer.parseInt(execQuery(query).get(1).get(0)) >= Tables.values().length;
             }

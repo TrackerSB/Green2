@@ -22,7 +22,7 @@ import bayern.steinbrecher.green2.connection.DefaultConnection;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
-import bayern.steinbrecher.green2.data.ConfigKey;
+import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.ProfileChoice;
@@ -178,7 +178,7 @@ public class MemberManagement extends Application {
 
     private Login createLogin() {
         Login login;
-        if (profile.getOrDefault(ConfigKey.USE_SSH, true)) {
+        if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
             login = new SshLogin();
         } else {
             login = new DefaultLogin();
@@ -247,22 +247,22 @@ public class MemberManagement extends Application {
         if (loginInfos.isPresent()) {
             Map<LoginKey, String> loginValues = loginInfos.get();
             try {
-                if (profile.getOrDefault(ConfigKey.USE_SSH, true)) {
+                if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
                     con = new SshConnection(
-                            profile.getOrDefault(ConfigKey.SSH_HOST, "localhost"),
+                            profile.getOrDefault(ProfileSettings.SSH_HOST, "localhost"),
                             loginValues.get(LoginKey.SSH_USERNAME),
                             loginValues.get(LoginKey.SSH_PASSWORD),
-                            profile.getOrDefault(ConfigKey.DATABASE_HOST, "localhost"),
+                            profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefault(ConfigKey.DATABASE_NAME, "dbname"),
-                            profile.getOrDefault(ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1));
+                            profile.getOrDefault(ProfileSettings.DATABASE_NAME, "dbname"),
+                            profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1));
                 } else {
                     con = new DefaultConnection(
-                            profile.getOrDefault(ConfigKey.DATABASE_HOST, "localhost"),
+                            profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost"),
                             loginValues.get(LoginKey.DATABASE_USERNAME),
                             loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefault(ConfigKey.DATABASE_NAME, "dbname"));
+                            profile.getOrDefault(ProfileSettings.DATABASE_NAME, "dbname"));
                 }
             } catch (UnknownHostException | AuthException ex) {
                 handleAuthException(login, waitScreen, ex);

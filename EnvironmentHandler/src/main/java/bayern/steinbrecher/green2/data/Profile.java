@@ -60,7 +60,7 @@ public class Profile {
      * The configurations found in a profile file.
      */
     //FIXME Java 9: Replace Property<String> with Property<T>
-    private ObservableMap<ConfigKey, Property<String>> configurations = FXCollections.observableHashMap();
+    private ObservableMap<ProfileSettings, Property<String>> configurations = FXCollections.observableHashMap();
     /**
      * {@code true} only if all allowed configurations are specified.
      */
@@ -97,12 +97,12 @@ public class Profile {
 
     public Profile(String profileName, boolean newProfile) {
         configurations.addListener((InvalidationListener) listener -> {
-            allConfigurationsSet = configurations.size() >= ConfigKey.values().length;
+            allConfigurationsSet = configurations.size() >= ProfileSettings.values().length;
         });
         configFile.addListener((obs, oldVal, newVal) -> {
             configurations.putAll(readConfigs(newVal));
             ageFunction = readAgeFunction(configurations.getOrDefault(
-                    ConfigKey.BIRTHDAY_EXPRESSION, new SimpleStringProperty("")).getValue());
+                    ProfileSettings.BIRTHDAY_EXPRESSION, new SimpleStringProperty("")).getValue());
         });
         configFilePath.addListener((obs, oldVal, newVal) -> configFile.setValue(new File(newVal)));
         originatorInfoPath.addListener((obs, oldVal, newVal) -> originatorInfoFile.setValue(new File(newVal)));
@@ -127,8 +127,8 @@ public class Profile {
         }
     }
 
-    private static ObservableMap<ConfigKey, Property<String>> readConfigs(File configFile) {
-        Map<ConfigKey, Property<String>> configurations = new HashMap<>();
+    private static ObservableMap<ProfileSettings, Property<String>> readConfigs(File configFile) {
+        Map<ProfileSettings, Property<String>> configurations = new HashMap<>();
 
         String[] parts;
         try (Scanner sc = new Scanner(configFile)) {
@@ -136,7 +136,7 @@ public class Profile {
                 String line = sc.nextLine().trim();
                 if (line.contains(VALUE_SEPARATOR)) {
                     parts = line.split(VALUE_SEPARATOR, 2);
-                    ConfigKey key = ConfigKey.valueOf(parts[0].toUpperCase());
+                    ProfileSettings key = ProfileSettings.valueOf(parts[0].toUpperCase());
                     Property<String> value = new SimpleObjectProperty<>(parts.length < 2 ? "" : parts[1]);
                     //FIXME Remove getValueFromString when Java 9 is released.
                     if (key.isValid(key.getValueFromString(value.getValue()))) {
@@ -209,8 +209,9 @@ public class Profile {
         }
     }
 
-    private String generateLine(ConfigKey key) {
-        return key.name() + VALUE_SEPARATOR + key.getStringFromValue(key.getValueFromString(configurations.get(key).getValue()));
+    private String generateLine(ProfileSettings key) {
+        return key.name() + VALUE_SEPARATOR
+                + key.getStringFromValue(key.getValueFromString(configurations.get(key).getValue()));
     }
 
     /**
@@ -222,7 +223,7 @@ public class Profile {
         }
         newProfile = false;
 
-        String out = Arrays.stream(ConfigKey.values())
+        String out = Arrays.stream(ProfileSettings.values())
                 .map(this::generateLine)
                 .collect(Collectors.joining("\n"));
         IOStreamUtility.printContent(out, configFile.getValue(), false);
@@ -293,7 +294,7 @@ public class Profile {
      * not specified.
      */
     @SuppressWarnings("UnnecessaryBoxing")
-    public <T> T getOrDefault(ConfigKey key, T defaultValue) {
+    public <T> T getOrDefault(ProfileSettings key, T defaultValue) {
         //FIXME Wait for JDK 9 in order to use generic enums
         if (defaultValue != null && !key.getValueClass().isAssignableFrom(defaultValue.getClass())) {
             throw new IllegalArgumentException("Type of defaultValue and the type of the value key represents have to "
@@ -326,7 +327,7 @@ public class Profile {
      * @param key The key to search for.
      * @return The property holding the value of {@code key} or {@code null} if there's no entry (yet) for {@code key}.
      */
-    public ReadOnlyProperty<String> getProperty(ConfigKey key) {
+    public ReadOnlyProperty<String> getProperty(ProfileSettings key) {
         //FIXME Wait for JDK 9 in order to use generic enums
         return configurations.get(key);
     }
@@ -338,7 +339,7 @@ public class Profile {
      * @param value The value to set for {@code key}.
      * @param <T> The type of the value.
      */
-    public <T> void set(ConfigKey key, T value) {
+    public <T> void set(ProfileSettings key, T value) {
         //FIXME Wait for JDK 9 in order to use generic enums
         if (!key.isValid(value)) {
             throw new IllegalArgumentException("The given value is not valid for the given key");

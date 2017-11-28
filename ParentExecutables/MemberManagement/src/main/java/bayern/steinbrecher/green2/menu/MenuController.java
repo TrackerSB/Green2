@@ -19,7 +19,7 @@ package bayern.steinbrecher.green2.menu;
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.contribution.Contribution;
-import bayern.steinbrecher.green2.data.ConfigKey;
+import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.generator.AddressGenerator;
@@ -362,7 +362,7 @@ public class MenuController extends Controller {
                             List<Member> invalidMember
                                     = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
                                             sequenceType, file,
-                                            EnvironmentHandler.getProfile().getOrDefault(ConfigKey.SEPA_USE_BOM, true));
+                                            EnvironmentHandler.getProfile().getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
                             String message = invalidMember.stream()
                                     .map(Member::toString)
                                     .collect(Collectors.joining("\n"));

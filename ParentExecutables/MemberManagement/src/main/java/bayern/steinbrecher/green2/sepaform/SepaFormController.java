@@ -99,9 +99,7 @@ public class SepaFormController extends CheckedController {
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));
 
-        Profile profile = EnvironmentHandler.getProfile();
-
-        originator = Originator.readOriginatorInfo(profile).orElse(new Originator(profile));
+        originator = Originator.readCurrentOriginatorInfo().orElse(new Originator());
 
         creatorTextField.setText(originator.getCreator());
         creditorTextField.setText(originator.getCreditor());

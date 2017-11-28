@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  *
  * @author Stefan Huber
  */
-public enum ConfigKey {
+public enum ProfileSettings {
     //FIXME Add generic to enum when available (JDK9?)
 
     /**
@@ -140,7 +140,7 @@ public enum ConfigKey {
             = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
     private final Class<?> valueClass;
 
-    private ConfigKey(Class<?> valueClass) {
+    private ProfileSettings(Class<?> valueClass) {
         this.valueClass = valueClass;
     }
 
@@ -155,19 +155,19 @@ public enum ConfigKey {
     }
 
     /**
-     * Checks whether the given value is valid for this ConfigKey.
+     * Checks whether the given value is valid for this ProfileSettings.
      *
      * @param value The value to check.
      * @param <T> The type of the value.
-     * @return {@code true} only if this value is valid for this ConfigKey.
+     * @return {@code true} only if this value is valid for this ProfileSettings.
      */
     public abstract <T> boolean isValid(T value);
 
     /**
-     * Returns a String representation of value according to the type of the value the ConfigKey holds.
+     * Returns a String representation of value according to the type of the value the ProfileSettings holds.
      *
      * @param value The value to convert.
-     * @param <T> The type of the value the ConfigKey holds.
+     * @param <T> The type of the value the ProfileSettings holds.
      * @return The String representation.
      */
     public <T> String getStringFromValue(T value) {
@@ -189,11 +189,11 @@ public enum ConfigKey {
     }
 
     /**
-     * Returns a value of the type this ConfigKey holds converting it from {@code value}. NOTE: It does NOT imply that
+     * Returns a value of the type this ProfileSettings holds converting it from {@code value}. NOTE: It does NOT imply that
      * the valid is a valid value to be used as value of a ConfigKey.
      *
      * @param value The String representation to convert.
-     * @param <T> The type of the value the ConfigKey holds.
+     * @param <T> The type of the value the ProfileSettings holds.
      * @return The converted value.
      */
     public <T> T getValueFromString(String value) {
@@ -213,7 +213,7 @@ public enum ConfigKey {
             try {
                 return (T) DBConnection.SupportedDatabase.valueOf(value);
             } catch (IllegalArgumentException ex) {
-                Logger.getLogger(ConfigKey.class.getName())
+                Logger.getLogger(ProfileSettings.class.getName())
                         .log(Level.WARNING, "Could not find SupportedDatabase {0}", value);
                 return null;
             }

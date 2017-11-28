@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.configDialog;
 
 import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.connection.DBConnection;
-import bayern.steinbrecher.green2.data.ConfigKey;
+import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedComboBox;
@@ -77,7 +77,7 @@ public class ConfigDialogController extends CheckedController {
         checkedTextFields.addAll(Arrays.asList(sshHostTextField, databaseHostTextField, databaseNameTextField,
                 birthdayExpressionTextField, profileNameTextField));
 
-        birthdayExpressionTextField.setRegex(ConfigKey.BIRTHDAY_PATTERN.pattern());
+        birthdayExpressionTextField.setRegex(ProfileSettings.BIRTHDAY_PATTERN.pattern());
         profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (stage != null) {
                 stage.setTitle(EnvironmentHandler.getResourceValue("configureApplication") + ": " + newVal);
@@ -95,30 +95,30 @@ public class ConfigDialogController extends CheckedController {
 
         //Load settings
         profile = EnvironmentHandler.getProfile();
-        useSSHCheckBox.setSelected(profile.getOrDefault(ConfigKey.USE_SSH, true));
-        sshHostTextField.setText(profile.getOrDefault(ConfigKey.SSH_HOST, ""));
-        databaseHostTextField.setText(profile.getOrDefault(ConfigKey.DATABASE_HOST, ""));
-        databaseNameTextField.setText(profile.getOrDefault(ConfigKey.DATABASE_NAME, ""));
-        birthdayExpressionTextField.setText(profile.getOrDefault(ConfigKey.BIRTHDAY_EXPRESSION, ""));
+        useSSHCheckBox.setSelected(profile.getOrDefault(ProfileSettings.USE_SSH, true));
+        sshHostTextField.setText(profile.getOrDefault(ProfileSettings.SSH_HOST, ""));
+        databaseHostTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_HOST, ""));
+        databaseNameTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_NAME, ""));
+        birthdayExpressionTextField.setText(profile.getOrDefault(ProfileSettings.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
-        sepaWithBomCheckBox.setSelected(profile.getOrDefault(ConfigKey.SEPA_USE_BOM, true));
-        sshCharsetTextField.setText(profile.getOrDefault(ConfigKey.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
+        sepaWithBomCheckBox.setSelected(profile.getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
+        sshCharsetTextField.setText(profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
         dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(DBConnection.SupportedDatabase.values())));
-        dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ConfigKey.DBMS, null));
+        dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ProfileSettings.DBMS, null));
     }
 
     @FXML
     private void saveSettings() {
         checkStage();
         if (isValid()) {
-            profile.set(ConfigKey.USE_SSH, useSSHCheckBox.isSelected());
-            profile.set(ConfigKey.SSH_HOST, sshHostTextField.getText());
-            profile.set(ConfigKey.DATABASE_HOST, databaseHostTextField.getText());
-            profile.set(ConfigKey.DATABASE_NAME, databaseNameTextField.getText());
-            profile.set(ConfigKey.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getText());
-            profile.set(ConfigKey.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());
-            profile.set(ConfigKey.SSH_CHARSET, Charset.forName(sshCharsetTextField.getText()));
-            profile.set(ConfigKey.DBMS, dbmsComboBox.getSelectionModel().getSelectedItem());
+            profile.set(ProfileSettings.USE_SSH, useSSHCheckBox.isSelected());
+            profile.set(ProfileSettings.SSH_HOST, sshHostTextField.getText());
+            profile.set(ProfileSettings.DATABASE_HOST, databaseHostTextField.getText());
+            profile.set(ProfileSettings.DATABASE_NAME, databaseNameTextField.getText());
+            profile.set(ProfileSettings.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getText());
+            profile.set(ProfileSettings.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());
+            profile.set(ProfileSettings.SSH_CHARSET, Charset.forName(sshCharsetTextField.getText()));
+            profile.set(ProfileSettings.DBMS, dbmsComboBox.getSelectionModel().getSelectedItem());
             profile.saveSettings();
             profile.renameProfile(profileNameTextField.getText());
             stage.close();

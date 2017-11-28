@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.people;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import java.io.BufferedWriter;
@@ -42,7 +43,7 @@ import java.util.logging.Logger;
  * @author Stefan Huber
  */
 public class Originator {
-    
+
     private String creator,
             msgId,
             creditor,
@@ -54,7 +55,7 @@ public class Originator {
     private final File originatorFile;
     private static final Properties DEFAULT_PROPERTIES = new Properties() {
         private static final long serialVersionUID = 1L;
-        
+
         {
             put("creator", "");
             put("creditor", "");
@@ -69,8 +70,17 @@ public class Originator {
     private LocalDate executionDate;
 
     /**
-     * Constructs a new originator which has owns the attributes specified in {@code originatorFile}. HINT: Attributes
-     * are only set after calling {@code readOriginatorInfo()}.
+     * Constructs a new originator whose attributes are specified by the currently loaded {@link Profile}.
+     *
+     * @see EnvironmentHandler#getProfile()
+     */
+    public Originator() {
+        this(EnvironmentHandler.getProfile());
+    }
+
+    /**
+     * Constructs a new originator which has the attributes specified in {@code originatorFile}. NOTE: Attributes are
+     * only set after calling {@link #readOriginatorInfo()}.
      *
      * @param profile The profile this originator belongs to.
      */
@@ -79,10 +89,21 @@ public class Originator {
     }
 
     /**
-     * Constructs a new originator out of the attributes specified in {@code originatorFile}.
+     * Constructs a new {@link Originator} out of the attributes of the currently loaded {@link Profile}.
+     *
+     * @return The new originator or {@link Optional#empty()} if the file was not found or could not be read.
+     * @see EnvironmentHandler#getProfile()
+     */
+    public static Optional<Originator> readCurrentOriginatorInfo() {
+        return readOriginatorInfo(EnvironmentHandler.getProfile());
+    }
+
+    /**
+     * Constructs a new originator out of the attributes specified in {@code originatorFile} of {@link Profile}.
      *
      * @param profile The profile the originator has to belong to.
      * @return The new originator or {@link Optional#empty()} if the file was not found or could not be read.
+     * @see Profile#getOriginatorInfoFile()
      */
     public static Optional<Originator> readOriginatorInfo(Profile profile) {
         Originator originator = new Originator(profile);
@@ -90,9 +111,10 @@ public class Originator {
     }
 
     /**
-     * Reads in the specified file and sets the appropriate attributes.
+     * Reads the originator of the specified {@link Profile}.
      *
      * @return {@code true} only if the file associated with this originator was found and could be read.
+     * @see Profile#getOriginatorInfoFile()
      */
     public boolean readOriginatorInfo() {
         if (originatorFile.exists()) {
@@ -105,7 +127,7 @@ public class Originator {
                         .forEach(f -> {
                             try {
                                 String property = originatorProps.getProperty(f.getName());
-                                
+
                                 if (f.getType() == LocalDate.class) {
                                     f.set(this, LocalDate.parse(property));
                                 } else if (f.getType() == String.class) {
