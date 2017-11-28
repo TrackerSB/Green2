@@ -107,10 +107,10 @@ public class ConfigDialogController extends CheckedController {
         dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ProfileSettings.DBMS, null));
     }
 
-    @FXML
-    private void saveSettings() {
+    private boolean saveSettings() {
         checkStage();
-        if (isValid()) {
+        boolean isValid = isValid();
+        if (isValid) {
             profile.set(ProfileSettings.USE_SSH, useSSHCheckBox.isSelected());
             profile.set(ProfileSettings.SSH_HOST, sshHostTextField.getText());
             profile.set(ProfileSettings.DATABASE_HOST, databaseHostTextField.getText());
@@ -123,12 +123,21 @@ public class ConfigDialogController extends CheckedController {
             profile.renameProfile(profileNameTextField.getText());
             stage.close();
         }
+        return isValid;
+    }
+
+    @FXML
+    private void saveSettingsAndReturn() {
+        if (saveSettings()) {
+            Programs.CONFIGURATION_DIALOG.call();
+        }
     }
 
     @FXML
     private void saveSettingsAndContinue() {
-        saveSettings();
-        Programs.MEMBER_MANAGEMENT.call();
+        if (saveSettings()) {
+            Programs.MEMBER_MANAGEMENT.call();
+        }
     }
 
     /**
