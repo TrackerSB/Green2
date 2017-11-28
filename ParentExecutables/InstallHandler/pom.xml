@@ -14,8 +14,16 @@
     <packaging>jar</packaging>
 
     <name>InstallHandler</name>
-
+    
     <properties>
         <mainClass>bayern.steinbrecher.green2.installHandler.InstallHandler</mainClass>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>EnvironmentHandler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

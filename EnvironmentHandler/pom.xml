@@ -32,10 +32,5 @@
             <artifactId>jsch</artifactId>
             <version>0.1.54</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>InstallHandler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

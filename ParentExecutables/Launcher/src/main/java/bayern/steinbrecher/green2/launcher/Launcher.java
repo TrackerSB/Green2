@@ -238,12 +238,7 @@ public final class Launcher extends Application {
                         Logger.getLogger(Launcher.class.getName())
                                 .log(Level.WARNING, "The installer got follwing error:\n{0}", errorMessage);
                     }
-
                 } else {
-                    //Following line is not working until Green2 was launched with admin rights.
-                    //The version is currently set by the installer.
-                    //VersionHandler.updateLocalVersion(newVersion);
-
                     Collector.sendData();
                 }
             } catch (InterruptedException | IOException ex) {

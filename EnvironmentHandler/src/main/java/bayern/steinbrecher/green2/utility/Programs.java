@@ -17,7 +17,6 @@
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.installHandler.InstallHandler;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;
@@ -33,8 +32,8 @@ public enum Programs {
     MEMBER_MANAGEMENT("MemberManagement.jar"),
     LAUNCHER("Launcher.jar"),
     CONFIGURATION_DIALOG("ConfigurationDialog.jar"),
-    INSTALLER("InstallHandler.jar", InstallHandler.Actions.INSTALL.name()),
-    UNINSTALLER("InstallHandler.jar", InstallHandler.Actions.UNINSTALL.name());
+    INSTALLER("InstallHandler.jar", "install"),
+    UNINSTALLER("InstallHandler.jar", "uninstall");
 
     /**
      * The path of the local folder where to save the application itself.
