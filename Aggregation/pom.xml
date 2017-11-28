@@ -20,7 +20,7 @@
         <module>../ParentExecutables/ConfigurationDialog</module>
         <module>../ParentExecutables/Launcher</module>
         <module>../ParentExecutables/MemberManagement</module>
-        <module>../ParentExecutables/InstallHandler</module>
+        <module>../ParentExecutables/Uninstaller</module>
     </modules>
     <name>Aggregation</name>
 

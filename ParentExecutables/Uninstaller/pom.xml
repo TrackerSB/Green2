@@ -10,13 +10,13 @@
         <version>2u13</version>
     </parent>
 
-    <artifactId>InstallHandler</artifactId>
+    <artifactId>Uninstaller</artifactId>
     <packaging>jar</packaging>
 
-    <name>InstallHandler</name>
+    <name>Uninstaller</name>
     
     <properties>
-        <mainClass>bayern.steinbrecher.green2.installHandler.InstallHandler</mainClass>
+        <mainClass>bayern.steinbrecher.green2.uninstaller.Uninstaller</mainClass>
     </properties>
     
     <dependencies>
