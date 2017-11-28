@@ -313,7 +313,7 @@ public final class EnvironmentHandler {
         /**
          * Representing any Linux operating system.
          */
-        LINUX
+        LINUX;
     }
 
     /**
@@ -327,20 +327,20 @@ public final class EnvironmentHandler {
         /**
          * The splashscreen of the english version of Green2.
          */
-        SPLASHSCREEN_EN("splashscreen_en.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true),
+        SPLASHSCREEN_EN("splashscreen_en.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE),
         /**
          * The splashscreen of the german version of Green2.
          */
-        SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE, true, true);
+        SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE);
 
-        private Image image;
+        private final Image image;
 
-        LogoSet(String filename) {
+        private LogoSet(String filename) {
             image = new Image(BASIC_ICON_DIR_PATH + filename);
         }
 
-        LogoSet(String filename, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) {
-            image = new Image(BASIC_ICON_DIR_PATH + filename, requestedWidth, requestedHeight, preserveRatio, smooth);
+        private LogoSet(String filename, double requestedWidth, double requestedHeight) {
+            image = new Image(BASIC_ICON_DIR_PATH + filename, requestedWidth, requestedHeight, true, true);
         }
 
         /**
@@ -377,12 +377,13 @@ public final class EnvironmentHandler {
         CREDIT_CARD("credit-card.png", false),
         BANK("back.png", false);
 
-        private Image image;
-        private boolean isBig;
+        public static final int BIG_SIZE = 50;
+        public static final int SMALL_SIZE = 15;
+        private final Image image;
 
-        ImageSet(String filename, boolean big) {
-            image = new Image(BASIC_ICON_DIR_PATH + filename);
-            isBig = big;
+        private ImageSet(String filename, boolean big) {
+            int size = big ? BIG_SIZE : SMALL_SIZE;
+            image = new Image(BASIC_ICON_DIR_PATH + filename, size, size, true, true);
         }
 
         /**
@@ -395,20 +396,13 @@ public final class EnvironmentHandler {
         }
 
         /**
-         * Returns the image as {@link ImageView} of size 50x50 if big and of size 15x15 if small.
+         * Returns the image as {@link ImageView} of size of the image.
          *
          * @return The image as {@link ImageView}.
          */
         public ImageView getAsImageView() {
             ImageView imageView = new ImageView(get());
             imageView.setSmooth(true);
-            if (isBig) {
-                imageView.setFitHeight(50);
-                imageView.setFitWidth(50);
-            } else {
-                imageView.setFitHeight(15);
-                imageView.setFitWidth(15);
-            }
             return imageView;
         }
     }
