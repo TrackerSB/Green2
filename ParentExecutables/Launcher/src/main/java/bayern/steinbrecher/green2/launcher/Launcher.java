@@ -103,13 +103,13 @@ public final class Launcher extends Application {
             String onlineVersion = optOnlineVersion.get();
             if (isInstalled) {
                 if (!EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion) && ChoiceDialog.askForUpdate()) {
-                    serv = downloadAndInstall(onlineVersion);
+                    serv = createDownloadAndInstallService(onlineVersion);
                     serv.setOnSucceeded(evt -> Programs.MEMBER_MANAGEMENT.call());
                 } else {
                     Programs.MEMBER_MANAGEMENT.call();
                 }
             } else {
-                serv = downloadAndInstall(onlineVersion);
+                serv = createDownloadAndInstallService(onlineVersion);
                 serv.setOnSucceeded(evt -> Programs.CONFIGURATION_DIALOG.call());
             }
         } else if (isInstalled) {
@@ -206,7 +206,7 @@ public final class Launcher extends Application {
     /**
      * Returns a service which downloads and installs Green2.
      */
-    private Service<Void> downloadAndInstall(String newVersion) {
+    private Service<Void> createDownloadAndInstallService(String newVersion) {
         return ServiceFactory.createService(() -> {
             try {
                 File tempFile = download();
