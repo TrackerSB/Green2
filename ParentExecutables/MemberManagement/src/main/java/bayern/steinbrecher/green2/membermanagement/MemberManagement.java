@@ -122,7 +122,11 @@ public class MemberManagement extends Application {
                 if (optDBConnection.isPresent()) {
                     dbConnection = optDBConnection.get();
                     try {
-                        dbConnection.createTablesIfNeeded();
+                        if (!dbConnection.createTablesIfNeeded()) {
+                            Logger.getLogger(MemberManagement.class.getName()).log(Level.INFO,
+                                    "Some tables are missing and the user did not confirm the creation of them.");
+                            Platform.exit();
+                        }
                     } catch (SchemeCreationException ex) {
                         String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
                         DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme).showAndWait();

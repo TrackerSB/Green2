@@ -21,6 +21,7 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.people.Member;
+import bayern.steinbrecher.green2.utility.DialogUtility;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -32,12 +33,15 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 /**
  * Represents a database connection.
@@ -85,12 +89,8 @@ public abstract class DBConnection implements AutoCloseable {
         mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE " + Tables.NICKNAMES.getRealTableName() + " ("
                 + "Name VARCHAR(255) PRIMARY KEY,"
                 + "Spitzname VARCHAR(255) NOT NULL);");
-        mysql.put(Query.TABLES_EXIST, "SELECT count(*) FROM information_schema.tables "
-                + "WHERE table_schema=\"{0}\" AND ("
-                + Arrays.stream(Tables.values())
-                        .map(t -> "table_name=\"" + t.getRealTableName() + "\"")
-                        .collect(Collectors.joining(" OR "))
-                + ");");
+        mysql.put(Query.TABLE_EXISTS, "SELECT count(*) FROM information_schema.tables "
+                + "WHERE table_schema=\"{0}\" AND (table_name=\"{1}\");");
         QUERIES.put(SupportedDatabase.MY_SQL, mysql);
     }
 
@@ -150,19 +150,21 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Checks whether tables &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; exist. It DOES NOT check whether they
-     * have all needed columns and are configured right.
+     * Checks whether the given table exists. It DOES NOT check whether it has all needed columns and is configured
+     * right.
      *
-     * @return {@code true} only if both tables exist.
+     * @param table The table to search for.
+     * @return {@code true} only if the given table exist.
      */
-    public boolean tablesExist() {
+    public boolean tableExists(Tables table) {
         try {
             Profile profile = EnvironmentHandler.getProfile();
             if (profile == null) {
                 throw new IllegalStateException("Can't check. Currently no profile is loaded.");
             } else {
                 String databaseName = profile.getOrDefault(ProfileSettings.DATABASE_NAME, "database");
-                String query = MessageFormat.format(getQuery(Query.TABLES_EXIST), databaseName);
+                String query
+                        = MessageFormat.format(getQuery(Query.TABLE_EXISTS), databaseName, table.getRealTableName());
                 return Integer.parseInt(execQuery(query).get(1).get(0)) >= Tables.values().length;
             }
             //FIXME When permissions to read are missing, also a SQLException is thrown.
@@ -172,20 +174,47 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Creates table &bdquo;Mitglieder&ldquo; and &bdquo;Spitznamen&ldquo; if they not already exist.
+     * Creates all tables if they do not already exist and the user confirms the creation.
      *
-     * @throws SchemeCreationException Thrown, only if there are tables missing in the database and they could not be
-     * created.
+     * @return {@code true} only if either no table is missing or the missing tables were created.
+     * @throws SchemeCreationException Thrown, only if there are tables missing in the database, the user confirmed the
+     * creation and they could not be created.
      */
-    public void createTablesIfNeeded() throws SchemeCreationException {
-        if (!tablesExist()) {
-            try {
-                execUpdate(getQuery(Query.CREATE_MEMBER_TABLE));
-                execUpdate(getQuery(Query.CREATE_NICKNAMES_TABLE));
-            } catch (SQLException ex) {
-                throw new SchemeCreationException("Could not create database tables", ex);
+    public boolean createTablesIfNeeded() throws SchemeCreationException {
+        List<Tables> missingTables = Arrays.stream(Tables.values())
+                .filter(this::tableExists)
+                .collect(Collectors.toList());
+        boolean tablesAreMissing = !missingTables.isEmpty();
+        boolean tablesCreated = false;
+        if (tablesAreMissing) {
+            StringJoiner message = new StringJoiner("\n").add(EnvironmentHandler.getResourceValue("tablesMissing"));
+            missingTables.forEach(table -> message.add(table.getRealTableName()));
+            Alert creationConfirmation = DialogUtility.createAlert(
+                    Alert.AlertType.CONFIRMATION, message.toString(), ButtonType.YES, ButtonType.NO);
+            Optional<ButtonType> resultButton = creationConfirmation.showAndWait();
+            if (resultButton.isPresent() && resultButton.get() == ButtonType.YES) {
+                for (Tables table : missingTables) {
+                    try {
+                        switch (table) {
+                            case MEMBER:
+                                execUpdate(getQuery(Query.CREATE_MEMBER_TABLE));
+                                break;
+                            case NICKNAMES:
+                                execUpdate(getQuery(Query.CREATE_NICKNAMES_TABLE));
+                                break;
+                            default:
+                                throw new SchemeCreationException(
+                                        "There is no sql statement for creating \"" + table.getRealTableName() + "\".");
+                        }
+                    } catch (SQLException ex) {
+                        throw new SchemeCreationException("Could not create one or more database tables", ex);
+                    }
+                }
+                tablesCreated = true;
             }
         }
+
+        return !tablesAreMissing || tablesCreated;
     }
 
     /**
@@ -296,11 +325,12 @@ public abstract class DBConnection implements AutoCloseable {
 
     private enum Query {
         /**
-         * Checks whether all tables exist.<br />
+         * Checks whether a given table exists.<br />
          * Variables:<br />
-         * 0: database name
+         * 0: database name<br />
+         * 1: name of the table
          */
-        TABLES_EXIST(true),
+        TABLE_EXISTS(true),
         /**
          * Creates the database for member with all columns.
          */
