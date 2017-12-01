@@ -75,7 +75,7 @@ End With
 
 'Create start menu entries
 createLink "Grün2 starten", programFilesPath, "Launcher.jar"
-createLink "Grün2 deinstallieren", programFilesPath, "uninstall.vbs"
+createLink "Grün2 deinstallieren", programFilesPath, "Uninstaller.jar"
 createLink "Grün2 konfigurieren", programFilesPath, "ConfigurationDialog.jar"
 
 Sub createLink(linkname, workingDir, fileOfWorkingDir)

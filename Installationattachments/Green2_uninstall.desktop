@@ -3,6 +3,6 @@ Type=Application
 Version=1.0
 Name=Uninstall Green2
 Name[de]=Grün2 deinstallieren
-Exec=/bin/bash /opt/Green2/uninstall.sh
+Exec=/usr/bin/xdg-open /opt/Green2/Uninstaller.jar
 Icon=/opt/Green2/icon.png
 Categories=Office;Java;
