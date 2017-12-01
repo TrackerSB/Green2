@@ -226,7 +226,8 @@ public class Wizard extends Application {
     }
 
     /**
-     * Returns the property representing whether the wizard is finished.
+     * Returns the property representing whether the wizard is finished. NOTE: It is not finished when it was closed
+     * without using the "finish" button.
      *
      * @return The property representing whether the wizard is finished.
      */
@@ -235,9 +236,10 @@ public class Wizard extends Application {
     }
 
     /**
-     * Checks whether the wizard is finished.
+     * Checks whether the wizard is finished. NOTE: It is not finished when it was closed without using the "finish"
+     * button.
      *
-     * @return Only {@code true} if the wizard is finished.
+     * @return {@code true} only if the wizard is finished.
      */
     public boolean isFinished() {
         return finished.get();
