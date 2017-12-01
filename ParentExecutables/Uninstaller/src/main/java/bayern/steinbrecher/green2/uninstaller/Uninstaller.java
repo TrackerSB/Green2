@@ -34,7 +34,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
- * This class is only needed for the installer to determine where to put the version of Green2.
+ * This class is only needed for uninstalling the application.
  *
  * @author Stefan Huber
  */
