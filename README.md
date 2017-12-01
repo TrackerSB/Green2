@@ -4,6 +4,12 @@
 [![](https://img.shields.io/badge/JavaFX-9-blue.svg)](https://github.com/TrackerSB/Green2)
 [![](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
 
+[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=lines)](https://github.com/TrackerSB/Green2)
+[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=code)](https://github.com/TrackerSB/Green2)
+[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=comments)](https://github.com/TrackerSB/Green2)
+[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=blanks)](https://github.com/TrackerSB/Green2)
+[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=files)](https://github.com/TrackerSB/Green2)
+
 # Green2
 A client for creating serial letters, Sepa Direct Debits, etc.
 
