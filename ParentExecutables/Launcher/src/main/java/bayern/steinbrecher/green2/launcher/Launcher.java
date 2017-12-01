@@ -217,7 +217,6 @@ public final class Launcher extends Application {
         return ServiceFactory.createService(() -> {
             try {
                 File tempFile = download();
-
                 File tempDir = Files.createTempDirectory(null).toFile();
 
                 ZipUtility.unzip(tempFile, tempDir, ZIP_CHARSET);
@@ -228,7 +227,6 @@ public final class Launcher extends Application {
 
                 int installerExitValue = installer.exitValue();
                 tempDir.delete();
-
                 if (installerExitValue != 0) {
                     String errorMessage;
                     try (InputStream errorStream = installer.getErrorStream()) {
@@ -236,7 +234,7 @@ public final class Launcher extends Application {
                     }
                     if (!errorMessage.isEmpty()) {
                         Logger.getLogger(Launcher.class.getName())
-                                .log(Level.WARNING, "The installer got follwing error:\n{0}", errorMessage);
+                                .log(Level.SEVERE, "The installer got follwing error:\n{0}", errorMessage);
                     }
                 } else {
                     Collector.sendData();
