@@ -187,37 +187,39 @@ public class Wizard extends Application {
     }
 
     /**
-     * Moves to the next page if possible.
+     * Moves to the next page if possible and if this page is valid.
      */
     void showNext() {
-        WizardPage<?> page = currentPage.getValue();
-        Callable<String> nextFunction = page.getNextFunction();
-        if (page.isHasNextFunction() && page.isValid()) {
-            try {
-                String nextIndex = nextFunction.call();
-                if (!pages.containsKey(nextIndex)) {
-                    throw new PageNotFoundException(
-                            "Wizard contains no page with key \""
-                            + nextIndex + "\".");
+        if (currentPage.getValue().isValid()) {
+            WizardPage<?> page = currentPage.getValue();
+            Callable<String> nextFunction = page.getNextFunction();
+            if (page.isHasNextFunction() && page.isValid()) {
+                try {
+                    String nextIndex = nextFunction.call();
+                    if (!pages.containsKey(nextIndex)) {
+                        throw new PageNotFoundException(
+                                "Wizard contains no page with key \""
+                                + nextIndex + "\".");
+                    }
+                    currentIndex.set(nextIndex);
+                    history.push(currentIndex.get());
+                    atBeginnng.set(false);
+                    updatePage();
+                } catch (Exception ex) {
+                    throw new IllegalCallableException(
+                            "A valid function or a next function of page \""
+                            + currentIndex.get() + "\" has thrown an exception",
+                            ex);
                 }
-                currentIndex.set(nextIndex);
-                history.push(currentIndex.get());
-                atBeginnng.set(false);
-                updatePage();
-            } catch (Exception ex) {
-                throw new IllegalCallableException(
-                        "A valid function or a next function of page \""
-                        + currentIndex.get() + "\" has thrown an exception",
-                        ex);
             }
         }
     }
 
     /**
-     * Closes the stage only if the current page is the last one.
+     * Closes the stage only if the current page is the last one and it is valid.
      */
     void finish() {
-        if (atFinish.get()) {
+        if (currentPage.getValue().isValid() && atFinish.get()) {
             finished.set(true);
             stage.close();
         }
