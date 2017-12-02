@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedComboBox;
+import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
@@ -56,7 +57,11 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedTextField sshHostTextField;
     @FXML
+    private CheckedIntegerSpinner sshPort;
+    @FXML
     private CheckedTextField databaseHostTextField;
+    @FXML
+    private CheckedIntegerSpinner databasePort;
     @FXML
     private CheckedTextField databaseNameTextField;
     @FXML
@@ -87,17 +92,24 @@ public class ConfigDialogController extends CheckedController {
         });
 
         anyInputMissing.bind(BindingUtility.reduceOr(checkedTextFields.stream().map(CheckedTextField::emptyProperty))
-                .or(dbmsComboBox.nothingSelectedProperty()));
+                .or(dbmsComboBox.nothingSelectedProperty())
+                .or(sshPort.valueProperty().isNull())
+                .or(databasePort.valueProperty().isNull()));
         anyInputToLong.bind(BindingUtility.reduceOr(checkedTextFields.stream().map(CheckedTextField::toLongProperty)));
         valid.bind(BindingUtility.reduceAnd(checkedTextFields.stream().map(CheckedTextField::validProperty))
                 .and(profileAlreadyExists.not())
-                .and(dbmsComboBox.nothingSelectedProperty().not()));
+                .and(dbmsComboBox.nothingSelectedProperty().not())
+                .and(sshPort.validProperty())
+                .and(databasePort.validProperty()));
 
         //Load settings
         profile = EnvironmentHandler.getProfile();
         useSSHCheckBox.setSelected(profile.getOrDefault(ProfileSettings.USE_SSH, true));
         sshHostTextField.setText(profile.getOrDefault(ProfileSettings.SSH_HOST, ""));
+        sshPort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.SSH_PORT, 22));
         databaseHostTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_HOST, ""));
+        databasePort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.DATABASE_PORT,
+                profile.getOrDefault(ProfileSettings.DBMS, DBConnection.SupportedDatabase.MY_SQL).getDefaultPort()));
         databaseNameTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(profile.getOrDefault(ProfileSettings.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
@@ -113,7 +125,9 @@ public class ConfigDialogController extends CheckedController {
         if (isValid) {
             profile.set(ProfileSettings.USE_SSH, useSSHCheckBox.isSelected());
             profile.set(ProfileSettings.SSH_HOST, sshHostTextField.getText());
+            profile.set(ProfileSettings.SSH_PORT, sshPort.getValue());
             profile.set(ProfileSettings.DATABASE_HOST, databaseHostTextField.getText());
+            profile.set(ProfileSettings.DATABASE_PORT, databasePort.getValue());
             profile.set(ProfileSettings.DATABASE_NAME, databaseNameTextField.getText());
             profile.set(ProfileSettings.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getText());
             profile.set(ProfileSettings.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());

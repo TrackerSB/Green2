@@ -360,12 +360,14 @@ public abstract class DBConnection implements AutoCloseable {
      * This enum lists all supported databases like MySQL.
      */
     public enum SupportedDatabase {
-        MY_SQL("My SQL");
+        MY_SQL("My SQL", 3306);
 
         private final String displayName;
+        private final int defaultPort;
 
-        private SupportedDatabase(String displayName) {
+        private SupportedDatabase(String displayName, int defaultPort) {
             this.displayName = displayName;
+            this.defaultPort = defaultPort;
         }
 
         /**
@@ -374,6 +376,15 @@ public abstract class DBConnection implements AutoCloseable {
         @Override
         public String toString() {
             return displayName;
+        }
+
+        /**
+         * Returns the default port of the dbms.
+         *
+         * @return The default port of the dbms.
+         */
+        public int getDefaultPort() {
+            return defaultPort;
         }
     }
 

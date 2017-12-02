@@ -57,9 +57,33 @@ public enum ProfileSettings {
         }
     },
     /**
+     * The port to use for the ssh connection.
+     */
+    SSH_PORT(Integer.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && value != null;
+        }
+    },
+    /**
      * The host for connecting to the database.
      */
     DATABASE_HOST(String.class) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <T> boolean isValid(T value) {
+            return (getValueClass().isInstance(value)) && value != null;
+        }
+    },
+    /**
+     * The port to use for the database connection.
+     */
+    DATABASE_PORT(Integer.class) {
         /**
          * {@inheritDoc}
          */
@@ -183,14 +207,16 @@ public enum ProfileSettings {
             return ((Charset) value).name();
         } else if (value instanceof DBConnection.SupportedDatabase) {
             return ((DBConnection.SupportedDatabase) value).name();
+        } else if (value instanceof Integer) {
+            return Integer.toString((Integer) value);
         } else {
             throw new UnsupportedOperationException(value.getClass().getSimpleName() + " is not supported.");
         }
     }
 
     /**
-     * Returns a value of the type this ProfileSettings holds converting it from {@code value}. NOTE: It does NOT imply that
-     * the valid is a valid value to be used as value of a ConfigKey.
+     * Returns a value of the type this ProfileSettings holds converting it from {@code value}. NOTE: It does NOT imply
+     * that the valid is a valid value to be used as value of a ConfigKey.
      *
      * @param value The String representation to convert.
      * @param <T> The type of the value the ProfileSettings holds.
@@ -217,6 +243,8 @@ public enum ProfileSettings {
                         .log(Level.WARNING, "Could not find SupportedDatabase {0}", value);
                 return null;
             }
+        } else if (Integer.class.isAssignableFrom(valueClass)) {
+            return (T) valueClass.cast(Integer.parseInt(value));
         } else {
             throw new UnsupportedOperationException(valueClass.getSimpleName() + " is not supported.");
         }
