@@ -1,19 +1,34 @@
+'Check number of parameters
+If WScript.Arguments.Count < 2 Then
+    WScript.Echo "There are parameters missing: 0=HKCU of Green2, 1=delete configs true/false"
+End If
+
 'Request admin rights
 If Not WScript.Arguments.Named.Exists("elevate") Then
-  CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ /elevate", "", "runas", 1
-  WScript.Quit
+    CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ " & WScript.Arguments(0) & " " & WScript.Arguments(1) & " /elevate", "", "runas", 1
+    WScript.Quit
 End If
 
 Set oWS = CreateObject("WScript.Shell")
-Set fso = CreateObject("Scripting.FileSystemObject")
-programFilesPath = oWS.ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
-menuEntryFolderPath = oWS.SpecialFolders("AllUsersPrograms") & "\Green2"
-versionFilePath = oWS.ExpandEnvironmentStrings("%AppData%") & "\Green2\version.txt" 'Still legacy reason
+With oWS
+    programFilesPath = .ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
+    menuEntryFolderPath = .SpecialFolders("AllUsersPrograms") & "\Green2"
+    appDataPath = .ExpandEnvironmentStrings("%AppData%") & "\Green2"
+    versionFilePath = appDataPath & "\version.txt" 'Still legacy reason
+    
+    'Delete Registry keys
+    WScript.Echo WScript.Arguments(0) & "\"
+    .RegDelete WScript.Arguments(0) & "\"
+End With
 
-'Delete folder but configs (but version file)
+'Delete folder but configs
+Set fso = CreateObject("Scripting.FileSystemObject")
 With fso
     If .FileExists(versionFilePath) Then 'Still legacy reason
         .DeleteFile(versionFilePath)
+    End If
+    If .FolderExists(appDataPath) Then
+        .DeleteFolder appDataPath
     End If
     If .FolderExists(programFilesPath) Then
         .DeleteFolder programFilesPath
