@@ -17,7 +17,6 @@ With oWS
     versionFilePath = appDataPath & "\version.txt" 'Still legacy reason
     
     'Delete Registry keys
-    WScript.Echo WScript.Arguments(0) & "\"
     .RegDelete WScript.Arguments(0) & "\"
 End With
 
