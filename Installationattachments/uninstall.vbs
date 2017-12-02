@@ -27,8 +27,10 @@ With fso
     If .FileExists(versionFilePath) Then 'Still legacy reason
         .DeleteFile(versionFilePath)
     End If
-    If .FolderExists(appDataPath) Then
-        .DeleteFolder appDataPath
+    If StrComp(WScript.Arguments(1), "true", 1) = 0 Then
+        If .FolderExists(appDataPath) Then
+            .DeleteFolder appDataPath
+        End If
     End If
     If .FolderExists(programFilesPath) Then
         .DeleteFolder programFilesPath
