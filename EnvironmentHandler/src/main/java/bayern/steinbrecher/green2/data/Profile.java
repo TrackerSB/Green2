@@ -312,6 +312,8 @@ public class Profile {
                 return (T) DBConnection.SupportedDatabase.valueOf(value);
             } else if (defaultValue instanceof DBConnection.SupportedDatabase) {
                 return (T) DBConnection.SupportedDatabase.valueOf(value);
+            } else if (defaultValue instanceof Integer) {
+                return (T) Integer.valueOf(value);
             } else {
                 throw new UnsupportedOperationException("Type \"" + defaultValue.getClass().getSimpleName()
                         + "\" not supported.");
