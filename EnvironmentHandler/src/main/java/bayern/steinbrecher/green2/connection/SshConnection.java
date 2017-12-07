@@ -81,16 +81,21 @@ public final class SshConnection extends DBConnection {
     private final Charset charset;
 
     static {
-        //Configurations which are applieid to all sessions.
-        JSch.setConfig("kex", "diffie-hellman-group1-sha1, diffie-hellman-group-exchange-sha1");
-        JSch.setConfig("server_host_key", "ssh-rsa,ssh-dss");
+        //Configurations which are applied to all sessions.
+        JSch.setConfig("kex", "diffie-hellman-group-exchange-sha1, diffie-hellman-group1-sha1, "
+                + "diffie-hellman-group14-sha1, diffie-hellman-group-exchange-sha256, ecdh-sha2-nistp256, "
+                + "ecdh-sha2-nistp384, ecdh-sha2-nistp521");
+        JSch.setConfig("server_host_key", "ssh-dss, ssh-rsa, ecdsa-sha2-nistp256, ecdsa-sha2-nistp384, "
+                + "ecdsa-sha2-nistp521");
         JSch.setConfig("StrictHostKeyChecking", "no");
         JSch.setConfig("lang.s2c", "");
         JSch.setConfig("lang.c2s", "");
-        JSch.setConfig("cipher.s2c", "3des-cbc,blowfish-cbc");
-        JSch.setConfig("cipher.c2s", "3des-cbc,blowfish-cbc");
-        JSch.setConfig("mac.s2c", "hmac-sha1,hmac-sha1-96,hmac-md5,hmac-md5-96");
-        JSch.setConfig("mac.c2s", "hmac-sha1,hmac-sha1-96,hmac-md5,hmac-md5-96");
+        JSch.setConfig("cipher.s2c", "blowfish-cbc, 3des-cbc, aes128-cbc, aes192-cbc, aes256-cbc, aes128-ctr, "
+                + "aes192-ctr, aes256-ctr, 3des-ctr, arcfour, arcfour128, arcfour256");
+        JSch.setConfig("cipher.c2s", "blowfish-cbc, 3des-cbc, aes128-cbc, aes192-cbc, aes256-cbc, aes128-ctr, "
+                + "aes192-ctr, aes256-ctr, 3des-ctr, arcfour, arcfour128, arcfour256");
+        JSch.setConfig("mac.s2c", "hmac-md5, hmac-sha1, hmac-md5-96, hmac-sha1-96");
+        JSch.setConfig("mac.c2s", "hmac-md5, hmac-sha1, hmac-md5-96, hmac-sha1-96");
     }
 
     /**
