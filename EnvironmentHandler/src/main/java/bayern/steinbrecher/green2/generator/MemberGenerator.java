@@ -133,8 +133,8 @@ public class MemberGenerator {
             if (table.isOptional(column)) {
                 return null;
             } else {
-                throw new IllegalStateException(
-                        column.getRealColumnName() + " is no optional column but has no mapping.");
+                throw new IllegalStateException(column.getRealColumnName() + "(" + column + ") is no optional column "
+                        + "but has no mapping or it is set to NULL in the database.");
             }
         }
     }
@@ -154,8 +154,8 @@ public class MemberGenerator {
             //Read attributes
             LocalDate birthday = MemberGenerator.pickAndConvert(
                     row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY, LocalDate.class);
-            LocalDate mandatsigned = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY, LocalDate.class);
+            LocalDate mandatsigned = MemberGenerator.pickAndConvert(row, columnMapping, DBConnection.Tables.MEMBER,
+                    DBConnection.Columns.MANDAT_SIGNED, LocalDate.class);
             Boolean male = MemberGenerator.pickAndConvert(
                     row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_MALE, Boolean.class);
             Boolean isActive = MemberGenerator.pickAndConvert(
