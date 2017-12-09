@@ -71,6 +71,7 @@ public abstract class DBConnection implements AutoCloseable {
                 + "Titel VARCHAR(255) NOT NULL,"
                 + "Vorname VARCHAR(255) NOT NULL,"
                 + "Nachname VARCHAR(255) NOT NULL,"
+                + "MitgliedSeit DATE NOT NULL,"
                 + "IstAktiv BOOLEAN NOT NULL,"
                 + "IstMaennlich BOOLEAN NOT NULL,"
                 + "Geburtstag DATE NOT NULL,"
