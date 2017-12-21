@@ -59,11 +59,20 @@ public class MemberGenerator {
         return date;
     }
 
-    private static Optional<String> getOptionally(List<String> row, Integer index) {
+    /**
+     * Returns the appropriate entry of the given row if existing.
+     *
+     * @param row The row to pick the entry from.
+     * @param index The index of the row to pick.
+     * @return An {@link Optional} containing the entry. Returns {@link Optional#empty()} of {@code row} does not
+     * contain {@code index}. Returns an {@link Optional} of an {@link Optional#empty()} if and and only if {@code row}
+     * contains {@code index} but the value is {@code null}.
+     */
+    private static Optional<Optional<String>> getOptionally(List<String> row, Integer index) {
         if (index == null || index < 0) {
             return Optional.empty();
         } else {
-            return Optional.ofNullable(row.get(index));
+            return Optional.of(Optional.ofNullable(row.get(index)));
         }
     }
 
@@ -76,29 +85,38 @@ public class MemberGenerator {
         throw new UnsupportedOperationException("It is only supported in JDK9.");
         /*Class<T> typeT = (Class<T>) ((ParameterizedType) DBConnection.Columns.class.getGenericSuperclass())
                 .getActualTypeArguments()[0];
-        Optional<String> optionalField = getOptionally(row, columnMapping.get(column));
+        Optional<Optional<String>> optionalField = getOptionally(row, columnMapping.get(column));
         if (optionalField.isPresent()) {
-            T value;
-            if (Boolean.class.isAssignableFrom(typeT)) {
-                value = (T) (Boolean) optionalField.get().equalsIgnoreCase("1");
-            } else if (LocalDate.class.isAssignableFrom(typeT)) {
-                value = (T) parseString(optionalField.get());
-            } else if (Integer.class.isAssignableFrom(typeT)) {
-                value = (T) (Integer) Integer.parseInt(optionalField.get());
-            } else if (Double.class.isAssignableFrom(typeT)) {
-                value = (T) (Double) Double.parseDouble(optionalField.get());
-            } else if (String.class.isAssignableFrom(typeT)) {
-                value = (T) optionalField.get();
+            Optional<String> field = optionalField.get();
+            if (field.isPresent()) {
+                T value;
+                if (Boolean.class.isAssignableFrom(clazz)) {
+                    value = (T) (Boolean) field.get().equalsIgnoreCase("1");
+                } else if (LocalDate.class.isAssignableFrom(clazz)) {
+                    value = (T) parseString(field.get());
+                } else if (Integer.class.isAssignableFrom(clazz)) {
+                    value = (T) (Integer) Integer.parseInt(field.get());
+                } else if (Double.class.isAssignableFrom(clazz)) {
+                    value = (T) (Double) Double.parseDouble(field.get());
+                } else if (String.class.isAssignableFrom(clazz)) {
+                    value = (T) optionalField.get();
+                } else {
+                    throw new IllegalArgumentException("Type " + clazz.getSimpleName() + " not supported.");
+                }
+                return value;
             } else {
-                throw new IllegalArgumentException("Type " + typeT.getSimpleName() + " not supported.");
+                if (!table.isOptional(column)) {
+                    Logger.getLogger(MemberGenerator.class.getName())
+                            .log(Level.WARNING, "Column {0} is not optional but contains a null value", column);
+                }
+                return null;
             }
-            return value;
         } else {
             if (table.isOptional(column)) {
                 return null;
             } else {
-                throw new IllegalStateException(
-                        column.getRealColumnName() + " is no optional column but has no mapping.");
+                throw new IllegalStateException(column.getRealColumnName() + "(" + column + ") is no optional column "
+                        + "but has no mapping or it is set to NULL in the database.");
             }
         }*/
     }
@@ -110,25 +128,32 @@ public class MemberGenerator {
     @Deprecated
     private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns, Integer> columnMapping,
             DBConnection.Tables table, DBConnection.Columns column, Class<T> clazz) {
-        /*Class<T> typeT = (Class<T>) ((ParameterizedType) DBConnection.Columns.class.getGenericSuperclass())
-                .getActualTypeArguments()[0];*/
-        Optional<String> optionalField = getOptionally(row, columnMapping.get(column));
+        Optional<Optional<String>> optionalField = getOptionally(row, columnMapping.get(column));
         if (optionalField.isPresent()) {
-            T value;
-            if (Boolean.class.isAssignableFrom(clazz)) {
-                value = (T) (Boolean) optionalField.get().equalsIgnoreCase("1");
-            } else if (LocalDate.class.isAssignableFrom(clazz)) {
-                value = (T) parseString(optionalField.get());
-            } else if (Integer.class.isAssignableFrom(clazz)) {
-                value = (T) (Integer) Integer.parseInt(optionalField.get());
-            } else if (Double.class.isAssignableFrom(clazz)) {
-                value = (T) (Double) Double.parseDouble(optionalField.get());
-            } else if (String.class.isAssignableFrom(clazz)) {
-                value = (T) optionalField.get();
+            Optional<String> field = optionalField.get();
+            if (field.isPresent()) {
+                T value;
+                if (Boolean.class.isAssignableFrom(clazz)) {
+                    value = (T) (Boolean) field.get().equalsIgnoreCase("1");
+                } else if (LocalDate.class.isAssignableFrom(clazz)) {
+                    value = (T) parseString(field.get());
+                } else if (Integer.class.isAssignableFrom(clazz)) {
+                    value = (T) (Integer) Integer.parseInt(field.get());
+                } else if (Double.class.isAssignableFrom(clazz)) {
+                    value = (T) (Double) Double.parseDouble(field.get());
+                } else if (String.class.isAssignableFrom(clazz)) {
+                    value = (T) field.get();
+                } else {
+                    throw new IllegalArgumentException("Type " + clazz.getSimpleName() + " not supported.");
+                }
+                return value;
             } else {
-                throw new IllegalArgumentException("Type " + clazz.getSimpleName() + " not supported.");
+                if (!table.isOptional(column)) {
+                    Logger.getLogger(MemberGenerator.class.getName())
+                            .log(Level.WARNING, "Column {0} is not optional but contains a null value", column);
+                }
+                return null;
             }
-            return value;
         } else {
             if (table.isOptional(column)) {
                 return null;

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Generates files containing the relevant birthdays of a given year and writes them to a file.
@@ -43,14 +42,6 @@ public class BirthdayGenerator {
             .thenComparing(m -> m.getPerson().getBirthday().getMonth())
             .thenComparing(m -> m.getPerson().getBirthday().getDayOfMonth())
             .thenComparing(m -> m.getPerson().getName());
-    /**
-     * Represents a function creating a {@link String} out of a {@link Member} containing the first name, last name and
-     * the birthday of the member. Values are separated by semicolon and the {@link String} is closed by a linebreak.
-     */
-    private static final Function<Member, String> PRINT_LINE = m -> {
-        Person p = m.getPerson();
-        return p.getPrename() + ';' + p.getLastname() + ';' + p.getBirthday() + '\n';
-    };
 
     /**
      * Prohibit construction of an object.
@@ -106,6 +97,15 @@ public class BirthdayGenerator {
         return output.toString();
     }
 
+    private static StringBuilder getMemberLines(List<Member> member) {
+        return member.stream()
+                .map(m -> {
+                    Person p = m.getPerson();
+                    return p.getPrename() + ';' + p.getLastname() + ';' + p.getBirthday() + '\n';
+                })
+                .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append);
+    }
+
     /**
      * Appends all member of {@code currentAgeActive} and {@code currentAgePassiv} to {@code output} if the lists are
      * not empty. The order of every list remains unchanged. The order of the lists printed is:
@@ -131,24 +131,23 @@ public class BirthdayGenerator {
                 if (!currentAgeActive.isEmpty()) {
                     output.append("Aktiv:\n")
                             .append("Vorname;Nachname;Geburtstag\n")
-                            .append(currentAgeActive.stream().map(PRINT_LINE).reduce("", String::concat));
+                            .append(getMemberLines(currentAgeActive));
                 }
                 if (!currentAgePassive.isEmpty()) {
                     output.append("Passiv:\n")
                             .append("Vorname;Nachname;Geburtstag\n")
-                            .append(currentAgePassive.stream().map(PRINT_LINE).reduce("", String::concat));
+                            .append(getMemberLines(currentAgePassive));
                 }
                 if (!currentAgeNeither.isEmpty()) {
                     output.append("Unbekannt:\n")
                             .append("Vorname;Nachname;Geburtstag\n")
-                            .append(currentAgeNeither.stream().map(PRINT_LINE).reduce("", String::concat));
+                            .append(getMemberLines(currentAgeNeither));
                 }
             } else {
-                output.append("Passiv:\n")
-                        .append("Vorname;Nachname;Geburtstag\n")
-                        .append(currentAgeActive.stream().map(PRINT_LINE).reduce("", String::concat))
-                        .append(currentAgePassive.stream().map(PRINT_LINE).reduce("", String::concat))
-                        .append(currentAgeNeither.stream().map(PRINT_LINE).reduce("", String::concat));
+                output.append("Vorname;Nachname;Geburtstag\n")
+                        .append(getMemberLines(currentAgeActive))
+                        .append(getMemberLines(currentAgePassive))
+                        .append(getMemberLines(currentAgeNeither));
             }
         }
     }

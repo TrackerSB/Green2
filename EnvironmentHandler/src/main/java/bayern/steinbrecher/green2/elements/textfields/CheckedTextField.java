@@ -71,7 +71,6 @@ public class CheckedTextField extends TextField {
      * Holds {@code true} only if the text of the text field is too long.
      */
     private final BooleanProperty toLongContent = new SimpleBooleanProperty(this, "toLongContent");
-    private final Property<ObservableBooleanValue> condition = new SimpleObjectProperty<>(this, "condition");
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of the following is true (as implemented by
      * this class):
@@ -238,7 +237,7 @@ public class CheckedTextField extends TextField {
     /**
      * Checks whether the current content is valid.
      *
-     * @return {@code true } only if the current content is valid.
+     * @return {@code true} only if the current content is valid.
      * @see #valid
      */
     public boolean isValid() {

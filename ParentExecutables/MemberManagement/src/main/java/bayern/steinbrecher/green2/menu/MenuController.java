@@ -179,9 +179,13 @@ public class MenuController extends Controller {
             Optional<LocalDateTime> dataLastUpdatedOptional = getDataLastUpdated();
             String text;
             if (dataLastUpdatedOptional.isPresent()) {
-                text = EnvironmentHandler.getResourceValue(
-                        "dataLastUpdated", dataLastUpdatedOptional.get()
-                                .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+                if (dataLastUpdatedOptional.get().equals(LocalDateTime.MIN)) {
+                    text = EnvironmentHandler.getResourceValue("dataQueryFailed");
+                } else {
+                    text = EnvironmentHandler.getResourceValue(
+                            "dataLastUpdated", dataLastUpdatedOptional.get()
+                                    .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+                }
             } else {
                 text = EnvironmentHandler.getResourceValue("noData");
             }
@@ -424,7 +428,15 @@ public class MenuController extends Controller {
         member.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllMember()));
         nicknames.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllNicknames()));
         CompletableFuture.allOf(member.get(), nicknames.get())
-                .thenRunAsync(() -> Platform.runLater(() -> dataLastUpdated.set(Optional.of(LocalDateTime.now()))));
+                .thenRunAsync(() -> {
+                    LocalDateTime datetime;
+                    if (member.get().isCompletedExceptionally() || nicknames.get().isCompletedExceptionally()) {
+                        datetime = LocalDateTime.MIN;
+                    } else {
+                        datetime = LocalDateTime.now();
+                    }
+                    Platform.runLater(() -> dataLastUpdated.set(Optional.of(datetime)));
+                });
         memberNonContributionfree.set(member.get().thenApplyAsync(
                 ml -> ml.parallelStream()
                         .filter(m -> !m.isContributionfree())
