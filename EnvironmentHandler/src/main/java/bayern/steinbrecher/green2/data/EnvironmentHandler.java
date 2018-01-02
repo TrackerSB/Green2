@@ -71,15 +71,6 @@ public final class EnvironmentHandler {
      * The node of the user preferences where to put user specific settings of Green2.
      */
     public static final Preferences PREFERENCES_USER_NODE = Preferences.userRoot().node(PREFERENCES_SUBKEY);
-    /**
-     * The node of the system preferences where to put settings belonging to Green2 and not to a specific user. NOTE:
-     * You are not allowed to write/change keys without administrator permissions.
-     *
-     * @deprecated Future version save the version within the program.
-     * @see EnvironmentHandler#VERSION
-     */
-    @Deprecated
-    public static final Preferences PREFERENCES_SYSTEM_NODE = Preferences.systemRoot().node(PREFERENCES_SUBKEY);
     private static final String LAST_SAVE_PATH_KEY = "lastSavePath";
     /**
      * The os currently operating on. (Only supported os can be set)
