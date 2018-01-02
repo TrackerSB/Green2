@@ -309,9 +309,9 @@ public class Profile {
             } else if (defaultValue instanceof Charset) {
                 return (T) Charset.forName(value);
             } else if (defaultValue == null) { //FIXME Crucial specialcase until JDK 9 arrives...
-                return (T) DBConnection.SupportedDatabase.valueOf(value);
-            } else if (defaultValue instanceof DBConnection.SupportedDatabase) {
-                return (T) DBConnection.SupportedDatabase.valueOf(value);
+                return (T) DBConnection.SupportedDatabases.valueOf(value);
+            } else if (defaultValue instanceof DBConnection.SupportedDatabases) {
+                return (T) DBConnection.SupportedDatabases.valueOf(value);
             } else if (defaultValue instanceof Integer) {
                 return (T) Integer.valueOf(value);
             } else {
@@ -348,8 +348,8 @@ public class Profile {
         }
         configurations.putIfAbsent(key, new SimpleObjectProperty<>());
         String valueString;
-        if (value instanceof DBConnection.SupportedDatabase) {
-            valueString = ((DBConnection.SupportedDatabase) value).name();
+        if (value instanceof DBConnection.SupportedDatabases) {
+            valueString = ((DBConnection.SupportedDatabases) value).name();
         } else {
             valueString = value.toString();
         }

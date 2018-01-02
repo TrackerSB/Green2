@@ -40,10 +40,10 @@ public final class DefaultConnection extends DBConnection {
     /**
      * The protocols of the supported databases.
      */
-    private static final Map<SupportedDatabase, String> DRIVER_PROTOCOLS
-            = new HashMap<SupportedDatabase, String>(SupportedDatabase.values().length) {
+    private static final Map<SupportedDatabases, String> DRIVER_PROTOCOLS
+            = new HashMap<SupportedDatabases, String>(SupportedDatabases.values().length) {
         {
-            put(SupportedDatabase.MY_SQL, "jdbc:mysql://");
+            put(SupportedDatabases.MY_SQL, "jdbc:mysql://");
         }
     };
     /**

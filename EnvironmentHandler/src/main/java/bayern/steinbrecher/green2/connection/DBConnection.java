@@ -50,8 +50,8 @@ import javafx.scene.control.ButtonType;
  */
 public abstract class DBConnection implements AutoCloseable {
 
-    private static final Map<SupportedDatabase, Map<Query, String>> QUERIES = new HashMap<>();
-    protected static final Property<SupportedDatabase> DATABASE = new SimpleObjectProperty<>();
+    private static final Map<SupportedDatabases, Map<Queries, String>> QUERIES = new HashMap<>();
+    protected static final Property<SupportedDatabases> DATABASE = new SimpleObjectProperty<>();
     /**
      * Caches existing columns of tables. All column names are lowercase.
      */
@@ -65,8 +65,8 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     static {
-        Map<Query, String> mysql = new HashMap<>(Query.values().length);
-        mysql.put(Query.CREATE_MEMBER_TABLE, "CREATE TABLE " + Tables.MEMBER.getRealTableName() + " ("
+        Map<Queries, String> mysql = new HashMap<>(Queries.values().length);
+        mysql.put(Queries.CREATE_MEMBER_TABLE, "CREATE TABLE " + Tables.MEMBER.getRealTableName() + " ("
                 + "Mitgliedsnummer INTEGER PRIMARY KEY,"
                 + "Titel VARCHAR(255) NOT NULL,"
                 + "Vorname VARCHAR(255) NOT NULL,"
@@ -87,12 +87,12 @@ public abstract class DBConnection implements AutoCloseable {
                 + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
                 + "IstBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
                 + "Beitrag FLOAT NOT NULL);");
-        mysql.put(Query.CREATE_NICKNAMES_TABLE, "CREATE TABLE " + Tables.NICKNAMES.getRealTableName() + " ("
+        mysql.put(Queries.CREATE_NICKNAMES_TABLE, "CREATE TABLE " + Tables.NICKNAMES.getRealTableName() + " ("
                 + "Name VARCHAR(255) PRIMARY KEY,"
                 + "Spitzname VARCHAR(255) NOT NULL);");
-        mysql.put(Query.TABLE_EXISTS, "SELECT count(*) FROM information_schema.tables "
+        mysql.put(Queries.TABLE_EXISTS, "SELECT count(*) FROM information_schema.tables "
                 + "WHERE table_schema=\"{0}\" AND (table_name=\"{1}\");");
-        QUERIES.put(SupportedDatabase.MY_SQL, mysql);
+        QUERIES.put(SupportedDatabases.MY_SQL, mysql);
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class DBConnection implements AutoCloseable {
         return columnsMapping;
     }
 
-    private String getQuery(Query query) {
+    private String getQuery(Queries query) {
         if (DATABASE.getValue() == null) {
             throw new IllegalStateException("The supported databases are not set.");
         } else {
@@ -165,7 +165,7 @@ public abstract class DBConnection implements AutoCloseable {
             } else {
                 String databaseName = profile.getOrDefault(ProfileSettings.DATABASE_NAME, "database");
                 String query
-                        = MessageFormat.format(getQuery(Query.TABLE_EXISTS), databaseName, table.getRealTableName());
+                        = MessageFormat.format(getQuery(Queries.TABLE_EXISTS), databaseName, table.getRealTableName());
                 return Integer.parseInt(execQuery(query).get(1).get(0)) >= Tables.values().length;
             }
             //FIXME When permissions to read are missing, also a SQLException is thrown.
@@ -198,10 +198,10 @@ public abstract class DBConnection implements AutoCloseable {
                     try {
                         switch (table) {
                             case MEMBER:
-                                execUpdate(getQuery(Query.CREATE_MEMBER_TABLE));
+                                execUpdate(getQuery(Queries.CREATE_MEMBER_TABLE));
                                 break;
                             case NICKNAMES:
-                                execUpdate(getQuery(Query.CREATE_NICKNAMES_TABLE));
+                                execUpdate(getQuery(Queries.CREATE_NICKNAMES_TABLE));
                                 break;
                             default:
                                 throw new SchemeCreationException(
@@ -324,7 +324,7 @@ public abstract class DBConnection implements AutoCloseable {
         }
     }
 
-    private enum Query {
+    private enum Queries {
         /**
          * Checks whether a given table exists.<br />
          * Variables:<br />
@@ -343,7 +343,7 @@ public abstract class DBConnection implements AutoCloseable {
 
         private final boolean containsVariables;
 
-        private Query(boolean containsVariables) {
+        private Queries(boolean containsVariables) {
             this.containsVariables = containsVariables;
         }
 
@@ -360,13 +360,13 @@ public abstract class DBConnection implements AutoCloseable {
     /**
      * This enum lists all supported databases like MySQL.
      */
-    public enum SupportedDatabase {
+    public enum SupportedDatabases {
         MY_SQL("My SQL", 3306);
 
         private final String displayName;
         private final int defaultPort;
 
-        private SupportedDatabase(String displayName, int defaultPort) {
+        private SupportedDatabases(String displayName, int defaultPort) {
             this.displayName = displayName;
             this.defaultPort = defaultPort;
         }

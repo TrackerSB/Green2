@@ -125,7 +125,7 @@ public class MemberGenerator {
      * Picks the correct column and parses it to the specified type.
      */
     //FIXME Waiting for JDK 9.
-    @Deprecated
+    @Deprecated(forRemoval = true)
     private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns, Integer> columnMapping,
             DBConnection.Tables table, DBConnection.Columns column, Class<T> clazz) {
         Optional<Optional<String>> optionalField = getOptionally(row, columnMapping.get(column));

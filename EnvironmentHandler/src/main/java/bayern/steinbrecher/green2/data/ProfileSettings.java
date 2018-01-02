@@ -152,8 +152,8 @@ public enum ProfileSettings {
         @Override
         public <T> boolean isValid(T value) {
             //FIXME Use this enum directly.
-            return (getValueClass().isInstance(value)) && Arrays.asList(DBConnection.SupportedDatabase.values())
-                    .contains((DBConnection.SupportedDatabase) value);
+            return (getValueClass().isInstance(value)) && Arrays.asList(DBConnection.SupportedDatabases.values())
+                    .contains((DBConnection.SupportedDatabases) value);
         }
     };
 
@@ -173,7 +173,7 @@ public enum ProfileSettings {
      *
      * @return The class of the value this enum constant represents.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public Class<?> getValueClass() {
         return valueClass;
     }
@@ -205,8 +205,8 @@ public enum ProfileSettings {
             return (String) value;
         } else if (value instanceof Charset) {
             return ((Charset) value).name();
-        } else if (value instanceof DBConnection.SupportedDatabase) {
-            return ((DBConnection.SupportedDatabase) value).name();
+        } else if (value instanceof DBConnection.SupportedDatabases) {
+            return ((DBConnection.SupportedDatabases) value).name();
         } else if (value instanceof Integer) {
             return Integer.toString((Integer) value);
         } else {
@@ -237,7 +237,7 @@ public enum ProfileSettings {
         } else if (Enum.class.isAssignableFrom(valueClass)) {
             //FIXME Need to wait until Java 9 arrives
             try {
-                return (T) DBConnection.SupportedDatabase.valueOf(value);
+                return (T) DBConnection.SupportedDatabases.valueOf(value);
             } catch (IllegalArgumentException ex) {
                 Logger.getLogger(ProfileSettings.class.getName())
                         .log(Level.WARNING, "Could not find SupportedDatabase {0}", value);

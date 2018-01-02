@@ -67,7 +67,7 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedTextField profileNameTextField;
     @FXML
-    private CheckedComboBox<DBConnection.SupportedDatabase> dbmsComboBox;
+    private CheckedComboBox<DBConnection.SupportedDatabases> dbmsComboBox;
     @FXML
     private CheckedRegexTextField birthdayExpressionTextField;
     private final List<CheckedTextField> checkedTextFields = new ArrayList<>();
@@ -109,13 +109,13 @@ public class ConfigDialogController extends CheckedController {
         sshPort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.SSH_PORT, 22));
         databaseHostTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_HOST, ""));
         databasePort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.DATABASE_PORT,
-                profile.getOrDefault(ProfileSettings.DBMS, DBConnection.SupportedDatabase.MY_SQL).getDefaultPort()));
+                profile.getOrDefault(ProfileSettings.DBMS, DBConnection.SupportedDatabases.MY_SQL).getDefaultPort()));
         databaseNameTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(profile.getOrDefault(ProfileSettings.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(profile.getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
         sshCharsetTextField.setText(profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
-        dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(DBConnection.SupportedDatabase.values())));
+        dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(DBConnection.SupportedDatabases.values())));
         dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ProfileSettings.DBMS, null));
     }
 

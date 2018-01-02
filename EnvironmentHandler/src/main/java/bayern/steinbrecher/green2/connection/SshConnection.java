@@ -49,12 +49,12 @@ public final class SshConnection extends DBConnection {
      * The default port for ssh.
      */
     public static final int DEFAULT_SSH_PORT = 22;
-    private static final Map<SupportedDatabase, String> COMMANDS = new HashMap<SupportedDatabase, String>() {
+    private static final Map<SupportedDatabases, String> COMMANDS = new HashMap<SupportedDatabases, String>() {
         {
-            put(SupportedDatabase.MY_SQL, "mysql");
+            put(SupportedDatabases.MY_SQL, "mysql");
         }
     };
-    private final Map<SupportedDatabase, Function<String, String>> sqlCommands = new HashMap<>();
+    private final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
     /**
      * The name of the database.
      */
@@ -112,7 +112,7 @@ public final class SshConnection extends DBConnection {
      * @throws AuthException Thrown if some of username, password or host is wrong or not reachable.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      * @throws UnsupportedDatabaseException Thrown only if no supported database was found.
-     * @see SupportedDatabase
+     * @see SupportedDatabases
      */
     public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost,
             String databaseUsername, String databasePasswd, String databaseName, Charset charset)
@@ -124,7 +124,7 @@ public final class SshConnection extends DBConnection {
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.charset = charset;
 
-        sqlCommands.put(SupportedDatabase.MY_SQL, query -> COMMANDS.get(SupportedDatabase.MY_SQL)
+        sqlCommands.put(SupportedDatabases.MY_SQL, query -> COMMANDS.get(SupportedDatabases.MY_SQL)
                 + " -u" + databaseUsername
                 + " -p" + databasePasswd
                 + " -h" + databaseHost
