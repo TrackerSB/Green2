@@ -16,12 +16,10 @@
  */
 package bayern.steinbrecher.green2.data;
 
-import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,8 +57,8 @@ public class Profile {
     /**
      * The configurations found in a profile file.
      */
-    //FIXME Java 9: Replace Property<String> with Property<T>
-    private ObservableMap<ProfileSettings, Property<String>> configurations = FXCollections.observableHashMap();
+    //TODO Think about how to force equallity of these two question marks
+    private ObservableMap<ProfileSettings<?>, Property<?>> configurations = FXCollections.observableHashMap();
     /**
      * {@code true} only if all allowed configurations are specified.
      */
@@ -101,7 +99,7 @@ public class Profile {
         });
         configFile.addListener((obs, oldVal, newVal) -> {
             configurations.putAll(readConfigs(newVal));
-            ageFunction = readAgeFunction(configurations.getOrDefault(
+            ageFunction = readAgeFunction((String) configurations.getOrDefault(
                     ProfileSettings.BIRTHDAY_EXPRESSION, new SimpleStringProperty("")).getValue());
         });
         configFilePath.addListener((obs, oldVal, newVal) -> configFile.setValue(new File(newVal)));
@@ -127,8 +125,8 @@ public class Profile {
         }
     }
 
-    private static ObservableMap<ProfileSettings, Property<String>> readConfigs(File configFile) {
-        Map<ProfileSettings, Property<String>> configurations = new HashMap<>();
+    private static ObservableMap<ProfileSettings<?>, Property<?>> readConfigs(File configFile) {
+        Map<ProfileSettings<?>, Property<?>> configurations = new HashMap<>();
 
         String[] parts;
         try (Scanner sc = new Scanner(configFile)) {
@@ -136,11 +134,11 @@ public class Profile {
                 String line = sc.nextLine().trim();
                 if (line.contains(VALUE_SEPARATOR)) {
                     parts = line.split(VALUE_SEPARATOR, 2);
+                    //NOTE At this point using raw type is necessary
                     ProfileSettings key = ProfileSettings.valueOf(parts[0].toUpperCase());
-                    Property<String> value = new SimpleObjectProperty<>(parts.length < 2 ? "" : parts[1]);
-                    //FIXME Remove getValueFromString when Java 9 is released.
-                    if (key.isValid(key.getValueFromString(value.getValue()))) {
-                        configurations.put(key, value);
+                    Object value = key.parse(parts.length < 2 ? "" : parts[1]);
+                    if (key.isValid(value)) {
+                        configurations.put(key, new SimpleObjectProperty<>(value));
                     } else {
                         Logger.getLogger(Profile.class.getName())
                                 .log(Level.WARNING, "\"{0}\" has an invalid value. It is skipped.", key);
@@ -209,9 +207,8 @@ public class Profile {
         }
     }
 
-    private String generateLine(ProfileSettings key) {
-        return key.name() + VALUE_SEPARATOR
-                + key.getStringFromValue(key.getValueFromString(configurations.get(key).getValue()));
+    private <T> String generateLine(ProfileSettings<T> key) {
+        return ProfileSettings.name(key) + VALUE_SEPARATOR + key.toString((T) configurations.get(key).getValue());
     }
 
     /**
@@ -293,31 +290,9 @@ public class Profile {
      * @return The value belonging to key {@code key} or {@code defaultValue} if {@code key} could not be found or is
      * not specified.
      */
-    @SuppressWarnings("UnnecessaryBoxing")
-    public <T> T getOrDefault(ProfileSettings key, T defaultValue) {
-        //FIXME Wait for JDK 9 in order to use generic enums
-        if (defaultValue != null && !key.getValueClass().isAssignableFrom(defaultValue.getClass())) {
-            throw new IllegalArgumentException("Type of defaultValue and the type of the value key represents have to "
-                    + "be the same. (Still waiting for generic enums to check this on compile time... :-( )");
-        }
+    public <T> T getOrDefault(ProfileSettings<T> key, T defaultValue) {
         if (configurations.containsKey(key)) {
-            String value = configurations.get(key).getValue();
-            if (defaultValue instanceof String) {
-                return (T) value;
-            } else if (defaultValue instanceof Boolean) {
-                return (T) Boolean.valueOf(value.equalsIgnoreCase("ja") || value.equalsIgnoreCase("true"));
-            } else if (defaultValue instanceof Charset) {
-                return (T) Charset.forName(value);
-            } else if (defaultValue == null) { //FIXME Crucial specialcase until JDK 9 arrives...
-                return (T) DBConnection.SupportedDatabases.valueOf(value);
-            } else if (defaultValue instanceof DBConnection.SupportedDatabases) {
-                return (T) DBConnection.SupportedDatabases.valueOf(value);
-            } else if (defaultValue instanceof Integer) {
-                return (T) Integer.valueOf(value);
-            } else {
-                throw new UnsupportedOperationException("Type \"" + defaultValue.getClass().getSimpleName()
-                        + "\" not supported.");
-            }
+            return (T) configurations.get(key).getValue();
         } else {
             return defaultValue;
         }
@@ -329,9 +304,8 @@ public class Profile {
      * @param key The key to search for.
      * @return The property holding the value of {@code key} or {@code null} if there's no entry (yet) for {@code key}.
      */
-    public ReadOnlyProperty<String> getProperty(ProfileSettings key) {
-        //FIXME Wait for JDK 9 in order to use generic enums
-        return configurations.get(key);
+    public ReadOnlyProperty<?> getProperty(ProfileSettings<?> key) {
+        return (Property<?>) configurations.get(key);
     }
 
     /**
@@ -341,19 +315,14 @@ public class Profile {
      * @param value The value to set for {@code key}.
      * @param <T> The type of the value.
      */
-    public <T> void set(ProfileSettings key, T value) {
-        //FIXME Wait for JDK 9 in order to use generic enums
+    public <T> void set(ProfileSettings<T> key, T value) {
         if (!key.isValid(value)) {
             throw new IllegalArgumentException("The given value is not valid for the given key");
         }
         configurations.putIfAbsent(key, new SimpleObjectProperty<>());
-        String valueString;
-        if (value instanceof DBConnection.SupportedDatabases) {
-            valueString = ((DBConnection.SupportedDatabases) value).name();
-        } else {
-            valueString = value.toString();
-        }
-        configurations.get(key).setValue(valueString);
+        //NOTE Using raw type is necessary
+        Property valueProperty = configurations.get(key);
+        valueProperty.setValue(value);
     }
 
     /**

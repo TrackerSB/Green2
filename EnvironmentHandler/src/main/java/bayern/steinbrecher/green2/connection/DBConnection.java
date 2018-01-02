@@ -25,6 +25,8 @@ import bayern.steinbrecher.green2.utility.DialogUtility;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -128,8 +130,8 @@ public abstract class DBConnection implements AutoCloseable {
      * @return The {@link Map} containing entries assigning the entries of {@code headings} which contain the headings
      * of a query the number of the column.
      */
-    public static Map<Columns, Integer> generateColumnMapping(Tables table, List<String> headings) {
-        Map<Columns, Integer> columnsMapping = new HashMap<>();
+    public static Map<Columns<?>, Integer> generateColumnMapping(Tables table, List<String> headings) {
+        Map<Columns<?>, Integer> columnsMapping = new HashMap<>();
         table.getAllColumns().forEach(column -> {
             for (int i = 0; i < headings.size(); i++) {
                 if (column.getRealColumnName().equalsIgnoreCase(headings.get(i))) {
@@ -235,8 +237,8 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@link Optional#empty()} if all tables have all required columns. Otherwise returns an {@link Optional}
      * mapping invalid tables to the required columns missing.
      */
-    public Optional<Map<Tables, List<Columns>>> getMissingColumns() {
-        Map<Tables, List<Columns>> missingColumns = new HashMap<>();
+    public Optional<Map<Tables, List<Columns<?>>>> getMissingColumns() {
+        Map<Tables, List<Columns<?>>> missingColumns = new HashMap<>();
         for (Tables table : Tables.values()) {
             table.getMissingColumns(this).ifPresent(mc -> missingColumns.put(table, mc));
         }
@@ -295,7 +297,7 @@ public abstract class DBConnection implements AutoCloseable {
      * @param column The column name to search for.
      * @return {@code true} only if the given table contains the given column.
      */
-    public boolean columnExists(Tables table, Columns column) {
+    public boolean columnExists(Tables table, Columns<?> column) {
         try {
             synchronized (EXISTING_HEADINGS_CACHE) {
                 if (!EXISTING_HEADINGS_CACHE.containsKey(table)) {
@@ -394,7 +396,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public enum Tables {
         //FIXME JDK9 allows <> with anonymous inner classes.
-        MEMBER("Mitglieder", new HashMap<Columns, Boolean>() {
+        MEMBER("Mitglieder", new HashMap<Columns<?>, Boolean>() {
             {
                 put(Columns.MEMBERSHIPNUMBER, true);
                 put(Columns.PRENAME, true);
@@ -418,14 +420,14 @@ public abstract class DBConnection implements AutoCloseable {
             }
         }),
         //FIXME JDK9 allows <> with anonymous inner classes.
-        NICKNAMES("Spitznamen", new HashMap<Columns, Boolean>() {
+        NICKNAMES("Spitznamen", new HashMap<Columns<?>, Boolean>() {
             {
                 put(Columns.NAME, true);
                 put(Columns.NICKNAME, true);
             }
         });
 
-        private final Map<Columns, Boolean> columns;
+        private final Map<Columns<?>, Boolean> columns;
         private final String realTableName;
 
         /**
@@ -435,7 +437,7 @@ public abstract class DBConnection implements AutoCloseable {
          * @param columns A map containing the columns of this table and whether they are required. {@code true} means
          * required; {@code false} means optional.
          */
-        private Tables(String realTableName, Map<Columns, Boolean> columns) {
+        private Tables(String realTableName, Map<Columns<?>, Boolean> columns) {
             if (columns.values().stream().anyMatch(Objects::isNull)) {
                 throw new IllegalArgumentException(
                         "Found a column which is neither marked as required nor as optional in table " + realTableName);
@@ -457,7 +459,7 @@ public abstract class DBConnection implements AutoCloseable {
          * @param column The column to check.
          * @return {@code true} only if this table contains {@code column}.
          */
-        public boolean contains(Columns column) {
+        public boolean contains(Columns<?> column) {
             return columns.containsKey(column);
         }
 
@@ -479,8 +481,8 @@ public abstract class DBConnection implements AutoCloseable {
          * @return {@link Optional#empty()} if no required column is missing or unaccessible. Otherwise an
          * {@link Optional} containing a list of these columns.
          */
-        public Optional<List<Columns>> getMissingColumns(DBConnection connection) {
-            List<Columns> missingColumns = columns.entrySet().stream()
+        public Optional<List<Columns<?>>> getMissingColumns(DBConnection connection) {
+            List<Columns<?>> missingColumns = columns.entrySet().stream()
                     .filter(Entry::getValue)
                     .map(Entry::getKey)
                     .filter(column -> !connection.columnExists(this, column))
@@ -546,32 +548,46 @@ public abstract class DBConnection implements AutoCloseable {
          *
          * @return The {@link Set} containing all columns this table can have according to its scheme.
          */
-        public Set<Columns> getAllColumns() {
+        public Set<Columns<?>> getAllColumns() {
             return columns.keySet();
         }
 
-        private Columns[] getAllColumnsAsArray() {
-            return columns.keySet().toArray(new Columns[0]);
+        private Columns<?>[] getAllColumnsAsArray() {
+            return columns.keySet().toArray(new Columns<?>[0]);
         }
     }
 
     /**
      * This enum lists all columns which a table can have.
+     *
+     * @param <T> The type of the value hold.
      */
-    //FIXME Waiting for JDK 9 making it generic.
-    public enum Columns {
-        MEMBERSHIPNUMBER("Mitgliedsnummer"), IS_ACTIVE("IstAktiv"), PRENAME("Vorname"), LASTNAME("Nachname"),
-        TITLE("Titel"), IS_MALE("IstMaennlich"), BIRTHDAY("Geburtstag"), STREET("Strasse"), HOUSENUMBER("Hausnummer"),
-        CITY_CODE("PLZ"), CITY("Ort"), IS_CONTRIBUTIONFREE("IstBeitragsfrei"), IBAN("Iban"), BIC("Bic"),
-        ACCOUNTHOLDER_PRENAME("KontoinhaberVorname"), ACCOUNTHOLDER_LASTNAME("KontoinhaberNachname"),
-        MANDAT_SIGNED("MandatErstellt"), CONTRIBUTION("Beitrag"), NAME("Name"), NICKNAME("Spitzname"),
-        RESIGN_DATE("AusgetretenSeit"); //FIXME Remove AusgetretenSeit at some point in the future.
+    public static abstract class /*enum*/ Columns<T> {
 
-        private final String realColumnName;
+        public static final Columns<Integer> MEMBERSHIPNUMBER = new IntegerColumn("Mitgliedsnummer");
+        public static final Columns<Boolean> IS_ACTIVE = new BooleanColumn("IstAktiv");
+        public static final Columns<String> PRENAME = new StringColumn("Vorname");
+        public static final Columns<String> LASTNAME = new StringColumn("Nachname");
+        public static final Columns<String> TITLE = new StringColumn("Titel");
+        public static final Columns<Boolean> IS_MALE = new BooleanColumn("IstMaennlich");
+        public static final Columns<LocalDate> BIRTHDAY = new LocalDateColumn("Geburtstag");
+        public static final Columns<String> STREET = new StringColumn("Strasse");
+        public static final Columns<String> HOUSENUMBER = new StringColumn("Hausnummer");
+        public static final Columns<String> CITY_CODE = new StringColumn("PLZ");
+        public static final Columns<String> CITY = new StringColumn("Ort");
+        public static final Columns<Boolean> IS_CONTRIBUTIONFREE = new BooleanColumn("IstBeitragsfrei");
+        public static final Columns<String> IBAN = new StringColumn("Iban");
+        public static final Columns<String> BIC = new StringColumn("Bic");
+        public static final Columns<String> ACCOUNTHOLDER_PRENAME = new StringColumn("KontoinhaberVorname");
+        public static final Columns<String> ACCOUNTHOLDER_LASTNAME = new StringColumn("KontoinhaberNachname");
+        public static final Columns<LocalDate> MANDAT_SIGNED = new LocalDateColumn("MandatErstellt");
+        public static final Columns<Double> CONTRIBUTION = new DoubleColumn("Beitrag");
+        public static final Columns<String> NAME = new StringColumn("Name");
+        public static final Columns<String> NICKNAME = new StringColumn("Spitzname");
+        @Deprecated(since = "2u13")
+        public static final Columns<LocalDate> RESIGN_DATE = new LocalDateColumn("AusgetretenSeit");
 
-        private Columns(String realColumnName) {
-            this.realColumnName = realColumnName;
-        }
+        private String realColumnName;
 
         /**
          * Returns the name of this column in the database scheme.
@@ -580,6 +596,108 @@ public abstract class DBConnection implements AutoCloseable {
          */
         public String getRealColumnName() {
             return realColumnName;
+        }
+
+        /**
+         * Sets the name of this column in the database scheme.
+         *
+         * @param realColumnName The name of the column in the database scheme.
+         */
+        protected void setRealColumnName(String realColumnName) {
+            this.realColumnName = realColumnName;
+        }
+
+        /**
+         * Parses the given value to the appropriate type of this column if possible.
+         *
+         * @param value The value to parse.
+         * @return The typed value represented by {@code value}.
+         */
+        public abstract T parse(String value);
+    }
+
+    private static class StringColumn extends Columns<String> {
+
+        public StringColumn(String realColumnName) {
+            setRealColumnName(realColumnName);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String parse(String value) {
+            return value;
+        }
+    }
+
+    private static class IntegerColumn extends Columns<Integer> {
+
+        public IntegerColumn(String realColumnName) {
+            setRealColumnName(realColumnName);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Integer parse(String value) {
+            return Integer.parseInt(value);
+        }
+    }
+
+    private static class BooleanColumn extends Columns<Boolean> {
+
+        public BooleanColumn(String realColumnName) {
+            setRealColumnName(realColumnName);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Boolean parse(String value) {
+            return value.equalsIgnoreCase("1");
+        }
+    }
+
+    private static class LocalDateColumn extends Columns<LocalDate> {
+
+        public LocalDateColumn(String realColumnName) {
+            setRealColumnName(realColumnName);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public LocalDate parse(String value) {
+            LocalDate date = null;
+            try {
+                if (value == null) {
+                    throw new DateTimeParseException("Can´t parse null", "null", 0);
+                } else {
+                    date = LocalDate.parse(value);
+                }
+            } catch (DateTimeParseException ex) {
+                Logger.getLogger(MemberGenerator.class.getName()).log(Level.WARNING, value + " is an invalid date", ex);
+            }
+            return date;
+        }
+    }
+
+    private static class DoubleColumn extends Columns<Double> {
+
+        public DoubleColumn(String realColumnName) {
+            setRealColumnName(realColumnName);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Double parse(String value) {
+            return Double.parseDouble(value);
         }
     }
 }

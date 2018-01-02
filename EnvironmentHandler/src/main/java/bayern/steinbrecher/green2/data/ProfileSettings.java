@@ -17,236 +17,247 @@
 package bayern.steinbrecher.green2.data;
 
 import bayern.steinbrecher.green2.connection.DBConnection;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
  * Represents all options allowed to configure in Green2.
  *
  * @author Stefan Huber
+ * @param <T> The type of the setting hold.
  */
-public enum ProfileSettings {
+public abstract class /*enum*/ ProfileSettings<T> {
     //FIXME Add generic to enum when available (JDK9?)
 
     /**
-     * Indicating whether to use SSH or not. Write "Yes" to use SSH. ("Ja" is also accepted because of legacy, but
-     * should not be used.)
+     * Indicating whether to use SSH or not. Write "1" or "true" to use SSH.
      */
-    USE_SSH(Boolean.class) {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && value != null;
-        }
-    },
+    public static final ProfileSettings<Boolean> USE_SSH = new BooleanSetting();
     /**
      * The host for connecting over SSH.
      */
-    SSH_HOST(String.class) {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && value != null;
-        }
-    },
+    public static final ProfileSettings<String> SSH_HOST = new StringSetting();
     /**
      * The port to use for the ssh connection.
      */
-    SSH_PORT(Integer.class) {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && value != null;
-        }
-    },
+    public static final ProfileSettings<Integer> SSH_PORT = new IntegerSetting();
     /**
      * The host for connecting to the database.
      */
-    DATABASE_HOST(String.class) {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && value != null;
-        }
-    },
+    public static final ProfileSettings<String> DATABASE_HOST = new StringSetting();
     /**
      * The port to use for the database connection.
      */
-    DATABASE_PORT(Integer.class) {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && value != null;
-        }
-    },
+    public static final ProfileSettings<Integer> DATABASE_PORT = new IntegerSetting();
     /**
      * The name of the database to connect to.
      */
-    DATABASE_NAME(String.class) {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && value != null;
-        }
-    },
+    public static final ProfileSettings<String> DATABASE_NAME = new StringSetting();
     /**
      * Indicates whether the generated SEPA is UTF-8 or "UTF-8 with BOM".
      */
-    SEPA_USE_BOM(Boolean.class) {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && value != null;
-        }
-    },
-    /**
-     * The expression to indicate which people get birthday notifications. Like =50,=60,=70,=75,&gt;=80
-     */
-    BIRTHDAY_EXPRESSION(String.class) {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            return (getValueClass().isInstance(value)) && BIRTHDAY_PATTERN.matcher((String) value).matches();
-        }
-    },
-    /**
-     * The charset used by the response of the ssh connection.
-     */
-    SSH_CHARSET(Charset.class) {
-        /**
-         * Checks whether the given value represents a supported {@link Charset} (on this machine).
-         *
-         * @param value The value to check.
-         * @return {@code true} only if {@code value} represents a supported {@link Charset}.
-         */
-        @Override
-        public <T> boolean isValid(T value) {
-            //FIXME Second operand of && is redundant. Charset.forName(..) already checks support...
-            return (getValueClass().isInstance(value)) && Charset.isSupported(((Charset) value).name());
-        }
-    },
-    /**
-     * The type of the SQL database. (e.g. MySQL).
-     */
-    DBMS(Enum.class) {
-        @Override
-        public <T> boolean isValid(T value) {
-            //FIXME Use this enum directly.
-            return (getValueClass().isInstance(value)) && Arrays.asList(DBConnection.SupportedDatabases.values())
-                    .contains((DBConnection.SupportedDatabases) value);
-        }
-    };
-
+    public static final ProfileSettings<Boolean> SEPA_USE_BOM = new BooleanSetting();
     /**
      * The regex to check against the value containing the birthday expression.
      */
     public static final Pattern BIRTHDAY_PATTERN
             = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
-    private final Class<?> valueClass;
+    /**
+     * The expression to indicate which people get birthday notifications. Like =50,=60,=70,=75,&gt;=80
+     */
+    public static final ProfileSettings<String> BIRTHDAY_EXPRESSION = new BirthdayFunctionSetting();
+    /**
+     * The charset used by the response of the ssh connection.
+     */
+    public static final ProfileSettings<Charset> SSH_CHARSET = new CharsetSetting();
+    /**
+     * The type of the SQL database. (e.g. MySQL).
+     */
+    public static final ProfileSettings<DBConnection.SupportedDatabases> DBMS = new SupportedDatabaseSetting();
 
-    private ProfileSettings(Class<?> valueClass) {
-        this.valueClass = valueClass;
+    /**
+     * Contains all values like an enum. NOTE: It will be removed when generic enums are added to Java.
+     */
+    @Deprecated(forRemoval = true, since = "2u13")
+    private static final ProfileSettings<?>[] values = {USE_SSH, SSH_HOST, SSH_PORT, DATABASE_HOST, DATABASE_PORT,
+        DATABASE_NAME, SEPA_USE_BOM, BIRTHDAY_EXPRESSION, SSH_CHARSET, DBMS};
+
+    /**
+     * Returns the list of all values like an enum. NOTE: It will be removed when generic enums are added to Java.
+     *
+     * @return The list of available "enums".
+     */
+    @Deprecated(forRemoval = true, since = "2u13")
+    public static ProfileSettings<?>[] values() {
+        return values;
     }
 
     /**
-     * Returns the class of the value this enum constant represents.
+     * Returns the name of the given "enum".
      *
-     * @return The class of the value this enum constant represents.
+     * @param setting The "enum" to retrieve the name for.
+     * @return The name of the given "enum".
+     * @see Enum#name()
      */
-    @Deprecated(forRemoval = true)
-    public Class<?> getValueClass() {
-        return valueClass;
+    @Deprecated(forRemoval = true, since = "2u13")
+    public static String name(ProfileSettings<?> setting) {
+        return Arrays.stream(ProfileSettings.class.getFields())
+                .filter(field -> {
+                    try {
+                        return field.get(null) == setting;
+                    } catch (IllegalAccessException ex) {
+                        return false;
+                    }
+                })
+                .findAny()
+                .map(Field::getName)
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    /**
+     * Returns the {@link ProfileSettings} object which has the name {@code name}. NOTE: It will be removed when Java
+     * supports generic enums.
+     *
+     * @param name The name of the {@link ProfileSettings} object to return.
+     * @return The appropriate {@link ProfileSettings} object.
+     */
+    @Deprecated(forRemoval = true, since = "2u13")
+    public static final ProfileSettings<?> valueOf(String name) {
+        Optional<Field> possibleEnum = Arrays.stream(ProfileSettings.class.getFields())
+                .filter(field -> {
+                    return ProfileSettings.class.isAssignableFrom(field.getType());
+                })
+                .filter(field -> field.getName().equalsIgnoreCase(name))
+                .findAny();
+        try {
+            return (ProfileSettings<?>) possibleEnum.orElseThrow(IllegalArgumentException::new).get(null);
+        } catch (IllegalAccessException ex) {
+            throw new Error("The reimplementation based on Enum#valueOf(...) failed.", ex);
+        }
     }
 
     /**
      * Checks whether the given value is valid for this ProfileSettings.
      *
      * @param value The value to check.
-     * @param <T> The type of the value.
      * @return {@code true} only if this value is valid for this ProfileSettings.
      */
-    public abstract <T> boolean isValid(T value);
-
-    /**
-     * Returns a String representation of value according to the type of the value the ProfileSettings holds.
-     *
-     * @param value The value to convert.
-     * @param <T> The type of the value the ProfileSettings holds.
-     * @return The String representation.
-     */
-    public <T> String getStringFromValue(T value) {
-        //FIXME Need to wait until Java 9 arrives
-        if (value == null) {
-            throw new IllegalArgumentException("value must not be null");
-        }
-        if (value instanceof Boolean) {
-            return (Boolean) value ? "true" : "false";
-        } else if (value instanceof String) {
-            return (String) value;
-        } else if (value instanceof Charset) {
-            return ((Charset) value).name();
-        } else if (value instanceof DBConnection.SupportedDatabases) {
-            return ((DBConnection.SupportedDatabases) value).name();
-        } else if (value instanceof Integer) {
-            return Integer.toString((Integer) value);
-        } else {
-            throw new UnsupportedOperationException(value.getClass().getSimpleName() + " is not supported.");
-        }
+    public boolean isValid(T value) {
+        return value != null;
     }
 
     /**
-     * Returns a value of the type this ProfileSettings holds converting it from {@code value}. NOTE: It does NOT imply
-     * that the valid is a valid value to be used as value of a ConfigKey.
+     * Parses the given value to an object of the type represented by this {@link ProfileSettings}. It is not checked
+     * whether the result is a valid setting.
      *
-     * @param value The String representation to convert.
-     * @param <T> The type of the value the ProfileSettings holds.
-     * @return The converted value.
+     * @param value The value to parse;
+     * @return The object representing the value of the setting hold by {@code value}.
+     * @see #toString(T)
+     * @see #isValid(java.lang.Object)
      */
-    public <T> T getValueFromString(String value) {
-        //FIXME Need to wait until Java 9 arrives
-        if (value == null) {
-            throw new IllegalArgumentException("value must not be null");
+    public abstract T parse(String value);
+
+    /**
+     * Returns a {@link String} representation of the given object which can be parsed to reproduce the given object.
+     *
+     * @param value The value to create a {@link String} for.
+     * @return The {@link String} representation for which {@link #parse(java.lang.String)} returns {@code value}.
+     */
+    public String toString(T value) {
+        return value.toString();
+    }
+
+    private static class StringSetting extends ProfileSettings<String> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String parse(String value) {
+            return value;
         }
-        if (Boolean.class.isAssignableFrom(valueClass)) {
-            //FIXME "yes" legacy check
-            return (T) valueClass.cast(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"));
-        } else if (String.class.isAssignableFrom(valueClass)) {
-            return (T) valueClass.cast(value);
-        } else if (Charset.class.isAssignableFrom(valueClass)) {
-            return (T) valueClass.cast(Charset.forName(value));
-        } else if (Enum.class.isAssignableFrom(valueClass)) {
-            //FIXME Need to wait until Java 9 arrives
-            try {
-                return (T) DBConnection.SupportedDatabases.valueOf(value);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(ProfileSettings.class.getName())
-                        .log(Level.WARNING, "Could not find SupportedDatabase {0}", value);
-                return null;
-            }
-        } else if (Integer.class.isAssignableFrom(valueClass)) {
-            return (T) valueClass.cast(Integer.parseInt(value));
-        } else {
-            throw new UnsupportedOperationException(valueClass.getSimpleName() + " is not supported.");
+    }
+
+    private static class IntegerSetting extends ProfileSettings<Integer> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Integer parse(String value) {
+            return Integer.parseInt(value);
+        }
+    }
+
+    private static class BooleanSetting extends ProfileSettings<Boolean> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Boolean parse(String value) {
+            //FIXME Remove legacy equals 1 check
+            return value.equalsIgnoreCase("1") || Boolean.parseBoolean(value);
+        }
+    }
+
+    private static class BirthdayFunctionSetting extends ProfileSettings<String> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isValid(String value) {
+            return BIRTHDAY_PATTERN.matcher(value).matches();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String parse(String value) {
+            return value;
+        }
+    }
+
+    private static class CharsetSetting extends ProfileSettings<Charset> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isValid(Charset value) {
+            return Charset.availableCharsets().containsValue(value);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Charset parse(String value) {
+            return Charset.forName(value);
+        }
+    }
+
+    private static class SupportedDatabaseSetting extends ProfileSettings<DBConnection.SupportedDatabases> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isValid(DBConnection.SupportedDatabases value) {
+            return true; //An enum of a class can only be constructed if and only if it already exists.
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public DBConnection.SupportedDatabases parse(String value) {
+            return DBConnection.SupportedDatabases.valueOf(value);
         }
     }
 }

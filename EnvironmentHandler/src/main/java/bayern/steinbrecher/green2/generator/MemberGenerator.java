@@ -64,15 +64,23 @@ public class MemberGenerator {
      *
      * @param row The row to pick the entry from.
      * @param index The index of the row to pick.
-     * @return An {@link Optional} containing the entry. Returns {@link Optional#empty()} of {@code row} does not
-     * contain {@code index}. Returns an {@link Optional} of an {@link Optional#empty()} if and and only if {@code row}
-     * contains {@code index} but the value is {@code null}.
+     * @return An {@link Optional} containing the entry. Returns {@link Optional#empty()} if {@code row} does not
+     * contain {@code column}. Returns an {@link Optional} of an {@link Optional#empty()} if and and only if {@code row}
+     * contains {@code column} but the value is {@code null} or is parsed to {@code null}.
      */
-    private static Optional<Optional<String>> getOptionally(List<String> row, Integer index) {
-        if (index == null || index < 0) {
-            return Optional.empty();
+    private static <T> Optional<Optional<T>> getOptionally(List<String> row,
+            Map<DBConnection.Columns<?>, Integer> columnMapping, DBConnection.Columns<T> column) {
+        if (columnMapping.containsKey(column)) {
+            String cell = row.get(columnMapping.get(column));
+            T value;
+            if (cell == null) {
+                value = null;
+            } else {
+                value = column.parse(cell);
+            }
+            return Optional.of(Optional.ofNullable(value));
         } else {
-            return Optional.of(Optional.ofNullable(row.get(index)));
+            return Optional.empty();
         }
     }
 
@@ -80,34 +88,17 @@ public class MemberGenerator {
      * Picks the correct column and parses it to the specified type.
      */
     //FIXME Waiting for JDK 9.
-    private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns, Integer> columnMapping,
-            DBConnection.Tables table, DBConnection.Columns column) {
-        throw new UnsupportedOperationException("It is only supported in JDK9.");
-        /*Class<T> typeT = (Class<T>) ((ParameterizedType) DBConnection.Columns.class.getGenericSuperclass())
-                .getActualTypeArguments()[0];
-        Optional<Optional<String>> optionalField = getOptionally(row, columnMapping.get(column));
+    private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns<?>, Integer> columnMapping,
+            DBConnection.Tables table, DBConnection.Columns<T> column) {
+        Optional<Optional<T>> optionalField = getOptionally(row, columnMapping, column);
         if (optionalField.isPresent()) {
-            Optional<String> field = optionalField.get();
+            Optional<T> field = optionalField.get();
             if (field.isPresent()) {
-                T value;
-                if (Boolean.class.isAssignableFrom(clazz)) {
-                    value = (T) (Boolean) field.get().equalsIgnoreCase("1");
-                } else if (LocalDate.class.isAssignableFrom(clazz)) {
-                    value = (T) parseString(field.get());
-                } else if (Integer.class.isAssignableFrom(clazz)) {
-                    value = (T) (Integer) Integer.parseInt(field.get());
-                } else if (Double.class.isAssignableFrom(clazz)) {
-                    value = (T) (Double) Double.parseDouble(field.get());
-                } else if (String.class.isAssignableFrom(clazz)) {
-                    value = (T) optionalField.get();
-                } else {
-                    throw new IllegalArgumentException("Type " + clazz.getSimpleName() + " not supported.");
-                }
-                return value;
+                return field.get();
             } else {
                 if (!table.isOptional(column)) {
-                    Logger.getLogger(MemberGenerator.class.getName())
-                            .log(Level.WARNING, "Column {0} is not optional but contains a null value", column);
+                    Logger.getLogger(MemberGenerator.class.getName()).log(Level.WARNING,
+                            "Column {0} is not optional but contains a null value", column.getRealColumnName());
                 }
                 return null;
             }
@@ -115,51 +106,8 @@ public class MemberGenerator {
             if (table.isOptional(column)) {
                 return null;
             } else {
-                throw new IllegalStateException(column.getRealColumnName() + "(" + column + ") is no optional column "
-                        + "but has no mapping or it is set to NULL in the database.");
-            }
-        }*/
-    }
-
-    /*
-     * Picks the correct column and parses it to the specified type.
-     */
-    //FIXME Waiting for JDK 9.
-    @Deprecated(forRemoval = true)
-    private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns, Integer> columnMapping,
-            DBConnection.Tables table, DBConnection.Columns column, Class<T> clazz) {
-        Optional<Optional<String>> optionalField = getOptionally(row, columnMapping.get(column));
-        if (optionalField.isPresent()) {
-            Optional<String> field = optionalField.get();
-            if (field.isPresent()) {
-                T value;
-                if (Boolean.class.isAssignableFrom(clazz)) {
-                    value = (T) (Boolean) field.get().equalsIgnoreCase("1");
-                } else if (LocalDate.class.isAssignableFrom(clazz)) {
-                    value = (T) parseString(field.get());
-                } else if (Integer.class.isAssignableFrom(clazz)) {
-                    value = (T) (Integer) Integer.parseInt(field.get());
-                } else if (Double.class.isAssignableFrom(clazz)) {
-                    value = (T) (Double) Double.parseDouble(field.get());
-                } else if (String.class.isAssignableFrom(clazz)) {
-                    value = (T) field.get();
-                } else {
-                    throw new IllegalArgumentException("Type " + clazz.getSimpleName() + " not supported.");
-                }
-                return value;
-            } else {
-                if (!table.isOptional(column)) {
-                    Logger.getLogger(MemberGenerator.class.getName())
-                            .log(Level.WARNING, "Column {0} is not optional but contains a null value", column);
-                }
-                return null;
-            }
-        } else {
-            if (table.isOptional(column)) {
-                return null;
-            } else {
-                throw new IllegalStateException(column.getRealColumnName() + "(" + column + ") is no optional column "
-                        + "but has no mapping or it is set to NULL in the database.");
+                throw new IllegalStateException(column.getRealColumnName()
+                        + " is no optional column but has no mapping which means the column is not accessible.");
             }
         }
     }
@@ -168,65 +116,69 @@ public class MemberGenerator {
      * Generates a list of member out of {@code queryResult}.
      *
      * @param queryResult The table that hold the member informations. First dimension has to be row; second column.
-     * Each row is treated as one member. First row has to contain the headings.
+     * Each row is treated as one member. The first row is skipped since it is assumed it contains the headings of the
+     * columns.
      * @return The resulting list of member.
      */
     public static List<Member> generateMemberList(List<List<String>> queryResult) {
-        Map<DBConnection.Columns, Integer> columnMapping
+        Map<DBConnection.Columns<?>, Integer> columnMapping
                 = DBConnection.generateColumnMapping(DBConnection.Tables.MEMBER, queryResult.get(0));
 
-        return queryResult.parallelStream().skip(1).map(row -> {
-            //Read attributes
-            LocalDate birthday = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY, LocalDate.class);
-            LocalDate mandatsigned = MemberGenerator.pickAndConvert(row, columnMapping, DBConnection.Tables.MEMBER,
-                    DBConnection.Columns.MANDAT_SIGNED, LocalDate.class);
-            Boolean male = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_MALE, Boolean.class);
-            Boolean isActive = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_ACTIVE, Boolean.class);
-            Boolean isContributionfree = MemberGenerator.pickAndConvert(row,
-                    columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_CONTRIBUTIONFREE, Boolean.class);
-            Integer membershipnumber = MemberGenerator.pickAndConvert(row,
-                    columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.MEMBERSHIPNUMBER, Integer.class);
-            String prename = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.PRENAME, String.class);
-            String lastname = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.LASTNAME, String.class);
-            String title = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.TITLE, String.class);
-            String iban = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IBAN, String.class);
-            String bic = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIC, String.class);
-            String accountholderPrename = MemberGenerator.pickAndConvert(row, columnMapping,
-                    DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_PRENAME, String.class);
-            if (accountholderPrename == null || accountholderPrename.isEmpty()) {
-                accountholderPrename = prename;
-            }
-            String accountholderLastname = MemberGenerator.pickAndConvert(row, columnMapping,
-                    DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_LASTNAME, String.class);
-            if (accountholderLastname == null || accountholderLastname.isEmpty()) {
-                accountholderLastname = lastname;
-            }
-            Double contribution = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CONTRIBUTION, Double.class);
-            String street = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.STREET, String.class);
-            String housenumber = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.HOUSENUMBER, String.class);
-            String cityCode = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY_CODE, String.class);
-            String city = MemberGenerator.pickAndConvert(
-                    row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY, String.class);
+        return queryResult.parallelStream()
+                //Skip columnnames
+                .skip(1)
+                .map(row -> {
+                    //Read attributes
+                    LocalDate birthday = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY);
+                    LocalDate mandatsigned = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.MANDAT_SIGNED);
+                    Boolean male = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_MALE);
+                    Boolean isActive = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_ACTIVE);
+                    Boolean isContributionfree = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_CONTRIBUTIONFREE);
+                    Integer membershipnumber = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.MEMBERSHIPNUMBER);
+                    String prename = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.PRENAME);
+                    String lastname = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.LASTNAME);
+                    String title = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.TITLE);
+                    String iban = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IBAN);
+                    String bic = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIC);
+                    String accountholderPrename = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_PRENAME);
+                    if (accountholderPrename == null || accountholderPrename.isEmpty()) {
+                        accountholderPrename = prename;
+                    }
+                    String accountholderLastname = MemberGenerator.pickAndConvert(row, columnMapping,
+                            DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_LASTNAME);
+                    if (accountholderLastname == null || accountholderLastname.isEmpty()) {
+                        accountholderLastname = lastname;
+                    }
+                    Double contribution = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CONTRIBUTION);
+                    String street = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.STREET);
+                    String housenumber = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.HOUSENUMBER);
+                    String cityCode = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY_CODE);
+                    String city = MemberGenerator.pickAndConvert(
+                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY);
 
-            //Connect attributes
-            Person p = new Person(prename, lastname, title, birthday, male);
-            //FIXME mandateChanged has not to be always false
-            AccountHolder ah = new AccountHolder(
-                    iban, bic, mandatsigned, false, accountholderPrename, accountholderLastname, title, birthday, male);
-            Address ad = new Address(street, housenumber, cityCode, city);
-            return new Member(membershipnumber, p, ad, ah, isActive, isContributionfree, contribution);
-        }).collect(Collectors.toList());
+                    //Connect attributes
+                    Person p = new Person(prename, lastname, title, birthday, male);
+                    //FIXME mandateChanged has not to be always false
+                    AccountHolder ah = new AccountHolder(iban, bic, mandatsigned, false, accountholderPrename,
+                            accountholderLastname, title, birthday, male);
+                    Address ad = new Address(street, housenumber, cityCode, city);
+                    return new Member(membershipnumber, p, ad, ah, isActive, isContributionfree, contribution);
+                }).collect(Collectors.toList());
     }
 }
