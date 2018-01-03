@@ -26,6 +26,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -120,9 +121,9 @@ public class MemberGenerator {
      * columns.
      * @return The resulting list of member.
      */
-    public static List<Member> generateMemberList(List<List<String>> queryResult) {
-        Map<DBConnection.Columns<?>, Integer> columnMapping
-                = DBConnection.generateColumnMapping(DBConnection.Tables.MEMBER, queryResult.get(0));
+    public static Set<Member> generateMemberList(List<List<String>> queryResult) {
+        Map<Columns<?>, Integer> columnMapping
+                = DBConnection.generateColumnMapping(Tables.MEMBER, queryResult.get(0));
 
         return queryResult.parallelStream()
                 //Skip columnnames
@@ -179,6 +180,7 @@ public class MemberGenerator {
                             accountholderLastname, title, birthday, male);
                     Address ad = new Address(street, housenumber, cityCode, city);
                     return new Member(membershipnumber, p, ad, ah, isActive, isContributionfree, contribution);
-                }).collect(Collectors.toList());
+                })
+                .collect(Collectors.toSet());
     }
 }

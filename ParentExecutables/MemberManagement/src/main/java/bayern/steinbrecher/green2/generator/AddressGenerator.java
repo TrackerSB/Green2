@@ -19,9 +19,10 @@ package bayern.steinbrecher.green2.generator;
 import bayern.steinbrecher.green2.people.Address;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Person;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * Represents a generator for generating a table of member with their names, addresses and their salutation. The
@@ -46,12 +47,12 @@ public class AddressGenerator {
      * @param nicknames The nicknames to use for addresses.
      * @return The content for the output CSV file.
      */
-    public static String generateAddressData(List<Member> member, Map<String, String> nicknames) {
+    public static String generateAddressData(Collection<Member> member, Map<String, String> nicknames) {
         if (member.isEmpty()) {
             throw new IllegalArgumentException("Can't create output when member is empty.");
         }
-        List<String> salutations = createSalutations(member, nicknames);
-        return createOutput(member, salutations);
+        Map<Member, String> memberSalutationMapping = createSalutations(member, nicknames);
+        return createOutput(memberSalutationMapping);
     }
 
     /**
@@ -61,42 +62,37 @@ public class AddressGenerator {
      * @param nicknames The map containing the nicknames used for the salutations.
      * @return A list with appropriate salutations.
      */
-    private static List<String> createSalutations(List<Member> member, Map<String, String> nicknames) {
-        List<String> addresses = new ArrayList<>(member.size());
-        member.stream().forEach(m -> {
-            String address = m.getPerson().isMale() ? "Lieber " : "Liebe ";
-            address += nicknames.getOrDefault(m.getPerson().getPrename(), m.getPerson().getPrename());
-            addresses.add(address);
-        });
-        assert addresses.size() == member.size();
-
-        return addresses;
+    private static Map<Member, String> createSalutations(Collection<Member> member, Map<String, String> nicknames) {
+        return member.stream().collect(Collectors.toMap(m -> m,
+                m -> (m.getPerson().isMale() ? "Lieber " : "Liebe ")
+                + nicknames.getOrDefault(m.getPerson().getPrename(), m.getPerson().getPrename())));
     }
 
     /**
      * Creates output representing {@link Member}. The order is not guaranteed. But the first row will contain column
      * labels (german).
      *
-     * @param member The list of member to create output for.
-     * @param salutations The list containing the appropriate salutations for the member.
-     * @return A String representing the output.
+     * @param memberSalutationsMapping The map from the given {@link Member} to their salutations.
+     * @return A {@link String} representing the output.
      */
-    private static String createOutput(List<Member> member, List<String> salutations) {
-        StringBuilder output = new StringBuilder("Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Geburtstag;Anrede\n");
-        for (int i = 0; i < member.size(); i++) {
-            Person currentPerson = member.get(i).getPerson();
-            Address currentAddress = member.get(i).getHome();
-            output.append(currentPerson.getPrename()).append(';')
-                    .append(currentPerson.getLastname()).append(';')
-                    .append(currentAddress.getStreet()).append(';')
-                    .append(currentAddress.getHouseNumber()).append(';')
-                    .append(currentAddress.getPostcode()).append(';')
-                    .append(currentAddress.getPlace()).append(';')
-                    .append(currentPerson.getBirthday()).append(';')
-                    .append(salutations.get(i)).append('\n');
-        }
-        output.deleteCharAt(output.length() - 1);
-
-        return output.toString();
+    private static String createOutput(Map<Member, String> memberSalutationsMapping) {
+        return new StringBuilder("Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Geburtstag;Anrede\n")
+                .append(memberSalutationsMapping.entrySet().stream()
+                        .map(entry -> {
+                            Person p = entry.getKey().getPerson();
+                            Address a = entry.getKey().getHome();
+                            return new StringJoiner(";")
+                                    .add(p.getPrename())
+                                    .add(p.getLastname())
+                                    .add(a.getStreet())
+                                    .add(a.getHouseNumber())
+                                    .add(a.getPostcode())
+                                    .add(a.getPlace())
+                                    .add(String.valueOf(p.getBirthday()))
+                                    .add(entry.getValue())
+                                    .toString();
+                        })
+                        .collect(Collectors.joining("\n")))
+                .toString();
     }
 }

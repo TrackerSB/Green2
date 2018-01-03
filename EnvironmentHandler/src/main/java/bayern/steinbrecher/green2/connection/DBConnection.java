@@ -255,7 +255,7 @@ public abstract class DBConnection implements AutoCloseable {
      *
      * @return The list with the member.
      */
-    public List<Member> getAllMember() {
+    public Set<Member> getAllMember() {
         try {
             return MemberGenerator.generateMemberList(execQuery(
                     Tables.MEMBER.generateQuery(this, Tables.MEMBER.getAllColumnsAsArray()).get()

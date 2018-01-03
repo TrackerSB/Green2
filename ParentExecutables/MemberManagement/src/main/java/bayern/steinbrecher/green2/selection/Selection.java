@@ -21,8 +21,8 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Parent;
@@ -37,9 +37,9 @@ import javafx.stage.Stage;
  * @param <T> The type of the attributes being able to select.
  * @author Stefan Huber
  */
-public class Selection<T extends Comparable<T>> extends WizardableView<Optional<List<T>>, SelectionController<T>> {
+public class Selection<T extends Comparable<T>> extends WizardableView<Optional<Set<T>>, SelectionController<T>> {
 
-    private final List<T> options; //TODO May use Sets instead of Lists.
+    private final Set<T> options; //TODO May use Sets instead of Lists.
 
     /**
      * Creates a new Frame representing the given options as selectable {@link CheckBox} es and representing a
@@ -47,7 +47,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
      *
      * @param options The options the user is allowed to select.
      */
-    public Selection(List<T> options) {
+    public Selection(Set<T> options) {
         this.options = options;
     }
 
@@ -83,7 +83,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
      *
      * @return The selection if any.
      */
-    public Optional<List<T>> getSelection() {
+    public Optional<Set<T>> getSelection() {
         return controller.getSelection();
     }
 
@@ -91,7 +91,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<List<T>>> getWizardPage() {
+    public WizardPage<Optional<Set<T>>> getWizardPage() {
         try {
             Pane root = loadFXML("Selection_Wizard.fxml");
             return new WizardPage<>(root, null, false,

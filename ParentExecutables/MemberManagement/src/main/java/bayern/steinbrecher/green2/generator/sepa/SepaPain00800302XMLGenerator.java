@@ -23,6 +23,7 @@ import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,7 +56,7 @@ public final class SepaPain00800302XMLGenerator {
      * @return A list containing member which are not included in the outputfile. These are member which have no iban or
      * no bic.
      */
-    public static List<Member> createXMLFile(List<Member> member, Originator originator, SequenceType sequenceType,
+    public static List<Member> createXMLFile(Collection<Member> member, Originator originator, SequenceType sequenceType,
             File outputfile, boolean sepaWithBom) {
         List<Member> invalidMember = filterValidMember(member);
         if (member.isEmpty()) {
@@ -73,7 +74,7 @@ public final class SepaPain00800302XMLGenerator {
      * @param member The list of member to filter.
      * @return The list containing the member EXCLUDED from {@link Member}.
      */
-    private static List<Member> filterValidMember(List<Member> member) {
+    private static List<Member> filterValidMember(Collection<Member> member) {
         List<Member> invalidMember = new LinkedList<>();
         member.parallelStream().forEach(m -> {
             boolean valid = true;
@@ -117,7 +118,7 @@ public final class SepaPain00800302XMLGenerator {
      * @param contributions The mapping of membershipnumbers to contributions.
      * @return The {@link String} representing the xml file content.
      */
-    private static String createXML(List<Member> member, Originator originator, SequenceType sequenceType) {
+    private static String createXML(Collection<Member> member, Originator originator, SequenceType sequenceType) {
         int numberOfTransactions = member.size();
         double controlSum = member.parallelStream()
                 .mapToDouble(m -> m.getContribution().get())

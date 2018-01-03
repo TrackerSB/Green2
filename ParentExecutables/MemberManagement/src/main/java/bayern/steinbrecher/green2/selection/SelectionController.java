@@ -18,22 +18,22 @@ package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableController;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ListProperty;
+import javafx.beans.property.MapProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
@@ -48,26 +48,15 @@ import javafx.scene.layout.Priority;
  */
 public class SelectionController<T extends Comparable<T>> extends WizardableController {
 
-    private final ListProperty<T> optionsProperty
-            = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private IntegerProperty selectedCount
-            = new SimpleIntegerProperty(this, "selectedCount");
-    private final ReadOnlyIntegerProperty totalCount
-            = optionsProperty.sizeProperty();
-    private final BooleanProperty nothingSelected
-            = new SimpleBooleanProperty(this, "nothingSelected");
-    private final BooleanProperty allSelected
-            = new SimpleBooleanProperty(this, "allSelected");
+    private final MapProperty<T, CheckBox> optionsProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount");
+    private final ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
+    private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
+    private final BooleanProperty allSelected = new SimpleBooleanProperty(this, "allSelected");
     @FXML
     private ListView<CheckBox> optionsListView; //TODO May use CheckBoxListCell
     private final ChangeListener<Boolean> selectionChange
-            = (obs, oldVal, newVal) -> {
-                if (newVal) {
-                    selectedCount.set(selectedCount.get() + 1);
-                } else {
-                    selectedCount.set(selectedCount.get() - 1);
-                }
-            };
+            = (obs, oldVal, newVal) -> selectedCount.set(selectedCount.get() + (newVal ? 1 : -1));
 
     /**
      * {@inheritDoc}
@@ -77,16 +66,26 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
         valid.bind(nothingSelected.not());
+        optionsListView.itemsProperty().bind(Bindings.createObjectBinding(() -> {
+            optionsProperty.entrySet().stream()
+                    .filter(entry -> entry.getValue() == null)
+                    .forEach(entry -> {
+                        CheckBox newItem = new CheckBox(entry.getKey().toString());
+                        newItem.selectedProperty().addListener(selectionChange);
+                        entry.setValue(newItem);
+                    });
+            return FXCollections.observableArrayList(optionsProperty.values())
+                    .sorted((c, d) -> c.getText().compareToIgnoreCase(d.getText()));
+        }, optionsProperty));
 
-        optionsProperty.addListener((obs, oldVal, newVal) -> {
+        /*optionsProperty.addListener((obs, oldVal, newVal) -> {
             optionsListView.getItems().clear();
             newVal.stream().forEachOrdered(op -> {
                 CheckBox newItem = new CheckBox(op.toString());
                 newItem.selectedProperty().addListener(selectionChange);
                 optionsListView.getItems().add(newItem);
             });
-        });
-
+        });*/
         HBox.setHgrow(optionsListView, Priority.ALWAYS);
     }
 
@@ -95,9 +94,9 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
      *
      * @param options The list of new options.
      */
-    public void setOptions(List<T> options) {
-        this.optionsProperty.setAll(
-                options.stream().sorted().collect(Collectors.toList()));
+    public void setOptions(Set<T> options) {
+        optionsProperty.set(FXCollections.observableMap(
+                options.stream().collect(Collectors.toMap(op -> op, op -> (CheckBox) null))));
     }
 
     @FXML
@@ -124,17 +123,16 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
      *
      * @return An {@link Optional} containing the selection if any.
      */
-    public Optional<List<T>> getSelection() {
+    public Optional<Set<T>> getSelection() {
         if (userAbborted()) {
             return Optional.empty();
         } else {
-            List<T> selection = new ArrayList<>();
-            ObservableList<CheckBox> items = optionsListView.getItems();
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).isSelected()) {
-                    selection.add(optionsProperty.get(i));
+            Set<T> selection = new HashSet<>();
+            optionsProperty.forEach((option, checkbox) -> {
+                if (checkbox.isSelected()) {
+                    selection.add(option);
                 }
-            }
+            });
             return Optional.of(selection);
         }
     }

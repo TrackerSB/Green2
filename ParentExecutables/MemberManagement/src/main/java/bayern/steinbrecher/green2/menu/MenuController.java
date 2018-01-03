@@ -48,6 +48,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -138,8 +140,8 @@ public class MenuController extends Controller {
             }
         }
     };
-    private final CompletableFutureProperty<List<Member>> member = new CompletableFutureProperty<>();
-    private final CompletableFutureProperty<List<Member>> memberNonContributionfree = new CompletableFutureProperty<>();
+    private final CompletableFutureProperty<Set<Member>> member = new CompletableFutureProperty<>();
+    private final CompletableFutureProperty<Set<Member>> memberNonContributionfree = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Map<String, String>> nicknames = new CompletableFutureProperty<>();
     private BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
 
@@ -252,7 +254,7 @@ public class MenuController extends Controller {
         alert.showAndWait();
     }
 
-    private void generateAddresses(List<Member> member, File outputFile) {
+    private void generateAddresses(Collection<Member> member, File outputFile) {
         if (member.isEmpty()) {
             throw new IllegalArgumentException("Passed empty list to generateAddresses(...)");
         }
@@ -269,7 +271,7 @@ public class MenuController extends Controller {
      */
     public void generateAddressesAll() {
         try {
-            List<Member> memberList = this.member.get().get();
+            Set<Member> memberList = this.member.get().get();
             if (memberList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
@@ -302,10 +304,10 @@ public class MenuController extends Controller {
         }
     }
 
-    private void generateSepa(Future<List<Member>> memberToSelectFuture, boolean useMemberContributions,
+    private void generateSepa(Future<Set<Member>> memberToSelectFuture, boolean useMemberContributions,
             SequenceType sequenceType) {
         try {
-            List<Member> memberToSelect = memberToSelectFuture.get();
+            Set<Member> memberToSelect = memberToSelectFuture.get();
 
             if (memberToSelect.isEmpty()) {
                 showNoMemberForOutputDialog();
@@ -316,7 +318,7 @@ public class MenuController extends Controller {
                 WizardPage<Optional<Originator>> sepaFormPage = new SepaForm().getWizardPage();
                 sepaFormPage.setNextFunction(() -> askForContribution ? "contribution" : "selection");
                 WizardPage<Optional<Map<Color, Double>>> contributionPage = new Contribution().getWizardPage();
-                WizardPage<Optional<List<Member>>> selectionPage = new Selection<>(memberToSelect).getWizardPage();
+                WizardPage<Optional<Set<Member>>> selectionPage = new Selection<>(memberToSelect).getWizardPage();
                 selectionPage.setFinish(true);
 
                 Map<String, WizardPage<?>> pages = new HashMap<>();
@@ -342,7 +344,7 @@ public class MenuController extends Controller {
                 wizard.finishedProperty().addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
                         Map<String, ?> results = wizard.getResults().get();
-                        List<Member> selectedMember;
+                        Set<Member> selectedMember;
                         if (askForContribution) {
                             Map<Color, Double> contribution
                                     = ((Optional<Map<Color, Double>>) results.get("contribution")).get();
@@ -356,9 +358,9 @@ public class MenuController extends Controller {
                                         m.setContribution(contribution.get(entry.getValue()));
                                         return m;
                                     })
-                                    .collect(Collectors.toList());
+                                    .collect(Collectors.toSet());
                         } else {
-                            selectedMember = ((Optional<List<Member>>) results.get("selection")).get();
+                            selectedMember = ((Optional<Set<Member>>) results.get("selection")).get();
                         }
                         Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
@@ -440,7 +442,7 @@ public class MenuController extends Controller {
         memberNonContributionfree.set(member.get().thenApplyAsync(
                 ml -> ml.parallelStream()
                         .filter(m -> !m.isContributionfree())
-                        .collect(Collectors.toList())));
+                        .collect(Collectors.toSet())));
 
         //Precalculate memberBirthday for commonly used years
         int currentYear = LocalDate.now().getYear();
