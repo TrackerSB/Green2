@@ -64,7 +64,6 @@ public class ConfigDialogControllerTest {
         ResourceBundle rb = null;
         ConfigDialogController instance = new ConfigDialogController();
         instance.initialize(url, rb);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
@@ -78,7 +77,6 @@ public class ConfigDialogControllerTest {
         ReadOnlyBooleanProperty expResult = null;
         ReadOnlyBooleanProperty result = instance.profileAlreadyExistsProperty();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
@@ -92,7 +90,6 @@ public class ConfigDialogControllerTest {
         boolean expResult = false;
         boolean result = instance.isProfileAlreadyExists();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 

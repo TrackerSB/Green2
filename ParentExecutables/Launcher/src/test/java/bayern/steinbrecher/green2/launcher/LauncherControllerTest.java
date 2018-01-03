@@ -65,7 +65,6 @@ public class LauncherControllerTest {
         ResourceBundle rb = null;
         LauncherController instance = new LauncherController();
         instance.initialize(url, rb);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
@@ -79,7 +78,6 @@ public class LauncherControllerTest {
         ReadOnlyDoubleProperty expResult = null;
         ReadOnlyDoubleProperty result = instance.percentageProperty();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
@@ -93,7 +91,6 @@ public class LauncherControllerTest {
         double expResult = 0.0;
         double result = instance.getPercentage();
         assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
@@ -106,7 +103,6 @@ public class LauncherControllerTest {
         int steps = 0;
         LauncherController instance = new LauncherController();
         instance.incPercentage(steps);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
@@ -120,7 +116,6 @@ public class LauncherControllerTest {
         ReadOnlyStringProperty expResult = null;
         ReadOnlyStringProperty result = instance.percentageStringProperty();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
@@ -134,7 +129,6 @@ public class LauncherControllerTest {
         String expResult = "";
         String result = instance.getPercentageString();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
