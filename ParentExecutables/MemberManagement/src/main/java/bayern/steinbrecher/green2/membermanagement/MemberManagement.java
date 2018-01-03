@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.connection.DefaultConnection;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
+import bayern.steinbrecher.green2.connection.scheme.Columns;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
@@ -139,7 +140,7 @@ public class MemberManagement extends Application {
                         String message = invalidScheme + "\n" + mc.entrySet().parallelStream()
                                 .map(entry -> entry.getKey().getRealTableName() + ":\n"
                                 + entry.getValue().parallelStream()
-                                        .map(DBConnection.Columns::getRealColumnName)
+                                        .map(Columns::getRealColumnName)
                                         .map(col -> EnvironmentHandler.getResourceValue("columnMissing", col))
                                         .collect(Collectors.joining("\n")))
                                 .collect(Collectors.joining("\n"));

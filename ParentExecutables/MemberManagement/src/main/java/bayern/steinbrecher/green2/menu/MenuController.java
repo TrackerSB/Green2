@@ -18,6 +18,8 @@ package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.scheme.Columns;
+import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.contribution.Contribution;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -313,7 +315,7 @@ public class MenuController extends Controller {
                 showNoMemberForOutputDialog();
             } else {
                 boolean askForContribution = !(useMemberContributions
-                        && dbConnection.columnExists(DBConnection.Tables.MEMBER, DBConnection.Columns.CONTRIBUTION));
+                        && dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION));
 
                 WizardPage<Optional<Originator>> sepaFormPage = new SepaForm().getWizardPage();
                 sepaFormPage.setNextFunction(() -> askForContribution ? "contribution" : "selection");

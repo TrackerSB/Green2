@@ -17,6 +17,8 @@
 package bayern.steinbrecher.green2.generator;
 
 import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.scheme.Columns;
+import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.people.AccountHolder;
 import bayern.steinbrecher.green2.people.Address;
 import bayern.steinbrecher.green2.people.Member;
@@ -70,7 +72,7 @@ public class MemberGenerator {
      * contains {@code column} but the value is {@code null} or is parsed to {@code null}.
      */
     private static <T> Optional<Optional<T>> getOptionally(List<String> row,
-            Map<DBConnection.Columns<?>, Integer> columnMapping, DBConnection.Columns<T> column) {
+            Map<Columns<?>, Integer> columnMapping, Columns<T> column) {
         if (columnMapping.containsKey(column)) {
             String cell = row.get(columnMapping.get(column));
             T value;
@@ -88,9 +90,8 @@ public class MemberGenerator {
     /*
      * Picks the correct column and parses it to the specified type.
      */
-    //FIXME Waiting for JDK 9.
-    private static <T> T pickAndConvert(List<String> row, Map<DBConnection.Columns<?>, Integer> columnMapping,
-            DBConnection.Tables table, DBConnection.Columns<T> column) {
+    private static <T> T pickAndConvert(List<String> row, Map<Columns<?>, Integer> columnMapping, Tables table,
+            Columns<T> column) {
         Optional<Optional<T>> optionalField = getOptionally(row, columnMapping, column);
         if (optionalField.isPresent()) {
             Optional<T> field = optionalField.get();
@@ -131,47 +132,47 @@ public class MemberGenerator {
                 .map(row -> {
                     //Read attributes
                     LocalDate birthday = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIRTHDAY);
+                            row, columnMapping, Tables.MEMBER, Columns.BIRTHDAY);
                     LocalDate mandatsigned = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.MANDAT_SIGNED);
+                            row, columnMapping, Tables.MEMBER, Columns.MANDAT_SIGNED);
                     Boolean male = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_MALE);
+                            row, columnMapping, Tables.MEMBER, Columns.IS_MALE);
                     Boolean isActive = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_ACTIVE);
+                            row, columnMapping, Tables.MEMBER, Columns.IS_ACTIVE);
                     Boolean isContributionfree = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IS_CONTRIBUTIONFREE);
+                            row, columnMapping, Tables.MEMBER, Columns.IS_CONTRIBUTIONFREE);
                     Integer membershipnumber = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.MEMBERSHIPNUMBER);
+                            row, columnMapping, Tables.MEMBER, Columns.MEMBERSHIPNUMBER);
                     String prename = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.PRENAME);
+                            row, columnMapping, Tables.MEMBER, Columns.PRENAME);
                     String lastname = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.LASTNAME);
+                            row, columnMapping, Tables.MEMBER, Columns.LASTNAME);
                     String title = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.TITLE);
+                            row, columnMapping, Tables.MEMBER, Columns.TITLE);
                     String iban = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.IBAN);
+                            row, columnMapping, Tables.MEMBER, Columns.IBAN);
                     String bic = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.BIC);
+                            row, columnMapping, Tables.MEMBER, Columns.BIC);
                     String accountholderPrename = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_PRENAME);
+                            row, columnMapping, Tables.MEMBER, Columns.ACCOUNTHOLDER_PRENAME);
                     if (accountholderPrename == null || accountholderPrename.isEmpty()) {
                         accountholderPrename = prename;
                     }
                     String accountholderLastname = MemberGenerator.pickAndConvert(row, columnMapping,
-                            DBConnection.Tables.MEMBER, DBConnection.Columns.ACCOUNTHOLDER_LASTNAME);
+                            Tables.MEMBER, Columns.ACCOUNTHOLDER_LASTNAME);
                     if (accountholderLastname == null || accountholderLastname.isEmpty()) {
                         accountholderLastname = lastname;
                     }
                     Double contribution = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CONTRIBUTION);
+                            row, columnMapping, Tables.MEMBER, Columns.CONTRIBUTION);
                     String street = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.STREET);
+                            row, columnMapping, Tables.MEMBER, Columns.STREET);
                     String housenumber = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.HOUSENUMBER);
+                            row, columnMapping, Tables.MEMBER, Columns.HOUSENUMBER);
                     String cityCode = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY_CODE);
+                            row, columnMapping, Tables.MEMBER, Columns.CITY_CODE);
                     String city = MemberGenerator.pickAndConvert(
-                            row, columnMapping, DBConnection.Tables.MEMBER, DBConnection.Columns.CITY);
+                            row, columnMapping, Tables.MEMBER, Columns.CITY);
 
                     //Connect attributes
                     Person p = new Person(prename, lastname, title, birthday, male);
