@@ -48,7 +48,8 @@ import javafx.scene.layout.Priority;
  */
 public class SelectionController<T extends Comparable<T>> extends WizardableController {
 
-    private final MapProperty<T, CheckBox> optionsProperty = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private final MapProperty<T, Optional<CheckBox>> optionsProperty
+            = new SimpleMapProperty<>(FXCollections.observableHashMap());
     private IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount");
     private final ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
     private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
@@ -68,14 +69,17 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
         valid.bind(nothingSelected.not());
         optionsListView.itemsProperty().bind(Bindings.createObjectBinding(() -> {
             optionsProperty.entrySet().stream()
-                    .filter(entry -> entry.getValue() == null)
+                    .filter(entry -> !entry.getValue().isPresent())
                     .forEach(entry -> {
                         CheckBox newItem = new CheckBox(entry.getKey().toString());
                         newItem.selectedProperty().addListener(selectionChange);
-                        entry.setValue(newItem);
+                        entry.setValue(Optional.of(newItem));
                     });
-            return FXCollections.observableArrayList(optionsProperty.values())
-                    .sorted((c, d) -> c.getText().compareToIgnoreCase(d.getText()));
+            return FXCollections.observableArrayList(optionsProperty.values()
+                    .stream()
+                    .map(Optional::get)
+                    .sorted((c, d) -> c.getText().compareToIgnoreCase(d.getText()))
+                    .collect(Collectors.toList()));
         }, optionsProperty));
 
         /*optionsProperty.addListener((obs, oldVal, newVal) -> {
@@ -96,7 +100,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
      */
     public void setOptions(Set<T> options) {
         optionsProperty.set(FXCollections.observableMap(
-                options.stream().collect(Collectors.toMap(op -> op, op -> (CheckBox) null))));
+                options.stream().collect(Collectors.toMap(op -> op, op -> Optional.empty()))));
     }
 
     @FXML
@@ -129,9 +133,11 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
         } else {
             Set<T> selection = new HashSet<>();
             optionsProperty.forEach((option, checkbox) -> {
-                if (checkbox.isSelected()) {
-                    selection.add(option);
-                }
+                checkbox.ifPresent(c -> {
+                    if (c.isSelected()) {
+                        selection.add(option);
+                    }
+                });
             });
             return Optional.of(selection);
         }
