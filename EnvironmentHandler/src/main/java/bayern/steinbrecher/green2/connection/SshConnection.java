@@ -16,6 +16,9 @@
  */
 package bayern.steinbrecher.green2.connection;
 
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -33,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -134,9 +138,10 @@ public final class SshConnection extends DBConnection {
             this.sshSession.connect();
 
             String result;
+            SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
             try {
-                result = execCommand("command -v "
-                        + COMMANDS.get(DATABASE.getValue()) + " >/dev/null 2>&1 || { echo \"Not installed\"; }");
+                result = execCommand(
+                        "command -v " + COMMANDS.get(dbms) + " >/dev/null 2>&1 || { echo \"Not installed\"; }");
             } catch (CommandException ex) {
                 throw new UnsupportedDatabaseException(
                         "The command to check existence of the correct database failed.", ex);
@@ -210,21 +215,22 @@ public final class SshConnection extends DBConnection {
      */
     @Override
     public List<List<String>> execQuery(String sqlCode) throws SQLException {
+        SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
+        String result;
         try {
-            String result = execCommand(sqlCommands.get(DATABASE.getValue()).apply(sqlCode));
-
-            String[] rows = result.split("\n");
-            List<List<String>> resultTable = Arrays.stream(rows)
-                    .map(row -> splitUp(row, '\t'))
-                    .map(rowFields -> rowFields.stream()
-                    .map(f -> f.equals("0000-00-00") ? null : f) //TODO Remove legacy check 0000-00-00
-                    .collect(Collectors.toList()))
-                    .collect(Collectors.toList());
-
-            return resultTable;
+            result = execCommand(sqlCommands.get(dbms).apply(sqlCode));
         } catch (JSchException | CommandException ex) {
             throw new SQLException(ex);
         }
+        String[] rows = result.split("\n");
+        List<List<String>> resultTable = Arrays.stream(rows)
+                .map(row -> splitUp(row, '\t'))
+                .map(rowFields -> rowFields.stream()
+                .map(f -> f.equals("0000-00-00") ? null : f) //TODO Remove legacy check 0000-00-00
+                .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+
+        return resultTable;
     }
 
     /**

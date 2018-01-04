@@ -165,6 +165,7 @@ public class MenuController extends Controller {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //Bind year spinner
         StringBinding yearBinding = Bindings.createStringBinding(
                 () -> yearSpinner.isValid() ? yearSpinner.getValue().toString() : "?",
                 yearSpinner.validProperty(), yearSpinner.valueProperty());
@@ -176,6 +177,7 @@ public class MenuController extends Controller {
                         .concat(yearBinding));
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
+        //Bind availability informations
         allDataAvailable.bind(member.availableProperty()
                 .and(memberNonContributionfree.availableProperty())
                 .and(nicknames.availableProperty()));
@@ -196,6 +198,7 @@ public class MenuController extends Controller {
             return text;
         }, dataLastUpdatedProperty()));
 
+        //Load licenses
         EnvironmentHandler.getLicenses().stream().forEach(license -> {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
@@ -432,14 +435,16 @@ public class MenuController extends Controller {
         member.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllMember()));
         nicknames.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllNicknames()));
         CompletableFuture.allOf(member.get(), nicknames.get())
-                .thenRunAsync(() -> {
+                .whenCompleteAsync((result, throwable) -> {
                     LocalDateTime datetime;
-                    if (member.get().isCompletedExceptionally() || nicknames.get().isCompletedExceptionally()) {
-                        datetime = LocalDateTime.MIN;
-                    } else {
+                    if (throwable == null) {
                         datetime = LocalDateTime.now();
+                    } else {
+                        Logger.getLogger(MenuController.class.getName())
+                                .log(Level.SEVERE, "Retrieving the data failed.", throwable);
+                        datetime = null;
                     }
-                    Platform.runLater(() -> dataLastUpdated.set(Optional.of(datetime)));
+                    Platform.runLater(() -> dataLastUpdated.set(Optional.ofNullable(datetime)));
                 });
         memberNonContributionfree.set(member.get().thenApplyAsync(
                 ml -> ml.parallelStream()

@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.IntFunction;
@@ -277,6 +279,23 @@ public class Profile {
             return Arrays.stream(configFiles)
                     .map(s -> s.substring(0, s.length() - CONFIGFILE_FORMAT.length()))
                     .collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * Returns the value belonging to the key {@code key} or throws a {@link NoSuchElementException} if {@code key}
+     * could not be found.
+     *
+     * @param <T> The type of the value hold by the given setting.
+     * @param key The key to search for.
+     * @return The value belonging to the key {@code key} or throws a {@link NoSuchElementException} if {@code key}
+     * could not be found.
+     */
+    public <T> T get(ProfileSettings<T> key) {
+        if (configurations.containsKey(key)) {
+            return (T) configurations.get(key).getValue();
+        } else {
+            throw new NoSuchElementException("The currently loaded profile does not specify a value for " + key);
         }
     }
 

@@ -17,6 +17,8 @@
 package bayern.steinbrecher.green2.connection;
 
 import bayern.steinbrecher.green2.connection.scheme.Columns;
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Queries;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -24,9 +26,7 @@ import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.utility.DialogUtility;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -37,11 +37,9 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.util.Pair;
 
 /**
  * Represents a database connection.
@@ -49,50 +47,6 @@ import javafx.scene.control.ButtonType;
  * @author Stefan Huber
  */
 public abstract class DBConnection implements AutoCloseable {
-
-    private static final Map<SupportedDatabases, Map<Queries, String>> QUERIES = new HashMap<>();
-    protected static final Property<SupportedDatabases> DATABASE = new SimpleObjectProperty<>();
-    /**
-     * Caches existing columns of tables. All column names are lowercase.
-     */
-    private final Map<Tables, List<String>> EXISTING_HEADINGS_CACHE = new HashMap<>();
-
-    static {
-        DATABASE.bind(Bindings.createObjectBinding(() -> {
-            Profile profile = EnvironmentHandler.getProfile();
-            return profile == null ? null : profile.getOrDefault(ProfileSettings.DBMS, null);
-        }, EnvironmentHandler.loadedProfileProperty(), EnvironmentHandler.getProfile().getProperty(ProfileSettings.DBMS)));
-    }
-
-    static {
-        Map<Queries, String> mysql = new HashMap<>(Queries.values().length);
-        mysql.put(Queries.CREATE_MEMBER_TABLE, "CREATE TABLE " + Tables.MEMBER.getRealTableName() + " ("
-                + "Mitgliedsnummer INTEGER PRIMARY KEY,"
-                + "Titel VARCHAR(255) NOT NULL,"
-                + "Vorname VARCHAR(255) NOT NULL,"
-                + "Nachname VARCHAR(255) NOT NULL,"
-                + "MitgliedSeit DATE NOT NULL,"
-                + "IstAktiv BOOLEAN NOT NULL,"
-                + "IstMaennlich BOOLEAN NOT NULL,"
-                + "Geburtstag DATE NOT NULL,"
-                + "Strasse VARCHAR(255) NOT NULL,"
-                + "Hausnummer VARCHAR(255) NOT NULL,"
-                + "PLZ VARCHAR(255) NOT NULL,"
-                + "Ort VARCHAR(255) NOT NULL,"
-                + "IBAN VARCHAR(255) NOT NULL,"
-                + "BIC VARCHAR(255) NOT NULL,"
-                + "MandatErstellt DATE NOT NULL,"
-                + "KontoinhaberVorname VARCHAR(255) NOT NULL,"
-                + "KontoinhaberNachname VARCHAR(255) NOT NULL,"
-                + "IstBeitragsfrei BOOLEAN NOT NULL DEFAULT '0',"
-                + "Beitrag FLOAT NOT NULL);");
-        mysql.put(Queries.CREATE_NICKNAMES_TABLE, "CREATE TABLE " + Tables.NICKNAMES.getRealTableName() + " ("
-                + "Name VARCHAR(255) PRIMARY KEY,"
-                + "Spitzname VARCHAR(255) NOT NULL);");
-        mysql.put(Queries.TABLE_EXISTS, "SELECT count(*) FROM information_schema.tables "
-                + "WHERE table_schema=\"{0}\" AND (table_name=\"{1}\");");
-        QUERIES.put(SupportedDatabases.MY_SQL, mysql);
-    }
 
     /**
      * Closes this connection.
@@ -141,12 +95,9 @@ public abstract class DBConnection implements AutoCloseable {
         return columnsMapping;
     }
 
-    private String getQuery(Queries query) {
-        if (DATABASE.getValue() == null) {
-            throw new IllegalStateException("The supported databases are not set.");
-        } else {
-            return QUERIES.get(DATABASE.getValue()).get(query);
-        }
+    private Pair<String, SupportedDatabases> getNameAndTypeOfDatabase() {
+        Profile profile = EnvironmentHandler.getProfile();
+        return new Pair<>(profile.get(ProfileSettings.DATABASE_NAME), profile.get(ProfileSettings.DBMS));
     }
 
     /**
@@ -157,20 +108,16 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table exist.
      */
     public boolean tableExists(Tables table) {
+        boolean tableExists = false;
         try {
-            Profile profile = EnvironmentHandler.getProfile();
-            if (profile == null) {
-                throw new IllegalStateException("Can't check. Currently no profile is loaded.");
-            } else {
-                String databaseName = profile.getOrDefault(ProfileSettings.DATABASE_NAME, "database");
-                String query
-                        = MessageFormat.format(getQuery(Queries.TABLE_EXISTS), databaseName, table.getRealTableName());
-                return Integer.parseInt(execQuery(query).get(1).get(0)) >= Tables.values().length;
-            }
+            Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
+            List<List<String>> result = execQuery(table.generateQuery(
+                    Queries.TABLE_EXISTS, profileInfo.getValue(), profileInfo.getKey()));
+            tableExists = Integer.parseInt(result.get(1).get(0)) >= 1;
             //FIXME When permissions to read are missing, also a SQLException is thrown.
         } catch (SQLException ex) {
-            return false;
         }
+        return tableExists;
     }
 
     /**
@@ -195,19 +142,11 @@ public abstract class DBConnection implements AutoCloseable {
             if (resultButton.isPresent() && resultButton.get() == ButtonType.YES) {
                 for (Tables table : missingTables) {
                     try {
-                        switch (table) {
-                            case MEMBER:
-                                execUpdate(getQuery(Queries.CREATE_MEMBER_TABLE));
-                                break;
-                            case NICKNAMES:
-                                execUpdate(getQuery(Queries.CREATE_NICKNAMES_TABLE));
-                                break;
-                            default:
-                                throw new SchemeCreationException(
-                                        "There is no sql statement for creating \"" + table.getRealTableName() + "\".");
-                        }
+                        Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
+                        execUpdate(table.generateQuery(
+                                Queries.CREATE_TABLE, profileInfo.getValue(), profileInfo.getKey()));
                     } catch (SQLException ex) {
-                        throw new SchemeCreationException("Could not create one or more database tables", ex);
+                        throw new SchemeCreationException("Could not create table " + table.getRealTableName(), ex);
                     }
                 }
                 tablesCreated = true;
@@ -255,7 +194,7 @@ public abstract class DBConnection implements AutoCloseable {
     public Set<Member> getAllMember() {
         try {
             return MemberGenerator.generateMemberList(
-                    execQuery(Tables.MEMBER.generateQuery(this, Tables.MEMBER.getAllColumns()).get()));
+                    execQuery(Tables.MEMBER.generateSearchQuery(this, Tables.MEMBER.getAllColumns()).get()));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
@@ -269,7 +208,7 @@ public abstract class DBConnection implements AutoCloseable {
     public Map<String, String> getAllNicknames() {
         try {
             List<List<String>> queriedNicknames
-                    = execQuery(Tables.NICKNAMES.generateQuery(this, Tables.NICKNAMES.getAllColumns()).get());
+                    = execQuery(Tables.NICKNAMES.generateSearchQuery(this, Tables.NICKNAMES.getAllColumns()).get());
 
             Map<String, String> mappedNicknames = new HashMap<>();
             queriedNicknames.parallelStream()
@@ -293,95 +232,22 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean columnExists(Tables table, Columns<?> column) {
         try {
-            synchronized (EXISTING_HEADINGS_CACHE) {
-                if (!EXISTING_HEADINGS_CACHE.containsKey(table)) {
-                    EXISTING_HEADINGS_CACHE
-                            /*
-                             * FIXME When the database is empty it may happen that the result contains nothing.
-                             * Not even the column names. (See also JavaDoc)
-                             */
-                            /*
-                             * NOTE Don´t use putIfAbsent(...). If you do, execQuery(...) will always be evaluated
-                             * because of missing lazy evaluation.
-                             */
-                            .put(table, execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;")
-                                    .get(0)
-                                    .stream()
-                                    .map(String::toLowerCase)
-                                    .collect(Collectors.toList()));
-                }
-            }
-            return EXISTING_HEADINGS_CACHE.get(table).stream()
-                    .anyMatch(s -> s.equalsIgnoreCase(column.getRealColumnName()));
+            /*
+             * FIXME When the database is empty it may happen that the result contains nothing.
+             * Not even the column names. (See also JavaDoc)
+             */
+            //FIXME Cache the columns and clear the cache when changing the profile.
+            //TODO Think about ignoring small/capital letters in column names
+            return execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;")
+                    .get(0)
+                    .stream()
+                    .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
+                    .findAny()
+                    .isPresent();
             //FIXME Try not to use SQLException for checking whether the table exists.
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
             return false;
-        }
-    }
-
-    private enum Queries {
-        /**
-         * Checks whether a given table exists.<br />
-         * Variables:<br />
-         * 0: database name<br />
-         * 1: name of the table
-         */
-        TABLE_EXISTS(true),
-        /**
-         * Creates the database for member with all columns.
-         */
-        CREATE_MEMBER_TABLE(false),
-        /**
-         * Creates the database for nicknames with all columns.
-         */
-        CREATE_NICKNAMES_TABLE(false);
-
-        private final boolean containsVariables;
-
-        private Queries(boolean containsVariables) {
-            this.containsVariables = containsVariables;
-        }
-
-        /**
-         * Checks whether this query contains variables to be used as {@link PreparedStatement}.
-         *
-         * @return {@code true} only if this query contains variables.
-         */
-        public boolean containsVariables() {
-            return containsVariables;
-        }
-    }
-
-    /**
-     * This enum lists all supported databases like MySQL.
-     */
-    public enum SupportedDatabases {
-        MY_SQL("My SQL", 3306);
-
-        private final String displayName;
-        private final int defaultPort;
-
-        private SupportedDatabases(String displayName, int defaultPort) {
-            this.displayName = displayName;
-            this.defaultPort = defaultPort;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            return displayName;
-        }
-
-        /**
-         * Returns the default port of the dbms.
-         *
-         * @return The default port of the dbms.
-         */
-        public int getDefaultPort() {
-            return defaultPort;
         }
     }
 }

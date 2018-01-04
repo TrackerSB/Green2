@@ -99,6 +99,13 @@ public abstract class /*enum*/ Columns<T> {
      */
     public abstract T parse(String value);
 
+    /**
+     * Returns the generic type of the class. This method is needed since type ereasure takes place.
+     *
+     * @return The generic type of the class.
+     */
+    public abstract Class<T> getType();
+
     private static class StringColumn extends Columns<String> {
 
         public StringColumn(String realColumnName, String defaultValue) {
@@ -110,12 +117,14 @@ public abstract class /*enum*/ Columns<T> {
             this(realColumnName, null);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String parse(String value) {
             return value;
+        }
+
+        @Override
+        public Class<String> getType() {
+            return String.class;
         }
     }
 
@@ -130,12 +139,14 @@ public abstract class /*enum*/ Columns<T> {
             this(realColumnName, null);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Integer parse(String value) {
             return Integer.parseInt(value);
+        }
+
+        @Override
+        public Class<Integer> getType() {
+            return Integer.class;
         }
     }
 
@@ -150,12 +161,14 @@ public abstract class /*enum*/ Columns<T> {
             this(realColumnName, null);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Boolean parse(String value) {
             return value.equalsIgnoreCase("1");
+        }
+
+        @Override
+        public Class<Boolean> getType() {
+            return Boolean.class;
         }
     }
 
@@ -170,9 +183,6 @@ public abstract class /*enum*/ Columns<T> {
             this(realColumnName, null);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public LocalDate parse(String value) {
             LocalDate date = null;
@@ -187,6 +197,11 @@ public abstract class /*enum*/ Columns<T> {
             }
             return date;
         }
+
+        @Override
+        public Class<LocalDate> getType() {
+            return LocalDate.class;
+        }
     }
 
     private static class DoubleColumn extends Columns<Double> {
@@ -200,12 +215,14 @@ public abstract class /*enum*/ Columns<T> {
             this(realColumnName, null);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Double parse(String value) {
             return Double.parseDouble(value);
+        }
+
+        @Override
+        public Class<Double> getType() {
+            return Double.class;
         }
     }
 }

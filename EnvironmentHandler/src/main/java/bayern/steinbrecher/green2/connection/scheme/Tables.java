@@ -17,15 +17,18 @@
 package bayern.steinbrecher.green2.connection.scheme;
 
 import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Keywords;
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Queries;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import javafx.util.Pair;
 
 /**
  * This enum lists all tables needed.
@@ -33,50 +36,45 @@ import java.util.stream.Collectors;
  * @author Stefan Huber
  */
 public enum Tables {
-    //FIXME JDK9 allows <> with anonymous inner classes.
-    MEMBER("Mitglieder", new HashMap<Columns<?>, Boolean>() {
-        {
-            put(Columns.MEMBERSHIPNUMBER, true);
-            put(Columns.PRENAME, true);
-            put(Columns.LASTNAME, true);
-            put(Columns.TITLE, true);
-            put(Columns.IS_MALE, true);
-            put(Columns.BIRTHDAY, true);
-            put(Columns.STREET, true);
-            put(Columns.HOUSENUMBER, true);
-            put(Columns.CITY_CODE, true);
-            put(Columns.CITY, true);
-            put(Columns.IS_CONTRIBUTIONFREE, true);
-            put(Columns.IBAN, true);
-            put(Columns.BIC, true);
-            put(Columns.ACCOUNTHOLDER_PRENAME, true);
-            put(Columns.ACCOUNTHOLDER_LASTNAME, true);
-            put(Columns.MANDAT_SIGNED, true);
-            put(Columns.CONTRIBUTION, false);
-            put(Columns.IS_ACTIVE, false);
-        }
-    }),
-    //FIXME JDK9 allows <> with anonymous inner classes.
-    NICKNAMES("Spitznamen", new HashMap<Columns<?>, Boolean>() {
-        {
-            put(Columns.NAME, true);
-            put(Columns.NICKNAME, true);
-        }
-    });
+    MEMBER("Mitglieder", Map.ofEntries(
+            Map.entry(Columns.MEMBERSHIPNUMBER, new Pair<>(true, Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY))),
+            Map.entry(Columns.PRENAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.LASTNAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.TITLE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.IS_MALE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.BIRTHDAY, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.STREET, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.HOUSENUMBER, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.CITY_CODE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.CITY, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.IS_CONTRIBUTIONFREE, new Pair<>(true, Set.of(Keywords.DEFAULT, Keywords.NOT_NULL))),
+            Map.entry(Columns.IBAN, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.BIC, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.ACCOUNTHOLDER_PRENAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.ACCOUNTHOLDER_LASTNAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.MANDAT_SIGNED, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.CONTRIBUTION, new Pair<>(false, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.IS_ACTIVE, new Pair<>(false, Set.of(Keywords.NOT_NULL)))
+    )),
+    NICKNAMES("Spitznamen", Map.of(
+            Columns.NAME, new Pair<>(true, Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY)),
+            Columns.NICKNAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))
+    ));
 
-    private final Map<Columns<?>, Boolean> columns;
+    private final Map<Columns<?>, Pair<Boolean, Set<Keywords>>> columns;
     private final String realTableName;
 
     /**
      * Creates a representation of a scheme of a table.
      *
      * @param realTableName The name of the table in a database.
-     * @param columns A map containing the columns of this table and whether they are required. {@code true} means
-     * required; {@code false} means optional.
+     * @param columns A map containing the columns of this table, whether they are required ({@code true} means
+     * required; {@code false} means optional.) and their attributes.
+     * @param createTemplate The template of the CREATE statement of a table.
      */
-    private Tables(String realTableName, Map<Columns<?>, Boolean> columns) {
+    private Tables(String realTableName, Map<Columns<?>, Pair<Boolean, Set<Keywords>>> columns) {
         if (columns.values().stream().anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException(
+            throw new Error(
                     "Found a column which is neither marked as required nor as optional in table " + realTableName);
         }
         this.realTableName = realTableName;
@@ -119,7 +117,7 @@ public enum Tables {
      */
     public Optional<List<Columns<?>>> getMissingColumns(DBConnection connection) {
         List<Columns<?>> missingColumns = columns.entrySet().stream()
-                .filter(Map.Entry::getValue)
+                .filter(entry -> entry.getValue().getKey())
                 .map(Map.Entry::getKey)
                 .filter(column -> !connection.columnExists(this, column))
                 .collect(Collectors.toList());
@@ -138,7 +136,7 @@ public enum Tables {
      */
     public boolean isOptional(Columns column) {
         if (contains(column)) {
-            return !columns.get(column);
+            return !columns.get(column).getKey();
         } else {
             throw new IllegalArgumentException(column + " is no column of " + realTableName);
         }
@@ -152,10 +150,10 @@ public enum Tables {
      * @param columnsToSelect The columns to select when they exist.
      * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
      * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
-     * @see #generateQuery(bayern.steinbrecher.green2.connection.DBConnection,
-     * bayern.steinbrecher.green2.connection.scheme.Columns...)
+     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection,
+     * bayern.steinbrecher.green2.connection.scheme.Columns[])
      */
-    public Optional<String> generateQuery(DBConnection connection, Collection<Columns<?>> columnsToSelect) {
+    public Optional<String> generateSearchQuery(DBConnection connection, Collection<Columns<?>> columnsToSelect) {
         throwIfInvalid(connection);
         List<Columns> existingColumns = columnsToSelect.stream()
                 .filter(c -> connection.columnExists(this, c))
@@ -178,10 +176,48 @@ public enum Tables {
      * @param columnsToSelect The columns to select when they exist.
      * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
      * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
-     * @see #generateQuery(bayern.steinbrecher.green2.connection.DBConnection, java.util.Collection)
+     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection, java.util.Collection)
      */
-    public Optional<String> generateQuery(DBConnection connection, Columns... columnsToSelect) {
-        return generateQuery(connection, Arrays.asList(columnsToSelect));
+    public Optional<String> generateSearchQuery(DBConnection connection, Columns... columnsToSelect) {
+        return generateSearchQuery(connection, Arrays.asList(columnsToSelect));
+    }
+
+    private String generateCreateStatement(SupportedDatabases dbms) {
+        String columnList = getAllColumns().stream()
+                .map(column -> new StringJoiner(" ")
+                .add(column.getRealColumnName())
+                .add(dbms.getType(column))
+                .add(dbms.getKeywords(columns.get(column).getValue()).stream().collect(Collectors.joining(" ")))
+                .toString())
+                .collect(Collectors.joining(", "));
+        return dbms.getTemplate(SupportedDatabases.Queries.CREATE_TABLE, getRealTableName(), columnList);
+    }
+
+    private String generateTableExistsStatement(SupportedDatabases dbms, String databaseName) {
+        return dbms.getTemplate(Queries.TABLE_EXISTS, databaseName, getRealTableName());
+    }
+
+    /**
+     * Generates a statement for the given query.
+     *
+     * @param query The query to generate a statement for.
+     * @param dbms The dbms to create the statement for.
+     * @param databaseName The name of the database to use.
+     * @return The generated statement.
+     */
+    public String generateQuery(Queries query, SupportedDatabases dbms, String databaseName) {
+        String statement;
+        switch (query) {
+            case CREATE_TABLE:
+                statement = generateCreateStatement(dbms);
+                break;
+            case TABLE_EXISTS:
+                statement = generateTableExistsStatement(dbms, databaseName);
+                break;
+            default:
+                throw new UnsupportedOperationException("The query " + query + " is not implemented, yet.");
+        }
+        return statement;
     }
 
     /**

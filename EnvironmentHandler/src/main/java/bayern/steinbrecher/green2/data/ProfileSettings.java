@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.data;
 
-import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
     /**
      * The type of the SQL database. (e.g. MySQL).
      */
-    public static final ProfileSettings<DBConnection.SupportedDatabases> DBMS = new SupportedDatabaseSetting();
+    public static final ProfileSettings<SupportedDatabases> DBMS = new SupportedDatabaseSetting();
 
     /**
      * Contains all values like an enum. NOTE: It will be removed when generic enums are added to Java.
@@ -242,13 +242,13 @@ public abstract class /*enum*/ ProfileSettings<T> {
         }
     }
 
-    private static class SupportedDatabaseSetting extends ProfileSettings<DBConnection.SupportedDatabases> {
+    private static class SupportedDatabaseSetting extends ProfileSettings<SupportedDatabases> {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public boolean isValid(DBConnection.SupportedDatabases value) {
+        public boolean isValid(SupportedDatabases value) {
             return true; //An enum of a class can only be constructed if and only if it already exists.
         }
 
@@ -256,8 +256,8 @@ public abstract class /*enum*/ ProfileSettings<T> {
          * {@inheritDoc}
          */
         @Override
-        public DBConnection.SupportedDatabases parse(String value) {
-            return DBConnection.SupportedDatabases.valueOf(value);
+        public SupportedDatabases parse(String value) {
+            return SupportedDatabases.valueOf(value);
         }
     }
 }

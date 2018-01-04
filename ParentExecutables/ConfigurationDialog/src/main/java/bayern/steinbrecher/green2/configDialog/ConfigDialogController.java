@@ -17,7 +17,7 @@
 package bayern.steinbrecher.green2.configDialog;
 
 import bayern.steinbrecher.green2.CheckedController;
-import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
@@ -67,7 +67,7 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedTextField profileNameTextField;
     @FXML
-    private CheckedComboBox<DBConnection.SupportedDatabases> dbmsComboBox;
+    private CheckedComboBox<SupportedDatabases> dbmsComboBox;
     @FXML
     private CheckedRegexTextField birthdayExpressionTextField;
     private final List<CheckedTextField> checkedTextFields = new ArrayList<>();
@@ -109,13 +109,14 @@ public class ConfigDialogController extends CheckedController {
         sshPort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.SSH_PORT, 22));
         databaseHostTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_HOST, ""));
         databasePort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.DATABASE_PORT,
-                profile.getOrDefault(ProfileSettings.DBMS, DBConnection.SupportedDatabases.MY_SQL).getDefaultPort()));
+                profile.getOrDefault(ProfileSettings.DBMS, SupportedDatabases.MY_SQL).getDefaultPort()));
         databaseNameTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(profile.getOrDefault(ProfileSettings.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(profile.getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
-        sshCharsetTextField.setText(profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
-        dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(DBConnection.SupportedDatabases.values())));
+        sshCharsetTextField.setText(
+                profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
+        dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(SupportedDatabases.values())));
         dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ProfileSettings.DBMS, null));
     }
 

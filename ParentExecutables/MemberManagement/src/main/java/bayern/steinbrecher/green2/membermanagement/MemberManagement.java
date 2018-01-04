@@ -19,10 +19,12 @@ package bayern.steinbrecher.green2.membermanagement;
 import bayern.steinbrecher.green2.connection.AuthException;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.DefaultConnection;
+import bayern.steinbrecher.green2.connection.InvalidSchemeException;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
 import bayern.steinbrecher.green2.connection.scheme.Columns;
+import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
@@ -48,6 +50,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -92,7 +96,7 @@ public class MemberManagement extends Application {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws IOException, InterruptedException, ExecutionException {
         menuStage = primaryStage;
 
         if (profile.isAllConfigurationsSet()) {
@@ -117,57 +121,66 @@ public class MemberManagement extends Application {
             });
             login.start(loginStage);
 
-            CompletableFuture.runAsync(() -> {
-                //Create database connection
-                Optional<DBConnection> optDBConnection = getConnection(login, waitScreen);
-                if (optDBConnection.isPresent()) {
-                    dbConnection = optDBConnection.get();
-                    try {
-                        if (!dbConnection.createTablesIfNeeded()) {
-                            Logger.getLogger(MemberManagement.class.getName()).log(Level.INFO,
-                                    "Some tables are missing and the user did not confirm the creation of them.");
-                            Platform.exit();
-                        }
-                    } catch (SchemeCreationException ex) {
-                        String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
-                        DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme).showAndWait();
-                        Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-                        Platform.exit();
-                    }
-
-                    dbConnection.getMissingColumns().ifPresent(mc -> {
-                        String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
-                        String message = invalidScheme + "\n" + mc.entrySet().parallelStream()
-                                .map(entry -> entry.getKey().getRealTableName() + ":\n"
-                                + entry.getValue().parallelStream()
-                                        .map(Columns::getRealColumnName)
-                                        .map(col -> EnvironmentHandler.getResourceValue("columnMissing", col))
-                                        .collect(Collectors.joining("\n")))
-                                .collect(Collectors.joining("\n"));
-
-                        DialogUtility.createErrorAlert(null, message, invalidScheme).showAndWait();
-                        Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, message);
-                        Platform.exit();
-                    });
-
-                    menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
-                        if (newVal) {
-                            waitScreen.close();
-                        } else {
-                            Platform.exit();
-                        }
-                    });
-
-                    Platform.runLater(() -> {
+            CompletableFuture.supplyAsync(() -> getConnection(login, waitScreen))
+                    //Get connection
+                    .thenAcceptAsync(connection -> {
+                        dbConnection = connection.orElseThrow(
+                                () -> new IllegalStateException("Could not create a connection"));
+                    })
+                    //Check existence of tables
+                    .thenRunAsync(() -> {
                         try {
-                            //Show main menu
-                            new Menu(dbConnection).start(menuStage);
-                        } catch (Exception ex) {
-                            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+                            if (!dbConnection.createTablesIfNeeded()) {
+                                throw new IllegalStateException(
+                                        "Some tables are missing and the user did not confirm the creation of them.");
+                            }
+                        } catch (SchemeCreationException ex) {
+                            String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
+                            Platform.runLater(
+                                    DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme)::show);
+                            throw new CompletionException(ex);
+                        }
+                    })
+                    //Check whether every table has all its required columns
+                    .thenRunAsync(() -> {
+                        Optional<Map<Tables, List<Columns<?>>>> missingColumns = dbConnection.getMissingColumns();
+                        if (missingColumns.isPresent()) {
+                            String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
+                            String message = invalidScheme + "\n" + missingColumns.get().entrySet().parallelStream()
+                                    .map(entry -> entry.getKey().getRealTableName() + ":\n"
+                                    + entry.getValue().parallelStream()
+                                            .map(Columns::getRealColumnName)
+                                            .map(col -> EnvironmentHandler.getResourceValue("columnMissing", col))
+                                            .collect(Collectors.joining("\n")))
+                                    .collect(Collectors.joining("\n"));
+                            Platform.runLater(() -> DialogUtility.createErrorAlert(null, message, invalidScheme).show());
+                            throw new CompletionException(new InvalidSchemeException(message));
+                        }
+                    })
+                    //Handle error occured at any stage
+                    .whenCompleteAsync((voidResult, throwable) -> {
+                        if (throwable == null) {
+                            menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                                if (newVal) {
+                                    waitScreen.close();
+                                } else {
+                                    Platform.exit();
+                                }
+                            });
+
+                            Platform.runLater(() -> {
+                                try {
+                                    //Show main menu
+                                    new Menu(dbConnection).start(menuStage);
+                                } catch (Exception ex) {
+                                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            });
+                        } else {
+                            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, throwable);
+                            Platform.exit();
                         }
                     });
-                }
-            });
         } else {
             String badConfigs = MessageFormat.format(
                     EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName());
@@ -277,7 +290,8 @@ public class MemberManagement extends Application {
                 return getConnection(login, waitScreen);
             } catch (UnsupportedDatabaseException ex) {
                 Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-                DialogUtility.createErrorAlert(null, EnvironmentHandler.getResourceValue("noSupportedDatabase"));
+                DialogUtility.createErrorAlert(null, EnvironmentHandler.getResourceValue("noSupportedDatabase"))
+                        .showAndWait();
             }
         }
 

@@ -16,6 +16,9 @@
  */
 package bayern.steinbrecher.green2.connection;
 
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.data.ProfileSettings;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -63,16 +66,16 @@ public final class DefaultConnection extends DBConnection {
      */
     public DefaultConnection(String databaseHost, String databaseUsername, String databasePasswd, String databaseName)
             throws AuthException, UnknownHostException {
+        if (!databaseHost.endsWith("/")) {
+            databaseHost += "/";
+        }
+        SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
         try {
-            if (!databaseHost.endsWith("/")) {
-                databaseHost += "/";
-            }
-            connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(DATABASE.getValue()) + databaseHost
+            connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(dbms) + databaseHost
                     + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
                     + "&serverTimezone=UTC",
                     databaseUsername, databasePasswd);
         } catch (SQLException ex) {
-            Logger.getLogger(DefaultConnection.class.getName()).log(Level.SEVERE, null, ex);
             if (ex instanceof CommunicationsException) {
                 throw new UnknownHostException(ex.getMessage());
             } else {

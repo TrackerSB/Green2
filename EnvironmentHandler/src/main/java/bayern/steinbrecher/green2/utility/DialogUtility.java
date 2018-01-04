@@ -34,7 +34,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
- * Provides functions for creating different dialogs. NOTE: There are some functions like initOwner(...) which may
+ * Provides functions for creating different dialogs. When using this class all alerts should be created on the FX
+ * application thread otherwise the creation may fail. NOTE: There are some functions like initOwner(...) which may
  * override the stylesheet which is set in these methods. So you should use the {@code owner} parameter if needed.
  *
  * @author Stefan Huber
