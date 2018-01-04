@@ -204,9 +204,9 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Returns the loaded profile.
+     * Returns the currently loaded profile.
      *
-     * @return Returns the loaded profile.
+     * @return The currently loaded profile. The returned value is never {@code null}.
      */
     public static Profile getProfile() {
         if (isLoaded()) {
@@ -234,6 +234,7 @@ public final class EnvironmentHandler {
      * @return The profile itself. (This may be used for chaining)
      */
     public static Profile loadProfile(Profile profile) {
+        //TODO Does it cause trouble when changing the profile?
         loadedProfile.setValue(profile);
         return profile;
     }
