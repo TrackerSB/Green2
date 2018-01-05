@@ -36,7 +36,7 @@ public class ProfileRenamingException extends RuntimeException {
      * @param message The detail message.
      */
     public ProfileRenamingException(String message) {
-        super();
+        super(message);
     }
 
     /**
