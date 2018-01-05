@@ -17,6 +17,7 @@
     
     <properties>
         <mainClass>bayern.steinbrecher.green2.uninstaller.Uninstaller</mainClass>
+        <netbeans.hint.license>gpl30</netbeans.hint.license>
     </properties>
     
     <dependencies>
