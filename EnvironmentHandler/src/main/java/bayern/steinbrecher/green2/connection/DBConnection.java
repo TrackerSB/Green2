@@ -49,6 +49,16 @@ import javafx.util.Pair;
 public abstract class DBConnection implements AutoCloseable {
 
     /**
+     * Caches the names of all columns (not only the ones defined in {@link Columns}). The cache is refreshed whenever
+     * the currently loaded profile changes.
+     */
+    private static final Map<Tables, List<String>> EXISTING_COLUMNS_CACHE = new HashMap<>();
+
+    static {
+        EnvironmentHandler.loadedProfileProperty().addListener(change -> EXISTING_COLUMNS_CACHE.clear());
+    }
+
+    /**
      * Closes this connection.
      */
     @Override
@@ -232,18 +242,22 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean columnExists(Tables table, Columns<?> column) {
         try {
-            /*
-             * FIXME When the database is empty it may happen that the result contains nothing.
-             * Not even the column names. (See also JavaDoc)
-             */
-            //FIXME Cache the columns and clear the cache when changing the profile.
-            //TODO Think about ignoring small/capital letters in column names
-            return execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;")
-                    .get(0)
-                    .stream()
-                    .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
-                    .findAny()
-                    .isPresent();
+            synchronized (EXISTING_COLUMNS_CACHE) {
+                if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
+                    /*
+                     * FIXME When the database is empty it may happen that the result contains nothing.
+                     * Not even the column names. (See also JavaDoc)
+                     */
+                    //NOTE Don´t use putIfAbsent(...) since it is lacking lazy evaluation for the second argument.
+                    EXISTING_COLUMNS_CACHE.put(table,
+                            execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;").get(0));
+                }
+                //TODO Think about ignoring small/capital letters in column names
+                return EXISTING_COLUMNS_CACHE.get(table).stream()
+                        .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
+                        .findAny()
+                        .isPresent();
+            }
             //FIXME Try not to use SQLException for checking whether the table exists.
         } catch (SQLException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
