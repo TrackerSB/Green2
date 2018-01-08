@@ -27,6 +27,7 @@ import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,9 +54,15 @@ public abstract class DBConnection implements AutoCloseable {
      * the currently loaded profile changes.
      */
     private static final Map<Tables, List<String>> EXISTING_COLUMNS_CACHE = new HashMap<>();
+    private static final List<String> TABLES_CACHE = new ArrayList<>();
+    private static Pair<String, SupportedDatabases> nameAndTypeOfDatabaseCache = null;
 
     static {
-        EnvironmentHandler.loadedProfileProperty().addListener(change -> EXISTING_COLUMNS_CACHE.clear());
+        EnvironmentHandler.loadedProfileProperty().addListener(change -> {
+            EXISTING_COLUMNS_CACHE.clear();
+            TABLES_CACHE.clear();
+            nameAndTypeOfDatabaseCache = null;
+        });
     }
 
     /**
@@ -106,8 +113,12 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     private Pair<String, SupportedDatabases> getNameAndTypeOfDatabase() {
-        Profile profile = EnvironmentHandler.getProfile();
-        return new Pair<>(profile.get(ProfileSettings.DATABASE_NAME), profile.get(ProfileSettings.DBMS));
+        if (nameAndTypeOfDatabaseCache == null) {
+            Profile profile = EnvironmentHandler.getProfile();
+            nameAndTypeOfDatabaseCache
+                    = new Pair<>(profile.get(ProfileSettings.DATABASE_NAME), profile.get(ProfileSettings.DBMS));
+        }
+        return nameAndTypeOfDatabaseCache;
     }
 
     /**
@@ -118,16 +129,24 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table exist.
      */
     public boolean tableExists(Tables table) {
-        boolean tableExists = false;
-        try {
-            Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
-            List<List<String>> result = execQuery(table.generateQuery(
-                    Queries.TABLE_EXISTS, profileInfo.getValue(), profileInfo.getKey()));
-            tableExists = Integer.parseInt(result.get(1).get(0)) >= 1;
-            //FIXME When permissions to read are missing, also a SQLException is thrown.
-        } catch (SQLException ex) {
+        synchronized (TABLES_CACHE) {
+            if (TABLES_CACHE.isEmpty()) {
+                Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
+                List<List<String>> result;
+                try {
+                    result = execQuery(
+                            table.generateQuery(Queries.GET_TABLE_NAMES, profileInfo.getValue(), profileInfo.getKey()));
+                    TABLES_CACHE.addAll(result.stream()
+                            //Skip column name
+                            .skip(1)
+                            .map(list -> list.get(0))
+                            .collect(Collectors.toList()));
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
-        return tableExists;
+        return TABLES_CACHE.contains(table.getRealTableName());
     }
 
     /**
@@ -241,27 +260,27 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table contains the given column.
      */
     public boolean columnExists(Tables table, Columns<?> column) {
-        try {
-            synchronized (EXISTING_COLUMNS_CACHE) {
-                if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
-                    /*
-                     * FIXME When the database is empty it may happen that the result contains nothing.
-                     * Not even the column names. (See also JavaDoc)
-                     */
+        synchronized (EXISTING_COLUMNS_CACHE) {
+            if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
+                Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
+                try {
+                    List<List<String>> result = execQuery(
+                            table.generateQuery(Queries.GET_COLUMN_NAMES, profileInfo.getValue(), profileInfo.getKey()));
+                    List<String> listOfColumns = result
+                            .stream()
+                            .map(list -> list.get(0))
+                            .collect(Collectors.toList());
                     //NOTE Don´t use putIfAbsent(...) since it is lacking lazy evaluation for the second argument.
-                    EXISTING_COLUMNS_CACHE.put(table,
-                            execQuery("SELECT * FROM " + table.getRealTableName() + " LIMIT 1;").get(0));
+                    EXISTING_COLUMNS_CACHE.put(table, listOfColumns.subList(1, listOfColumns.size()));
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //TODO Think about ignoring small/capital letters in column names
-                return EXISTING_COLUMNS_CACHE.get(table).stream()
-                        .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
-                        .findAny()
-                        .isPresent();
             }
-            //FIXME Try not to use SQLException for checking whether the table exists.
-        } catch (SQLException ex) {
-            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            //TODO Think about ignoring small/capital letters in column names
+            return EXISTING_COLUMNS_CACHE.get(table).stream()
+                    .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
+                    .findAny()
+                    .isPresent();
         }
     }
 }

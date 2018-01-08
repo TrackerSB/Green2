@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.connection.scheme;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
@@ -46,8 +47,10 @@ public enum SupportedDatabases {
             ),
             Map.of(
                     Queries.CREATE_TABLE, "CREATE TABLE {0} ({1});",
-                    Queries.TABLE_EXISTS, "SELECT count(*) FROM information_schema.tables "
-                    + "WHERE table_schema=\"{0}\" AND (table_name=\"{1}\");"
+                    Queries.GET_COLUMN_NAMES, "SELECT column_name FROM information_schema.columns "
+                    + "WHERE table_schema=\"{0}\" AND table_name=\"{1}\";",
+                    Queries.GET_TABLE_NAMES, "SELECT table_name FROM information_schema.tables "
+                    + "WHERE table_schema=\"{0}\" AND table_name=\"{1}\";"
             ));
 
     private final String displayName;
@@ -146,7 +149,7 @@ public enum SupportedDatabases {
      */
     public String getTemplate(Queries query, Object... params) {
         if (queryTemplates.containsKey(query)) {
-            return queryTemplates.get(query);
+            return MessageFormat.format(queryTemplates.get(query), params);
         } else {
             throw new Error("For the database " + displayName + " the query " + query + " is not defined.");
         }
@@ -175,15 +178,22 @@ public enum SupportedDatabases {
 
     public static enum Queries {
         /**
-         * Checks whether a given table exists.<br />
+         * Creates a table with all given columns.
+         */
+        CREATE_TABLE,
+        /**
+         * Returns all column names of the given table.<br />
          * Variables:<br />
          * 0: database name<br />
          * 1: name of the table
          */
-        TABLE_EXISTS,
+        GET_COLUMN_NAMES,
         /**
-         * Creates a table with all given columns.
+         * Returns all table names of the given database.<br />
+         * Variables:<br />
+         * 0: database name<br />
+         * 1: name of the table
          */
-        CREATE_TABLE;
+        GET_TABLE_NAMES;
     }
 }

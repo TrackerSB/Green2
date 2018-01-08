@@ -193,10 +193,6 @@ public enum Tables {
         return dbms.getTemplate(SupportedDatabases.Queries.CREATE_TABLE, getRealTableName(), columnList);
     }
 
-    private String generateTableExistsStatement(SupportedDatabases dbms, String databaseName) {
-        return dbms.getTemplate(Queries.TABLE_EXISTS, databaseName, getRealTableName());
-    }
-
     /**
      * Generates a statement for the given query.
      *
@@ -205,14 +201,18 @@ public enum Tables {
      * @param databaseName The name of the database to use.
      * @return The generated statement.
      */
+    //FIXME Think about where to move these generateQuery methods
     public String generateQuery(Queries query, SupportedDatabases dbms, String databaseName) {
         String statement;
         switch (query) {
             case CREATE_TABLE:
                 statement = generateCreateStatement(dbms);
                 break;
-            case TABLE_EXISTS:
-                statement = generateTableExistsStatement(dbms, databaseName);
+            case GET_COLUMN_NAMES:
+                statement = dbms.getTemplate(Queries.GET_COLUMN_NAMES, databaseName, getRealTableName());
+                break;
+            case GET_TABLE_NAMES:
+                statement = dbms.getTemplate(Queries.GET_TABLE_NAMES, databaseName, getRealTableName());
                 break;
             default:
                 throw new UnsupportedOperationException("The query " + query + " is not implemented, yet.");
