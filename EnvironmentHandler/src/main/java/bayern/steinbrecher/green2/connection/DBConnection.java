@@ -163,6 +163,7 @@ public abstract class DBConnection implements AutoCloseable {
         boolean tablesAreMissing = !missingTables.isEmpty();
         boolean tablesCreated = false;
         if (tablesAreMissing) {
+            //FIXME Check rights for creating tables
             StringJoiner message = new StringJoiner("\n").add(EnvironmentHandler.getResourceValue("tablesMissing"));
             missingTables.forEach(table -> message.add(table.getRealTableName()));
             Alert creationConfirmation = DialogUtility.createAlert(
