@@ -178,7 +178,7 @@ public class MemberManagement extends Application {
                             });
                         } else {
                             Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, throwable);
-                            Platform.exit();
+                            Platform.runLater(() -> waitScreen.close());
                         }
                     });
         } else {
