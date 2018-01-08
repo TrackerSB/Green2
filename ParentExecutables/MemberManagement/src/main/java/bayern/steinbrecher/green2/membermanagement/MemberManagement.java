@@ -137,7 +137,8 @@ public class MemberManagement extends Application {
                         } catch (SchemeCreationException ex) {
                             String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
                             Platform.runLater(
-                                    DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme)::show);
+                                    () -> DialogUtility.createErrorAlert(null, couldntCreateScheme, couldntCreateScheme)
+                                            .show());
                             throw new CompletionException(ex);
                         }
                     })
@@ -153,7 +154,8 @@ public class MemberManagement extends Application {
                                             .map(col -> EnvironmentHandler.getResourceValue("columnUnaccessible", col))
                                             .collect(Collectors.joining("\n")))
                                     .collect(Collectors.joining("\n"));
-                            Platform.runLater(DialogUtility.createErrorAlert(null, message, invalidScheme)::show);
+                            Platform.runLater(
+                                    () -> DialogUtility.createErrorAlert(null, message, invalidScheme).show());
                             throw new CompletionException(new InvalidSchemeException(message));
                         }
                     })
