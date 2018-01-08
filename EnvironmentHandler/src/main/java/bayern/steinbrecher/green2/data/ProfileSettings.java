@@ -151,14 +151,34 @@ public abstract class /*enum*/ ProfileSettings<T> {
 
     /**
      * Parses the given value to an object of the type represented by this {@link ProfileSettings}. It is not checked
-     * whether the result is a valid setting.
+     * whether the result is a valid setting. NOTE: It can be assumed that the argument is never {@code null} since
+     * {@code null} is handled by {@link #parse(java.lang.String)}.
      *
-     * @param value The value to parse;
-     * @return The object representing the value of the setting hold by {@code value}.
+     * @param value The value to parse.
+     * @return The object representing the value of the setting hold by {@code value} or {@link Optional#empty()} if the
+     * value could not be parsed.
      * @see #toString(T)
      * @see #isValid(java.lang.Object)
      */
-    public abstract T parse(String value);
+    protected abstract Optional<T> parseImpl(String value);
+
+    /**
+     * Parses the given value to an object of the type represented by this {@link ProfileSettings}. It is not checked
+     * whether the result is a valid setting.
+     *
+     * @param value The value to parse.
+     * @return The object representing the value of the setting hold by {@code value} or {@link Optional#empty()} if the
+     * value could not be parsed or is {@code null}.
+     * @see #toString(T)
+     * @see #isValid(java.lang.Object)
+     */
+    public final Optional<T> parse(String value) {
+        if (value == null) {
+            return Optional.empty();
+        } else {
+            return parseImpl(value);
+        }
+    }
 
     /**
      * Returns a {@link String} representation of the given object which can be parsed to reproduce the given object.
@@ -176,8 +196,8 @@ public abstract class /*enum*/ ProfileSettings<T> {
          * {@inheritDoc}
          */
         @Override
-        public String parse(String value) {
-            return value;
+        protected Optional<String> parseImpl(String value) {
+            return Optional.of(value);
         }
     }
 
@@ -187,8 +207,12 @@ public abstract class /*enum*/ ProfileSettings<T> {
          * {@inheritDoc}
          */
         @Override
-        public Integer parse(String value) {
-            return Integer.parseInt(value);
+        protected Optional<Integer> parseImpl(String value) {
+            try {
+                return Optional.of(Integer.parseInt(value));
+            } catch (NumberFormatException ex) {
+                return Optional.empty();
+            }
         }
     }
 
@@ -198,9 +222,9 @@ public abstract class /*enum*/ ProfileSettings<T> {
          * {@inheritDoc}
          */
         @Override
-        public Boolean parse(String value) {
+        protected Optional<Boolean> parseImpl(String value) {
             //FIXME Remove legacy equals 1 check
-            return value.equalsIgnoreCase("1") || Boolean.parseBoolean(value);
+            return Optional.of(value.equalsIgnoreCase("1") || Boolean.parseBoolean(value));
         }
     }
 
@@ -218,8 +242,8 @@ public abstract class /*enum*/ ProfileSettings<T> {
          * {@inheritDoc}
          */
         @Override
-        public String parse(String value) {
-            return value;
+        protected Optional<String> parseImpl(String value) {
+            return Optional.of(value);
         }
     }
 
@@ -230,15 +254,19 @@ public abstract class /*enum*/ ProfileSettings<T> {
          */
         @Override
         public boolean isValid(Charset value) {
-            return Charset.availableCharsets().containsValue(value);
+            return true; //NOTE: A Charset can only be constructed if and only if it is supported and therefore is valid.
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public Charset parse(String value) {
-            return Charset.forName(value);
+        protected Optional<Charset> parseImpl(String value) {
+            Charset charset = null;
+            if (Charset.isSupported(value)) {
+                charset = Charset.forName(value);
+            }
+            return Optional.ofNullable(charset);
         }
     }
 
@@ -248,16 +276,31 @@ public abstract class /*enum*/ ProfileSettings<T> {
          * {@inheritDoc}
          */
         @Override
-        public boolean isValid(SupportedDatabases value) {
-            return true; //An enum of a class can only be constructed if and only if it already exists.
+        public String toString(SupportedDatabases value) {
+            return value.name();
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public SupportedDatabases parse(String value) {
-            return SupportedDatabases.valueOf(value);
+        public boolean isValid(SupportedDatabases value) {
+            return true; //NOTE: An enum of a class can only be constructed if and only if it already exists.
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected Optional<SupportedDatabases> parseImpl(String value) {
+            SupportedDatabases supportedDbms = null;
+            for (SupportedDatabases dbms : SupportedDatabases.values()) {
+                if (dbms.name().equalsIgnoreCase(value)) {
+                    supportedDbms = dbms;
+                    break;
+                }
+            }
+            return Optional.ofNullable(supportedDbms);
         }
     }
 }

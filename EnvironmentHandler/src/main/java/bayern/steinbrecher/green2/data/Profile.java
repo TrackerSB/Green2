@@ -138,13 +138,16 @@ public class Profile {
                     parts = line.split(VALUE_SEPARATOR, 2);
                     //NOTE At this point using raw type is necessary
                     ProfileSettings key = ProfileSettings.valueOf(parts[0].toUpperCase());
-                    Object value = key.parse(parts.length < 2 ? "" : parts[1]);
-                    if (key.isValid(value)) {
-                        configurations.put(key, new SimpleObjectProperty<>(value));
-                    } else {
-                        Logger.getLogger(Profile.class.getName())
-                                .log(Level.WARNING, "\"{0}\" has an invalid value. It is skipped.", key);
-                    }
+                    Optional<?> optValue = key.parse(parts.length < 2 ? "" : parts[1]);
+                    optValue.ifPresentOrElse(value -> {
+                        if (key.isValid(value)) {
+                            configurations.put(key, new SimpleObjectProperty<>(value));
+                        } else {
+                            Logger.getLogger(Profile.class.getName())
+                                    .log(Level.WARNING, "\"{0}\" has an invalid value. It is skipped.", key);
+                        }
+                    }, () -> Logger.getLogger(Profile.class.getName())
+                            .log(Level.WARNING, "The value of \"{0}\" could not be parsed. It is skipped.", line));
                 } else {
                     Logger.getLogger(Profile.class.getName())
                             .log(Level.SEVERE, "Line \"{0}\" contains no \"" + VALUE_SEPARATOR + "\"", line);
