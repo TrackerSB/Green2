@@ -150,7 +150,7 @@ public class MemberManagement extends Application {
                                     .map(entry -> entry.getKey().getRealTableName() + ":\n"
                                     + entry.getValue().parallelStream()
                                             .map(Columns::getRealColumnName)
-                                            .map(col -> EnvironmentHandler.getResourceValue("columnMissing", col))
+                                            .map(col -> EnvironmentHandler.getResourceValue("columnUnaccessible", col))
                                             .collect(Collectors.joining("\n")))
                                     .collect(Collectors.joining("\n"));
                             Platform.runLater(() -> DialogUtility.createErrorAlert(null, message, invalidScheme).show());
