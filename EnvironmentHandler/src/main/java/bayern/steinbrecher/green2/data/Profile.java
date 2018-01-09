@@ -217,7 +217,7 @@ public class Profile {
 
     private <T> String generateLine(ProfileSettings<T> key) {
         return ProfileSettings.name(key) + VALUE_SEPARATOR
-                + key.toString(configurations.getTypesafe(key).getValue());
+                + key.toString(configurations.get(key).getValue());
     }
 
     /**
@@ -300,7 +300,7 @@ public class Profile {
      */
     public <T> T get(ProfileSettings<T> key) {
         if (configurations.containsKey(key)) {
-            return configurations.getTypesafe(key).getValue();
+            return configurations.get(key).getValue();
         } else {
             throw new NoSuchElementException("The currently loaded profile does not specify a value for " + key);
         }
@@ -318,7 +318,7 @@ public class Profile {
      */
     public <T> T getOrDefault(ProfileSettings<T> key, T defaultValue) {
         if (configurations.containsKey(key)) {
-            return configurations.getTypesafe(key).getValue();
+            return configurations.get(key).getValue();
         } else {
             return defaultValue;
         }
@@ -347,7 +347,7 @@ public class Profile {
         }
         configurations.putIfAbsent(key, new SimpleObjectProperty<>());
         //NOTE Using raw type is necessary
-        configurations.getTypesafe(key).setValue(value);
+        configurations.get(key).setValue(value);
     }
 
     /**
@@ -414,7 +414,7 @@ public class Profile {
     private static class ConfigurationsMap extends SimpleMapProperty<ProfileSettings<?>, Property<?>> {
 
         @SuppressWarnings("unchecked")
-        public <T> Property<T> getTypesafe(ProfileSettings<T> key) {
+        public <T> Property<T> get(ProfileSettings<T> key) {
             //FIXME How to do that typesafe?
             return (Property<T>) super.get(key);
         }
