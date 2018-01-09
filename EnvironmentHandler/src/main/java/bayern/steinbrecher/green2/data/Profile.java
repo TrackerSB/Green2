@@ -37,6 +37,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -60,7 +61,7 @@ public class Profile {
      * The configurations found in a profile file.
      */
     //TODO Think about how to force equallity of these two question marks
-    private ObservableMap<ProfileSettings<?>, Property<?>> configurations = FXCollections.observableHashMap();
+    private ConfigurationsMap configurations = new ConfigurationsMap();
     /**
      * {@code true} only if all allowed configurations are specified.
      */
@@ -137,10 +138,12 @@ public class Profile {
                 if (line.contains(VALUE_SEPARATOR)) {
                     parts = line.split(VALUE_SEPARATOR, 2);
                     //NOTE At this point using raw type is necessary
-                    ProfileSettings key = ProfileSettings.valueOf(parts[0].toUpperCase());
+                    ProfileSettings key = ProfileSettings.valueOf(parts[0]);
                     Optional<?> optValue = key.parse(parts.length < 2 ? "" : parts[1]);
                     optValue.ifPresentOrElse(value -> {
-                        if (key.isValid(value)) {
+                        @SuppressWarnings("unchecked")
+                        boolean isValid = key.isValid(value);
+                        if (isValid) {
                             configurations.put(key, new SimpleObjectProperty<>(value));
                         } else {
                             Logger.getLogger(Profile.class.getName())
@@ -213,7 +216,8 @@ public class Profile {
     }
 
     private <T> String generateLine(ProfileSettings<T> key) {
-        return ProfileSettings.name(key) + VALUE_SEPARATOR + key.toString((T) configurations.get(key).getValue());
+        return ProfileSettings.name(key) + VALUE_SEPARATOR
+                + key.toString(configurations.getTypesafe(key).getValue());
     }
 
     /**
@@ -296,7 +300,7 @@ public class Profile {
      */
     public <T> T get(ProfileSettings<T> key) {
         if (configurations.containsKey(key)) {
-            return (T) configurations.get(key).getValue();
+            return configurations.getTypesafe(key).getValue();
         } else {
             throw new NoSuchElementException("The currently loaded profile does not specify a value for " + key);
         }
@@ -314,7 +318,7 @@ public class Profile {
      */
     public <T> T getOrDefault(ProfileSettings<T> key, T defaultValue) {
         if (configurations.containsKey(key)) {
-            return (T) configurations.get(key).getValue();
+            return configurations.getTypesafe(key).getValue();
         } else {
             return defaultValue;
         }
@@ -343,8 +347,7 @@ public class Profile {
         }
         configurations.putIfAbsent(key, new SimpleObjectProperty<>());
         //NOTE Using raw type is necessary
-        Property valueProperty = configurations.get(key);
-        valueProperty.setValue(value);
+        configurations.getTypesafe(key).setValue(value);
     }
 
     /**
@@ -406,5 +409,14 @@ public class Profile {
     public boolean isNewProfile() {
         checkDeleted();
         return newProfile;
+    }
+
+    private static class ConfigurationsMap extends SimpleMapProperty<ProfileSettings<?>, Property<?>> {
+
+        @SuppressWarnings("unchecked")
+        public <T> Property<T> getTypesafe(ProfileSettings<T> key) {
+            //FIXME How to do that typesafe?
+            return (Property<T>) super.get(key);
+        }
     }
 }

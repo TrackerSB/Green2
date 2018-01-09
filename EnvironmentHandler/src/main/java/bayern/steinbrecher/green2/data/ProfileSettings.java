@@ -190,22 +190,28 @@ public abstract class /*enum*/ ProfileSettings<T> {
         return value.toString();
     }
 
+    /**
+     * Returns the generic type of the class. This method is needed since type ereasure takes place.
+     *
+     * @return The generic type of the class.
+     */
+    public abstract Class<T> getType();
+
     private static class StringSetting extends ProfileSettings<String> {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Optional<String> parseImpl(String value) {
             return Optional.of(value);
+        }
+
+        @Override
+        public Class<String> getType() {
+            return String.class;
         }
     }
 
     private static class IntegerSetting extends ProfileSettings<Integer> {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Optional<Integer> parseImpl(String value) {
             try {
@@ -214,52 +220,52 @@ public abstract class /*enum*/ ProfileSettings<T> {
                 return Optional.empty();
             }
         }
+
+        @Override
+        public Class<Integer> getType() {
+            return Integer.class;
+        }
     }
 
     private static class BooleanSetting extends ProfileSettings<Boolean> {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Optional<Boolean> parseImpl(String value) {
             //FIXME Remove legacy equals 1 check
             return Optional.of(value.equalsIgnoreCase("1") || Boolean.parseBoolean(value));
         }
+
+        @Override
+        public Class<Boolean> getType() {
+            return Boolean.class;
+        }
     }
 
     private static class BirthdayFunctionSetting extends ProfileSettings<String> {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean isValid(String value) {
             return BIRTHDAY_PATTERN.matcher(value).matches();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Optional<String> parseImpl(String value) {
             return Optional.of(value);
+        }
+
+        @Override
+        public Class<String> getType() {
+            return String.class;
         }
     }
 
     private static class CharsetSetting extends ProfileSettings<Charset> {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean isValid(Charset value) {
             return true; //NOTE: A Charset can only be constructed if and only if it is supported and therefore is valid.
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Optional<Charset> parseImpl(String value) {
             Charset charset = null;
@@ -268,29 +274,25 @@ public abstract class /*enum*/ ProfileSettings<T> {
             }
             return Optional.ofNullable(charset);
         }
+
+        @Override
+        public Class<Charset> getType() {
+            return Charset.class;
+        }
     }
 
     private static class SupportedDatabaseSetting extends ProfileSettings<SupportedDatabases> {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String toString(SupportedDatabases value) {
             return value.name();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean isValid(SupportedDatabases value) {
             return true; //NOTE: An enum of a class can only be constructed if and only if it already exists.
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Optional<SupportedDatabases> parseImpl(String value) {
             SupportedDatabases supportedDbms = null;
@@ -301,6 +303,11 @@ public abstract class /*enum*/ ProfileSettings<T> {
                 }
             }
             return Optional.ofNullable(supportedDbms);
+        }
+
+        @Override
+        public Class<SupportedDatabases> getType() {
+            return SupportedDatabases.class;
         }
     }
 }
