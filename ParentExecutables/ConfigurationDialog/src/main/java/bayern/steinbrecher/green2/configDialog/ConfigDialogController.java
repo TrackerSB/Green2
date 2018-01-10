@@ -102,6 +102,7 @@ public class ConfigDialogController extends CheckedController {
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
 
+        //TODO Can loading/saving be abstracted?
         //Load settings
         profile = EnvironmentHandler.getProfile();
         useSSHCheckBox.setSelected(profile.getOrDefault(ProfileSettings.USE_SSH, true));
