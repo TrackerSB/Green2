@@ -142,14 +142,16 @@ public abstract class DBConnection implements AutoCloseable {
                     TABLES_CACHE.addAll(result.stream()
                             //Skip column name
                             .skip(1)
-                            .map(list -> list.get(0))
+                            //FIXME Ignore case?
+                            .map(list -> list.get(0).toLowerCase())
                             .collect(Collectors.toList()));
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
-        return TABLES_CACHE.contains(table.getRealTableName());
+        //FIXME Ignore case?
+        return TABLES_CACHE.contains(table.getRealTableName().toLowerCase());
     }
 
     /**
