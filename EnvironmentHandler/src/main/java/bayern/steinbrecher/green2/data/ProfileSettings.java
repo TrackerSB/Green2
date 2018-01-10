@@ -18,9 +18,13 @@ package bayern.steinbrecher.green2.data;
 
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -82,8 +86,22 @@ public abstract class /*enum*/ ProfileSettings<T> {
      * Contains all values like an enum. NOTE: It will be removed when generic enums are added to Java.
      */
     @Deprecated(forRemoval = true, since = "2u13")
-    private static final ProfileSettings<?>[] values = {USE_SSH, SSH_HOST, SSH_PORT, DATABASE_HOST, DATABASE_PORT,
-        DATABASE_NAME, SEPA_USE_BOM, BIRTHDAY_EXPRESSION, SSH_CHARSET, DBMS};
+    private static final ProfileSettings<?>[] values = Arrays.stream(ProfileSettings.class.getFields())
+            .filter(field -> {
+                int mod = field.getModifiers();
+                return Modifier.isPublic(mod) && Modifier.isStatic(mod) && Modifier.isFinal(mod);
+            })
+            .filter(field -> field.getType().isAssignableFrom(ProfileSettings.class))
+            .map(field -> {
+                try {
+                    return ProfileSettings.class.cast(field.get(null));
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(ProfileSettings.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .toArray(ProfileSettings<?>[]::new);
 
     /**
      * Returns the list of all values like an enum. NOTE: It will be removed when generic enums are added to Java.
