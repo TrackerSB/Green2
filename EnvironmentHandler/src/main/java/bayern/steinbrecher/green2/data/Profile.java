@@ -413,6 +413,10 @@ public class Profile {
 
     private static class ConfigurationsMap extends SimpleMapProperty<ProfileSettings<?>, Property<?>> {
 
+        public ConfigurationsMap() {
+            super(FXCollections.observableMap(new HashMap<>()));
+        }
+
         @SuppressWarnings("unchecked")
         public <T> Property<T> get(ProfileSettings<T> key) {
             //FIXME How to do that typesafe?
