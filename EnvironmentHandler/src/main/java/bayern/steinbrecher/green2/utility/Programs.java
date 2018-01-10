@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,9 +62,14 @@ public enum Programs {
                 ? EnvironmentHandler.APPLICATION_ROOT : PROGRAMFOLDER_PATH_LOCAL).toString(), jarname).toString();
         System.arraycopy(options, 0, args, 3, options.length);
         try {
-            new ProcessBuilder(args).start();
+            Process callProcess = new ProcessBuilder(args).start();
+            callProcess.waitFor();
+            String errorMessage = IOStreamUtility.readAll(callProcess.getErrorStream(), Charset.defaultCharset());
+            if (!errorMessage.isEmpty()) {
+                Logger.getLogger(Programs.class.getName()).log(Level.WARNING, errorMessage);
+            }
             Platform.exit();
-        } catch (IOException ex) {
+        } catch (IOException | InterruptedException ex) {
             Logger.getLogger(Programs.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
