@@ -263,10 +263,8 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Checks whether the given table of the configured database contains a specific column. You should NEVER call this
-     * function with parameters provided by the user in order to prohibit SQL INJECTION. This method does not check
-     * whether the scheme of the given table contains the given column. NOTE: For this function to work for sure the
-     * table should have at least one row. When having no rows the database may return nothing not even the headings.
+     * Checks whether the given table of the configured database contains a specific column and the column is
+     * accessible.
      *
      * @param table The name of the table to search for the column.
      * @param column The column name to search for.
