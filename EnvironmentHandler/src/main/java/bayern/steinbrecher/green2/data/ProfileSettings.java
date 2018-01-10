@@ -63,7 +63,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
     /**
      * The regex to check against the value containing the birthday expression.
      */
-    public static final Pattern BIRTHDAY_PATTERN
+    public static final Pattern BIRTHDAY_FUNCTION_PATTERN
             = Pattern.compile(" *((>=?)|(<=?)|=)[1-9]\\d*(, *((>=?)|(<=?)|=)[1-9]\\d*)* *");
     /**
      * The expression to indicate which people get birthday notifications. Like =50,=60,=70,=75,&gt;=80
@@ -244,7 +244,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
 
         @Override
         public boolean isValid(String value) {
-            return BIRTHDAY_PATTERN.matcher(value).matches();
+            return BIRTHDAY_FUNCTION_PATTERN.matcher(value).matches();
         }
 
         @Override

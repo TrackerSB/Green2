@@ -82,7 +82,7 @@ public class ConfigDialogController extends CheckedController {
         checkedTextFields.addAll(Arrays.asList(sshHostTextField, databaseHostTextField, databaseNameTextField,
                 birthdayExpressionTextField, profileNameTextField));
 
-        birthdayExpressionTextField.setRegex(ProfileSettings.BIRTHDAY_PATTERN.pattern());
+        birthdayExpressionTextField.setRegex(ProfileSettings.BIRTHDAY_FUNCTION_PATTERN.pattern());
         profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (stage != null) {
                 stage.setTitle(EnvironmentHandler.getResourceValue("configureApplication") + ": " + newVal);
