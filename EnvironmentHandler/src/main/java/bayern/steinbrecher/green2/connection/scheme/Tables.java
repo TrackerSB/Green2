@@ -212,7 +212,7 @@ public enum Tables {
                 statement = dbms.getTemplate(Queries.GET_COLUMN_NAMES, databaseName, getRealTableName());
                 break;
             case GET_TABLE_NAMES:
-                statement = dbms.getTemplate(Queries.GET_TABLE_NAMES, databaseName, getRealTableName());
+                statement = dbms.getTemplate(Queries.GET_TABLE_NAMES, databaseName);
                 break;
             default:
                 throw new UnsupportedOperationException("The query " + query + " is not implemented, yet.");

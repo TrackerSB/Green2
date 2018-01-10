@@ -50,7 +50,7 @@ public enum SupportedDatabases {
                     Queries.GET_COLUMN_NAMES, "SELECT column_name FROM information_schema.columns "
                     + "WHERE table_schema=\"{0}\" AND table_name=\"{1}\";",
                     Queries.GET_TABLE_NAMES, "SELECT table_name FROM information_schema.tables "
-                    + "WHERE table_schema=\"{0}\" AND table_name=\"{1}\";"
+                    + "WHERE table_schema=\"{0}\";"
             ));
 
     private final String displayName;
@@ -191,8 +191,7 @@ public enum SupportedDatabases {
         /**
          * Returns all table names of the given database.<br />
          * Variables:<br />
-         * 0: database name<br />
-         * 1: name of the table
+         * 0: database name
          */
         GET_TABLE_NAMES;
     }

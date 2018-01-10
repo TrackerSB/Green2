@@ -158,7 +158,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean createTablesIfNeeded() throws SchemeCreationException {
         List<Tables> missingTables = Arrays.stream(Tables.values())
-                .filter(this::tableExists)
+                .filter(table -> !tableExists(table))
                 .collect(Collectors.toList());
         boolean tablesAreMissing = !missingTables.isEmpty();
         boolean tablesCreated = false;
