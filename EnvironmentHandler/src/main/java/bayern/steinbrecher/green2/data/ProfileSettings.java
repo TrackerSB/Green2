@@ -208,23 +208,12 @@ public abstract class /*enum*/ ProfileSettings<T> {
         return value.toString();
     }
 
-    /**
-     * Returns the generic type of the class. This method is needed since type ereasure takes place.
-     *
-     * @return The generic type of the class.
-     */
-    //public abstract Class<T> getType();
     private static class StringSetting extends ProfileSettings<String> {
 
         @Override
         protected Optional<String> parseImpl(String value) {
             return Optional.of(value);
         }
-
-        /*@Override
-        public Class<String> getType() {
-            return String.class;
-        }*/
     }
 
     private static class IntegerSetting extends ProfileSettings<Integer> {
@@ -237,11 +226,6 @@ public abstract class /*enum*/ ProfileSettings<T> {
                 return Optional.empty();
             }
         }
-
-        /*@Override
-        public Class<Integer> getType() {
-            return Integer.class;
-        }*/
     }
 
     private static class BooleanSetting extends ProfileSettings<Boolean> {
@@ -251,11 +235,6 @@ public abstract class /*enum*/ ProfileSettings<T> {
             //FIXME Remove legacy equals 1 check
             return Optional.of(value.equalsIgnoreCase("1") || Boolean.parseBoolean(value));
         }
-
-        /*@Override
-        public Class<Boolean> getType() {
-            return Boolean.class;
-        }*/
     }
 
     private static class BirthdayFunctionSetting extends ProfileSettings<String> {
@@ -269,11 +248,6 @@ public abstract class /*enum*/ ProfileSettings<T> {
         protected Optional<String> parseImpl(String value) {
             return Optional.of(value);
         }
-
-        /*@Override
-        public Class<String> getType() {
-            return String.class;
-        }*/
     }
 
     private static class CharsetSetting extends ProfileSettings<Charset> {
@@ -291,11 +265,6 @@ public abstract class /*enum*/ ProfileSettings<T> {
             }
             return Optional.ofNullable(charset);
         }
-
-        /*@Override
-        public Class<Charset> getType() {
-            return Charset.class;
-        }*/
     }
 
     private static class SupportedDatabaseSetting extends ProfileSettings<SupportedDatabases> {
@@ -321,10 +290,5 @@ public abstract class /*enum*/ ProfileSettings<T> {
             }
             return Optional.ofNullable(supportedDbms);
         }
-
-        /*@Override
-        public Class<SupportedDatabases> getType() {
-            return SupportedDatabases.class;
-        }*/
     }
 }
