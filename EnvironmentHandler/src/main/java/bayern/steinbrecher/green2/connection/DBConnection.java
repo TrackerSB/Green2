@@ -35,9 +35,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.util.Pair;
@@ -166,23 +169,30 @@ public abstract class DBConnection implements AutoCloseable {
             //FIXME Check rights for creating tables
             StringJoiner message = new StringJoiner("\n").add(EnvironmentHandler.getResourceValue("tablesMissing"));
             missingTables.forEach(table -> message.add(table.getRealTableName()));
-            Alert creationConfirmation = DialogUtility.createAlert(
-                    Alert.AlertType.CONFIRMATION, message.toString(), ButtonType.YES, ButtonType.NO);
-            Optional<ButtonType> resultButton = creationConfirmation.showAndWait();
-            if (resultButton.isPresent() && resultButton.get() == ButtonType.YES) {
-                for (Tables table : missingTables) {
-                    try {
-                        Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
-                        execUpdate(table.generateQuery(
-                                Queries.CREATE_TABLE, profileInfo.getValue(), profileInfo.getKey()));
-                    } catch (SQLException ex) {
-                        throw new SchemeCreationException("Could not create table " + table.getRealTableName(), ex);
+            FutureTask<Optional<ButtonType>> askForCreationConfirmation = new FutureTask<>(() -> {
+                Alert creationConfirmation = DialogUtility.createAlert(
+                        Alert.AlertType.CONFIRMATION, message.toString(), ButtonType.YES, ButtonType.NO);
+                return creationConfirmation.showAndWait();
+            });
+            Platform.runLater(() -> askForCreationConfirmation.run());
+            try {
+                Optional<ButtonType> resultButton = askForCreationConfirmation.get();
+                if (resultButton.isPresent() && resultButton.get() == ButtonType.YES) {
+                    for (Tables table : missingTables) {
+                        try {
+                            Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
+                            execUpdate(table.generateQuery(
+                                    Queries.CREATE_TABLE, profileInfo.getValue(), profileInfo.getKey()));
+                        } catch (SQLException ex) {
+                            throw new SchemeCreationException("Could not create table " + table.getRealTableName(), ex);
+                        }
                     }
+                    tablesCreated = true;
                 }
-                tablesCreated = true;
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
         return !tablesAreMissing || tablesCreated;
     }
 
