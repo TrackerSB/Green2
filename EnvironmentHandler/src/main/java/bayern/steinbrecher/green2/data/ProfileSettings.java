@@ -81,6 +81,10 @@ public abstract class /*enum*/ ProfileSettings<T> {
      * The type of the SQL database. (e.g. MySQL).
      */
     public static final ProfileSettings<SupportedDatabases> DBMS = new SupportedDatabaseSetting();
+    /**
+     * Indicates whether to activate the features relating to the birthday of member.
+     */
+    public static final ProfileSettings<Boolean> ACTIVATE_BIRTHDAY_FEATURES = new BooleanSetting();
 
     /**
      * Contains all values like an enum. NOTE: It will be removed when generic enums are added to Java.
@@ -241,7 +245,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
 
         @Override
         public boolean isValid(String value) {
-            return BIRTHDAY_FUNCTION_PATTERN.matcher(value).matches();
+            return BIRTHDAY_FUNCTION_PATTERN.matcher(value).matches() || value.isEmpty();
         }
 
         @Override

@@ -124,7 +124,7 @@ public class CheckedTextField extends TextField {
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
-        valid.bind((toLongContent.or(emptyContent).and(checked).not()).and(validCondition));
+        valid.bind(toLongContent.or(emptyContent).not().and(validCondition).or(checked.not()));
         invalid.bind(valid.not());
         ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
         ElementsUtility.addCssClassIf(this, emptyContent, CSS_CLASS_NO_CONTENT);

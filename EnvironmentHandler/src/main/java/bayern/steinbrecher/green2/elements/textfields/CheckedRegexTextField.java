@@ -111,6 +111,17 @@ public class CheckedRegexTextField extends CheckedTextField {
     }
 
     /**
+     * Returns the text of the {@link CheckedTextField} only if the currently inserted text is valid according to the
+     * given regex.
+     *
+     * @return The text of the {@link CheckedTextField} only if the currently inserted text is valid according to the
+     * given regex. Otherwise it returns an empty {@link String}.
+     */
+    public String getRegexValidText() {
+        return isRegexValid() ? getText() : "";
+    }
+
+    /**
      * Returns the property representing the regex used for validation.
      *
      * @return The property representing the regex used for validation.

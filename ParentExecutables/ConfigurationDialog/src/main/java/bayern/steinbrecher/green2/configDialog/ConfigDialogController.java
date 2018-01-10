@@ -69,6 +69,8 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckedComboBox<SupportedDatabases> dbmsComboBox;
     @FXML
+    private CheckBox birthdayFeaturesCheckbox;
+    @FXML
     private CheckedRegexTextField birthdayExpressionTextField;
     private final List<CheckedTextField> checkedTextFields = new ArrayList<>();
     private Profile profile;
@@ -119,6 +121,7 @@ public class ConfigDialogController extends CheckedController {
                 profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
         dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(SupportedDatabases.values())));
         dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ProfileSettings.DBMS, null));
+        birthdayFeaturesCheckbox.setSelected(profile.getOrDefault(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES, true));
     }
 
     private boolean saveSettings() {
@@ -131,10 +134,11 @@ public class ConfigDialogController extends CheckedController {
             profile.set(ProfileSettings.DATABASE_HOST, databaseHostTextField.getText());
             profile.set(ProfileSettings.DATABASE_PORT, databasePort.getValue());
             profile.set(ProfileSettings.DATABASE_NAME, databaseNameTextField.getText());
-            profile.set(ProfileSettings.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getText());
+            profile.set(ProfileSettings.BIRTHDAY_EXPRESSION, birthdayExpressionTextField.getRegexValidText());
             profile.set(ProfileSettings.SEPA_USE_BOM, sepaWithBomCheckBox.isSelected());
             profile.set(ProfileSettings.SSH_CHARSET, Charset.forName(sshCharsetTextField.getText()));
             profile.set(ProfileSettings.DBMS, dbmsComboBox.getSelectionModel().getSelectedItem());
+            profile.set(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES, birthdayFeaturesCheckbox.isSelected());
             profile.saveSettings();
             profile.renameProfile(profileNameTextField.getText());
             stage.close();

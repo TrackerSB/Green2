@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
            fx:controller="bayern.steinbrecher.green2.menu.MenuController">
     <VBox>
         <MenuBar>
-            <Menu>
+            <Menu visible="${controller.activateBirthdayFeatures}">
                 <graphic>
                     <HBox>
                         <Label text="%year"/>
@@ -54,10 +54,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           accelerator="Alt+A"/>
                 <MenuItem fx:id="generateAddressesBirthday"
                           onAction="#generateAddressesBirthday"
-                          disable="${!yearSpinner.valid}"/>
+                          disable="${!yearSpinner.valid}"
+                          visible="${controller.activateBirthdayFeatures}"/>
             </Menu>
             <Menu fx:id="birthdayMenu"
-                  text="%birthdays">
+                  text="%birthdays"
+                  visible="${controller.activateBirthdayFeatures}">
                 <MenuItem fx:id="generateBirthdayInfos"
                           onAction="#generateBirthdayInfos"
                           disable="${!yearSpinner.valid}"

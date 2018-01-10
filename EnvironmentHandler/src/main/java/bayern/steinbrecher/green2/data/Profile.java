@@ -330,8 +330,8 @@ public class Profile {
      * @param key The key to search for.
      * @return The property holding the value of {@code key} or {@code null} if there's no entry (yet) for {@code key}.
      */
-    public ReadOnlyProperty<?> getProperty(ProfileSettings<?> key) {
-        return (Property<?>) configurations.get(key);
+    public <T> ReadOnlyProperty<T> getProperty(ProfileSettings<T> key) {
+        return (Property<T>) configurations.get(key);
     }
 
     /**

@@ -76,6 +76,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -146,6 +147,8 @@ public class MenuController extends Controller {
     private final CompletableFutureProperty<Set<Member>> memberNonContributionfree = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Map<String, String>> nicknames = new CompletableFutureProperty<>();
     private BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
+    private final BooleanProperty activateBirthdayFeatures
+            = new SimpleBooleanProperty(this, "activateBirthdayFeatures", true);
 
     @FXML
     private MenuItem generateAddressesBirthday;
@@ -197,6 +200,12 @@ public class MenuController extends Controller {
             }
             return text;
         }, dataLastUpdatedProperty()));
+
+        //Bind activateBirthdayFeatures
+        activateBirthdayFeatures.bind(Bindings.createBooleanBinding(
+                () -> EnvironmentHandler.getProfile().get(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES),
+                EnvironmentHandler.loadedProfileProperty(),
+                EnvironmentHandler.getProfile().getProperty(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES)));
 
         //Load licenses
         EnvironmentHandler.getLicenses().stream().forEach(license -> {
@@ -639,6 +648,30 @@ public class MenuController extends Controller {
      */
     public boolean isAllDataAvailable() {
         return allDataAvailable.get();
+    }
+
+    /**
+     * Returns the property holding whether the currently loaded profile has activated the birthday features.
+     *
+     * @return The property holding whether the currently loaded profile has activated the birthday features.
+     * @deprecated The visibility of the method may be changed to package private or even to private when FXML is able
+     * to access these.
+     */
+    @Deprecated(forRemoval = false, since = "2u13")
+    public ReadOnlyProperty<Boolean> activateBirthdayFeaturesProperty() {
+        return activateBirthdayFeatures;
+    }
+
+    /**
+     * Checks whether the birthday features are activated according to the currently loaded profile.
+     *
+     * @return {@code true} only if the birthday features are activated according to the currently loaded profile.
+     * @deprecated The visibility of the method may be changed to package private or even to private when FXML is able
+     * to access these.
+     */
+    @Deprecated(forRemoval = false, since = "2u13")
+    public boolean isActivateBirthdayFeatures() {
+        return activateBirthdayFeaturesProperty().getValue();
     }
 
     private class CompletableFutureProperty<T> extends SimpleObjectProperty<CompletableFuture<T>> {
