@@ -36,6 +36,9 @@ import javafx.util.Pair;
  * @author Stefan Huber
  */
 public enum Tables {
+    /**
+     * Represents the table of members.
+     */
     MEMBER("Mitglieder", Map.ofEntries(
             Map.entry(Columns.MEMBERSHIPNUMBER, new Pair<>(true, Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY))),
             Map.entry(Columns.PRENAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
@@ -56,6 +59,9 @@ public enum Tables {
             Map.entry(Columns.CONTRIBUTION, new Pair<>(false, Set.of(Keywords.NOT_NULL))),
             Map.entry(Columns.IS_ACTIVE, new Pair<>(false, Set.of(Keywords.NOT_NULL)))
     )),
+    /**
+     * Represents a table mapping names to nicknames.
+     */
     NICKNAMES("Spitznamen", Map.of(
             Columns.NAME, new Pair<>(true, Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY)),
             Columns.NICKNAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))

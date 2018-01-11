@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -196,8 +196,8 @@ public final class SshConnection extends DBConnection {
 
             String result = IOStreamUtility.readAll(in, charset);
 
-            String errorMessage = errStream.toString();
-            if (errorMessage.toLowerCase().contains("error")) {
+            String errorMessage = errStream.toString(charset.name());
+            if (errorMessage.toLowerCase(Locale.ROOT).contains("error")) {
                 throw new CommandException("The given command returned following error:\n" + errorMessage);
             }
 

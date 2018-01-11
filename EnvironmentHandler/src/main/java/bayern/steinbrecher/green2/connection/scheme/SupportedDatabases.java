@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
  * @author Stefan Huber
  */
 public enum SupportedDatabases {
+    /**
+     * Represents a MySQL database.
+     */
     MY_SQL("My SQL", 3306,
             Map.of(
                     Keywords.DEFAULT, "DEFAULT",
@@ -172,25 +175,42 @@ public enum SupportedDatabases {
         return defaultPort;
     }
 
+    /**
+     * Represents SQL keywords.
+     */
     public static enum Keywords {
-        DEFAULT, NOT_NULL, PRIMARY_KEY;
+        /**
+         * Keyword: DEFAULT.
+         */
+        DEFAULT,
+        /**
+         * Two keywords which are often used together: NOT NULL.
+         */
+        NOT_NULL,
+        /**
+         * Keyword: PRIMARY KEY.
+         */
+        PRIMARY_KEY;
     }
 
+    /**
+     * Represents general queries for which according to the underlying database SQL e.g. statements can be created.
+     */
     public static enum Queries {
         /**
          * Creates a table with all given columns.
          */
         CREATE_TABLE,
         /**
-         * Returns all column names of the given table.<br />
-         * Variables:<br />
-         * 0: database name<br />
+         * Returns all column names of the given table.<br>
+         * Variables:<br>
+         * 0: database name<br>
          * 1: name of the table
          */
         GET_COLUMN_NAMES,
         /**
-         * Returns all table names of the given database.<br />
-         * Variables:<br />
+         * Returns all table names of the given database.<br>
+         * Variables:<br>
          * 0: database name
          */
         GET_TABLE_NAMES;

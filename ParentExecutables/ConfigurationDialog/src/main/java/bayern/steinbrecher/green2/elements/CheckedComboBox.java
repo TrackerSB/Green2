@@ -35,10 +35,18 @@ public class CheckedComboBox<T> extends ComboBox<T> {
 
     private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
 
+    /**
+     * Creates a {@link CheckedComboBox} which contains no element.
+     */
     public CheckedComboBox() {
         this(FXCollections.observableArrayList());
     }
 
+    /**
+     * Creates a {@link CheckedComboBox} which show the given elements.
+     *
+     * @param items The elements to show.
+     */
     public CheckedComboBox(ObservableList<T> items) {
         super(items);
         nothingSelected.bind(Bindings.createBooleanBinding(() -> getSelectionModel().isEmpty(),

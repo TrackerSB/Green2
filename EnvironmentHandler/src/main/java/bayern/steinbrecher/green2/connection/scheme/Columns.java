@@ -30,25 +30,90 @@ import java.util.logging.Logger;
  */
 public abstract class /*enum*/ Columns<T> {
 
+    /**
+     * Stores membership numbers which are ment to be unique and therefore can be used e.g. for SEPA Direct Depits.
+     */
     public static final Columns<Integer> MEMBERSHIPNUMBER = new IntegerColumn("Mitgliedsnummer");
+    /**
+     * Stores two values: true: active, false: passive. Can be used for describing people as active/passive members.
+     */
     public static final Columns<Boolean> IS_ACTIVE = new BooleanColumn("IstAktiv");
+    /**
+     * The prename of a person.
+     */
     public static final Columns<String> PRENAME = new StringColumn("Vorname");
+    /**
+     * The lastname of a person.
+     */
     public static final Columns<String> LASTNAME = new StringColumn("Nachname");
+    /**
+     * The title of a person like Dr or B.Sc.
+     */
     public static final Columns<String> TITLE = new StringColumn("Titel");
+    /**
+     * Stores the sex of a person. true: male, false: female.
+     */
     public static final Columns<Boolean> IS_MALE = new BooleanColumn("IstMaennlich");
+    /**
+     * The birthday of a person.
+     */
     public static final Columns<LocalDate> BIRTHDAY = new LocalDateColumn("Geburtstag");
+    /**
+     * The streetname of an address.
+     */
     public static final Columns<String> STREET = new StringColumn("Strasse");
+    /**
+     * The housenumber of an address.
+     */
     public static final Columns<String> HOUSENUMBER = new StringColumn("Hausnummer");
+    /**
+     * The city code of an address.
+     */
     public static final Columns<String> CITY_CODE = new StringColumn("PLZ");
+    /**
+     * The name of the city of the city code of an address.
+     *
+     * @see #CITY_CODE
+     */
     public static final Columns<String> CITY = new StringColumn("Ort");
+    /**
+     * Stores whether a person has to pay contributions e.g. to an association.
+     */
     public static final Columns<Boolean> IS_CONTRIBUTIONFREE = new BooleanColumn("IstBeitragsfrei");
+    /**
+     * The IBAN of a bank account.
+     */
     public static final Columns<String> IBAN = new StringColumn("Iban");
+    /**
+     * The BIC of a bank account.
+     */
     public static final Columns<String> BIC = new StringColumn("Bic");
+    /**
+     * The prename of an owner of a bank account.
+     */
     public static final Columns<String> ACCOUNTHOLDER_PRENAME = new StringColumn("KontoinhaberVorname");
+    /**
+     * The lastname of an owner of a bank account.
+     */
     public static final Columns<String> ACCOUNTHOLDER_LASTNAME = new StringColumn("KontoinhaberNachname");
+    /**
+     * The date when an owner of a bank account allowed to include his/her account in SEPA Direct Debits.
+     */
     public static final Columns<LocalDate> MANDAT_SIGNED = new LocalDateColumn("MandatErstellt");
+    /**
+     * Represents a contribution.
+     */
     public static final Columns<Double> CONTRIBUTION = new DoubleColumn("Beitrag");
+    /**
+     * A general name where not specified whether it is pername, lastname or both.
+     *
+     * @see #PRENAME
+     * @see #LASTNAME
+     */
     public static final Columns<String> NAME = new StringColumn("Name");
+    /**
+     * The nickname of a person.
+     */
     public static final Columns<String> NICKNAME = new StringColumn("Spitzname");
 
     private String realColumnName;

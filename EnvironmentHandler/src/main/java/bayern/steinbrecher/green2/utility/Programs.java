@@ -30,11 +30,18 @@ import javafx.application.Platform;
  * @author Stefan Huber
  */
 public enum Programs {
+    /**
+     * The main program containing the member management.
+     */
     MEMBER_MANAGEMENT("MemberManagement.jar"),
+    /**
+     * The launcher which installs the application, looks for updates, etc.
+     */
     LAUNCHER("Launcher.jar"),
-    CONFIGURATION_DIALOG("ConfigurationDialog.jar"),
-    INSTALLER("InstallHandler.jar", "install"),
-    UNINSTALLER("InstallHandler.jar", "uninstall");
+    /**
+     * The program for managing the profiles and configurations.
+     */
+    CONFIGURATION_DIALOG("ConfigurationDialog.jar");
 
     /**
      * The path of the local folder where to save the application itself.

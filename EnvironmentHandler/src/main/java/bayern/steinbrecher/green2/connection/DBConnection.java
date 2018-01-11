@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +42,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.util.Pair;
@@ -58,13 +61,14 @@ public abstract class DBConnection implements AutoCloseable {
      */
     private static final Map<Tables, List<String>> EXISTING_COLUMNS_CACHE = new HashMap<>();
     private static final List<String> TABLES_CACHE = new ArrayList<>();
-    private static Pair<String, SupportedDatabases> nameAndTypeOfDatabaseCache = null;
+    private static final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> NAME_AND_TYPE_OF_DATABASE
+            = new SimpleObjectProperty<>(Optional.empty());
 
     static {
         EnvironmentHandler.loadedProfileProperty().addListener(change -> {
             EXISTING_COLUMNS_CACHE.clear();
             TABLES_CACHE.clear();
-            nameAndTypeOfDatabaseCache = null;
+            NAME_AND_TYPE_OF_DATABASE.set(Optional.empty());
         });
     }
 
@@ -116,12 +120,14 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     private Pair<String, SupportedDatabases> getNameAndTypeOfDatabase() {
-        if (nameAndTypeOfDatabaseCache == null) {
-            Profile profile = EnvironmentHandler.getProfile();
-            nameAndTypeOfDatabaseCache
-                    = new Pair<>(profile.get(ProfileSettings.DATABASE_NAME), profile.get(ProfileSettings.DBMS));
+        synchronized (NAME_AND_TYPE_OF_DATABASE) {
+            if (!NAME_AND_TYPE_OF_DATABASE.get().isPresent()) {
+                Profile profile = EnvironmentHandler.getProfile();
+                NAME_AND_TYPE_OF_DATABASE.set(Optional.of(
+                        new Pair<>(profile.get(ProfileSettings.DATABASE_NAME), profile.get(ProfileSettings.DBMS))));
+            }
         }
-        return nameAndTypeOfDatabaseCache;
+        return NAME_AND_TYPE_OF_DATABASE.get().get();
     }
 
     /**
@@ -151,7 +157,7 @@ public abstract class DBConnection implements AutoCloseable {
             }
         }
         //FIXME Ignore case?
-        return TABLES_CACHE.contains(table.getRealTableName().toLowerCase());
+        return TABLES_CACHE.contains(table.getRealTableName().toLowerCase(Locale.ROOT));
     }
 
     /**

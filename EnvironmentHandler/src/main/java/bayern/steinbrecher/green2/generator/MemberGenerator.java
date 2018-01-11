@@ -24,7 +24,6 @@ import bayern.steinbrecher.green2.people.Address;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Person;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,21 +44,6 @@ public class MemberGenerator {
      */
     private MemberGenerator() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
-    }
-
-    private static LocalDate parseString(String dateString) {
-        LocalDate date = null;
-        try {
-            if (dateString == null) {
-                throw new DateTimeParseException("Can´t parse null", "null", 0);
-            } else {
-                date = LocalDate.parse(dateString);
-            }
-        } catch (DateTimeParseException ex) {
-            Logger.getLogger(MemberGenerator.class.getName())
-                    .log(Level.WARNING, dateString + " is invalid birthdaydate", ex);
-        }
-        return date;
     }
 
     /**

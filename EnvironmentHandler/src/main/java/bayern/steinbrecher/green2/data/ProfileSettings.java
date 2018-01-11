@@ -90,7 +90,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
      * Contains all values like an enum. NOTE: It will be removed when generic enums are added to Java.
      */
     @Deprecated(forRemoval = true, since = "2u13")
-    private static final ProfileSettings<?>[] values = Arrays.stream(ProfileSettings.class.getFields())
+    private static final ProfileSettings<?>[] VALUES = Arrays.stream(ProfileSettings.class.getFields())
             .filter(field -> {
                 int mod = field.getModifiers();
                 return Modifier.isPublic(mod) && Modifier.isStatic(mod) && Modifier.isFinal(mod);
@@ -114,7 +114,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
      */
     @Deprecated(forRemoval = true, since = "2u13")
     public static ProfileSettings<?>[] values() {
-        return values;
+        return Arrays.copyOf(VALUES, VALUES.length);
     }
 
     /**

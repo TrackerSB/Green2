@@ -29,7 +29,7 @@ import javafx.scene.control.SpinnerValueFactory;
  */
 public class CheckedDoubleSpinnerValueFactory extends SpinnerValueFactory.DoubleSpinnerValueFactory {
 
-    private BooleanProperty includeMin = new SimpleBooleanProperty(this, "includeMin");
+    private final BooleanProperty includeMin = new SimpleBooleanProperty(this, "includeMin");
 
     /**
      * Constructs a new {@code CheckedDoubleSpinnerValueFactory} that sets the initial value to be equal to the min
@@ -105,7 +105,10 @@ public class CheckedDoubleSpinnerValueFactory extends SpinnerValueFactory.Double
                 }
             } else {
                 if (newVal <= getMin()) {
-                    double oneStepOverMin = getMin() + getAmountToStepBy();
+                    /* NOTE Here the boxed version of double is used otherwise it may happend that oldVal is unboxed but
+                     * is null.
+                     */
+                    Double oneStepOverMin = getMin() + getAmountToStepBy();
                     setValue(oldVal < oneStepOverMin ? oldVal : oneStepOverMin);
                 }
             }
@@ -117,14 +120,29 @@ public class CheckedDoubleSpinnerValueFactory extends SpinnerValueFactory.Double
         });
     }
 
+    /**
+     * Returns the property holding whether the minimum value is included or not.
+     *
+     * @return The property holding whether the minimum value is included or not.
+     */
     public BooleanProperty includeMinProperty() {
         return includeMin;
     }
 
+    /**
+     * Checks whether the minimum value is included.
+     *
+     * @return {@code true} if and only if the minimum value is include.
+     */
     public boolean isIncludeMin() {
         return includeMin.get();
     }
 
+    /**
+     * Sets whether the minimum value has to be included.
+     *
+     * @param includeMin {@code true} only if the minimum value has to be included.
+     */
     public void setIncludeMin(boolean includeMin) {
         this.includeMin.set(includeMin);
     }

@@ -62,7 +62,7 @@ public class ContributionField extends HBox implements Initializable {
      */
     public ContributionField() {
         FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("ContributionField.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
+                ContributionField.class.getResource("ContributionField.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
         try {
             fxmlLoader.setRoot(this);
             fxmlLoader.setController(this);

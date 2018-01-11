@@ -91,6 +91,7 @@ public final class DialogUtility {
      * {@link Alert}. If you specify more elements they will be ignored.
      * @return The created {@link Alert}.
      */
+    @SuppressWarnings("fallthrough")
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
         Alert alert = addStyleAndIcon(initOwner(new Alert(alertType), owner));
         int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;
@@ -112,6 +113,13 @@ public final class DialogUtility {
                 if (args[0] != null) {
                     alert.setContentText(args[0]);
                 }
+                break;
+            case 0:
+                //No op
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "This number of parameters can not be handled. How could that happen? Scary!");
         }
         return alert;
     }

@@ -39,7 +39,7 @@ public class HelpButton extends Button {
      * The CSS class representing a {@link HelpButton}.
      */
     public static final String CSS_CLASS_HELP_BUTTON = "help-button";
-    private StringProperty helpMessage = new SimpleStringProperty(this, "helpMessage", "");
+    private final StringProperty helpMessage = new SimpleStringProperty(this, "helpMessage", "");
 
     /**
      * Creates a new {@link HelpButton} without help message and labeled with &bdquo;?&ldquo;.

@@ -35,7 +35,7 @@ public class WizardController implements Initializable {
 
     @FXML
     private StackPane contents;
-    private Property<Wizard> caller = new SimpleObjectProperty<>(this, "caller", new Wizard());
+    private final Property<Wizard> caller = new SimpleObjectProperty<>(this, "caller", new Wizard());
     private static final String WIZARD_CONTENT_STYLECLASS = "wizard-content";
 
     /**
@@ -83,10 +83,10 @@ public class WizardController implements Initializable {
     }
 
     /**
-     * Sets the size of the {@code Pane} containing the content of the page.
-     * This function can be used to make all wizard pages the same size.
+     * Sets the size of the {@code Pane} containing the content of the page. This function can be used to make all
+     * wizard pages the same size.
      *
-     * @param width  The width of the content of the page.
+     * @param width The width of the content of the page.
      * @param height The height of the content of the page.
      */
     public void setContentSize(double width, double height) {
@@ -101,8 +101,7 @@ public class WizardController implements Initializable {
     /**
      * Property containing the wizard this controller has to use as callback.
      *
-     * @return The property containing the wizard this controller has to use as
-     * callback.
+     * @return The property containing the wizard this controller has to use as callback.
      */
     public Property<Wizard> callerProperty() {
         return caller;

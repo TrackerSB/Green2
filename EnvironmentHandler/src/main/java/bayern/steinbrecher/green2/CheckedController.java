@@ -28,7 +28,13 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public abstract class CheckedController extends WizardableController {
 
+    /**
+     * A property indicating whether any input handled by the controller is to long.
+     */
     protected final BooleanProperty anyInputToLong = new SimpleBooleanProperty(this, "anyInputToLong");
+    /**
+     * A property indiciating whether any input handled by the controller is missing.
+     */
     protected final BooleanProperty anyInputMissing = new SimpleBooleanProperty(this, "anyInputMissing");
 
     /**
@@ -72,6 +78,7 @@ public abstract class CheckedController extends WizardableController {
      *
      * @return The property representing a boolean value indicating whether all input is valid.
      */
+    @Override
     public ReadOnlyBooleanProperty validProperty() {
         return valid;
     }
@@ -81,6 +88,7 @@ public abstract class CheckedController extends WizardableController {
      *
      * @return {@code true} only if all inserted data is valid.
      */
+    @Override
     public boolean isValid() {
         return valid.get();
     }

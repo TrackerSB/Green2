@@ -18,7 +18,6 @@ package bayern.steinbrecher.green2.sepaform;
 
 import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.buttons.HelpButton;
 import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField;

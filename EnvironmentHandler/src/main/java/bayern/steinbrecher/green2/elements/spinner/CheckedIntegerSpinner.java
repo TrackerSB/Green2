@@ -28,7 +28,7 @@ import javafx.scene.control.SpinnerValueFactory;
  */
 public class CheckedIntegerSpinner extends CheckedSpinner<Integer> {
 
-    private static final Function<String, Optional<Integer>> parseFunction = value -> {
+    private static final Function<String, Optional<Integer>> PARSE_FUNCTION = value -> {
         try {
             return Optional.of(Integer.parseInt(value));
         } catch (NumberFormatException ex) {
@@ -64,6 +64,6 @@ public class CheckedIntegerSpinner extends CheckedSpinner<Integer> {
             @NamedArg("initialValue") int initialValue,
             @NamedArg("amountToStepBy") int amountToStepBy) {
         super(new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, initialValue, amountToStepBy),
-                parseFunction);
+                PARSE_FUNCTION);
     }
 }

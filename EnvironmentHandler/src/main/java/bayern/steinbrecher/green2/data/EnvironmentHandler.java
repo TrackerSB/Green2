@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -76,7 +77,7 @@ public final class EnvironmentHandler {
      * The os currently operating on. (Only supported os can be set)
      */
     public static final OS CURRENT_OS
-            = System.getProperty("os.name").toLowerCase().contains("win") ? OS.WINDOWS : OS.LINUX;
+            = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") ? OS.WINDOWS : OS.LINUX;
     /**
      * The path to the home directory of the user.
      */
@@ -116,7 +117,11 @@ public final class EnvironmentHandler {
 
     static {
         //Create configDir if not existing
-        new File(EnvironmentHandler.APP_DATA_PATH).mkdir();
+        if (!new File(EnvironmentHandler.APP_DATA_PATH).mkdirs()) {
+            Logger.getLogger(EnvironmentHandler.class.getName())
+                    .log(Level.WARNING, "At least some of the directories of the path {0} could not be created.",
+                            EnvironmentHandler.APP_DATA_PATH);
+        }
     }
 
     private EnvironmentHandler() {
@@ -279,7 +284,7 @@ public final class EnvironmentHandler {
         saveDialog.setInitialDirectory(initialDirectory);
         saveDialog.setInitialFileName(initialFile.getName());
         FileChooser.ExtensionFilter givenExtensionFilter
-                = new FileChooser.ExtensionFilter(fileEnding.toUpperCase(), "*." + fileEnding);
+                = new FileChooser.ExtensionFilter(fileEnding.toUpperCase(Locale.ROOT), "*." + fileEnding);
         saveDialog.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter(EnvironmentHandler.getResourceValue("allFiles"), "*.*"),
                 givenExtensionFilter);
@@ -350,26 +355,74 @@ public final class EnvironmentHandler {
      */
     public enum ImageSet {
 
+        /**
+         * A plus.
+         */
         ADD("add.png", false),
+        /**
+         * A pencil.
+         */
         EDIT("edit.png", false),
+        /**
+         * A bin.
+         */
         TRASH("trash.png", false),
+        /**
+         * An info sign.
+         */
         INFO("info.png", true),
+        /**
+         * An error sign.
+         */
         ERROR("error.png", true),
+        /**
+         * A warning sign.
+         */
         WARNING("warning.png", true),
         /**
          * An image for confirmations or checklists.
          */
         CHECKED("checked.png", true),
+        /**
+         * A key.
+         */
         KEY("key.png", false),
+        /**
+         * A locked lock.
+         */
         LOCKED("locked.png", false),
+        /**
+         * An id card symol.
+         */
         ID_CARD("id-card.png", false),
+        /**
+         * An arrow to the right.
+         */
         NEXT("next.png", false),
+        /**
+         * An arrow to the left.
+         */
         BACK("back.png", false),
+        /**
+         * A check mark.
+         */
         SUCCESS("success.png", false),
+        /**
+         * A credit card symbol.
+         */
         CREDIT_CARD("credit-card.png", false),
+        /**
+         * An image of a bank.
+         */
         BANK("back.png", false);
 
+        /**
+         * Width/height when requiring a big version of an image.
+         */
         public static final int BIG_SIZE = 50;
+        /**
+         * Width/height when requiring a small version of an image.
+         */
         public static final int SMALL_SIZE = 15;
         private final Image image;
 

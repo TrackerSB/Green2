@@ -20,24 +20,39 @@ import java.nio.charset.Charset;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.TextField;
 
 /**
- * Represents a {@link TextField} for entering a {@link Charset}. It also checks whether the current system supports the
- * entered {@link Charset}.
+ * Represents a {@link CheckedTextField} for entering a {@link Charset}. It also checks whether the current system
+ * supports the entered {@link Charset}.
  */
 public final class CharsetTextField extends CheckedTextField {
 
-    private BooleanProperty validCharset = new SimpleBooleanProperty(this, "invalid");
+    private final BooleanProperty validCharset = new SimpleBooleanProperty(this, "invalid");
 
+    /**
+     * Creates a new {@link CharsetTextfield} with a maximum column count of {@link Integer#MAX_VALUE} and no initial
+     * text.
+     */
     public CharsetTextField() {
         this(Integer.MAX_VALUE);
     }
 
+    /**
+     * Creates a new {@link CharsetTextField} with a maximum column count of {@code maxColumnCount} and no initial text.
+     *
+     * @param maxColumnCount The maximum column count.
+     */
     public CharsetTextField(int maxColumnCount) {
-        this(Integer.MAX_VALUE, "");
+        this(maxColumnCount, "");
     }
 
+    /**
+     * Creates a new {@link CharsetTextField} with a maximum column count of {@code maxColumnCount} and the initial text
+     * {@code text}.
+     *
+     * @param maxColumnCount The maximum column count.
+     * @param text The initial text.
+     */
     public CharsetTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
         validCharset.bind(Bindings.createBooleanBinding(

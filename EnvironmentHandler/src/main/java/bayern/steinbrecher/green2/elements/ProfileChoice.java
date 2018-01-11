@@ -49,7 +49,7 @@ public class ProfileChoice extends Application {
     private Stage stage;
     private Profile profile;
     private boolean created = false;
-    private GridPane profilePane = new GridPane();
+    private final GridPane profilePane = new GridPane();
 
     /**
      * {@inheritDoc}
@@ -92,11 +92,12 @@ public class ProfileChoice extends Application {
         stage.showAndWait();
 
         if (created) {
-            String newConfigName = EnvironmentHandler.getResourceValue("newConfigname");
+            String newConfigBaseName = EnvironmentHandler.getResourceValue("newConfigname");
             List<String> availableProfiles = Profile.getAvailableProfiles();
             Random random = new Random();
+            String newConfigName = newConfigBaseName;
             while (availableProfiles.contains(newConfigName)) {
-                newConfigName = newConfigName + " (" + random.nextInt(1000) + ")";
+                newConfigName = newConfigBaseName + " (" + random.nextInt(1000) + ")";
             }
             profile = new Profile(newConfigName, true);
         }

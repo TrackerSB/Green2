@@ -97,7 +97,7 @@ public class CheckedPasswordField extends CheckedTextField {
     /**
      * The Skin used to mask the checked passwordfield in order to hide the password itself.
      */
-    private class PasswordFieldSkin extends TextFieldSkin {
+    private static class PasswordFieldSkin extends TextFieldSkin {
 
         /**
          * Constructs a new skin for masking {@link CheckedPasswordField}.

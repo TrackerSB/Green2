@@ -81,7 +81,7 @@ public final class Launcher extends Application {
     private LauncherController controller;
 
     static {
-        try (Scanner sc = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream())) {
+        try (Scanner sc = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream(), StandardCharsets.UTF_8.name())) {
             ZIP_CHARSET = Charset.forName(sc.nextLine());
         } catch (IOException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,7 +151,7 @@ public final class Launcher extends Application {
     public static Optional<String> readOnlineVersion() {
         try {
             URL onlineVersionUrl = new URL(VERSIONFILE_PATH_ONLINE);
-            Scanner sc = new Scanner(onlineVersionUrl.openStream());
+            Scanner sc = new Scanner(onlineVersionUrl.openStream(), StandardCharsets.UTF_8.name());
             return Optional.of(sc.nextLine());
         } catch (IOException ex) {
             Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.SEVERE, null, ex);

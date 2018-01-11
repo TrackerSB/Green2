@@ -27,6 +27,9 @@ import javafx.scene.Parent;
  */
 public final class ElementsUtility {
 
+    /**
+     * The name of the CSS class added when the content is invalid.
+     */
     public static final String CSS_CLASS_INVALID_CONTENT = "invalidContent";
 
     private ElementsUtility() {

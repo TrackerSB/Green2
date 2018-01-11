@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +58,7 @@ public final class Collector {
     }
 
     private static URL resolvePostURL() {
-        URL url;
+        URL url = null;
         Optional<String> resolvedURL = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/php/collector.php");
         if (resolvedURL.isPresent()) {
             try {
@@ -66,10 +67,8 @@ public final class Collector {
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
-            url = null;
         }
-        return null;
+        return url;
     }
 
     private static String generateDataString() {
@@ -183,7 +182,7 @@ public final class Collector {
          */
         @Override
         public String toString() {
-            return super.toString().toLowerCase();
+            return super.toString().toLowerCase(Locale.ROOT);
         }
     }
 }

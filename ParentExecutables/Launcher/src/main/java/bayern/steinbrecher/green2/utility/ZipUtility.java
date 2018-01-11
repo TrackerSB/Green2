@@ -40,6 +40,10 @@ public final class ZipUtility {
      * The charset used when unzipping binary files.
      */
     private static final Charset BINARY_CHARSET = StandardCharsets.ISO_8859_1;
+    /**
+     * The {@link Charset}s which are fixed for certain file formats in order to guarantee that these are
+     * extracted/compressed correctly.
+     */
     public static final Map<String, Charset> SPECIAL_CHARSETS = new HashMap<>();
 
     static {
@@ -86,10 +90,13 @@ public final class ZipUtility {
                 }
 
                 File unzippedFile = new File(outDirPath + "/" + zipEntryName);
-                unzippedFile.getParentFile().mkdirs();
-                try (OutputStreamWriter osw
-                        = new OutputStreamWriter(new FileOutputStream(unzippedFile), currentCharset)) {
-                    IOStreamUtility.transfer(currentIsr, osw);
+                if (unzippedFile.getParentFile().mkdirs()) {
+                    try (OutputStreamWriter osw
+                            = new OutputStreamWriter(new FileOutputStream(unzippedFile), currentCharset)) {
+                        IOStreamUtility.transfer(currentIsr, osw);
+                    }
+                } else {
+                    throw new IOException("The directory where to place the extracted files could not be created.");
                 }
             }
         }

@@ -22,11 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
@@ -58,7 +56,7 @@ public class CheckedTextField extends TextField {
     /**
      * Represents the maximum column count.
      */
-    private IntegerProperty maxColumnCount = new SimpleIntegerProperty(this, "maxColumnCount");
+    private final IntegerProperty maxColumnCount = new SimpleIntegerProperty(this, "maxColumnCount");
     /**
      * Holds {@code true} only if the content has to be checked.
      */
@@ -254,7 +252,7 @@ public class CheckedTextField extends TextField {
      *
      * @param condition The condition to add.
      */
-    protected void addValidCondition(ObservableBooleanValue condition) {
+    protected final void addValidCondition(ObservableBooleanValue condition) {
         validConditions.add(condition);
         updateValidConditions();
     }
@@ -265,7 +263,7 @@ public class CheckedTextField extends TextField {
      * @param condition The condition to remove.
      * @return {@code true} only if any element was removed.
      */
-    protected boolean removeValidCondition(ObservableBooleanValue condition) {
+    protected final boolean removeValidCondition(ObservableBooleanValue condition) {
         boolean removedElement = validConditions.remove(condition);
         updateValidConditions();
         return removedElement;

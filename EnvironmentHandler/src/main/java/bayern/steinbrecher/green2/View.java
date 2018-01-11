@@ -39,10 +39,13 @@ public abstract class View<T extends Controller> extends Application {
     /**
      * The stage which has to be set in every start-Method of implementing classes.
      */
-    protected Stage stage = null;
+    protected Stage stage;
     private final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
     private final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
     private final BooleanBinding wouldShowProperty = gotShownProperty.not();
+    /**
+     * The controller handling the actions of this view.
+     */
     protected T controller;
 
     /**
@@ -73,7 +76,7 @@ public abstract class View<T extends Controller> extends Application {
      * @see Class#getResource(java.lang.String)
      */
     protected <P extends Parent> P loadFXML(String resource) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
+        FXMLLoader fxmlLoader = new FXMLLoader(View.class.getResource(resource));
         fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
         root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);

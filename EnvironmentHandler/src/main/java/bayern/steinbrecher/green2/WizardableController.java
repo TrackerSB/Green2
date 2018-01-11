@@ -27,6 +27,9 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public abstract class WizardableController extends Controller {
 
+    /**
+     * A property indicating whether all input handled by this controller is valid.
+     */
     protected BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
 
     /**

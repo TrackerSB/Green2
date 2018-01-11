@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,6 +97,13 @@ public class Profile {
     private Property<File> configFile = new SimpleObjectProperty<>();
     private boolean deleted = false;
 
+    /**
+     * Creates a profile representing object.
+     *
+     * @param profileName The name of the profile to laod or create.
+     * @param newProfile {@code true} only if the profile does not yet exist. If {@code false} is specified its settings
+     * are tried to be loaded.
+     */
     public Profile(String profileName, boolean newProfile) {
         configurations.addListener((InvalidationListener) listener -> {
             allConfigurationsSet = configurations.size() >= ProfileSettings.values().length;
@@ -132,7 +140,7 @@ public class Profile {
         Map<ProfileSettings<?>, Property<?>> configurations = new HashMap<>();
 
         String[] parts;
-        try (Scanner sc = new Scanner(configFile)) {
+        try (Scanner sc = new Scanner(configFile, StandardCharsets.UTF_8.name())) {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
                 if (line.contains(VALUE_SEPARATOR)) {
@@ -172,23 +180,23 @@ public class Profile {
                             case '>':
                                 switch (part.charAt(1)) {
                                     case '=':
-                                        functionPart = age -> age >= new Integer(part.substring(2));
+                                        functionPart = age -> age >= Integer.parseInt(part.substring(2));
                                         break;
                                     default:
-                                        functionPart = age -> age > new Integer(part.substring(1));
+                                        functionPart = age -> age > Integer.parseInt(part.substring(1));
                                 }
                                 break;
                             case '<':
                                 switch (part.charAt(1)) {
                                     case '=':
-                                        functionPart = age -> age <= new Integer(part.substring(2));
+                                        functionPart = age -> age <= Integer.parseInt(part.substring(2));
                                         break;
                                     default:
-                                        functionPart = age -> age < new Integer(part.substring(1));
+                                        functionPart = age -> age < Integer.parseInt(part.substring(1));
                                 }
                                 break;
                             case '=':
-                                functionPart = age -> age == new Integer(part.substring(1));
+                                functionPart = age -> age == Integer.parseInt(part.substring(1));
                                 break;
                             default:
                                 Logger.getLogger(EnvironmentHandler.class.getName())
@@ -209,7 +217,7 @@ public class Profile {
         }
     }
 
-    private void checkDeleted() {
+    private synchronized void checkDeleted() {
         if (deleted) {
             throw new IllegalStateException("Profile was deleted.");
         }
@@ -258,9 +266,14 @@ public class Profile {
             if (configFile.getValue().renameTo(newConfigFile)) {
                 File originatorInfoFileValue = originatorInfoFile.getValue();
                 if (originatorInfoFileValue.exists() && !originatorInfoFileValue.renameTo(newOriginatorFile)) {
-                    configFile.getValue().renameTo(oldConfigFile);
-                    throw new ProfileRenamingException(
-                            "Renaming the profile was undone. Originator settings couldn't be renamed.");
+                    if (configFile.getValue().renameTo(oldConfigFile)) {
+                        throw new ProfileRenamingException(
+                                "Renaming the profile was undone. Originator settings couldn't be renamed.");
+                    } else {
+                        throw new ProfileRenamingException("Renaming of the profile failed. Undoing the already "
+                                + "renamed parts of the profile also failed! The configuration may not work without "
+                                + "manual interaction.");
+                    }
                 }
             } else {
                 throw new ProfileRenamingException("Profile couldn't be renamed.");
@@ -270,13 +283,30 @@ public class Profile {
         }
     }
 
-    public synchronized void deleteProfile() {
+    /**
+     * Deletes all files belonging to this profile.
+     *
+     * @throws java.io.IOException Thrown if and only if the profile could not be deleted.
+     */
+    public synchronized void deleteProfile() throws IOException {
         checkDeleted();
-        configFile.getValue().delete();
-        originatorInfoFile.getValue().delete();
-        deleted = true;
+        if (configFile.getValue().delete()) {
+            if (!originatorInfoFile.getValue().delete()) {
+                Logger.getLogger(Profile.class.getName())
+                        .log(Level.WARNING, "Even the config file of the profile was deleted, the originator info file "
+                                + "could not be deleted. It may interfere with new profiles having exactly this name.");
+            }
+            deleted = true;
+        } else {
+            throw new IOException("The profile could not be deleted.");
+        }
     }
 
+    /**
+     * Returns a {@link List} of all currently existing profiles.
+     *
+     * @return A {@link List} of all currently existing profiles.
+     */
     public static List<String> getAvailableProfiles() {
         String[] configFiles = new File(EnvironmentHandler.APP_DATA_PATH)
                 .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT));
@@ -327,6 +357,7 @@ public class Profile {
     /**
      * Returns the property holding the value of {@code key} or {@code null} if there's no entry (yet) for {@code key}.
      *
+     * @param <T> The type of the value hold by {@code key}.
      * @param key The key to search for.
      * @return The property holding the value of {@code key} or {@code null} if there's no entry (yet) for {@code key}.
      */

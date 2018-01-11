@@ -27,7 +27,7 @@ import javafx.beans.NamedArg;
  */
 public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
 
-    private static final Function<String, Optional<Double>> parseFunction = value -> {
+    private static final Function<String, Optional<Double>> PARSE_FUNCTION = value -> {
         try {
             return Optional.of(Double.parseDouble(value.replace(',', '.')));
         } catch (NumberFormatException ex) {
@@ -66,6 +66,6 @@ public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
             @NamedArg("initialValue") double initialValue,
             @NamedArg("amountToStepBy") double amountToStepBy,
             @NamedArg("includeMin") boolean includeMin) {
-        super(new CheckedDoubleSpinnerValueFactory(min, max, initialValue, amountToStepBy, includeMin), parseFunction);
+        super(new CheckedDoubleSpinnerValueFactory(min, max, initialValue, amountToStepBy, includeMin), PARSE_FUNCTION);
     }
 }

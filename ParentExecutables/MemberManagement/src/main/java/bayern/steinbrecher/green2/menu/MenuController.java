@@ -674,7 +674,7 @@ public class MenuController extends Controller {
         return activateBirthdayFeaturesProperty().getValue();
     }
 
-    private class CompletableFutureProperty<T> extends SimpleObjectProperty<CompletableFuture<T>> {
+    private static class CompletableFutureProperty<T> extends SimpleObjectProperty<CompletableFuture<T>> {
 
         private final BooleanProperty available = new SimpleBooleanProperty();
 

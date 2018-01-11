@@ -98,7 +98,7 @@ public class Wizard extends Application {
             newVal.getStylesheets().addListener((Change<? extends String> c) -> updateContentSize());
         });
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Wizard.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Wizard.class.getResource("Wizard.fxml"));
         fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
@@ -307,10 +307,20 @@ public class Wizard extends Application {
         return atFinish.get();
     }
 
+    /**
+     * Returns the property holding the currently shown page.
+     *
+     * @return The property holding the currently shown page.
+     */
     public ReadOnlyProperty<WizardPage<?>> currentPageProperty() {
         return currentPage;
     }
 
+    /**
+     * Returns the currently shown page.
+     *
+     * @return The currently shown page.
+     */
     public WizardPage<?> getCurrentPage() {
         return currentPage.getValue();
     }
