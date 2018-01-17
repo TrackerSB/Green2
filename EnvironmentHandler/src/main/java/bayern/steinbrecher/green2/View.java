@@ -76,7 +76,8 @@ public abstract class View<T extends Controller> extends Application {
      * @see Class#getResource(java.lang.String)
      */
     protected <P extends Parent> P loadFXML(String resource) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(View.class.getResource(resource));
+        //NOTE getClass() is needed since View.class may result in bad paths
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
         fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
         root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);

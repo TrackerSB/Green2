@@ -19,11 +19,14 @@ package bayern.steinbrecher.green2.elements;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.utility.DialogUtility;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -140,7 +143,12 @@ public class ProfileChoice extends Application {
                             }
 
                             profilePane.getChildren().removeAll(nodesToDelete);
-                            new Profile(profileName, false).deleteProfile();
+                            try {
+                                new Profile(profileName, false).deleteProfile();
+                            } catch (IOException ex) {
+                                Logger.getLogger(ProfileChoice.class.getName())
+                                        .log(Level.SEVERE, "The profile could not be deleted.", ex);
+                            }
                             stage.sizeToScene();
                         }
                     }

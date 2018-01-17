@@ -54,7 +54,13 @@ public class ConfigDialog extends Application {
 
                 stage.showingProperty().addListener((obs, oldVal, newVal) -> {
                     if (!newVal && profile.isNewProfile()) {
-                        profile.deleteProfile();
+                        try {
+                            profile.deleteProfile();
+                        } catch (IOException ex) {
+                            Logger.getLogger(ConfigDialog.class.getName())
+                                    .log(Level.SEVERE, "The profile temporary generated for creating a new one "
+                                            + "could not be deleted again.", ex);
+                        }
                     }
                 });
                 stage.setResizable(false);
