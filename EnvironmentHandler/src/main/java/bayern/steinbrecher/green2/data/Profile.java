@@ -105,19 +105,22 @@ public class Profile {
      * are tried to be loaded.
      */
     public Profile(String profileName, boolean newProfile) {
+        this.newProfile = newProfile;
+        
         configurations.addListener((InvalidationListener) listener -> {
             allConfigurationsSet = configurations.size() >= ProfileSettings.values().length;
         });
         configFile.addListener((obs, oldVal, newVal) -> {
-            configurations.putAll(readConfigs(newVal));
-            ageFunction = readAgeFunction((String) configurations.getOrDefault(
-                    ProfileSettings.BIRTHDAY_EXPRESSION, new SimpleStringProperty("")).getValue());
+            if (!this.newProfile) {
+                configurations.putAll(readConfigs(newVal));
+                ageFunction = readAgeFunction((String) configurations.getOrDefault(
+                        ProfileSettings.BIRTHDAY_EXPRESSION, new SimpleStringProperty("")).getValue());
+            }
         });
         configFilePath.addListener((obs, oldVal, newVal) -> configFile.setValue(new File(newVal)));
         originatorInfoPath.addListener((obs, oldVal, newVal) -> originatorInfoFile.setValue(new File(newVal)));
 
         this.profileName.setValue(profileName);
-        this.newProfile = newProfile;
 
         if (newProfile) {
             try {

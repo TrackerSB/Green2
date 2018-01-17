@@ -148,7 +148,7 @@ public class WaitScreen extends View<Controller> {
     }
 
     /**
-     * Closes this WaitScreen if still open.
+     * Closes this WaitScreen if still open. Must be called on FX application thread.
      */
     public void close() {
         checkStage();

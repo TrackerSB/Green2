@@ -264,8 +264,7 @@ public class MenuController extends Controller {
 
     private void showNoMemberForOutputDialog() {
         String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
-        Alert alert = DialogUtility.createInfoAlert(stage, noMemberForOutput, noMemberForOutput);
-        alert.showAndWait();
+        DialogUtility.showAndWait(DialogUtility.createInfoAlert(stage, noMemberForOutput, noMemberForOutput));
     }
 
     private void generateAddresses(Collection<Member> member, File outputFile) {
@@ -389,7 +388,7 @@ public class MenuController extends Controller {
                             if (!message.isEmpty()) {
                                 Alert alert = DialogUtility.createErrorAlert(stage, message + "\n"
                                         + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
-                                alert.show();
+                                Platform.runLater(() -> alert.show());
                             }
                         });
                     }
@@ -400,8 +399,7 @@ public class MenuController extends Controller {
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
             String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
-            Alert alert = DialogUtility.createErrorAlert(stage, noSepaDebit, noSepaDebit);
-            alert.showAndWait();
+            DialogUtility.showAndWait(DialogUtility.createErrorAlert(stage, noSepaDebit, noSepaDebit));
         }
     }
 
@@ -558,8 +556,8 @@ public class MenuController extends Controller {
                 }
             });
             String checkData = EnvironmentHandler.getResourceValue("checkData");
-            Alert alert = DialogUtility.createMessageAlert(stage, messageJoiner.toString(), checkData, checkData);
-            alert.showAndWait();
+            DialogUtility.showAndWait(
+                    DialogUtility.createMessageAlert(stage, messageJoiner.toString(), checkData, checkData));
         });
     }
 
@@ -602,14 +600,14 @@ public class MenuController extends Controller {
         String credits = EnvironmentHandler.getResourceValue("credits");
         Alert alert = DialogUtility.createMessageAlert(
                 stage, EnvironmentHandler.getResourceValue("creditsContent"), null, credits, credits);
-        alert.show();
+        Platform.runLater(() -> alert.show());
     }
 
     @FXML
     private void showVersion() {
         String version = EnvironmentHandler.getResourceValue("version");
         Alert alert = DialogUtility.createInfoAlert(stage, EnvironmentHandler.VERSION, version, version, version);
-        alert.show();
+        Platform.runLater(() -> alert.show());
     }
 
     /**

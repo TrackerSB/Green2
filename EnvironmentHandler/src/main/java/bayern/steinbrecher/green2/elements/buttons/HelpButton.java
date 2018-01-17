@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.elements.buttons;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.DialogUtility;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.EventHandler;
@@ -89,7 +90,7 @@ public class HelpButton extends Button {
         String findHelp = EnvironmentHandler.getResourceValue("findHelp");
         Alert alert = DialogUtility.createMessageAlert(
                 getScene().getWindow(), this.helpMessage.get(), findHelp, help, help);
-        alert.show();
+        Platform.runLater(() -> alert.show());
     }
 
     /**

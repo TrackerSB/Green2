@@ -123,9 +123,8 @@ public final class Launcher extends Application {
             Programs.MEMBER_MANAGEMENT.call();
         } else {
             String installError = EnvironmentHandler.getResourceValue("installError");
-            DialogUtility.createErrorAlert(
-                    null, EnvironmentHandler.getResourceValue("installErrorMessage"), installError, installError)
-                    .showAndWait();
+            DialogUtility.showAndWait(DialogUtility.createErrorAlert(
+                    null, EnvironmentHandler.getResourceValue("installErrorMessage"), installError, installError));
             throw new IllegalStateException(
                     "Green2 is currently not installed and there´s no connection to install it.");
         }

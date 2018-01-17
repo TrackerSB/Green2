@@ -19,8 +19,13 @@ package bayern.steinbrecher.green2.utility;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -82,6 +87,32 @@ public final class DialogUtility {
     }
 
     /**
+     * Returns a new {@link Alert}. This method may be called on any {@link Thread}. If it is not called on the FX
+     * application thread it passes the creation to the FX application thread and waits for it.
+     *
+     * @return The newly created {@link Alert}.
+     */
+    private static Alert getAlert(Callable<Alert> alertCreation) {
+        Alert alert = null;
+        if (Platform.isFxApplicationThread()) {
+            try {
+                alert = alertCreation.call();
+            } catch (Exception ex) {
+                Logger.getLogger(DialogUtility.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            FutureTask<Alert> alertCreationTask = new FutureTask<>(alertCreation);
+            Platform.runLater(alertCreationTask);
+            try {
+                alert = alertCreationTask.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(DialogUtility.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return alert;
+    }
+
+    /**
      * Creates an {@link Alert} with given settings.
      *
      * @param alertType The type of the alert.
@@ -93,7 +124,7 @@ public final class DialogUtility {
      */
     @SuppressWarnings("fallthrough")
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
-        Alert alert = addStyleAndIcon(initOwner(new Alert(alertType), owner));
+        Alert alert = addStyleAndIcon(initOwner(getAlert(() -> new Alert(alertType)), owner));
         int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;
         if (parameterCount > NUMBER_USED_PARAMETERS) {
             Logger.getLogger(DialogUtility.class.getName())
@@ -227,6 +258,29 @@ public final class DialogUtility {
      * @return The created {@link Alert}.
      */
     public static Alert createAlert(Alert.AlertType type, String message, ButtonType... buttons) {
-        return addStyleAndIcon(new Alert(type, message, buttons));
+        return addStyleAndIcon(getAlert(() -> new Alert(type, message, buttons)));
+    }
+
+    /**
+     * Calls {@link Alert#showAndWait()} making sure it is called on the FX application thread.
+     *
+     * @param alert The alert to call {@link Alert#showAndWait()} on.
+     * @return The result of {@link Alert#showAndWait()}.
+     */
+    public static Optional<ButtonType> showAndWait(Alert alert) {
+        Optional<ButtonType> result;
+        if (Platform.isFxApplicationThread()) {
+            result = alert.showAndWait();
+        } else {
+            FutureTask<Optional<ButtonType>> showAndWaitTask = new FutureTask<>(() -> alert.showAndWait());
+            Platform.runLater(showAndWaitTask);
+            try {
+                result = showAndWaitTask.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(DialogUtility.class.getName()).log(Level.SEVERE, null, ex);
+                result = Optional.empty();
+            }
+        }
+        return result;
     }
 }

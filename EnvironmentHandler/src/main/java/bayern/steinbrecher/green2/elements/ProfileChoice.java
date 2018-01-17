@@ -115,7 +115,7 @@ public class ProfileChoice extends Application {
         DialogPane dialogPane = confirmation.getDialogPane();
         ((Button) dialogPane.lookupButton(ButtonType.YES)).setDefaultButton(false);
         ((Button) dialogPane.lookupButton(ButtonType.NO)).setDefaultButton(true);
-        confirmation.showAndWait()
+        DialogUtility.showAndWait(confirmation)
                 .ifPresent(buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         int rowIndexOfDeletedRow = -1;

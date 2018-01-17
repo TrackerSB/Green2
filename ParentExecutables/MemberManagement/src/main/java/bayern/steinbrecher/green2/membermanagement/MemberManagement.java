@@ -186,8 +186,7 @@ public class MemberManagement extends Application {
         } else {
             String badConfigs = MessageFormat.format(
                     EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName());
-            DialogUtility.createErrorAlert(null, badConfigs, badConfigs)
-                    .showAndWait()
+            DialogUtility.showAndWait(DialogUtility.createErrorAlert(null, badConfigs, badConfigs))
                     .ifPresent(buttontype -> {
                         if (buttontype == ButtonType.OK) {
                             Programs.CONFIGURATION_DIALOG.call();
@@ -217,34 +216,34 @@ public class MemberManagement extends Application {
     }
 
     private void handleAuthException(Login login, WaitScreen waitScreen, Exception cause) {
-        Platform.runLater(() -> {
-            Alert dialog;
-            if (cause instanceof UnknownHostException || cause instanceof ConnectException) {
-                String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
-                dialog = DialogUtility.createStacktraceAlert(null, cause, checkConnection, checkConnection);
-            } else if (cause instanceof AuthException) {
-                String checkInput = EnvironmentHandler.getResourceValue("checkInput");
-                dialog = DialogUtility.createInfoAlert(null, checkInput, checkInput);
-            } else {
-                Logger.getLogger(MemberManagement.class.getName())
-                        .log(Level.SEVERE, "Not action specified for: {0}", cause);
-                String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
-                dialog = DialogUtility.createErrorAlert(null, unexpectedAbort, unexpectedAbort);
-            }
+        Alert dialog;
+        if (cause instanceof UnknownHostException || cause instanceof ConnectException) {
+            String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
+            dialog = DialogUtility.createStacktraceAlert(null, cause, checkConnection, checkConnection);
+        } else if (cause instanceof AuthException) {
+            String checkInput = EnvironmentHandler.getResourceValue("checkInput");
+            dialog = DialogUtility.createInfoAlert(null, checkInput, checkInput);
+        } else {
+            Logger.getLogger(MemberManagement.class.getName())
+                    .log(Level.SEVERE, "Not action specified for: {0}", cause);
+            String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
+            dialog = DialogUtility.createErrorAlert(null, unexpectedAbort, unexpectedAbort);
+        }
 
-            dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
-                if (!newVal) {
-                    if (dialog.getResult() == ButtonType.OK) {
-                        login.reset();
-                        synchronized (this) {
-                            notifyAll();
-                        }
-                    } else {
-                        Platform.exit();
+        dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                if (dialog.getResult() == ButtonType.OK) {
+                    login.reset();
+                    synchronized (this) {
+                        notifyAll();
                     }
+                } else {
+                    Platform.exit();
                 }
-            });
+            }
+        });
 
+        Platform.runLater(() -> {
             waitScreen.close();
             dialog.show();
         });
@@ -292,8 +291,8 @@ public class MemberManagement extends Application {
                 return getConnection(login, waitScreen);
             } catch (UnsupportedDatabaseException ex) {
                 Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-                DialogUtility.createErrorAlert(null, EnvironmentHandler.getResourceValue("noSupportedDatabase"))
-                        .showAndWait();
+                DialogUtility.showAndWait(DialogUtility.createErrorAlert(
+                        null, EnvironmentHandler.getResourceValue("noSupportedDatabase")));
             }
         }
 
