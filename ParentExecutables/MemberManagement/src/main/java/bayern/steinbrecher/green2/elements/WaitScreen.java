@@ -78,9 +78,7 @@ public class WaitScreen extends View<Controller> {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) {
-        this.stage = stage;
-
+    public void startImpl(Stage stage) {
         Pane root = new Pane();
         root.setStyle("-fx-background-color: rgba(0,0,0,0)");
 
@@ -151,16 +149,14 @@ public class WaitScreen extends View<Controller> {
      * Closes this WaitScreen if still open. Must be called on FX application thread.
      */
     public void close() {
-        checkStage();
-        stage.close();
+        getStage().close();
     }
 
     /**
      * Shows this WaitScreen if not yet shown.
      */
     public void show() {
-        checkStage();
-        stage.show();
+        getStage().show();
     }
 
     /**

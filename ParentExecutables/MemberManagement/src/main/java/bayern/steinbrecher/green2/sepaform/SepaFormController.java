@@ -27,6 +27,7 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -114,6 +115,8 @@ public class SepaFormController extends CheckedController {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void generateMessageId() {
         messageIdTextField.setText(DateTimeFormatter.ISO_DATE.format(LocalDate.now()) + " "
                 + EnvironmentHandler.getResourceValue("contributions_sepaChars") + " "
@@ -136,6 +139,8 @@ public class SepaFormController extends CheckedController {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void ready() {
         checkStage();
         if (isValid()) {

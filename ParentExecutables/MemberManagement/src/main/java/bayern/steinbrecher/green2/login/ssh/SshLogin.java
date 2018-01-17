@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.login.ssh;
 
+import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.login.Login;
 import java.io.IOException;
@@ -34,11 +35,14 @@ public class SshLogin extends Login {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws IOException {
-        this.stage = stage;
-
-        Parent root = loadFXML("SshLogin.fxml");
-        controller.setStage(stage);
+    public void startImpl(Stage stage) {
+        Parent root;
+        try {
+            root = loadFXML("SshLogin.fxml");
+        } catch (IOException ex) {
+            throw new ViewStartException(ex);
+        }
+        getController().setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("loginTitle"));

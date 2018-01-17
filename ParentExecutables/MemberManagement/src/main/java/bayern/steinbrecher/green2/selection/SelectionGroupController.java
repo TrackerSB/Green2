@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.selection;
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.BindingUtility;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -239,6 +240,8 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void select() {
         checkStage();
         if (valid.get()) {
@@ -247,6 +250,8 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void selectAllOptions() {
         optionsListView.getItems().stream()
                 .filter(cb -> !cb.isSelected())
@@ -254,6 +259,8 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void selectNoOption() {
         optionsListView.getItems().stream()
                 .forEach(cb -> cb.setSelected(false));

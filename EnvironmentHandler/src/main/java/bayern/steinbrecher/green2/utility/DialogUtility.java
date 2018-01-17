@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.utility;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
@@ -123,6 +124,7 @@ public final class DialogUtility {
      * @return The created {@link Alert}.
      */
     @SuppressWarnings("fallthrough")
+    @SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH")
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
         Alert alert = addStyleAndIcon(initOwner(getAlert(() -> new Alert(alertType)), owner));
         int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;

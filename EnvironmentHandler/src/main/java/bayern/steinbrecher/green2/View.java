@@ -40,22 +40,35 @@ public abstract class View<T extends Controller> extends Application {
     /**
      * The stage which has to be set in every start-Method of implementing classes.
      */
-    protected Stage stage;
+    private Stage stage;
     private final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
     private final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
     private final BooleanBinding wouldShowProperty = gotShownProperty.not();
     /**
      * The controller handling the actions of this view.
      */
-    protected T controller;
+    private T controller;
 
     /**
-     * Throws a {@link IllegalStateException} only if stage is {@code null}.
+     * Contains the body usually inserted in {@link Application#start(javafx.stage.Stage)}.
+     *
+     * @param stage The {@link Stage} to be used by this application.
+     * @throws ViewStartException Thrown if something goes wrong. Since it is not known which {@link Exception} (if any)
+     * is thrown by an implementing class one could throw a plain {@link Exception}. But if this is the case any call to
+     * this method (or to {@link #start(javafx.stage.Stage)}) has either to throw also {@link Exception} itself or catch
+     * this unspecific {@link Exception}. Hence a wrapping exception is introduced.
+     * @see ViewStartException
      */
-    protected void checkStage() {
-        if (stage == null) {
-            throw new IllegalStateException("You have to call start(...)first");
-        }
+    protected abstract void startImpl(Stage stage);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    //FIXME Any way to throw a more specific exception
+    public final void start(Stage stage) {
+        this.stage = stage;
+        startImpl(stage);
     }
 
     @SuppressFBWarnings(value = "NN_NAKED_NOTIFY", justification = "The wait is called by other methods like "
@@ -68,9 +81,16 @@ public abstract class View<T extends Controller> extends Application {
     }
 
     /**
-     * Loads the given FMXL resource. This method may be overidden if some informations have to passed to the
-     * controller. This should be done the following way:
-     * {@code P root = super.loadFXML(resource);controller.setSomeInput(input);return root;}
+     * This method is called right before {@link #loadFXML(java.lang.String)} returns. It may be overriden to make sure
+     * certain methods are called whenever {@link #loadFXML(java.lang.String)} is called.
+     */
+    protected void callWhenLoadFXML() {
+        //no-op
+    }
+
+    /**
+     * Loads the given FMXL ressource. If it is needed to call certain methods each time this method is called, override
+     * {@link #callWhenLoadFXML()}. E.g. set some options to the {@link Controller}.
      *
      * @param <P> The concrete type of the root element of the given resource.
      * @param resource The FXML resource.
@@ -80,13 +100,14 @@ public abstract class View<T extends Controller> extends Application {
      */
     @SuppressFBWarnings(value = "UI_INHERITANCE_UNSAFE_GETRESOURCE", justification = "Since the fxml files used by "
             + "the views are located in the same package relative paths have to be used.")
-    protected <P extends Parent> P loadFXML(String resource) throws IOException {
+    protected final <P extends Parent> P loadFXML(String resource) throws IOException {
         //NOTE getClass() is needed since View.class may result in bad paths
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
         fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
         root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
         controller = fxmlLoader.getController();
+        callWhenLoadFXML();
         return root;
     }
 
@@ -100,19 +121,18 @@ public abstract class View<T extends Controller> extends Application {
      * @see View#showOnce(java.lang.Runnable)
      */
     public void showOnceAndWait() {
-        checkStage();
         if (!gotShownProperty.get()) {
             gotShownProperty.set(true);
             if (Platform.isFxApplicationThread()) {
-                stage.showAndWait();
+                getStage().showAndWait();
                 setClosedAndNotify();
             } else {
-                stage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                getStage().showingProperty().addListener((obs, oldVal, newVal) -> {
                     if (!newVal) {
                         setClosedAndNotify();
                     }
                 });
-                Platform.runLater(() -> stage.show());
+                Platform.runLater(() -> getStage().show());
             }
         }
         ThreadUtility.waitWhile(this, gotClosedProperty.not());
@@ -126,10 +146,9 @@ public abstract class View<T extends Controller> extends Application {
      * @see View#showOnceAndWait()
      */
     public void showOnce(Runnable callback) {
-        checkStage();
         if (!gotShownProperty.get()) {
             gotShownProperty.set(true);
-            stage.showingProperty().addListener((obs, oldVal, newVal) -> {
+            getStage().showingProperty().addListener((obs, oldVal, newVal) -> {
                 if (!newVal) {
                     if (callback != null) {
                         callback.run();
@@ -137,7 +156,7 @@ public abstract class View<T extends Controller> extends Application {
                     setClosedAndNotify();
                 }
             });
-            Platform.runLater(() -> stage.show());
+            Platform.runLater(() -> getStage().show());
         }
     }
 
@@ -164,6 +183,36 @@ public abstract class View<T extends Controller> extends Application {
      * @return {@code true} only if the user aborted the currently inserted data.
      */
     public boolean userAborted() {
-        return controller.userAbborted();
+        return getController().userAbborted();
+    }
+
+    /**
+     * Returns the {@link Stage} of the application.
+     *
+     * @return The {@link Stage} to be used by the application.
+     * @throws IllegalStateException Thrown only if the {@link Stage} is not set. This means
+     * {@link #start(javafx.stage.Stage)} has to be called before.
+     */
+    protected Stage getStage() {
+        if (stage == null) {
+            throw new IllegalStateException("You have to call start(...) first");
+        } else {
+            return stage;
+        }
+    }
+
+    /**
+     * Returns the {@link Controller} used by the application.
+     *
+     * @return The {@link Controller} used by the application.
+     * @throws IllegalStateException Thrown if the {@link Controller} is not set. This means
+     * {@link #loadFXML(java.lang.String)} has to be called before.
+     */
+    protected T getController() {
+        if (controller == null) {
+            throw new IllegalStateException("You have to call loadFXML(..) first");
+        } else {
+            return controller;
+        }
     }
 }

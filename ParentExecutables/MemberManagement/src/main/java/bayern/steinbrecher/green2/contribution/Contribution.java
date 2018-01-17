@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.contribution;
 
+import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
@@ -49,11 +50,14 @@ public class Contribution extends WizardableView<Optional<Map<Color, Double>>, C
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
-
-        Parent root = loadFXML("Contribution.fxml");
-        controller.setStage(stage);
+    public void startImpl(Stage stage) {
+        Parent root;
+        try {
+            root = loadFXML("Contribution.fxml");
+        } catch (IOException ex) {
+            throw new ViewStartException(ex);
+        }
+        getController().setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("contributionTitle"));
@@ -72,7 +76,7 @@ public class Contribution extends WizardableView<Optional<Map<Color, Double>>, C
      */
     public Optional<Map<Color, Double>> getContribution() {
         showOnceAndWait();
-        return controller.getContribution();
+        return getController().getContribution();
     }
 
     /**
@@ -82,7 +86,8 @@ public class Contribution extends WizardableView<Optional<Map<Color, Double>>, C
     public WizardPage<Optional<Map<Color, Double>>> getWizardPage() {
         try {
             Pane root = loadFXML("Contribution_Wizard.fxml");
-            return new WizardPage<>(root, null, false, () -> controller.getContribution(), controller.validProperty());
+            return new WizardPage<>(
+                    root, null, false, () -> getController().getContribution(), getController().validProperty());
         } catch (IOException ex) {
             Logger.getLogger(Contribution.class.getName()).log(Level.SEVERE, null, ex);
             return null;

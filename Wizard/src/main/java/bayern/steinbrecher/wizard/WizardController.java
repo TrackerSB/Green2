@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.wizard;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -65,18 +66,24 @@ public class WizardController implements Initializable {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void showPrevious() {
         checkCaller();
         caller.getValue().showPrevious();
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void showNext() {
         checkCaller();
         caller.getValue().showNext();
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void finish() {
         checkCaller();
         caller.getValue().finish();

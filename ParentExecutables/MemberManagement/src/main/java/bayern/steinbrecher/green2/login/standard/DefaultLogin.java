@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.login.standard;
 
+import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.login.Login;
 import java.io.IOException;
@@ -34,11 +35,14 @@ public class DefaultLogin extends Login {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws IOException {
-        this.stage = stage;
-
-        Parent root = loadFXML("DefaultLogin.fxml");
-        controller.setStage(stage);
+    public void startImpl(Stage stage) {
+        Parent root;
+        try {
+            root = loadFXML("DefaultLogin.fxml");
+        } catch (IOException ex) {
+            throw new ViewStartException(ex);
+        }
+        getController().setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("loginTitle"));

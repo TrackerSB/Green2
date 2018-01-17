@@ -38,6 +38,7 @@ import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -465,11 +466,15 @@ public class MenuController extends Controller {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void generateContributionSepa(ActionEvent aevt) {
         callOnDisabled(aevt, () -> generateSepa(memberNonContributionfree.get(), true, SequenceType.RCUR));
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void generateUniversalSepa(ActionEvent aevt) {
         callOnDisabled(aevt, () -> generateSepa(member.get(), false, SequenceType.RCUR));
     }
@@ -542,6 +547,8 @@ public class MenuController extends Controller {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void checkData(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
             StringJoiner messageJoiner = new StringJoiner("\n\n");
@@ -562,11 +569,15 @@ public class MenuController extends Controller {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void generateAddressesAll(ActionEvent aevt) {
         callOnDisabled(aevt, () -> generateAddressesAll());
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void generateAddressesBirthday(ActionEvent aevt) {
         if (yearSpinner.isValid()) {
             callOnDisabled(aevt, () -> generateAddressesBirthday(yearSpinner.getValue()));
@@ -574,6 +585,8 @@ public class MenuController extends Controller {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void generateBirthdayInfos(ActionEvent aevt) {
         if (yearSpinner.isValid()) {
             callOnDisabled(aevt, () -> {
@@ -596,6 +609,8 @@ public class MenuController extends Controller {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void showCredits() {
         String credits = EnvironmentHandler.getResourceValue("credits");
         Alert alert = DialogUtility.createMessageAlert(
@@ -604,6 +619,8 @@ public class MenuController extends Controller {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void showVersion() {
         String version = EnvironmentHandler.getResourceValue("version");
         Alert alert = DialogUtility.createInfoAlert(stage, EnvironmentHandler.VERSION, version, version, version);

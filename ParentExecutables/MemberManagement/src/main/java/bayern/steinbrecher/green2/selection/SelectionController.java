@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableController;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Optional;
@@ -104,6 +105,8 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void select() {
         checkStage();
         if (valid.get()) {
@@ -112,11 +115,15 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void selectAllOptions() {
         optionsListView.getItems().stream().forEach(cb -> cb.setSelected(true)); //TODO May be parallel?
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void selectNoOption() {
         optionsListView.getItems().stream().forEach(cb -> cb.setSelected(false)); //TODO May be parallel?
     }

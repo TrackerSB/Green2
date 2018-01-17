@@ -44,9 +44,7 @@ public class Splashscreen extends View<Controller> {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
-
+    public void startImpl(Stage stage) {
         Pane root = new Pane();
         root.setStyle("-fx-background-color: rgba(0,0,0,0)");
 
@@ -76,7 +74,7 @@ public class Splashscreen extends View<Controller> {
             } catch (InterruptedException ex) {
                 Logger.getLogger(Splashscreen.class.getName()).log(Level.WARNING, null, ex);
             }
-            Platform.runLater(() -> stage.close());
+            Platform.runLater(() -> getStage().close());
             return null;
         }).start();
         showOnceAndWait();

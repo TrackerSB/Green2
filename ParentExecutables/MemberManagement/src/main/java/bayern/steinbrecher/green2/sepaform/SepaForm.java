@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.sepaform;
 
+import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.people.Originator;
@@ -46,11 +47,14 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
-
-        Parent root = loadFXML("SepaForm.fxml");
-        controller.setStage(stage);
+    public void startImpl(Stage stage) {
+        Parent root;
+        try {
+            root = loadFXML("SepaForm.fxml");
+        } catch (IOException ex) {
+            throw new ViewStartException(ex);
+        }
+        getController().setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("sepaFormTitle"));
@@ -65,7 +69,7 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
      * @return The originator or {@link Optional#empty()}.
      */
     public Optional<Originator> getOriginator() {
-        return controller.getOriginator();
+        return getController().getOriginator();
     }
 
     /**
@@ -75,7 +79,7 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
     public WizardPage<Optional<Originator>> getWizardPage() {
         try {
             Pane root = loadFXML("SepaForm_Wizard.fxml");
-            return new WizardPage<>(root, null, false, this::getOriginator, controller.validProperty());
+            return new WizardPage<>(root, null, false, this::getOriginator, getController().validProperty());
         } catch (IOException ex) {
             Logger.getLogger(SepaForm.class.getName()).log(Level.SEVERE, null, ex);
             return null;

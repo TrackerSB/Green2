@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -56,18 +55,16 @@ public class SelectionGroup<T extends Comparable<T>>
      * {@inheritDoc}
      */
     @Override
-    protected <P extends Parent> P loadFXML(String resource) throws IOException {
-        P root = super.loadFXML(resource);
-        controller.setGroups(groups);
-        controller.setOptions(options);
-        return root;
+    protected void callWhenLoadFXML() {
+        getController().setGroups(groups);
+        getController().setOptions(options);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) {
+    public void startImpl(Stage primaryStage) {
         throw new UnsupportedOperationException(
                 "Currently the SelectionGroup dialog can only be used within a Wizard.");
     }
@@ -79,7 +76,8 @@ public class SelectionGroup<T extends Comparable<T>>
     public WizardPage<Optional<Map<T, Color>>> getWizardPage() {
         try {
             Pane root = loadFXML("SelectionGroup_Wizard.fxml");
-            return new WizardPage<>(root, null, false, () -> controller.getSelection(), controller.validProperty());
+            return new WizardPage<>(
+                    root, null, false, () -> getController().getSelection(), getController().validProperty());
         } catch (IOException ex) {
             Logger.getLogger(SelectionGroup.class.getName()).log(Level.SEVERE, null, ex);
             return null;

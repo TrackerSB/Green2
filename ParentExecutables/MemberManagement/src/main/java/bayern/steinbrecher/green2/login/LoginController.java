@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.login;
 import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,8 @@ public abstract class LoginController extends CheckedController {
      * Closes the stage only if the inserted information is valid.
      */
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void login() {
         checkStage();
         if (isValid()) {

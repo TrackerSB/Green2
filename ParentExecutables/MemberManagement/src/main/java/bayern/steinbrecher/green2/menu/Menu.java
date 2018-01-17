@@ -17,8 +17,10 @@
 package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.View;
+import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import java.io.IOException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -45,17 +47,27 @@ public class Menu extends View<MenuController> {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
+    protected void callWhenLoadFXML() {
+        getController().setConnection(dbConnection);
+    }
 
-        Parent root = loadFXML("Menu.fxml");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void startImpl(Stage stage) {
+        Parent root;
+        try {
+            root = loadFXML("Menu.fxml");
+        } catch (IOException ex) {
+            throw new ViewStartException(ex);
+        }
         root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET,
                 "/bayern/steinbrecher/green2/styles/menu.css");
         //TODO Think about moving this line to css file
         root.setStyle("-fx-padding: 0px");
 
-        controller.setStage(stage);
-        controller.setConnection(dbConnection);
+        getController().setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("chooseProgram"));

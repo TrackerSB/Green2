@@ -27,6 +27,7 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.Programs;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -147,6 +148,8 @@ public class ConfigDialogController extends CheckedController {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void saveSettingsAndReturn() {
         if (saveSettings()) {
             Programs.CONFIGURATION_DIALOG.call();
@@ -154,6 +157,8 @@ public class ConfigDialogController extends CheckedController {
     }
 
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void saveSettingsAndContinue() {
         if (saveSettings()) {
             Programs.MEMBER_MANAGEMENT.call();

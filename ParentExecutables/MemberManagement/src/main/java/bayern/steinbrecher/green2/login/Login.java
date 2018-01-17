@@ -17,10 +17,8 @@
 package bayern.steinbrecher.green2.login;
 
 import bayern.steinbrecher.green2.View;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import javafx.stage.Stage;
 
 /**
  * Represents a login.
@@ -29,9 +27,12 @@ import javafx.stage.Stage;
  */
 public abstract class Login extends View<LoginController> {
 
-    @Override
-    public abstract void start(Stage primaryStage) throws IOException;
-
+    /**
+     * {@inheritDoc}
+     */
+    //@Override
+    //TODO Is it possible to specify some kind of "an uppper bound" of ViewStartException?
+    //public abstract void startImpl(Stage primaryStage) throws IOException;
     /**
      * Returns the information that was entered in the login. This method blocks until the frame is closed or hidden. It
      * won't show more than once even if multiple threads call it. They will be blocked and notified when the login
@@ -41,6 +42,6 @@ public abstract class Login extends View<LoginController> {
      */
     public Optional<Map<LoginKey, String>> getLoginInformation() {
         showOnceAndWait();
-        return controller.getLoginInformation();
+        return getController().getLoginInformation();
     }
 }

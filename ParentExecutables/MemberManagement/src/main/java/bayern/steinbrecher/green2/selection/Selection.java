@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.selection;
 
+import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
@@ -55,22 +56,22 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
      * {@inheritDoc}
      */
     @Override
-    protected <P extends Parent> P loadFXML(String resource)
-            throws IOException {
-        P root = super.loadFXML(resource);
-        controller.setOptions(options);
-        return root;
+    protected void callWhenLoadFXML() {
+        getController().setOptions(options);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
-
-        Parent root = loadFXML("Selection.fxml");
-        controller.setStage(stage);
+    public void startImpl(Stage stage) {
+        Parent root;
+        try {
+            root = loadFXML("Selection.fxml");
+        } catch (IOException ex) {
+            throw new ViewStartException(ex);
+        }
+        getController().setStage(stage);
 
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("selectionTitle"));
@@ -84,7 +85,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
      * @return The selection if any.
      */
     public Optional<Set<T>> getSelection() {
-        return controller.getSelection();
+        return getController().getSelection();
     }
 
     /**
@@ -94,12 +95,10 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     public WizardPage<Optional<Set<T>>> getWizardPage() {
         try {
             Pane root = loadFXML("Selection_Wizard.fxml");
-            return new WizardPage<>(root, null, false,
-                    () -> controller.getSelection(),
-                    controller.validProperty());
+            return new WizardPage<>(
+                    root, null, false, () -> getController().getSelection(), getController().validProperty());
         } catch (IOException ex) {
-            Logger.getLogger(Selection.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(Selection.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

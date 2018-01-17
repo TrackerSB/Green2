@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.utility;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,8 @@ public final class ThreadUtility {
      * @param exp The expression to check whether to wait again or not.
      * @see Object#wait()
      */
+    @SuppressFBWarnings(value = "UW_UNCOND_WAIT",
+            justification = "FindBugs does not see that the boolean expression may change its value.")
     public static void waitWhile(Object monitor, BooleanExpression exp) {
         while (exp.get()) {
             try {

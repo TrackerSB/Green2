@@ -40,7 +40,6 @@ import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.Programs;
 import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -51,7 +50,6 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -96,7 +94,7 @@ public class MemberManagement extends Application {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage primaryStage) throws IOException, InterruptedException, ExecutionException {
+    public void start(Stage primaryStage) {
         menuStage = primaryStage;
 
         if (profile.isAllConfigurationsSet()) {
