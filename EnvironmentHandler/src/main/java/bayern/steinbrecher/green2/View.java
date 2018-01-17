@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -57,6 +58,8 @@ public abstract class View<T extends Controller> extends Application {
         }
     }
 
+    @SuppressFBWarnings(value = "NN_NAKED_NOTIFY", justification = "The wait is called by other methods like "
+            + "Stage#showAndWait() or ThreadUtility#waitWhile(...).")
     private void setClosedAndNotify() {
         gotClosedProperty.set(true);
         synchronized (this) {
@@ -75,6 +78,8 @@ public abstract class View<T extends Controller> extends Application {
      * @throws IOException Thrown only if the given resource could not be loaded by {@link FXMLLoader#load()}.
      * @see Class#getResource(java.lang.String)
      */
+    @SuppressFBWarnings(value = "UI_INHERITANCE_UNSAFE_GETRESOURCE", justification = "Since the fxml files used by "
+            + "the views are located in the same package relative paths have to be used.")
     protected <P extends Parent> P loadFXML(String resource) throws IOException {
         //NOTE getClass() is needed since View.class may result in bad paths
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
