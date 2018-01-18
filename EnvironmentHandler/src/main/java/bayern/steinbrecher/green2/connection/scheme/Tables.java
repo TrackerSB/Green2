@@ -193,7 +193,7 @@ public enum Tables {
                 .map(column -> new StringJoiner(" ")
                 .add(column.getRealColumnName())
                 .add(dbms.getType(column))
-                .add(dbms.getKeywords(columns.get(column).getValue()).stream().collect(Collectors.joining(" ")))
+                .add(dbms.getKeywords(columns.get(column).getValue(), column).stream().collect(Collectors.joining(" ")))
                 .toString())
                 .collect(Collectors.joining(", "));
         return dbms.getTemplate(SupportedDatabases.Queries.CREATE_TABLE, getRealTableName(), columnList);

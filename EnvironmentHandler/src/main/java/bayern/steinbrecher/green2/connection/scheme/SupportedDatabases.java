@@ -106,17 +106,25 @@ public enum SupportedDatabases {
     }
 
     /**
-     * Returns a list of the appropriate SQL keywords for the given ones. Keywords which are not defined by this enum
-     * are skipped.
+     * Returns a list of the appropriate SQL keywords for the given ones.Keywords which are not defined by this enum are
+     * skipped.
      *
      * @param keywords The keywords to lookup the appropriate SQL keyword for.
+     * @param column The column for which the keywords have to be retrieved. NOTE: This parameter is currently only used
+     * in the case {@code keywords} contains {@link Keywords#DEFAULT}.
      * @return A list of the appropriate SQL keywords for the given ones.
      */
-    public Collection<String> getKeywords(Set<Keywords> keywords) {
+    public Collection<String> getKeywords(Set<Keywords> keywords, Columns<?> column) {
         return keywords.stream()
                 .map(keyword -> {
                     if (this.keywords.containsKey(keyword)) {
-                        return this.keywords.get(keyword);
+                        String keywordString = this.keywords.get(keyword);
+                        if (keyword == Keywords.DEFAULT) {
+                            assert !keywords.contains(Keywords.NOT_NULL) || column.getDefaultValue() != null :
+                                    "The keyword NOT NULL is specified but the value for DEFAULT is null";
+                            keywordString += " '" + column.getDefaultValue() + "'";
+                        }
+                        return keywordString;
                     } else {
                         Logger.getLogger(SupportedDatabases.class.getName())
                                 .log(Level.WARNING, "Keyword {0} is not defined by {1}", new Object[]{keyword, this});
