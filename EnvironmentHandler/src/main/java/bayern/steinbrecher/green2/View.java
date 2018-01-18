@@ -65,7 +65,6 @@ public abstract class View<T extends Controller> extends Application {
      * {@inheritDoc}
      */
     @Override
-    //FIXME Any way to throw a more specific exception
     public final void start(Stage stage) {
         this.stage = stage;
         startImpl(stage);
