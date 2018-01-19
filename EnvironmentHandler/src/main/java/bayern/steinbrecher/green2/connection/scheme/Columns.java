@@ -79,7 +79,7 @@ public abstract class /*enum*/ Columns<T> {
     /**
      * Stores whether a person has to pay contributions e.g. to an association.
      */
-    public static final Columns<Boolean> IS_CONTRIBUTIONFREE = new BooleanColumn("IstBeitragsfrei");
+    public static final Columns<Boolean> IS_CONTRIBUTIONFREE = new BooleanColumn("IstBeitragsfrei", false);
     /**
      * The IBAN of a bank account.
      */
@@ -147,6 +147,35 @@ public abstract class /*enum*/ Columns<T> {
     }
 
     /**
+     * Returns the {@link String} representation of the default value suitable for SQL. NOTE: For implementation it can
+     * be assumed that the default value is not null since this is handled by {@link #getDefaultValueSql()}. The default
+     * implementation just calls {@link String.valueOf(...)}.
+     *
+     * @return The {@link String} representation of the default value suitable for SQL.
+     * @see #getDefaultValue()
+     */
+    protected String getDefaultValueSqlImpl() {
+        return String.valueOf(defaultValue);
+    }
+
+    /**
+     * Returns the {@link String} representation of the default value suitable for SQL.
+     *
+     * @return The {@link String} representation of the default value suitable for SQL. If the default value is
+     * {@code null} the {@link String} "NULL" (without quotes) is returned.
+     * @see #getDefaultValue()
+     */
+    public final String getDefaultValueSql() {
+        String valueSql;
+        if (defaultValue == null) {
+            valueSql = "NULL";
+        } else {
+            valueSql = getDefaultValueSqlImpl();
+        }
+        return valueSql;
+    }
+
+    /**
      * Sets the default value to set when creating a table containing this column.
      *
      * @param defaultValue The default value to set when creating a table containing this column. {@code null} indicates
@@ -180,6 +209,11 @@ public abstract class /*enum*/ Columns<T> {
 
         public StringColumn(String realColumnName) {
             this(realColumnName, null);
+        }
+
+        @Override
+        protected String getDefaultValueSqlImpl() {
+            return "'" + getDefaultValue() + "'";
         }
 
         @Override
@@ -224,6 +258,11 @@ public abstract class /*enum*/ Columns<T> {
 
         public BooleanColumn(String realColumnName) {
             this(realColumnName, null);
+        }
+
+        @Override
+        protected String getDefaultValueSqlImpl() {
+            return getDefaultValue() ? "TRUE" : "FALSE";
         }
 
         @Override

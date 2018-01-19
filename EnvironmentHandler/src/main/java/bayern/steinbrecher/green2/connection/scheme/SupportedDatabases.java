@@ -122,7 +122,7 @@ public enum SupportedDatabases {
                         if (keyword == Keywords.DEFAULT) {
                             assert !keywords.contains(Keywords.NOT_NULL) || column.getDefaultValue() != null :
                                     "The keyword NOT NULL is specified but the value for DEFAULT is null";
-                            keywordString += " '" + column.getDefaultValue() + "'";
+                            keywordString += " " + column.getDefaultValueSql();
                         }
                         return keywordString;
                     } else {
