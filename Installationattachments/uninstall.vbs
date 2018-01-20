@@ -1,6 +1,7 @@
 'Check number of parameters
 If WScript.Arguments.Count < 2 Then
     WScript.Echo "There are parameters missing: 0=HKCU of Green2, 1=delete configs true/false"
+    WScript.Quit
 End If
 
 'Request admin rights

@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -213,6 +214,7 @@ public final class Launcher extends Application {
      * Returns a service which downloads and installs Green2.
      */
     private Service<Void> createDownloadAndInstallService(String newVersion) {
+        //TODO May replace this Service by a CompletableFuture
         return ServiceFactory.createService(() -> {
             try {
                 File tempFile = download();
@@ -239,7 +241,7 @@ public final class Launcher extends Application {
                     Collector.sendData();
                 }
             } catch (InterruptedException | IOException ex) {
-                Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+                throw new CompletionException(ex);
             }
             return null;
         });

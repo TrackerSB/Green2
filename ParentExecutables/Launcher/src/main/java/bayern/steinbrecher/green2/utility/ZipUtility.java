@@ -90,13 +90,16 @@ public final class ZipUtility {
                 }
 
                 File unzippedFile = new File(outDirPath + "/" + zipEntryName);
-                if (unzippedFile.getParentFile().mkdirs()) {
+                //NOTE The file may be in some subdirectory
+                File unzippedFileParent = unzippedFile.getParentFile();
+                if (unzippedFileParent.exists() || unzippedFileParent.mkdirs()) {
                     try (OutputStreamWriter osw
                             = new OutputStreamWriter(new FileOutputStream(unzippedFile), currentCharset)) {
                         IOStreamUtility.transfer(currentIsr, osw);
                     }
                 } else {
-                    throw new IOException("The directory where to place the extracted files could not be created.");
+                    throw new IOException("The directory where to place the extracted files ("
+                            + outputDir.getAbsolutePath() + ") could not be created or at least one of its ancestors.");
                 }
             }
         }

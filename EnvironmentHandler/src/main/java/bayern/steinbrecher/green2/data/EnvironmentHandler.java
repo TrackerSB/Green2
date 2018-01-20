@@ -117,7 +117,8 @@ public final class EnvironmentHandler {
 
     static {
         //Create configDir if not existing
-        if (!new File(EnvironmentHandler.APP_DATA_PATH).mkdirs()) {
+        File appdataDir = new File(EnvironmentHandler.APP_DATA_PATH);
+        if (!appdataDir.exists() && !appdataDir.mkdirs()) {
             Logger.getLogger(EnvironmentHandler.class.getName())
                     .log(Level.WARNING, "At least some of the directories of the path {0} could not be created.",
                             EnvironmentHandler.APP_DATA_PATH);

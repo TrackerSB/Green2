@@ -17,12 +17,9 @@
 package bayern.steinbrecher.green2.uninstaller;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -123,7 +120,8 @@ public final class Uninstaller extends Application {
         }
         try {
             Process process = builder.start();
-            process.waitFor();
+            //FIXME Can´t wait for otherwise this jar can not be deleted
+            /*process.waitFor();
             try (InputStream errorStream = process.getErrorStream()) {
                 String errorMessage = IOStreamUtility.readAll(errorStream, Charset.defaultCharset());
                 if (!errorMessage.isEmpty()) {
@@ -132,8 +130,8 @@ public final class Uninstaller extends Application {
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Uninstaller.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } catch (IOException | InterruptedException ex) {
+            }*/
+        } catch (IOException ex) {
             Logger.getLogger(Uninstaller.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
