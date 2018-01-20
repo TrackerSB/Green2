@@ -1,16 +1,15 @@
 ### Technology
 [![Build Status](https://travis-ci.org/TrackerSB/Green2.svg?branch=master)](https://travis-ci.org/TrackerSB/Green2)
-[![](https://img.shields.io/badge/release-2u12-blue.svg)](https://github.com/TrackerSB/Green2)
-[![](https://img.shields.io/badge/Java-9.0.1-blue.svg)](https://github.com/TrackerSB/Green2)
-[![](https://img.shields.io/badge/JavaFX-9-blue.svg)](https://github.com/TrackerSB/Green2)
-[![](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
+[![GitHub release](https://img.shields.io/github/release/trackersb/green2.svg)](https://github.com/TrackerSB/Green2)
+[![JDK Version](https://img.shields.io/badge/Java-9.0.4-blue.svg)](https://github.com/TrackerSB/Green2)
+[![CSS Version](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
 
 ### Statistics
-[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=lines)](https://github.com/TrackerSB/Green2)
-[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=code)](https://github.com/TrackerSB/Green2)
-[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=comments)](https://github.com/TrackerSB/Green2)
-[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=blanks)](https://github.com/TrackerSB/Green2)
-[![](https://tokei.rs/b1/github/TrackerSB/Green2?category=files)](https://github.com/TrackerSB/Green2)
+[![Total](https://tokei.rs/b1/github/TrackerSB/Green2?category=lines)](https://github.com/TrackerSB/Green2)
+[![LoC](https://tokei.rs/b1/github/TrackerSB/Green2?category=code)](https://github.com/TrackerSB/Green2)
+[![comments](https://tokei.rs/b1/github/TrackerSB/Green2?category=comments)](https://github.com/TrackerSB/Green2)
+[![blank lines](https://tokei.rs/b1/github/TrackerSB/Green2?category=blanks)](https://github.com/TrackerSB/Green2)
+[![files](https://tokei.rs/b1/github/TrackerSB/Green2?category=files)](https://github.com/TrackerSB/Green2)
 [![Github All Releases](https://img.shields.io/github/downloads/TrackerSB/Green2/total.svg)](https://github.com/TrackerSB/Green2)
 
 # Green2
