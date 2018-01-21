@@ -23,9 +23,23 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Stack;
+import java.util.concurrent.Callable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.stage.Stage;
 
 /**
  * Contains the controller of the wizard.
@@ -34,9 +48,16 @@ import java.util.ResourceBundle;
  */
 public class WizardController implements Initializable {
 
+    private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
+    private final Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
+    private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
+    private final BooleanProperty atBeginning = new SimpleBooleanProperty(this, "atBeginning", true);
+    private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
+    private final BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
+    private final Stack<String> history = new Stack<>();
     @FXML
     private StackPane contents;
-    private final Property<Wizard> caller = new SimpleObjectProperty<>(this, "caller", new Wizard());
+    private Stage stage;
     private static final String WIZARD_CONTENT_STYLECLASS = "wizard-content";
 
     /**
@@ -44,13 +65,7 @@ public class WizardController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //No-op
-    }
-
-    private void checkCaller() {
-        if (caller.getValue() == null) {
-            throw new UnsupportedOperationException("You have to set caller first.");
-        }
+        //no-op
     }
 
     /**
@@ -69,24 +84,55 @@ public class WizardController implements Initializable {
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void showPrevious() {
-        checkCaller();
-        caller.getValue().showPrevious();
+        if (!atBeginning.get()) {
+            history.pop(); //Pop current index
+            atBeginning.set(history.size() < 2);
+            currentIndex.set(history.peek());
+            updatePage();
+        }
     }
 
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void showNext() {
-        checkCaller();
-        caller.getValue().showNext();
+        if (currentPage.getValue().isValid()) {
+            WizardPage<?> page = currentPage.getValue();
+            Callable<String> nextFunction = page.getNextFunction();
+            if (page.isHasNextFunction() && page.isValid()) {
+                try {
+                    String nextIndex = nextFunction.call();
+                    if (!pages.containsKey(nextIndex)) {
+                        throw new PageNotFoundException(
+                                "Wizard contains no page with key \""
+                                + nextIndex + "\".");
+                    }
+                    currentIndex.set(nextIndex);
+                    history.push(currentIndex.get());
+                    atBeginning.set(false);
+                    updatePage();
+                } catch (Exception ex) {
+                    throw new IllegalCallableException(
+                            "A valid function or a next function of page \""
+                            + currentIndex.get() + "\" has thrown an exception",
+                            ex);
+                }
+            }
+        }
     }
 
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void finish() {
-        checkCaller();
-        caller.getValue().finish();
+        if (currentPage.getValue().isValid() && atFinish.get()) {
+            finished.set(true);
+            stage.close();
+        }
+    }
+
+    void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     /**
@@ -106,29 +152,163 @@ public class WizardController implements Initializable {
     }
 
     /**
-     * Property containing the wizard this controller has to use as callback.
+     * Returns the property holding all pages visitable.
      *
-     * @return The property containing the wizard this controller has to use as callback.
+     * @return The property holding all pages visitable.
      */
-    public Property<Wizard> callerProperty() {
-        return caller;
+    public MapProperty<String, WizardPage<?>> pagesProperty() {
+        return pages;
     }
 
     /**
-     * Returning the wizard this controller has to use as callback.
+     * Returns all visitable pages.
      *
-     * @return The wizard this controller has to use as callback.
+     * @return All visitable pages.
      */
-    public Wizard getCaller() {
-        return caller.getValue();
+    public Map<String, WizardPage<?>> getPages() {
+        return pages.get();
+    }
+
+    private void updatePage() {
+        setContent(pages.get(currentIndex.get()).getRoot());
     }
 
     /**
-     * Sets the wizard this controller has to use as callback.
+     * Sets a new map of visitable pages. NOTE: Calling this method causes the wizard to reset to the first page and
+     * clear the history.
      *
-     * @param caller The wizard this controller has to use as callback.
+     * @param pages The map of pages to set.
      */
-    public void setCaller(Wizard caller) {
-        this.caller.setValue(caller);
+    public void setPages(Map<String, WizardPage<?>> pages) {
+        Wizard.checkPages(pages);
+        this.pages.set(FXCollections.observableMap(pages));
+
+        currentIndex.addListener((obs, oldVal, newVal) -> {
+            WizardPage<?> newPage = pages.get(newVal);
+            atFinish.set(newPage.isFinish());
+            currentPage.setValue(newPage);
+        });
+
+        currentIndex.set(WizardPage.FIRST_PAGE_KEY);
+        currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
+        history.clear();
+        history.push(WizardPage.FIRST_PAGE_KEY);
+
+        updatePage();
+    }
+
+    /**
+     * Adds the given page to the wizard and replaces pages with the same key but only if the page was not already
+     * visited. This method can be used if a page of the wizard is depending on the result of a previous one. NOTE: The
+     * size of {@code page} is not considered anymore after {@code start(...)} was called.
+     *
+     * @param key The key the page is associated with.
+     * @param page The page to add to the wizard.
+     */
+    public void put(String key, WizardPage<?> page) {
+        if (history.contains(key)) {
+            throw new IllegalStateException("A page already visited can not be replaced");
+        }
+        pages.put(key, page);
+    }
+
+    /**
+     * Returns the property representing whether the wizard is finished. NOTE: It is not finished when it was closed
+     * without using the "finish" button.
+     *
+     * @return The property representing whether the wizard is finished.
+     */
+    public ReadOnlyBooleanProperty finishedProperty() {
+        return finished;
+    }
+
+    /**
+     * Checks whether the wizard is finished. NOTE: It is not finished when it was closed without using the "finish"
+     * button.
+     *
+     * @return {@code true} only if the wizard is finished.
+     */
+    public boolean isFinished() {
+        return finished.get();
+    }
+
+    /**
+     * Property containing a boolean value representing whether the current page shown is the first one.
+     *
+     * @return {@code true} only if the current page is the first one.
+     */
+    public ReadOnlyBooleanProperty atBeginningProperty() {
+        return atBeginning;
+    }
+
+    /**
+     * Returns a boolean value representing whether the current page shown is the first one.
+     *
+     * @return {@code true} only if the current page is the first one.
+     */
+    public boolean isAtBeginning() {
+        return atBeginning.get();
+    }
+
+    /**
+     * Property containing a boolean value representing whether the current page shown is a last one.
+     *
+     * @return {@code true} only if the current page is a last one.
+     */
+    public ReadOnlyBooleanProperty atFinishProperty() {
+        return atFinish;
+    }
+
+    /**
+     * Returns a boolean value representing whether the current page shown is a last one.
+     *
+     * @return {@code true} only if the current page is a last one.
+     */
+    public boolean isAtFinish() {
+        return atFinish.get();
+    }
+
+    /**
+     * Returns the property holding the currently shown page.
+     *
+     * @return The property holding the currently shown page.
+     */
+    public ReadOnlyProperty<WizardPage<?>> currentPageProperty() {
+        return currentPage;
+    }
+
+    /**
+     * Returns the currently shown page.
+     *
+     * @return The currently shown page.
+     */
+    public WizardPage<?> getCurrentPage() {
+        return currentPage.getValue();
+    }
+
+    /**
+     * Returns the results of all pages visited in a sequence to an end.
+     *
+     * @return {@code Optional.empty()} only if the wizard is not finished yet, otherwise the results of the visited
+     * pages.
+     * @throws IllegalCallableException Only thrown if thrown by one of the result functions of the visited pages.
+     */
+    public Optional<Map<String, ?>> getResults() {
+        if (isFinished()) {
+            Map<String, Object> results = new HashMap<>();
+            history.forEach(key -> {
+                try {
+                    results.put(key, pages.get(key).getResultFunction().call());
+                } catch (Exception ex) {
+                    throw new IllegalCallableException(
+                            "The result function of wizard page \""
+                            + key
+                            + "\" has thrown an exception", ex);
+                }
+            });
+            return Optional.of(results);
+        } else {
+            return Optional.empty();
+        }
     }
 }

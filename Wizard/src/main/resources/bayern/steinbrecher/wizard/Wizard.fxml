@@ -29,15 +29,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <Button fx:id="wizardControlPrevious"
                     text="%previous"
                     onAction="#showPrevious"
-                    disable="${controller.caller.atBeginning}"/>
+                    disable="${controller.atBeginning}"/>
             <Button fx:id="wizardControlNext"
                     text="%next"
                     onAction="#showNext"
-                    disable="${(!controller.caller.currentPage.hasNextFunction) || !controller.caller.currentPage.valid}"/>
+                    disable="${(!controller.currentPage.hasNextFunction) || !controller.currentPage.valid}"/>
             <Button fx:id="wizardControlFinish"
                     text="%finish"
                     onAction="#finish"
-                    disable="${(!controller.caller.atFinish) || !controller.caller.currentPage.valid}"/>
+                    disable="${(!controller.atFinish) || !controller.currentPage.valid}"/>
             <!-- NOTE: These round braces are necessary! -->
         </buttons>
     </ButtonBar>

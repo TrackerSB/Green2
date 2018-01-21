@@ -17,17 +17,13 @@
 package bayern.steinbrecher.wizard;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Stack;
-import java.util.concurrent.Callable;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -49,22 +45,9 @@ import javafx.stage.Stage;
  */
 public class Wizard extends Application {
 
-    private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
-    private final Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
-    private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
-    private final BooleanProperty atBeginnng = new SimpleBooleanProperty(this, "atBeginning", true);
-    private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
-    private final BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
     private WizardController controller;
+    private final Map<String, WizardPage<?>> pages;
     private Stage stage;
-    private final Stack<String> history = new Stack<>();
-
-    Wizard() {
-        /*
-         * Dummy constructor needed for WizardController in order making caller
-         * non-null when FXMLLoader#load() is called.
-         */
-    }
 
     /**
      * Constructs a wizard with showing {@code pages} and using default stylesheet.
@@ -74,13 +57,13 @@ public class Wizard extends Application {
      */
     public Wizard(Map<String, WizardPage<?>> pages) {
         checkPages(pages);
-        this.pages.set(FXCollections.observableMap(pages));
+        this.pages = pages;
+    }
 
-        currentIndex.addListener((obs, oldVal, newVal) -> {
-            WizardPage<?> newPage = pages.get(newVal);
-            atFinish.set(newPage.isFinish());
-            currentPage.setValue(newPage);
-        });
+    static void checkPages(Map<String, WizardPage<?>> pages) {
+        if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
+            throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
+        }
     }
 
     /**
@@ -104,20 +87,10 @@ public class Wizard extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         controller = fxmlLoader.getController();
-        controller.setCaller(this);
+        controller.setStage(stage);
+        controller.setPages(pages);
 
-        updateContentSize(); //TODO Think about whether explicit call is needed.
-
-        currentIndex.set(WizardPage.FIRST_PAGE_KEY);
-        currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
-        history.push(WizardPage.FIRST_PAGE_KEY);
-        updatePage();
-    }
-
-    private void checkPages(Map<String, WizardPage<?>> pages) {
-        if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
-            throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
-        }
+        updateContentSize(); //TODO Think about whether an explicit call is needed.
     }
 
     private void updateContentSize() {
@@ -128,8 +101,9 @@ public class Wizard extends Application {
         boolean wasShowing = stage.isShowing();
         boolean wasImplicitExit = Platform.isImplicitExit();
 
+        //FIXME Avoid showing/hiding pages just for determining their size.
         Platform.setImplicitExit(false);
-        for (Entry<String, WizardPage<?>> entry : pages.get().entrySet()) {
+        for (Entry<String, WizardPage<?>> entry : controller.getPages().entrySet()) {
             Pane pane = entry.getValue().getRoot();
             pane.getChildren().forEach(n -> n.getStyleClass().add("wizard-inner-content"));
             controller.setContent(pane);
@@ -164,65 +138,7 @@ public class Wizard extends Application {
      * @param page The page to add to the wizard.
      */
     public void put(String key, WizardPage<?> page) {
-        if (history.contains(key)) {
-            throw new IllegalStateException("A page already visited can not be replaced");
-        }
-        pages.put(key, page);
-    }
-
-    private void updatePage() {
-        controller.setContent(pages.get(currentIndex.get()).getRoot());
-    }
-
-    /**
-     * Moves to the previous page if possible.
-     */
-    void showPrevious() {
-        if (!atBeginnng.get()) {
-            history.pop(); //Pop current index
-            atBeginnng.set(history.size() < 2);
-            currentIndex.set(history.peek());
-            updatePage();
-        }
-    }
-
-    /**
-     * Moves to the next page if possible and if this page is valid.
-     */
-    void showNext() {
-        if (currentPage.getValue().isValid()) {
-            WizardPage<?> page = currentPage.getValue();
-            Callable<String> nextFunction = page.getNextFunction();
-            if (page.isHasNextFunction() && page.isValid()) {
-                try {
-                    String nextIndex = nextFunction.call();
-                    if (!pages.containsKey(nextIndex)) {
-                        throw new PageNotFoundException(
-                                "Wizard contains no page with key \""
-                                + nextIndex + "\".");
-                    }
-                    currentIndex.set(nextIndex);
-                    history.push(currentIndex.get());
-                    atBeginnng.set(false);
-                    updatePage();
-                } catch (Exception ex) {
-                    throw new IllegalCallableException(
-                            "A valid function or a next function of page \""
-                            + currentIndex.get() + "\" has thrown an exception",
-                            ex);
-                }
-            }
-        }
-    }
-
-    /**
-     * Closes the stage only if the current page is the last one and it is valid.
-     */
-    void finish() {
-        if (currentPage.getValue().isValid() && atFinish.get()) {
-            finished.set(true);
-            stage.close();
-        }
+        controller.put(key, page);
     }
 
     /**
@@ -232,7 +148,7 @@ public class Wizard extends Application {
      * @return The property representing whether the wizard is finished.
      */
     public ReadOnlyBooleanProperty finishedProperty() {
-        return finished;
+        return controller.finishedProperty();
     }
 
     /**
@@ -242,7 +158,7 @@ public class Wizard extends Application {
      * @return {@code true} only if the wizard is finished.
      */
     public boolean isFinished() {
-        return finished.get();
+        return controller.isFinished();
     }
 
     /**
@@ -253,22 +169,7 @@ public class Wizard extends Application {
      * @throws IllegalCallableException Only thrown if thrown by one of the result functions of the visited pages.
      */
     public Optional<Map<String, ?>> getResults() {
-        if (isFinished()) {
-            Map<String, Object> results = new HashMap<>();
-            history.forEach(key -> {
-                try {
-                    results.put(key, pages.get(key).getResultFunction().call());
-                } catch (Exception ex) {
-                    throw new IllegalCallableException(
-                            "The result function of wizard page \""
-                            + key
-                            + "\" has thrown an exception", ex);
-                }
-            });
-            return Optional.of(results);
-        } else {
-            return Optional.empty();
-        }
+        return controller.getResults();
     }
 
     /**
@@ -277,7 +178,7 @@ public class Wizard extends Application {
      * @return {@code true} only if the current page is the first one.
      */
     public ReadOnlyBooleanProperty atBeginningProperty() {
-        return atBeginnng;
+        return controller.atBeginningProperty();
     }
 
     /**
@@ -286,7 +187,7 @@ public class Wizard extends Application {
      * @return {@code true} only if the current page is the first one.
      */
     public boolean isAtBeginning() {
-        return atBeginnng.get();
+        return atBeginningProperty().get();
     }
 
     /**
@@ -295,7 +196,7 @@ public class Wizard extends Application {
      * @return {@code true} only if the current page is a last one.
      */
     public ReadOnlyBooleanProperty atFinishProperty() {
-        return atFinish;
+        return controller.atFinishProperty();
     }
 
     /**
@@ -304,7 +205,7 @@ public class Wizard extends Application {
      * @return {@code true} only if the current page is a last one.
      */
     public boolean isAtFinish() {
-        return atFinish.get();
+        return atFinishProperty().get();
     }
 
     /**
@@ -313,7 +214,7 @@ public class Wizard extends Application {
      * @return The property holding the currently shown page.
      */
     public ReadOnlyProperty<WizardPage<?>> currentPageProperty() {
-        return currentPage;
+        return controller.currentPageProperty();
     }
 
     /**
@@ -322,7 +223,7 @@ public class Wizard extends Application {
      * @return The currently shown page.
      */
     public WizardPage<?> getCurrentPage() {
-        return currentPage.getValue();
+        return currentPageProperty().getValue();
     }
 
     /**
