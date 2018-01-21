@@ -56,7 +56,8 @@ public class ContributionField extends HBox implements Initializable {
 
     /**
      * Represents a combination of a spinner for entering a contribution and an associated color. The minimum value is
-     * 0, the maximum value is 5000, the initial value is 10 and the amountToStepBy is 1.
+     * 0, the maximum value is 5000, the initial value is 10 and the amountToStepBy is 1. The default color associated
+     * is {@link Color#TRANSPARENT}.
      *
      * @see CheckedDoubleSpinner#CheckedDoubleSpinner(double, double, double, double)
      */
@@ -90,7 +91,7 @@ public class ContributionField extends HBox implements Initializable {
         contributionSpinnerProperty.set(contributionSpinner);
         colorPickerProperty.set(colorPicker);
 
-        colorPicker.setValue(Color.FORESTGREEN); //TODO Default color is set manually and to fixed value
+        colorPicker.setValue(Color.TRANSPARENT);
     }
 
     /**

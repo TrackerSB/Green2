@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
@@ -39,6 +40,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -50,6 +52,10 @@ import javafx.scene.paint.Color;
  */
 public class ContributionController extends WizardableController {
 
+    private static final List<Color> PREDEFINED_COLORS = List.of(Color.FORESTGREEN, Color.rgb(232, 181, 14),
+            Color.rgb(255, 48, 28), Color.rgb(78, 14, 232), Color.rgb(16, 255, 234), Color.rgb(135, 139, 38),
+            Color.rgb(232, 115, 21), Color.rgb(246, 36, 255), Color.rgb(23, 115, 232), Color.rgb(24, 255, 54));
+    private static final Random COLOR_RANDOM = new Random();
     @FXML
     private VBox contributionFieldsBox;
     private ListProperty<ContributionField> contributionFields
@@ -75,18 +81,28 @@ public class ContributionController extends WizardableController {
         contributionFields.addListener(calculateAllContributionFieldsValid);
         contributionFields.addListener((ListChangeListener.Change<? extends ContributionField> change) -> {
             while (change.next()) {
-                change.getAddedSubList().forEach(cf -> {
-                    cf.getContributionSpinner().getEditor().setOnAction(aevt -> submitContributions());
-                    contributionFieldsBox.getChildren().add(createContributionRow(cf));
-                    cf.colorProperty().addListener(calculateUniqueColors);
-                    cf.getContributionSpinner().validProperty().addListener(calculateAllContributionFieldsValid);
+                change.getAddedSubList().forEach(addedCf -> {
+                    addedCf.getColorPicker().setValue(PREDEFINED_COLORS.stream()
+                            .sequential()
+                            .filter(
+                                    predefColor -> contributionFields.stream()
+                                            .map(ContributionField::getColorPicker)
+                                            .map(ColorPicker::getValue)
+                                            .noneMatch(c -> c.equals(predefColor)))
+                            .findFirst()
+                            .orElse(Color.rgb(COLOR_RANDOM.nextInt(256),
+                                    COLOR_RANDOM.nextInt(256), COLOR_RANDOM.nextInt(256))));
+                    addedCf.getContributionSpinner().getEditor().setOnAction(aevt -> submitContributions());
+                    contributionFieldsBox.getChildren().add(createContributionRow(addedCf));
+                    addedCf.colorProperty().addListener(calculateUniqueColors);
+                    addedCf.getContributionSpinner().validProperty().addListener(calculateAllContributionFieldsValid);
                 });
-                change.getRemoved().forEach(cds -> {
+                change.getRemoved().forEach(removedCf -> {
                     List<HBox> hboxes = contributionFieldsBox.getChildren().stream()
                             //If working as expected there should only be objects of the class HBox
                             .filter(node -> node instanceof HBox)
                             .map(node -> (HBox) node)
-                            .filter(hbox -> hbox.getChildren().contains(cds))
+                            .filter(hbox -> hbox.getChildren().contains(removedCf))
                             .distinct() //TODO Think about whether this is needed
                             .collect(Collectors.toList());
                     if (hboxes.isEmpty()) {
