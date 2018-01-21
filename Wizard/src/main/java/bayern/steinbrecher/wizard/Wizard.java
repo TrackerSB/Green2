@@ -105,13 +105,13 @@ public class Wizard extends Application {
         Platform.setImplicitExit(false);
         for (Entry<String, WizardPage<?>> entry : controller.getPages().entrySet()) {
             Pane pane = entry.getValue().getRoot();
-            pane.getChildren().forEach(n -> n.getStyleClass().add("wizard-inner-content"));
-            controller.setContent(pane);
-            stage.show();
-            stage.close();
+            pane.getChildren().forEach(child -> child.getStyleClass().add("wizard-inner-content"));
+            pane.applyCss();
+            pane.layout();
+            pane.autosize();
 
-            double paneWidth = pane.getWidth();
-            double paneHeight = pane.getHeight();
+            double paneWidth = pane.getBoundsInLocal().getWidth();
+            double paneHeight = pane.getBoundsInLocal().getHeight();
             if (paneWidth > maxWidth) {
                 maxWidth = paneWidth;
             }

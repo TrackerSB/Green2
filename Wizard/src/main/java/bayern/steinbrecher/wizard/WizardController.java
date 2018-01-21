@@ -68,18 +68,6 @@ public class WizardController implements Initializable {
         //no-op
     }
 
-    /**
-     * Replaces the current content of the wizard with {@code pane}.
-     *
-     * @param pane The new content of the wizard.
-     */
-    void setContent(Pane pane) {
-        contents.getChildren().forEach(n -> n.getStyleClass().remove(WIZARD_CONTENT_STYLECLASS));
-        contents.getChildren().clear();
-        pane.getStyleClass().add(WIZARD_CONTENT_STYLECLASS);
-        contents.getChildren().add(pane);
-    }
-
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
@@ -170,7 +158,11 @@ public class WizardController implements Initializable {
     }
 
     private void updatePage() {
-        setContent(pages.get(currentIndex.get()).getRoot());
+        Pane currentPane = pages.get(currentIndex.get()).getRoot();
+        contents.getChildren().forEach(n -> n.getStyleClass().remove(WIZARD_CONTENT_STYLECLASS));
+        contents.getChildren().clear();
+        currentPane.getStyleClass().add(WIZARD_CONTENT_STYLECLASS);
+        contents.getChildren().add(currentPane);
     }
 
     /**
