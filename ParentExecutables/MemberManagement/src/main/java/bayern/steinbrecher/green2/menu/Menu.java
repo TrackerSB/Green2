@@ -64,8 +64,6 @@ public class Menu extends View<MenuController> {
         }
         root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET,
                 "/bayern/steinbrecher/green2/styles/menu.css");
-        //TODO Think about moving this line to css file
-        root.setStyle("-fx-padding: 0px");
 
         getController().setStage(stage);
 

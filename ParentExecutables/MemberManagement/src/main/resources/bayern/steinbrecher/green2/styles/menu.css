@@ -42,6 +42,16 @@
     /*TODO Think about how to resize menubuttons*/
 }
 
+.root {
+    -fx-padding: 0;
+}
+
+VBox > HBox {
+    -fx-padding: 5px;
+    -fx-spacing: 10px;
+    -fx-alignment: center-left;
+}
+
 #overlayBackground {
     -fx-background-color: black;
     -fx-opacity: 0.7;
