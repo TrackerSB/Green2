@@ -56,11 +56,7 @@ public class ChoiceDialog extends Application {
             stage.close();
         });
 
-        HBox hbox = new HBox(yesButton, noButton);
-        hbox.setSpacing(10);
-
-        VBox vbox = new VBox(message, hbox);
-        vbox.setSpacing(10);
+        VBox vbox = new VBox(message, new HBox(yesButton, noButton));
         vbox.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
 
         stage.setScene(new Scene(vbox));

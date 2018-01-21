@@ -48,7 +48,6 @@
 
 VBox > HBox {
     -fx-padding: 5px;
-    -fx-spacing: 10px;
     -fx-alignment: center-left;
 }
 
