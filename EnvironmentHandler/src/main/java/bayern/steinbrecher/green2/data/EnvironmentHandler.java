@@ -50,7 +50,7 @@ public final class EnvironmentHandler {
     /**
      * Containing the version of this current program.
      */
-    public static final String VERSION = "2u13";
+    public static final String VERSION = "2u14";
     /**
      * Containing translations for the system default language.
      */
