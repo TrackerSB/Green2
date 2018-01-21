@@ -58,7 +58,7 @@ public class WizardController implements Initializable {
      *
      * @param pane The new content of the wizard.
      */
-    public void setContent(Pane pane) {
+    void setContent(Pane pane) {
         contents.getChildren().forEach(n -> n.getStyleClass().remove(WIZARD_CONTENT_STYLECLASS));
         contents.getChildren().clear();
         pane.getStyleClass().add(WIZARD_CONTENT_STYLECLASS);
