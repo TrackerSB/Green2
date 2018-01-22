@@ -225,13 +225,4 @@ public class Wizard extends Application {
     public WizardPage<?> getCurrentPage() {
         return currentPageProperty().getValue();
     }
-
-    /**
-     * The main method.
-     *
-     * @param args The command line arguments.
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
