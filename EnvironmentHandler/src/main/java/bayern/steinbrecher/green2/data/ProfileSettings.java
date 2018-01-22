@@ -179,7 +179,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
      * @param value The value to parse.
      * @return The object representing the value of the setting hold by {@code value} or {@link Optional#empty()} if the
      * value could not be parsed.
-     * @see #toString(T)
+     * @see #toString(java.lang.Object)
      * @see #isValid(java.lang.Object)
      */
     protected abstract Optional<T> parseImpl(String value);
@@ -191,7 +191,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
      * @param value The value to parse.
      * @return The object representing the value of the setting hold by {@code value} or {@link Optional#empty()} if the
      * value could not be parsed or is {@code null}.
-     * @see #toString(T)
+     * @see #toString(javaa.lang.Object)
      * @see #isValid(java.lang.Object)
      */
     public final Optional<T> parse(String value) {

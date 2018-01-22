@@ -149,7 +149,7 @@ public abstract class /*enum*/ Columns<T> {
     /**
      * Returns the {@link String} representation of the default value suitable for SQL. NOTE: For implementation it can
      * be assumed that the default value is not null since this is handled by {@link #getDefaultValueSql()}. The default
-     * implementation just calls {@link String.valueOf(...)}.
+     * implementation just calls {@link String#valueOf(java.lang.Object)}.
      *
      * @return The {@link String} representation of the default value suitable for SQL.
      * @see #getDefaultValue()

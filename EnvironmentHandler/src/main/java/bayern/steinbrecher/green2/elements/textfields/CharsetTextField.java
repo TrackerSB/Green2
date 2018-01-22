@@ -30,7 +30,7 @@ public final class CharsetTextField extends CheckedTextField {
     private final BooleanProperty validCharset = new SimpleBooleanProperty(this, "invalid");
 
     /**
-     * Creates a new {@link CharsetTextfield} with a maximum column count of {@link Integer#MAX_VALUE} and no initial
+     * Creates a new {@link CharsetTextField} with a maximum column count of {@link Integer#MAX_VALUE} and no initial
      * text.
      */
     public CharsetTextField() {
