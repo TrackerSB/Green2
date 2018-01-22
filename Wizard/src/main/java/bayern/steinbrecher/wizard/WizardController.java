@@ -30,6 +30,11 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.ParallelTransition;
+import javafx.animation.PathTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -39,7 +44,13 @@ import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.shape.HLineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Contains the controller of the wizard.
@@ -59,6 +70,7 @@ public class WizardController implements Initializable {
     private StackPane contents;
     private Stage stage;
     private static final String WIZARD_CONTENT_STYLECLASS = "wizard-content";
+    private static final Duration SWIPE_DURATION = Duration.seconds(0.75);
 
     /**
      * {@inheritDoc}
@@ -76,7 +88,7 @@ public class WizardController implements Initializable {
             history.pop(); //Pop current index
             atBeginning.set(history.size() < 2);
             currentIndex.set(history.peek());
-            updatePage();
+            updatePage(Optional.of(false));
         }
     }
 
@@ -98,7 +110,7 @@ public class WizardController implements Initializable {
                     currentIndex.set(nextIndex);
                     history.push(currentIndex.get());
                     atBeginning.set(false);
-                    updatePage();
+                    updatePage(Optional.of(true));
                 } catch (Exception ex) {
                     throw new IllegalCallableException(
                             "A valid function or a next function of page \""
@@ -157,12 +169,51 @@ public class WizardController implements Initializable {
         return pages.get();
     }
 
-    private void updatePage() {
-        Pane currentPane = pages.get(currentIndex.get()).getRoot();
-        contents.getChildren().forEach(n -> n.getStyleClass().remove(WIZARD_CONTENT_STYLECLASS));
-        contents.getChildren().clear();
-        currentPane.getStyleClass().add(WIZARD_CONTENT_STYLECLASS);
-        contents.getChildren().add(currentPane);
+    //Optional#empty() == dont swipe, just change
+    private void updatePage(Optional<Boolean> swipeToLeft) {
+        ObservableList<Node> addedContents = contents.getChildren();
+        Optional<Node> optCurrentPane = Optional.ofNullable(addedContents.isEmpty() ? null : addedContents.get(0));
+        assert !optCurrentPane.isPresent()
+                || optCurrentPane.get() instanceof Pane : "The current content of this wizard is not a pane.";
+        Consumer<Node> removeCurrentPane = currentPane -> {
+            currentPane.getStyleClass().remove(WIZARD_CONTENT_STYLECLASS);
+            if (!contents.getChildren().remove(currentPane)) {
+                Logger.getLogger(WizardController.class.getName())
+                        .log(Level.SEVERE, "The currently shown content of the wizard could not be removed.");
+            }
+        };
+
+        Pane nextPane = pages.get(currentIndex.get()).getRoot();
+        contents.getChildren().add(nextPane);
+        nextPane.getStyleClass().add(WIZARD_CONTENT_STYLECLASS);
+
+        swipeToLeft.ifPresentOrElse(swipeLeft -> {
+            double halfParentWidth = nextPane.getParent().getLayoutBounds().getWidth() / 2;
+            double halfParentHeight = nextPane.getParent().getLayoutBounds().getHeight() / 2;
+            double xRightOuter = 3 * halfParentWidth;
+            double xLeftOuter = -halfParentWidth;
+
+            ParallelTransition overallTrans = new ParallelTransition();
+
+            //Swipe new element in
+            MoveTo initialMoveIn = new MoveTo(swipeLeft ? xRightOuter : xLeftOuter, halfParentHeight);
+            HLineTo hlineIn = new HLineTo(halfParentWidth);
+            Path pathIn = new Path(initialMoveIn, hlineIn);
+            PathTransition pathTransIn = new PathTransition(SWIPE_DURATION, pathIn, nextPane);
+            overallTrans.getChildren().add(pathTransIn);
+
+            optCurrentPane.ifPresent(currentPane -> {
+                //Swipe old element out
+                MoveTo initialMoveOut = new MoveTo(halfParentWidth, halfParentHeight);
+                HLineTo hlineOut = new HLineTo(swipeLeft ? xLeftOuter : xRightOuter);
+                Path pathOut = new Path(initialMoveOut, hlineOut);
+                PathTransition pathTransOut = new PathTransition(SWIPE_DURATION, pathOut, currentPane);
+                pathTransOut.setOnFinished(aevt -> removeCurrentPane.accept(currentPane));
+                overallTrans.getChildren().add(pathTransOut);
+            });
+
+            overallTrans.playFromStart();
+        }, () -> optCurrentPane.ifPresent(currentPane -> removeCurrentPane.accept(currentPane)));
     }
 
     /**
@@ -186,7 +237,7 @@ public class WizardController implements Initializable {
         history.clear();
         history.push(WizardPage.FIRST_PAGE_KEY);
 
-        updatePage();
+        updatePage(Optional.empty());
     }
 
     /**
