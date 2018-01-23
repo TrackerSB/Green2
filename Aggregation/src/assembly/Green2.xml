@@ -1,6 +1,6 @@
-    <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.0.0" 
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.0.0" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
     <id>Green2</id>
     <formats>
         <format>dir</format>
@@ -105,29 +105,4 @@
             </includes>
         </fileSet>
     </fileSets>
-    
-    <!--<dependencySets>
-        <dependencySet>
-            <includes>
-                <include>bayern.steinbrecher.green2:ConfigurationDialog</include>
-                <include>bayern.steinbrecher.green2:Launcher</include>
-                <include>bayern.steinbrecher.green2:MemberManagement</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>-->
-    <moduleSets>
-        <moduleSet>
-            <useAllReactorProjects>true</useAllReactorProjects>
-            <includes>
-                <include>bayern.steinbrecher.green2:ConfigurationDialog</include>
-                <include>bayern.steinbrecher.green2:Launcher</include>
-                <include>bayern.steinbrecher.green2:MemberManagement</include>
-                <include>bayern.steinbrecher.green2:Uninstaller</include>
-            </includes>
-            <binaries>
-                <includeDependencies>true</includeDependencies>
-                <unpack>false</unpack>
-            </binaries>
-        </moduleSet>
-    </moduleSets>
 </assembly>
