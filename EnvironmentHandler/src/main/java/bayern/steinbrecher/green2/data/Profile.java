@@ -106,7 +106,7 @@ public class Profile {
      */
     public Profile(String profileName, boolean newProfile) {
         this.newProfile = newProfile;
-        
+
         configurations.addListener((InvalidationListener) listener -> {
             allConfigurationsSet = configurations.size() >= ProfileSettings.values().length;
         });
@@ -294,7 +294,7 @@ public class Profile {
     public synchronized void deleteProfile() throws IOException {
         checkDeleted();
         if (configFile.getValue().delete()) {
-            if (!originatorInfoFile.getValue().delete()) {
+            if (originatorInfoFile.getValue().exists() && !originatorInfoFile.getValue().delete()) {
                 Logger.getLogger(Profile.class.getName())
                         .log(Level.WARNING, "Even the config file of the profile was deleted, the originator info file "
                                 + "could not be deleted. It may interfere with new profiles having exactly this name.");
