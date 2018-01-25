@@ -52,7 +52,7 @@ public final class SepaUtility {
     /**
      * The maximum length of the name of the party creating the SEPA Direct Debit.
      */
-    public static final int MAX_CHAR_NAME_OF_CREATOR = 70;
+    public static final int MAX_CHAR_NAME_FIELD = 70;
 
     /**
      * Length of countrycode (CC);

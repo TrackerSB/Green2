@@ -84,9 +84,10 @@ public class SepaFormController extends CheckedController {
         pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
         pmtInfIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
                 "helpPmtInfId", SepaUtility.UNIQUE_MONTH_PMTINFID, SepaUtility.MAX_CHAR_PMTINFID));
-        creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_OF_CREATOR);
+        creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_FIELD);
         creatorHelpButton.setHelpMessage(
-                EnvironmentHandler.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_OF_CREATOR));
+                EnvironmentHandler.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_FIELD));
+        creditorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_FIELD);
         messageIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
                 "helpMessageId", SepaUtility.UNIQUE_DAYS_MESSAGEID, SepaUtility.MAX_CHAR_MESSAGE_ID));
 
