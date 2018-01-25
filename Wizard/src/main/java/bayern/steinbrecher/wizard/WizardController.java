@@ -65,6 +65,7 @@ public class WizardController implements Initializable {
     private final BooleanProperty atBeginning = new SimpleBooleanProperty(this, "atBeginning", true);
     private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
     private final BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
+    private final BooleanProperty changingPage = new SimpleBooleanProperty(this, "swiping", false);
     private final Stack<String> history = new Stack<>();
     @FXML
     private StackPane contents;
@@ -84,7 +85,7 @@ public class WizardController implements Initializable {
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void showPrevious() {
-        if (!atBeginning.get()) {
+        if (!atBeginning.get() && !changingPage.get()) {
             history.pop(); //Pop current index
             atBeginning.set(history.size() < 2);
             currentIndex.set(history.peek());
@@ -96,7 +97,7 @@ public class WizardController implements Initializable {
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void showNext() {
-        if (currentPage.getValue().isValid()) {
+        if (currentPage.getValue().isValid() && !changingPage.get()) {
             WizardPage<?> page = currentPage.getValue();
             Callable<String> nextFunction = page.getNextFunction();
             if (page.isHasNextFunction() && page.isValid()) {
@@ -171,6 +172,7 @@ public class WizardController implements Initializable {
 
     //Optional#empty() == dont swipe, just change
     private void updatePage(Optional<Boolean> swipeToLeft) {
+        changingPage.set(true);
         ObservableList<Node> addedContents = contents.getChildren();
         Optional<Node> optCurrentPane = Optional.ofNullable(addedContents.isEmpty() ? null : addedContents.get(0));
         assert !optCurrentPane.isPresent()
@@ -190,8 +192,9 @@ public class WizardController implements Initializable {
         swipeToLeft.ifPresentOrElse(swipeLeft -> {
             double halfParentWidth = nextPane.getParent().getLayoutBounds().getWidth() / 2;
             double halfParentHeight = nextPane.getParent().getLayoutBounds().getHeight() / 2;
-            double xRightOuter = 3 * halfParentWidth;
-            double xLeftOuter = -halfParentWidth;
+            double marginInScene = nextPane.getScene().getWidth() / 2 - halfParentWidth;
+            double xRightOuter = 3 * halfParentWidth + marginInScene;
+            double xLeftOuter = -halfParentWidth - marginInScene;
 
             ParallelTransition overallTrans = new ParallelTransition();
 
@@ -212,8 +215,12 @@ public class WizardController implements Initializable {
                 overallTrans.getChildren().add(pathTransOut);
             });
 
+            overallTrans.setOnFinished(aevt -> changingPage.set(false));
             overallTrans.playFromStart();
-        }, () -> optCurrentPane.ifPresent(currentPane -> removeCurrentPane.accept(currentPane)));
+        }, () -> {
+            optCurrentPane.ifPresent(currentPane -> removeCurrentPane.accept(currentPane));
+            changingPage.set(false);
+        });
     }
 
     /**
@@ -327,6 +334,24 @@ public class WizardController implements Initializable {
      */
     public WizardPage<?> getCurrentPage() {
         return currentPage.getValue();
+    }
+
+    /**
+     * Returns the property holding whether the current page is currently changed.
+     *
+     * @return The property holding whether the current page is currently changed.
+     */
+    public ReadOnlyBooleanProperty changingPageProperty() {
+        return changingPage;
+    }
+
+    /**
+     * Checks whether this wizard is currently changing its page.
+     *
+     * @return {@code true} only if this wizard is currently changing its page.
+     */
+    public boolean isChangingPage() {
+        return changingPage.get();
     }
 
     /**
