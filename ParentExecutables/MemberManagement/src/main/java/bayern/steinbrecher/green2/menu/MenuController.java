@@ -268,16 +268,13 @@ public class MenuController extends Controller {
         DialogUtility.showAndWait(DialogUtility.createInfoAlert(stage, noMemberForOutput, noMemberForOutput));
     }
 
-    private void generateAddresses(Collection<Member> member, File outputFile) {
+    private void generateAddresses(Collection<Member> member, File outputFile)
+            throws IOException, InterruptedException, ExecutionException {
         if (member.isEmpty()) {
             throw new IllegalArgumentException("Passed empty list to generateAddresses(...)");
         }
-        try {
-            IOStreamUtility.printContent(
-                    AddressGenerator.generateAddressData(member, nicknames.get().get()), outputFile, true);
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        IOStreamUtility.printContent(
+                AddressGenerator.generateAddressData(member, nicknames.get().get()), outputFile, true);
     }
 
     /**
@@ -289,12 +286,13 @@ public class MenuController extends Controller {
             if (memberList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
-                EnvironmentHandler.askForSavePath(stage, "Serienbrief_alle", "csv").ifPresent(file -> {
-                    generateAddresses(memberList, file);
-                });
+                Optional<File> path = EnvironmentHandler.askForSavePath(stage, "Serienbrief_alle", "csv");
+                if (path.isPresent()) {
+                    generateAddresses(memberList, path.get());
+                }
             }
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException | ExecutionException | IOException ex) {
+            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, "Could not generate addresses.", ex);
         }
     }
 
@@ -310,11 +308,13 @@ public class MenuController extends Controller {
             if (memberBirthdayList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
-                EnvironmentHandler.askForSavePath(stage, "Serienbrief_Geburtstag_" + year, "csv")
-                        .ifPresent(file -> generateAddresses(memberBirthdayList, file));
+                Optional<File> path = EnvironmentHandler.askForSavePath(stage, "Serienbrief_Geburtstag_" + year, "csv");
+                if (path.isPresent()) {
+                    generateAddresses(memberBirthdayList, path.get());
+                }
             }
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException | ExecutionException | IOException ex) {
+            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, "Could not generate addresses.", ex);
         }
     }
 
@@ -379,17 +379,22 @@ public class MenuController extends Controller {
                         Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
                         EnvironmentHandler.askForSavePath(stage, "Sepa", "xml").ifPresent(file -> {
-                            List<Member> invalidMember
-                                    = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
-                                            sequenceType, file,
-                                            EnvironmentHandler.getProfile().getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
-                            String message = invalidMember.stream()
-                                    .map(Member::toString)
-                                    .collect(Collectors.joining("\n"));
-                            if (!message.isEmpty()) {
-                                Alert alert = DialogUtility.createErrorAlert(stage, message + "\n"
-                                        + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
-                                Platform.runLater(() -> alert.show());
+                            try {
+                                List<Member> invalidMember
+                                        = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
+                                                sequenceType, file, EnvironmentHandler.getProfile()
+                                                        .getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
+                                String message = invalidMember.stream()
+                                        .map(Member::toString)
+                                        .collect(Collectors.joining("\n"));
+                                if (!message.isEmpty()) {
+                                    Alert alert = DialogUtility.createErrorAlert(stage, message + "\n"
+                                            + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
+                                    Platform.runLater(() -> alert.show());
+                                }
+                            } catch (IOException ex) {
+                                Logger.getLogger(MenuController.class.getName())
+                                        .log(Level.SEVERE, "The sepa xml file could not be created.", ex);
                             }
                         });
                     }
@@ -596,13 +601,15 @@ public class MenuController extends Controller {
                     if (birthdayList.isEmpty()) {
                         showNoMemberForOutputDialog();
                     } else {
-                        EnvironmentHandler.askForSavePath(stage, "/Geburtstag_" + year, "csv").ifPresent(file -> {
+                        Optional<File> path = EnvironmentHandler.askForSavePath(stage, "/Geburtstag_" + year, "csv");
+                        if (path.isPresent()) {
                             IOStreamUtility.printContent(
-                                    BirthdayGenerator.createGroupedOutput(birthdayList, year), file, true);
-                        });
+                                    BirthdayGenerator.createGroupedOutput(birthdayList, year), path.get(), true);
+                        }
                     }
-                } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | ExecutionException | IOException ex) {
+                    Logger.getLogger(MenuController.class.getName())
+                            .log(Level.SEVERE, "Could not generate birthday infos.", ex);
                 }
             });
         }

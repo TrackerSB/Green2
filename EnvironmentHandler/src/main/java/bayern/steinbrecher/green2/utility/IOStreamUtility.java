@@ -118,14 +118,15 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Overrides the hole content of {@code outputFile} with {@code content}. If {@code pathToFile} doesn't exist it
+     * Overrides the hole content of {@code outputFile} with {@code content}.If {@code pathToFile} doesn't exist it
      * creates one.
      *
      * @param content The content to be written into the file.
      * @param outputFile The file to write in.
      * @param withBom Only if {@code true} it adds '\uFEFF' to the beginning of the file.
+     * @throws java.io.IOException Thrown if any I/O error occurs.
      */
-    public static void printContent(String content, File outputFile, boolean withBom) {
+    public static void printContent(String content, File outputFile, boolean withBom) throws IOException {
         try (BufferedWriter bw
                 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
             //To make no UTF-8 without BOM but with BOM (Big Endian).
@@ -133,8 +134,6 @@ public final class IOStreamUtility {
                 bw.append('\uFEFF');
             }
             bw.append(content);
-        } catch (IOException ex) {
-            Logger.getLogger(IOStreamUtility.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -47,8 +47,8 @@ public final class SepaPain00800302XMLGenerator {
 
     /**
      * Generates a xml-file containing all valid member of {@code member} and prints the generated output into
-     * {@code outputfile} if there are any. If {@code outputfile} already exists it will be replaced on generation. If
-     * it don´t it will be created.
+     * {@code outputfile} if there are any.If {@code outputfile} already exists it will be replaced on generation. If it
+     * don´t it will be created.
      *
      * @param member The member to collect money via direct debit from.
      * @param originator The originator of the direct debit.
@@ -57,9 +57,10 @@ public final class SepaPain00800302XMLGenerator {
      * @param sepaWithBom Indicates whether to use UTF-8 with or without BOM.
      * @return A list containing member which are not included in the outputfile. These are member which have no iban or
      * no bic.
+     * @throws java.io.IOException Thrown if any I/O error occurs.
      */
-    public static List<Member> createXMLFile(Collection<Member> member, Originator originator, SequenceType sequenceType,
-            File outputfile, boolean sepaWithBom) {
+    public static List<Member> createXMLFile(Collection<Member> member, Originator originator,
+            SequenceType sequenceType, File outputfile, boolean sepaWithBom) throws IOException {
         List<Member> invalidMember = filterValidMember(member);
         if (member.isEmpty()) {
             Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())

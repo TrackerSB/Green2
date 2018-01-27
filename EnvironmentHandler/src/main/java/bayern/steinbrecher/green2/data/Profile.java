@@ -243,7 +243,11 @@ public class Profile {
         String out = Arrays.stream(ProfileSettings.values())
                 .map(this::generateLine)
                 .collect(Collectors.joining("\n"));
-        IOStreamUtility.printContent(out, configFile.getValue(), false);
+        try {
+            IOStreamUtility.printContent(out, configFile.getValue(), false);
+        } catch (IOException ex) {
+            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, "The settings could not be saved.", ex);
+        }
     }
 
     /**
