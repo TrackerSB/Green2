@@ -16,10 +16,33 @@
  */
 package bayern.steinbrecher.green2.utility;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Contains methods for checking some Sepa Direct Debit attributes which are especially needed by {@code Originator} and
@@ -81,6 +104,19 @@ public final class SepaUtility {
      */
     public static final String MESSAGE_ID_REGEX = "([a-zA-Z0-9]|/| |-|\\?|:|\\(|\\)|\\.|,|'|\\+)*";
     private static final Pattern MESSAGE_ID_PATTERN = Pattern.compile(MESSAGE_ID_REGEX);
+    private static /*final*/ Validator SEPA_VALIDATOR;
+
+    static {
+        try {
+            SEPA_VALIDATOR = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+                    //Source of schema:
+                    //https://github.com/w2c/sepa-sdd-xml-generator/blob/master/validation_schemes/pain.008.003.02.xsd
+                    .newSchema(SepaUtility.class.getResource("pain.008.003.02.xsd"))
+                    .newValidator();
+        } catch (SAXException ex) {
+            Logger.getLogger(SepaUtility.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * Prohibit instantiation.
@@ -155,5 +191,67 @@ public final class SepaUtility {
          * DateTime values.
          */
         return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(date);
+    }
+
+    public static boolean validateSepaXML(String xml) throws SAXException, IOException {
+        //Validate against xsd schema
+        DocumentBuilderFactory xmlBuilderFactory = DocumentBuilderFactory.newInstance();
+        xmlBuilderFactory.setIgnoringComments(true);
+        xmlBuilderFactory.setNamespaceAware(true);
+        xmlBuilderFactory.setValidating(false);
+        DocumentBuilder xmlBuilder;
+        try {
+            xmlBuilder = xmlBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException ex) {
+            throw new Error("The DocumentBuilder used for SEPA xml validation is invalid.", ex);
+        }
+        Map<String, List<String>> validationProblemsMap = new HashMap<>(3);
+        xmlBuilder.setErrorHandler(new ErrorHandler() {
+            private final BiConsumer<String, SAXParseException> logValidationProblem = (type, exception) -> {
+                validationProblemsMap.putIfAbsent(type, new ArrayList<>());
+                validationProblemsMap.get(type)
+                        .add("line: " + exception.getLineNumber() + ": " + exception.getMessage());
+            };
+
+            @Override
+            public void warning(SAXParseException exception) throws SAXException {
+                logValidationProblem.accept("warning", exception);
+            }
+
+            @Override
+            public void error(SAXParseException exception) throws SAXException {
+                logValidationProblem.accept("error", exception);
+            }
+
+            @Override
+            public void fatalError(SAXParseException exception) throws SAXException {
+                logValidationProblem.accept("fatalError", exception);
+            }
+        });
+        Document xmlDocument = xmlBuilder.parse(new InputSource(new StringReader(xml)));
+        SEPA_VALIDATOR.validate(new DOMSource(xmlDocument.getFirstChild()));
+
+        //Check lengths of names
+        NodeList nameNodes = xmlDocument.getElementsByTagName("Nm");
+        for (int i = 0; i < nameNodes.getLength(); i++) {
+            String itemContent = nameNodes.item(i).getTextContent();
+            if (itemContent.length() > MAX_CHAR_NAME_FIELD) {
+                validationProblemsMap.putIfAbsent("warning", new ArrayList<>());
+                validationProblemsMap.get("warning").add(itemContent + " is longer than " + MAX_CHAR_NAME_FIELD);
+            }
+        }
+
+        boolean isValid = (!validationProblemsMap.containsKey("error") || validationProblemsMap.get("error").isEmpty())
+                && (!validationProblemsMap.containsKey("fatalError")
+                || validationProblemsMap.get("fatalError").isEmpty());
+        if (!validationProblemsMap.isEmpty()) {
+            Logger.getLogger(SepaUtility.class.getName())
+                    .log(Level.WARNING, validationProblemsMap.entrySet()
+                            .stream()
+                            .sorted((entryA, entryB) -> entryA.getKey().compareTo(entryB.getKey()))
+                            .flatMap(entry -> entry.getValue().stream().map(cause -> entry.getKey() + ": " + cause))
+                            .collect(Collectors.joining("\n")));
+        }
+        return isValid;
     }
 }

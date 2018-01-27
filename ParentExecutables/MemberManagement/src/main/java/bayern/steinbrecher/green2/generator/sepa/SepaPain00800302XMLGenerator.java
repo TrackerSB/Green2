@@ -22,15 +22,17 @@ import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.xml.sax.SAXException;
 
 /**
- * Generates a Sepa.Pain.008.003.02.
+ * Generates and checks a Sepa.Pain.008.003.02 file.
  *
  * @author Stefan Huber
  */
@@ -130,8 +132,8 @@ public final class SepaPain00800302XMLGenerator {
         //The beginning containing originators data.
         output.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
                 .append("<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.003.02\" ")
-                .append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation")
-                .append("=\"urn:iso:std:iso:20022:tech:xsd:pain.008.003.02 pain.008.003.02.xsd\">\n")
+                .append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ")
+                .append("xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:pain.008.003.02 pain.008.003.02.xsd\">\n")
                 .append(" <CstmrDrctDbtInitn>\n")
                 .append("   <GrpHdr>\n")
                 .append("     <MsgId>")
@@ -272,6 +274,17 @@ public final class SepaPain00800302XMLGenerator {
                 .append(" </CstmrDrctDbtInitn>\n")
                 .append("</Document>");
 
-        return output.toString();
+        String xmlOutput = output.toString();
+        boolean isValid;
+        try {
+            isValid = SepaUtility.validateSepaXML(xmlOutput);
+        } catch (SAXException | IOException ex) {
+            throw new Error("The validation of the generated SEPA xml output failed.", ex);
+        }
+        if (isValid) {
+            return xmlOutput;
+        } else {
+            throw new Error("Invalid SEPA xml output was generated.");
+        }
     }
 }
