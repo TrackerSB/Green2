@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.utility;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -180,17 +181,31 @@ public final class SepaUtility {
     }
 
     /**
-     * Returns the given date as {@link String} which is valid for usage in Sepa Direct Debits.
+     * Returns a {@link String} representation of the given {@code dateTime} which is valid for SEPA Direct Debits.
      *
-     * @param date The date to convert.
-     * @return The valid representation of the given date.
+     * @param dateTime The date to convert.
+     * @return The valid representation of the given {@code dateTime}.
      */
-    public static String getSepaDate(LocalDateTime date) {
+    public static String getSepaDate(LocalDateTime dateTime) {
         /*
          * The DateTimeFormatter could accept any subtype of TemporalAccessor but a Sepa Direct Debit only accepts
-         * DateTime values.
+         * DateTime values and TemporalAccessor does not support all fields needed.
          */
-        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(date);
+        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateTime);
+    }
+
+    /**
+     * Returns a {@link String} representation of the given {@code date} which is valid for SEPA Direct Debits.
+     *
+     * @param date The date to convert.
+     * @return The valid representation of the given {@code date}.
+     */
+    public static String getSepaDate(LocalDate date) {
+        /*
+         * The DateTimeFormatter could accept any subtype of TemporalAccessor but a Sepa Direct Debit only accepts
+         * DateTime values and TemporalAccessor does not support all fields needed.
+         */
+        return DateTimeFormatter.ISO_LOCAL_DATE.format(date);
     }
 
     public static boolean validateSepaXML(String xml) throws SAXException, IOException {
