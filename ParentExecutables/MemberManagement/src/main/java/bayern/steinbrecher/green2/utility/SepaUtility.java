@@ -27,11 +27,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -229,41 +230,59 @@ public final class SepaUtility {
         } catch (ParserConfigurationException ex) {
             throw new Error("The DocumentBuilder used for SEPA xml validation is invalid.", ex);
         }
-        Map<String, List<String>> validationProblemsMap = new HashMap<>(3);
+        Map<String, List<String>> validationProblemsMap = new HashMap<String, List<String>>() {
+            @Override
+            public List<String> get(Object key) {
+                if (key instanceof String) {
+                    String keyString = (String) key;
+                    if (!containsKey(keyString)) {
+                        super.put(keyString, new ArrayList<>());
+                    }
+                }
+                return super.get(key);
+            }
+        };
+        BooleanProperty isValid = new SimpleBooleanProperty(true);
         xmlBuilder.setErrorHandler(new ErrorHandler() {
-            private final BiConsumer<String, SAXParseException> logValidationProblem = (type, exception) -> {
-                validationProblemsMap.putIfAbsent(type, new ArrayList<>());
-                validationProblemsMap.get(type)
-                        .add("line: " + exception.getLineNumber() + ": " + exception.getMessage());
-            };
+            private String createLine(SAXParseException ex) {
+                return "line: " + ex.getLineNumber() + ": " + ex.getMessage();
+            }
 
             @Override
             public void warning(SAXParseException exception) throws SAXException {
-                logValidationProblem.accept("warning", exception);
+                validationProblemsMap.get("warning").add(createLine(exception));
             }
 
             @Override
             public void error(SAXParseException exception) throws SAXException {
-                logValidationProblem.accept("error", exception);
+                validationProblemsMap.get("error").add(createLine(exception));
+                isValid.set(false);
             }
 
             @Override
             public void fatalError(SAXParseException exception) throws SAXException {
-                logValidationProblem.accept("fatalError", exception);
+                validationProblemsMap.get("fatalError").add(createLine(exception));
+                isValid.set(false);
             }
         });
         Document xmlDocument = xmlBuilder.parse(new InputSource(new StringReader(xml)));
-        SEPA_VALIDATOR.validate(new DOMSource(xmlDocument.getFirstChild()));
+        try {
+            SEPA_VALIDATOR.validate(new DOMSource(xmlDocument.getFirstChild()));
+        } catch (SAXException ex) {
+            /*
+             * NOTE: When a fatal error occurs some implementations may or may not continue evaluation.
+             * (See {@link ErrorHandler#fatalError(SAXParseException)})
+             */
+            validationProblemsMap.get("fatalError (discontinue)").add(ex.getMessage());
+            isValid.set(false);
+        }
 
-        boolean isValid = (!validationProblemsMap.containsKey("error") || validationProblemsMap.get("error").isEmpty())
-                && (!validationProblemsMap.containsKey("fatalError")
-                || validationProblemsMap.get("fatalError").isEmpty());
         String validationOutput = validationProblemsMap.entrySet()
                 .stream()
                 .sorted((entryA, entryB) -> entryA.getKey().compareTo(entryB.getKey()))
                 .flatMap(entry -> entry.getValue().stream().map(cause -> entry.getKey() + ": " + cause))
                 .collect(Collectors.joining("\n"));
-        if (isValid) {
+        if (isValid.get()) {
             if (!validationOutput.isEmpty()) {
                 Logger.getLogger(SepaUtility.class.getName()).log(Level.WARNING, validationOutput);
             }

@@ -244,7 +244,7 @@ public final class SepaPain00800302XMLGenerator {
             throw new Error("The validation of the generated SEPA xml output failed.", ex);
         }
         if (errorMessage.isPresent()) {
-            throw new Error("Erroneous SEPA xml output was generated.");
+            throw new Error("Erroneous SEPA xml output was generated:\n" + errorMessage.get());
         } else {
             return xmlOutput;
         }
