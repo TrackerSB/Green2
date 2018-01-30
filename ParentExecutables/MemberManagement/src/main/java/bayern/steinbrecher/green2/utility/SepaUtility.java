@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +40,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -208,7 +208,16 @@ public final class SepaUtility {
         return DateTimeFormatter.ISO_LOCAL_DATE.format(date);
     }
 
-    public static boolean validateSepaXML(String xml) throws SAXException, IOException {
+    /**
+     * Checks whether the given {@link String} contains valid SEPA DD content.
+     *
+     * @param xml The XML content to check.
+     * @return An {@link Optional} containing the error output if {@code xml} is erroneous. If {@link Optional#empty()}
+     * is returned the XML does not contain errors but it may still contain warnings. If so these are logged.
+     * @throws SAXException If any parse error occurs.
+     * @throws IOException If any I/O error occurs.
+     */
+    public static Optional<String> validateSepaXML(String xml) throws SAXException, IOException {
         //Validate against xsd schema
         DocumentBuilderFactory xmlBuilderFactory = DocumentBuilderFactory.newInstance();
         xmlBuilderFactory.setIgnoringComments(true);
@@ -246,27 +255,21 @@ public final class SepaUtility {
         Document xmlDocument = xmlBuilder.parse(new InputSource(new StringReader(xml)));
         SEPA_VALIDATOR.validate(new DOMSource(xmlDocument.getFirstChild()));
 
-        //Check lengths of names
-        NodeList nameNodes = xmlDocument.getElementsByTagName("Nm");
-        for (int i = 0; i < nameNodes.getLength(); i++) {
-            String itemContent = nameNodes.item(i).getTextContent();
-            if (itemContent.length() > MAX_CHAR_NAME_FIELD) {
-                validationProblemsMap.putIfAbsent("warning", new ArrayList<>());
-                validationProblemsMap.get("warning").add(itemContent + " is longer than " + MAX_CHAR_NAME_FIELD);
-            }
-        }
-
         boolean isValid = (!validationProblemsMap.containsKey("error") || validationProblemsMap.get("error").isEmpty())
                 && (!validationProblemsMap.containsKey("fatalError")
                 || validationProblemsMap.get("fatalError").isEmpty());
-        if (!validationProblemsMap.isEmpty()) {
-            Logger.getLogger(SepaUtility.class.getName())
-                    .log(Level.WARNING, validationProblemsMap.entrySet()
-                            .stream()
-                            .sorted((entryA, entryB) -> entryA.getKey().compareTo(entryB.getKey()))
-                            .flatMap(entry -> entry.getValue().stream().map(cause -> entry.getKey() + ": " + cause))
-                            .collect(Collectors.joining("\n")));
+        String validationOutput = validationProblemsMap.entrySet()
+                .stream()
+                .sorted((entryA, entryB) -> entryA.getKey().compareTo(entryB.getKey()))
+                .flatMap(entry -> entry.getValue().stream().map(cause -> entry.getKey() + ": " + cause))
+                .collect(Collectors.joining("\n"));
+        if (isValid) {
+            if (!validationOutput.isEmpty()) {
+                Logger.getLogger(SepaUtility.class.getName()).log(Level.WARNING, validationOutput);
+            }
+            return Optional.empty();
+        } else {
+            return Optional.of(validationOutput);
         }
-        return isValid;
     }
 }

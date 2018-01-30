@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.xml.sax.SAXException;
@@ -236,16 +237,16 @@ public final class SepaPain00800302XMLGenerator {
                 .append("</Document>");
 
         String xmlOutput = output.toString();
-        boolean isValid;
+        Optional<String> errorMessage;
         try {
-            isValid = SepaUtility.validateSepaXML(xmlOutput);
+            errorMessage = SepaUtility.validateSepaXML(xmlOutput);
         } catch (SAXException | IOException ex) {
             throw new Error("The validation of the generated SEPA xml output failed.", ex);
         }
-        if (isValid) {
-            return xmlOutput;
+        if (errorMessage.isPresent()) {
+            throw new Error("Erroneous SEPA xml output was generated.");
         } else {
-            throw new Error("Invalid SEPA xml output was generated.");
+            return xmlOutput;
         }
     }
 }
