@@ -97,6 +97,14 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>3.0.1u2</version>
+        </dependency>
+    </dependencies>
+
     <organization>
         <name>Steinbrecher</name>
         <url>http://www.steinbrecher.bayern</url>
