@@ -119,7 +119,8 @@ public final class Uninstaller extends Application {
                 throw new UnsupportedOperationException("The unstaller does not support the current os.");
         }
         try {
-            Process process = builder.start();
+            /*Process process = */
+            builder.start();
             //FIXME Can´t wait for otherwise this jar can not be deleted
             /*process.waitFor();
             try (InputStream errorStream = process.getErrorStream()) {
