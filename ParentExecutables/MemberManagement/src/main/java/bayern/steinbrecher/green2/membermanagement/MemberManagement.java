@@ -23,8 +23,6 @@ import bayern.steinbrecher.green2.connection.InvalidSchemeException;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
-import bayern.steinbrecher.green2.connection.scheme.Columns;
-import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
@@ -52,7 +50,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -142,16 +139,10 @@ public class MemberManagement extends Application {
                     })
                     //Check whether every table has all its required columns
                     .thenRunAsync(() -> {
-                        Optional<Map<Tables, List<Columns<?>>>> missingColumns = dbConnection.getMissingColumns();
-                        if (missingColumns.isPresent()) {
+                        String missingColumnsString = dbConnection.getMissingColumnsString();
+                        if (!missingColumnsString.isEmpty()) {
                             String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
-                            String message = invalidScheme + "\n" + missingColumns.get().entrySet().parallelStream()
-                                    .map(entry -> entry.getKey().getRealTableName() + ":\n"
-                                    + entry.getValue().parallelStream()
-                                            .map(Columns::getRealColumnName)
-                                            .map(col -> EnvironmentHandler.getResourceValue("columnUnaccessible", col))
-                                            .collect(Collectors.joining("\n")))
-                                    .collect(Collectors.joining("\n"));
+                            String message = invalidScheme + "\n" + missingColumnsString;
                             Platform.runLater(
                                     () -> DialogUtility.createErrorAlert(null, message, invalidScheme).show());
                             throw new CompletionException(new InvalidSchemeException(message));

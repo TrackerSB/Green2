@@ -16,22 +16,17 @@
  */
 package bayern.steinbrecher.green2.connection.scheme;
 
-import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Keywords;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Queries;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import javafx.util.Pair;
 
 /**
- * This enum lists all tables needed.
+ * This enum lists all tables and their schemes needed.
  *
  * @author Stefan Huber
  */
@@ -87,12 +82,6 @@ public enum Tables {
         this.columns = columns;
     }
 
-    private void throwIfInvalid(DBConnection connection) {
-        if (!isValid(connection)) {
-            throw new IllegalStateException(realTableName + " is missing required columns.");
-        }
-    }
-
     /**
      * Checks whether the scheme of this table contains the given column. NOTE: This does not confirm that the this
      * column exists in the real table. It only states that the scheme can have such a column.
@@ -102,36 +91,6 @@ public enum Tables {
      */
     public boolean contains(Columns<?> column) {
         return columns.containsKey(column);
-    }
-
-    /**
-     * Checks whether this table exists and has all required columns when using the given connection.
-     *
-     * @param connection The connection to use for checking.
-     * @return {@code true} only if the table accessible using {@code connection} exists and has all required columns.
-     */
-    public boolean isValid(DBConnection connection) {
-        return !getMissingColumns(connection).isPresent();
-    }
-
-    /**
-     * Returns all required but missing or unaccessible columns of this table using the given connection.
-     *
-     * @param connection The connection to use.
-     * @return {@link Optional#empty()} if no required column is missing or unaccessible. Otherwise an {@link Optional}
-     * containing a list of these columns.
-     */
-    public Optional<List<Columns<?>>> getMissingColumns(DBConnection connection) {
-        List<Columns<?>> missingColumns = columns.entrySet().stream()
-                .filter(entry -> entry.getValue().getKey())
-                .map(Map.Entry::getKey)
-                .filter(column -> !connection.columnExists(this, column))
-                .collect(Collectors.toList());
-        if (missingColumns.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(missingColumns);
-        }
     }
 
     /**
@@ -148,46 +107,6 @@ public enum Tables {
         }
     }
 
-    /**
-     * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
-     * trailing space at the end. The select statement contains only columns existing when using {@code connection}.
-     *
-     * @param connection The connection to use.
-     * @param columnsToSelect The columns to select when they exist.
-     * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
-     * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
-     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection,
-     * bayern.steinbrecher.green2.connection.scheme.Columns[])
-     */
-    public Optional<String> generateSearchQuery(DBConnection connection, Collection<Columns<?>> columnsToSelect) {
-        throwIfInvalid(connection);
-        List<Columns> existingColumns = columnsToSelect.stream()
-                .filter(c -> connection.columnExists(this, c))
-                .collect(Collectors.toList());
-        if (existingColumns.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of("SELECT " + existingColumns.stream()
-                    .map(Columns::getRealColumnName)
-                    .collect(Collectors.joining(","))
-                    + " FROM " + realTableName);
-        }
-    }
-
-    /**
-     * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
-     * trailing space at the end. The select statement contains only columns existing when using {@code connection}.
-     *
-     * @param connection The connection to use.
-     * @param columnsToSelect The columns to select when they exist.
-     * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
-     * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
-     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection, java.util.Collection)
-     */
-    public Optional<String> generateSearchQuery(DBConnection connection, Columns... columnsToSelect) {
-        return generateSearchQuery(connection, Arrays.asList(columnsToSelect));
-    }
-
     private String generateCreateStatement(SupportedDatabases dbms) {
         String columnList = getAllColumns().stream()
                 .map(column -> new StringJoiner(" ")
@@ -200,7 +119,7 @@ public enum Tables {
     }
 
     /**
-     * Generates a statement for the given query.
+     * Generates a statement for the given connection independent query.
      *
      * @param query The query to generate a statement for.
      * @param dbms The dbms to create the statement for.

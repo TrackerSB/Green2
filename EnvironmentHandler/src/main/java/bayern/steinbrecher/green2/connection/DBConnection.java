@@ -24,11 +24,13 @@ import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
+import bayern.steinbrecher.green2.generator.NicknameGenerator;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -192,6 +194,54 @@ public abstract class DBConnection implements AutoCloseable {
         return !tablesAreMissing || tablesCreated;
     }
 
+    private void throwIfInvalid() {
+        String missingColumnsString = getMissingColumnsString();
+        if (!missingColumnsString.isEmpty()) {
+            throw new IllegalStateException("The connection refers tables which are missing required columns:\n"
+                    + missingColumnsString);
+        }
+    }
+
+    /**
+     * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
+     * trailing space at the end. The select statement contains only columns existing and associated with {@code table}.
+     *
+     * @param table The table to select from.
+     * @param columnsToSelect The columns to select when they exist.
+     * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
+     * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
+     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection,
+     * bayern.steinbrecher.green2.connection.scheme.Columns[])
+     */
+    public Optional<String> generateSearchQuery(Tables table, Collection<Columns<?>> columnsToSelect) {
+        throwIfInvalid();
+        List<Columns> existingColumns = columnsToSelect.stream()
+                .filter(c -> columnExists(table, c))
+                .collect(Collectors.toList());
+        if (existingColumns.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of("SELECT " + existingColumns.stream()
+                    .map(Columns::getRealColumnName)
+                    .collect(Collectors.joining(","))
+                    + " FROM " + table.getRealTableName());
+        }
+    }
+
+    /**
+     * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
+     * trailing space at the end. The select statement contains only columns existing and associated with {@code table}.
+     *
+     * @param table The table to select from.
+     * @param columnsToSelect The columns to select when they exist.
+     * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
+     * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
+     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection, java.util.Collection)
+     */
+    public Optional<String> generateSearchQuery(Tables table, Columns... columnsToSelect) {
+        return generateSearchQuery(table, Arrays.asList(columnsToSelect));
+    }
+
     /**
      * Checks whether all needed tables are accessible using this connection and have all required columns which are
      * also accessible.
@@ -212,13 +262,49 @@ public abstract class DBConnection implements AutoCloseable {
     public Optional<Map<Tables, List<Columns<?>>>> getMissingColumns() {
         Map<Tables, List<Columns<?>>> missingColumns = new HashMap<>();
         for (Tables table : Tables.values()) {
-            table.getMissingColumns(this).ifPresent(mc -> missingColumns.put(table, mc));
+            List<Columns<?>> currentMissingColumns = table.getAllColumns().stream()
+                    .filter(c -> !table.isOptional(c))
+                    .filter(c -> !columnExists(table, c))
+                    .collect(Collectors.toList());
+            if (!currentMissingColumns.isEmpty()) {
+                missingColumns.put(table, currentMissingColumns);
+            }
         }
         if (missingColumns.isEmpty()) {
             return Optional.empty();
         } else {
             return Optional.of(missingColumns);
         }
+    }
+
+    /**
+     * Creates a {@link String} out of the result of {@link #getMissingColumns()}.
+     *
+     * @param missingColumns The required columns missing.
+     * @return
+     */
+    private static String generateMissingColumnsString(Optional<Map<Tables, List<Columns<?>>>> missingColumns) {
+        if (missingColumns.isPresent()) {
+            return missingColumns.get().entrySet().parallelStream()
+                    .map(entry -> entry.getKey().getRealTableName() + ":\n"
+                    + entry.getValue().stream()
+                            .map(Columns::getRealColumnName)
+                            .sorted()
+                            .collect(Collectors.joining(", ")))
+                    .collect(Collectors.joining("\n"));
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Generates a {@link String} listing all required but missing columns of all tables.
+     *
+     * @return A {@link String} listing all required but missing columns of all tables.
+     * @see #getMissingColumns()
+     */
+    public String getMissingColumnsString() {
+        return generateMissingColumnsString(getMissingColumns());
     }
 
     /**
@@ -230,7 +316,7 @@ public abstract class DBConnection implements AutoCloseable {
     public Set<Member> getAllMember() {
         try {
             return MemberGenerator.generateMemberList(
-                    execQuery(Tables.MEMBER.generateSearchQuery(this, Tables.MEMBER.getAllColumns()).get()));
+                    execQuery(generateSearchQuery(Tables.MEMBER, Tables.MEMBER.getAllColumns()).get()));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
@@ -243,22 +329,16 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public Map<String, String> getAllNicknames() {
         try {
-            List<List<String>> queriedNicknames
-                    = execQuery(Tables.NICKNAMES.generateSearchQuery(this, Tables.NICKNAMES.getAllColumns()).get());
-
-            Map<String, String> mappedNicknames = new HashMap<>();
-            queriedNicknames.parallelStream()
-                    .skip(1) //Skip headings
-                    .forEach(row -> mappedNicknames.put(row.get(0), row.get(1)));
-            return mappedNicknames;
+            return NicknameGenerator.generateNicknames(
+                    execQuery(generateSearchQuery(Tables.NICKNAMES, Tables.NICKNAMES.getAllColumns()).get()));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
         }
     }
 
     /**
-     * Checks whether the given table of the configured database contains a specific column and the column is
-     * accessible.
+     * Checks whether the given table of the configured database contains a specific column. The column must be
+     * associated with {@code table} and has to be accessible.
      *
      * @param table The name of the table to search for the column.
      * @param column The column name to search for.
