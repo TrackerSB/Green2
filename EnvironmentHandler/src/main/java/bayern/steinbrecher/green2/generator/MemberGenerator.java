@@ -58,14 +58,14 @@ public class MemberGenerator {
     private static <T> Optional<Optional<T>> getOptionally(List<String> row,
             Map<Columns<?>, Integer> columnMapping, Columns<T> column) {
         if (columnMapping.containsKey(column)) {
-            String cell = row.get(columnMapping.get(column));
-            T value;
-            if (cell == null) {
-                value = null;
+            String cellValue = row.get(columnMapping.get(column));
+            Optional<T> value;
+            if (cellValue == null) {
+                value = Optional.empty();
             } else {
-                value = column.parse(cell);
+                value = column.parse(cellValue);
             }
-            return Optional.of(Optional.ofNullable(value));
+            return Optional.of(value);
         } else {
             return Optional.empty();
         }

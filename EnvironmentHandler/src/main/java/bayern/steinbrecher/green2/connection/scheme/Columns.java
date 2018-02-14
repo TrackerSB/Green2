@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.connection.scheme;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -138,24 +139,42 @@ public abstract class /*enum*/ Columns<T> {
     }
 
     /**
-     * Returns the default value to set when creating a table containing this column.
+     * Parses the given value to the appropriate type of this column if possible. Returns {@link Optional#empty()} if it
+     * could not be converted.
      *
-     * @return The default value to set when creating a table containing this column.
+     * @param value The value to parse.
+     * @return The typed value represented by {@code value}.
      */
-    public T getDefaultValue() {
-        return defaultValue;
+    public abstract Optional<T> parse(String value);
+
+    /**
+     * Returns the {@link String} representation of the default value suitable for SQL.NOTE: For implementation it can
+     * be assumed that the value is not {@code null} since this is handled by {@link #toString(java.lang.Object)}. The
+     * default implementation just calls {@link String#valueOf(java.lang.Object)}.
+     *
+     * @param value The value to convert.
+     * @return The {@link String} representation of the given value suitable for SQL.
+     * @see #getDefaultValue()
+     */
+    protected String toStringImpl(T value) {
+        return String.valueOf(value);
     }
 
     /**
-     * Returns the {@link String} representation of the default value suitable for SQL. NOTE: For implementation it can
-     * be assumed that the default value is not null since this is handled by {@link #getDefaultValueSql()}. The default
-     * implementation just calls {@link String#valueOf(java.lang.Object)}.
+     * Parses the given value into a {@link String} representation suitable for SQL. Returns the {@link String} "NULL"
+     * (without quotes) if {@code value} is {@code null}.
      *
-     * @return The {@link String} representation of the default value suitable for SQL.
-     * @see #getDefaultValue()
+     * @param value The value to convert.
+     * @return A {@link String} representation of the given value suitable for SQL.
      */
-    protected String getDefaultValueSqlImpl() {
-        return String.valueOf(defaultValue);
+    public final String toString(T value) {
+        String valueSql;
+        if (value == null) {
+            valueSql = "NULL";
+        } else {
+            valueSql = toStringImpl(value);
+        }
+        return valueSql;
     }
 
     /**
@@ -165,14 +184,17 @@ public abstract class /*enum*/ Columns<T> {
      * {@code null} the {@link String} "NULL" (without quotes) is returned.
      * @see #getDefaultValue()
      */
-    public final String getDefaultValueSql() {
-        String valueSql;
-        if (defaultValue == null) {
-            valueSql = "NULL";
-        } else {
-            valueSql = getDefaultValueSqlImpl();
-        }
-        return valueSql;
+    public String getDefaultValueSql() {
+        return toString(defaultValue);
+    }
+
+    /**
+     * Returns the default value to set when creating a table containing this column.
+     *
+     * @return The default value to set when creating a table containing this column.
+     */
+    public T getDefaultValue() {
+        return defaultValue;
     }
 
     /**
@@ -184,14 +206,6 @@ public abstract class /*enum*/ Columns<T> {
     public void setDefaultValue(T defaultValue) {
         this.defaultValue = defaultValue;
     }
-
-    /**
-     * Parses the given value to the appropriate type of this column if possible.
-     *
-     * @param value The value to parse.
-     * @return The typed value represented by {@code value}.
-     */
-    public abstract T parse(String value);
 
     /**
      * Returns the generic type of the class. This method is needed since type ereasure takes place.
@@ -212,13 +226,13 @@ public abstract class /*enum*/ Columns<T> {
         }
 
         @Override
-        protected String getDefaultValueSqlImpl() {
-            return "'" + getDefaultValue() + "'";
+        public Optional<String> parse(String value) {
+            return Optional.of(value);
         }
 
         @Override
-        public String parse(String value) {
-            return value;
+        protected String toStringImpl(String value) {
+            return "'" + value + "'";
         }
 
         @Override
@@ -239,8 +253,15 @@ public abstract class /*enum*/ Columns<T> {
         }
 
         @Override
-        public Integer parse(String value) {
-            return Integer.parseInt(value);
+        public Optional<Integer> parse(String value) {
+            Optional<Integer> parsedValue;
+            try {
+                parsedValue = Optional.of(Integer.parseInt(value));
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(IntegerColumn.class.getName()).log(Level.WARNING, null, ex);
+                parsedValue = Optional.empty();
+            }
+            return parsedValue;
         }
 
         @Override
@@ -261,13 +282,13 @@ public abstract class /*enum*/ Columns<T> {
         }
 
         @Override
-        protected String getDefaultValueSqlImpl() {
-            return getDefaultValue() ? "TRUE" : "FALSE";
+        public Optional<Boolean> parse(String value) {
+            return Optional.of(value.equalsIgnoreCase("1"));
         }
 
         @Override
-        public Boolean parse(String value) {
-            return value.equalsIgnoreCase("1");
+        protected String toStringImpl(Boolean value) {
+            return value ? "TRUE" : "FALSE";
         }
 
         @Override
@@ -288,7 +309,7 @@ public abstract class /*enum*/ Columns<T> {
         }
 
         @Override
-        public LocalDate parse(String value) {
+        public Optional<LocalDate> parse(String value) {
             LocalDate date = null;
             try {
                 if (value == null) {
@@ -299,7 +320,12 @@ public abstract class /*enum*/ Columns<T> {
             } catch (DateTimeParseException ex) {
                 Logger.getLogger(MemberGenerator.class.getName()).log(Level.WARNING, value + " is an invalid date", ex);
             }
-            return date;
+            return Optional.ofNullable(date);
+        }
+
+        @Override
+        protected String toStringImpl(LocalDate value) {
+            return "'" + String.valueOf(value) + "'";
         }
 
         @Override
@@ -320,8 +346,15 @@ public abstract class /*enum*/ Columns<T> {
         }
 
         @Override
-        public Double parse(String value) {
-            return Double.parseDouble(value);
+        public Optional<Double> parse(String value) {
+            Optional<Double> parsedValue;
+            try {
+                parsedValue = Optional.of(Double.parseDouble(value));
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(DoubleColumn.class.getName()).log(Level.WARNING, null, ex);
+                parsedValue = Optional.empty();
+            }
+            return parsedValue;
         }
 
         @Override
