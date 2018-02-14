@@ -30,6 +30,7 @@ import bayern.steinbrecher.green2.generator.sepa.SepaPain00800302XMLGenerator;
 import bayern.steinbrecher.green2.generator.sepa.SequenceType;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Originator;
+import bayern.steinbrecher.green2.query.Query;
 import bayern.steinbrecher.green2.selection.Selection;
 import bayern.steinbrecher.green2.selection.SelectionGroup;
 import bayern.steinbrecher.green2.sepaform.SepaForm;
@@ -471,6 +472,16 @@ public class MenuController extends Controller {
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(currentYear - 1, currentYear + 1)
                 .forEach(memberBirthday::get);
+    }
+
+    @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
+    private void openQueryDialog(ActionEvent aevt) {
+        callOnDisabled(aevt, () -> {
+            Query queryDialog = new Query(dbConnection);
+            queryDialog.start(new Stage());
+        });
     }
 
     @FXML
