@@ -482,7 +482,7 @@ public class MenuController extends Controller {
             Query queryDialog = new Query(dbConnection);
             Stage queryStage = new Stage();
             queryDialog.start(queryStage);
-            queryStage.show();
+            queryStage.showAndWait();
         });
     }
 
