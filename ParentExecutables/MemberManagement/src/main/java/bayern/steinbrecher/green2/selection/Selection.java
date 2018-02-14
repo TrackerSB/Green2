@@ -76,7 +76,6 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("selectionTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

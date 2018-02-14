@@ -59,7 +59,6 @@ public class Splashscreen extends View<Controller> {
         stage.setTitle(EnvironmentHandler.getResourceValue("startingApplication"));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

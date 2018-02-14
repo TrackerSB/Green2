@@ -50,7 +50,8 @@ public abstract class View<T extends Controller> extends Application {
     private T controller;
 
     /**
-     * Contains the body usually inserted in {@link Application#start(javafx.stage.Stage)}.
+     * Contains the body usually inserted in {@link Application#start(javafx.stage.Stage)}. This method shall not call
+     * {@link Stage#show()}.
      *
      * @param stage The {@link Stage} to be used by this application.
      * @throws ViewStartException Thrown if something goes wrong. Since it is not known which {@link Exception} (if any)
@@ -62,12 +63,17 @@ public abstract class View<T extends Controller> extends Application {
     protected abstract void startImpl(Stage stage);
 
     /**
-     * {@inheritDoc}
+     * Sets the stage of this view, calls {@link #startImpl(javafx.stage.Stage)} where the actual content of
+     * {@link Application#start(javafx.stage.Stage)} has to be placed and sets the application logo.
+     *
+     * @param stage The stage to be used by this view.
+     * @see #startImpl(javafx.stage.Stage)
      */
     @Override
     public final void start(Stage stage) {
         this.stage = stage;
         startImpl(stage);
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     @SuppressFBWarnings(value = "NN_NAKED_NOTIFY", justification = "The wait is called by other methods like "

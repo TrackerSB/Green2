@@ -70,8 +70,6 @@ public class Menu extends View<MenuController> {
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("chooseProgram"));
         stage.setResizable(false);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-        stage.show();
     }
 
     /**

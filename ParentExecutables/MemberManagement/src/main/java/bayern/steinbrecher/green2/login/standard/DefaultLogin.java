@@ -47,6 +47,5 @@ public class DefaultLogin extends Login {
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("loginTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 }

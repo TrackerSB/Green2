@@ -59,7 +59,6 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("sepaFormTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

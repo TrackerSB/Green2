@@ -163,6 +163,7 @@ public class MemberManagement extends Application {
                                 try {
                                     //Show main menu
                                     new Menu(dbConnection).start(menuStage);
+                                    menuStage.show();
                                 } catch (Exception ex) {
                                     Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                                 }

@@ -62,7 +62,6 @@ public class Contribution extends WizardableView<Optional<Map<Color, Double>>, C
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("contributionTitle"));
         stage.setResizable(false);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**

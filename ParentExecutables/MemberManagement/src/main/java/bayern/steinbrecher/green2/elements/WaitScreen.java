@@ -142,7 +142,6 @@ public class WaitScreen extends View<Controller> {
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setTitle(EnvironmentHandler.getResourceValue("waitAMoment"));
         stage.setResizable(false);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     /**
