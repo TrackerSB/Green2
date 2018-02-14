@@ -480,7 +480,9 @@ public class MenuController extends Controller {
     private void openQueryDialog(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
             Query queryDialog = new Query(dbConnection);
-            queryDialog.start(new Stage());
+            Stage queryStage = new Stage();
+            queryDialog.start(queryStage);
+            queryStage.show();
         });
     }
 

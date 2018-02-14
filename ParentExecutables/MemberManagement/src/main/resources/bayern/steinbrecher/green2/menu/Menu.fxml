@@ -66,6 +66,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           accelerator="Alt+G"/>
             </Menu>
             <Menu text="%data">
+                <MenuItem onAction="#openQueryDialog"
+                          text="%queryMember"/>
                 <MenuItem onAction="#checkData"
                           text="%checkData"
                           accelerator="Alt+P"/>

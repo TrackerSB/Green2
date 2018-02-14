@@ -65,7 +65,7 @@ public class Query extends View<QueryController> {
         getController().setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle(EnvironmentHandler.getResourceValue("queryTitle"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("queryMemberTitle"));
         stage.setResizable(false);
     }
 }
