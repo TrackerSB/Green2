@@ -17,12 +17,12 @@
 package bayern.steinbrecher.green2.connection;
 
 import bayern.steinbrecher.green2.connection.scheme.Columns;
+import bayern.steinbrecher.green2.connection.scheme.Queries;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
-import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Queries;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
-import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
+import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.generator.MemberGenerator;
 import bayern.steinbrecher.green2.generator.NicknameGenerator;
 import bayern.steinbrecher.green2.people.Member;
@@ -58,7 +58,7 @@ public abstract class DBConnection implements AutoCloseable {
      * Caches the names of all columns (not only the ones defined in {@link Columns}). The cache is refreshed whenever
      * the currently loaded profile changes.
      */
-    private static final Map<Tables, List<String>> EXISTING_COLUMNS_CACHE = new HashMap<>();
+    private static final Map<Tables, List<Pair<String, Class<?>>>> EXISTING_COLUMNS_CACHE = new HashMap<>();
     private static final List<String> TABLES_CACHE = new ArrayList<>();
     private static final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> NAME_AND_TYPE_OF_DATABASE
             = new SimpleObjectProperty<>(Optional.empty());
@@ -336,6 +336,31 @@ public abstract class DBConnection implements AutoCloseable {
         }
     }
 
+    private void checkExistingColumnsCache(Tables table) {
+        synchronized (EXISTING_COLUMNS_CACHE) {
+            if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
+                Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
+                try {
+                    List<List<String>> result = execQuery(table.generateQuery(Queries.GET_COLUMN_NAMES_AND_TYPES,
+                            profileInfo.getValue(), profileInfo.getKey()));
+                    List<Pair<String, Class<?>>> listOfColumns = result.stream()
+                            .map(list -> {
+                                return profileInfo.getValue()
+                                        .getType(list.get(1))
+                                        .map(ct -> new Pair<String, Class<?>>(list.get(0), ct));
+                            })
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.toList());
+                    //NOTE Don´t use putIfAbsent(...) since it is lacking lazy evaluation for the second argument.
+                    EXISTING_COLUMNS_CACHE.put(table, listOfColumns.subList(1, listOfColumns.size()));
+                } catch (SQLException ex) {
+                    Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
     /**
      * Checks whether the given table of the configured database contains a specific column. The column must be
      * associated with {@code table} and has to be accessible.
@@ -345,27 +370,25 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table contains the given column.
      */
     public boolean columnExists(Tables table, Columns<?> column) {
-        synchronized (EXISTING_COLUMNS_CACHE) {
-            if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
-                Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
-                try {
-                    List<List<String>> result = execQuery(
-                            table.generateQuery(Queries.GET_COLUMN_NAMES, profileInfo.getValue(), profileInfo.getKey()));
-                    List<String> listOfColumns = result
-                            .stream()
-                            .map(list -> list.get(0))
-                            .collect(Collectors.toList());
-                    //NOTE Don´t use putIfAbsent(...) since it is lacking lazy evaluation for the second argument.
-                    EXISTING_COLUMNS_CACHE.put(table, listOfColumns.subList(1, listOfColumns.size()));
-                } catch (SQLException ex) {
-                    Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            //TODO Think about ignoring small/capital letters in column names
-            return EXISTING_COLUMNS_CACHE.get(table).stream()
-                    .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
-                    .findAny()
-                    .isPresent();
-        }
+        checkExistingColumnsCache(table);
+        //TODO Think about ignoring small/capital letters in column names
+        return EXISTING_COLUMNS_CACHE.get(table).stream()
+                .map(Pair::getKey)
+                .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
+                .findAny()
+                .isPresent();
+    }
+
+    /**
+     * Returns a {@link List} of all existing columns (not only that ones declared in the scheme) and their
+     * <strong>actual</strong> types in the database which may defer from the one declared in the scheme of the table.
+     *
+     * @param table The table to get the columns for.
+     * @return A {@link List} of all existing columns (not only that ones declared in the scheme).
+     * @see Tables#getAllColumns()
+     */
+    public List<Pair<String, Class<?>>> getAllColumns(Tables table) {
+        checkExistingColumnsCache(table);
+        return EXISTING_COLUMNS_CACHE.get(table);
     }
 }

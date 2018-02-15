@@ -16,11 +16,15 @@
  */
 package bayern.steinbrecher.green2.connection.scheme;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,16 +45,15 @@ public enum SupportedDatabases {
                     Keywords.NOT_NULL, "NOT NULL",
                     Keywords.PRIMARY_KEY, "PRIMARY KEY"
             ),
-            Map.of(
-                    Boolean.class, "BOOLEAN",
-                    Double.class, "FLOAT",
-                    Integer.class, "INTEGER",
-                    LocalDate.class, "DATE",
-                    String.class, "VARCHAR(255)"
-            ),
-            Map.of(
-                    Queries.CREATE_TABLE, "CREATE TABLE {0} ({1});",
-                    Queries.GET_COLUMN_NAMES, "SELECT column_name FROM information_schema.columns "
+            HashBiMap.create(Map.of(
+                    Boolean.class, new SQLType("TINYINT", 1),
+                    Double.class, new SQLType("FLOAT"),
+                    Integer.class, new SQLType("INTEGER"),
+                    LocalDate.class, new SQLType("DATE"),
+                    String.class, new SQLType("VARCHAR", 255)
+            )),
+            Map.of(Queries.CREATE_TABLE, "CREATE TABLE {0} ({1});",
+                    Queries.GET_COLUMN_NAMES_AND_TYPES, "SELECT column_name, data_type FROM information_schema.columns "
                     + "WHERE table_schema=\"{0}\" AND table_name=\"{1}\";",
                     Queries.GET_TABLE_NAMES, "SELECT table_name FROM information_schema.tables "
                     + "WHERE table_schema=\"{0}\";"
@@ -59,7 +62,7 @@ public enum SupportedDatabases {
     private final String displayName;
     private final int defaultPort;
     private final Map<Keywords, String> keywords;
-    private final Map<Class<?>, String> types;
+    private final BiMap<Class<?>, SQLType> types;
     private final Map<Queries, String> queryTemplates;
 
     /**
@@ -69,15 +72,11 @@ public enum SupportedDatabases {
      * @param defaultPort The default port to use when no other specified.
      * @param keywords The mapping of the keywords to the database specific keywords.
      * @param types The mapping of the types to the database specific types.
-     * @param createTemplate The database specific template for generating a CREATE statement of a table. Place {0}
-     * where the name of the table has to be inserted and {1} where the column separated list of columns to add have to
-     * be inserted.
-     * @param tableExistsTemplate The database specific template for generating a statement for looking up whether a
-     * given table exists. Place {0} where to insert the name of the database and {1} where to place the name of the
-     * table.
+     * @param queryTemplates The templates for all queries in {@link Queries#values()}. NOTE: This parameter may be
+     * removed in future versions since {@code information_schema} is standardized.
      */
     private SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywords,
-            Map<Class<?>, String> types, Map<Queries, String> queryTemplates) {
+            BiMap<Class<?>, SQLType> types, Map<Queries, String> queryTemplates) {
         this.displayName = displayName;
         this.defaultPort = defaultPort;
         this.keywords = keywords;
@@ -145,10 +144,22 @@ public enum SupportedDatabases {
     public <T> String getType(Columns<T> column) {
         Class<T> type = column.getType();
         if (types.containsKey(type)) {
-            return types.get(type);
+            return types.get(type).getSqlTypeKeyword();
         } else {
             throw new Error("For the database " + displayName + " no SQL type for type " + type + " is defined.");
         }
+    }
+
+    /**
+     * Returns the appropriate SQL type for the given class.
+     *
+     * @param sqlType The type to get a class for.
+     * @return An {@link Optional} containing the {@link Class} representing the appropriate SQL type. Returns
+     * {@link Optional#empty()} if and only if for {@code sqlType} no class is defined.
+     * @since 2u14
+     */
+    public Optional<Class<?>> getType(String sqlType) {
+        return Optional.ofNullable(types.inverse().get(new SQLType(sqlType)));
     }
 
     /**
@@ -184,43 +195,67 @@ public enum SupportedDatabases {
     }
 
     /**
-     * Represents SQL keywords.
+     * Represents a wrapper for a {@link String} which ignores at every point the case of characters of the wrapped
+     * keyword. This includes {@link Object#equals(java.lang.Object)}, {@link Comparable#compareTo(java.lang.Object)},
+     * etc. NOTE: Specified parameters are ignored.
      */
-    public static enum Keywords {
-        /**
-         * Keyword: DEFAULT.
-         */
-        DEFAULT,
-        /**
-         * Two keywords which are often used together: NOT NULL.
-         */
-        NOT_NULL,
-        /**
-         * Keyword: PRIMARY KEY.
-         */
-        PRIMARY_KEY;
-    }
+    private static class SQLType implements Comparable<SQLType> {
 
-    /**
-     * Represents general queries for which according to the underlying database SQL e.g. statements can be created.
-     */
-    public static enum Queries {
+        private final String sqlTypeKeyword;
+        private final String parameter;
+
         /**
-         * Creates a table with all given columns.
+         * Creates a new {@link SQLType}.
+         *
+         * @param sqlTypeKeyword The keyword is always saved and handled in uppercase. This keyword must represent the
+         * type saved in {@code information_schema.columns}. Be careful with aliases.
+         * @param parameter Additional parameters related to the keyword. These are ignored concerning
+         * {@link Object#equals(java.lang.Object)}, {@link Comparable#compareTo(java.lang.Object)}, etc.
          */
-        CREATE_TABLE,
+        public SQLType(String sqlTypeKeyword, Object... parameter) {
+            this.sqlTypeKeyword = sqlTypeKeyword.toUpperCase();
+            this.parameter = parameter.length > 0
+                    ? Arrays.stream(parameter)
+                            .map(String::valueOf)
+                            .collect(Collectors.joining(", ", "(", ")"))
+                    : "";
+        }
+
         /**
-         * Returns all column names of the given table.<br>
-         * Variables:<br>
-         * 0: database name<br>
-         * 1: name of the table
+         * {@inheritDoc}
          */
-        GET_COLUMN_NAMES,
+        @Override
+        public boolean equals(Object other) {
+            if (other instanceof SQLType) {
+                return sqlTypeKeyword.equalsIgnoreCase(((SQLType) other).sqlTypeKeyword);
+            } else {
+                return false;
+            }
+        }
+
         /**
-         * Returns all table names of the given database.<br>
-         * Variables:<br>
-         * 0: database name
+         * {@inheritDoc}
          */
-        GET_TABLE_NAMES;
+        @Override
+        public int hashCode() {
+            return sqlTypeKeyword.hashCode();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int compareTo(SQLType other) {
+            return sqlTypeKeyword.compareToIgnoreCase(other.sqlTypeKeyword);
+        }
+
+        /**
+         * Returns the SQL type keyword in upper case and appends a comma separated list of parameters in braces.
+         *
+         * @return The SQL type keyword in upper case and appends a comma separated list of parameters in braces.
+         */
+        public String getSqlTypeKeyword() {
+            return sqlTypeKeyword + parameter;
+        }
     }
 }

@@ -16,8 +16,6 @@
  */
 package bayern.steinbrecher.green2.connection.scheme;
 
-import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Keywords;
-import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases.Queries;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -115,7 +113,7 @@ public enum Tables {
                 .add(dbms.getKeywords(columns.get(column).getValue(), column).stream().collect(Collectors.joining(" ")))
                 .toString())
                 .collect(Collectors.joining(", "));
-        return dbms.getTemplate(SupportedDatabases.Queries.CREATE_TABLE, getRealTableName(), columnList);
+        return dbms.getTemplate(Queries.CREATE_TABLE, getRealTableName(), columnList);
     }
 
     /**
@@ -133,8 +131,8 @@ public enum Tables {
             case CREATE_TABLE:
                 statement = generateCreateStatement(dbms);
                 break;
-            case GET_COLUMN_NAMES:
-                statement = dbms.getTemplate(Queries.GET_COLUMN_NAMES, databaseName, getRealTableName());
+            case GET_COLUMN_NAMES_AND_TYPES:
+                statement = dbms.getTemplate(Queries.GET_COLUMN_NAMES_AND_TYPES, databaseName, getRealTableName());
                 break;
             case GET_TABLE_NAMES:
                 statement = dbms.getTemplate(Queries.GET_TABLE_NAMES, databaseName);
