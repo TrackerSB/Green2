@@ -23,5 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           fx:controller="bayern.steinbrecher.green2.query.QueryController">
     <GridPane fx:id="queryInput" />
     <Button onAction="#query"
-            disable="${controller.valid}" />
+            disable="${controller.valid}"
+            text="%search"/>
 </VBox>

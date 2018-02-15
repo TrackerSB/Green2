@@ -39,6 +39,20 @@ public class CheckedDoubleSpinner extends CheckedSpinner<Double> {
      * Constructs a new {@link CheckedDoubleSpinner}.
      *
      * @param min The minimum allowed value.
+     * @param initialValue The value of the Spinner when first instantiated, must be within the bounds of the min and
+     * max arguments, or else the min value will be used.
+     * @param amountToStepBy The amount to increment or decrement by, per step.
+     */
+    public CheckedDoubleSpinner(@NamedArg("min") double min,
+            @NamedArg("initialValue") double initialValue,
+            @NamedArg("amountToStepBy") double amountToStepBy) {
+        this(min, Double.MAX_VALUE, initialValue, amountToStepBy, true);
+    }
+
+    /**
+     * Constructs a new {@link CheckedDoubleSpinner}.
+     *
+     * @param min The minimum allowed value.
      * @param max The maximum allowed value.
      * @param initialValue The value of the Spinner when first instantiated, must be within the bounds of the min and
      * max arguments, or else the min value will be used.

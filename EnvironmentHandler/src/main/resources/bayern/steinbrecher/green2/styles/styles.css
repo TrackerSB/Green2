@@ -38,7 +38,7 @@
     -fx-font-size: 12px;
 }
 
-.root, .wizard-content {
+.root, .wizard-content, GridPane {
     -fx-hgap: 5px;
     -fx-vgap: 10px;
 }
