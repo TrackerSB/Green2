@@ -46,9 +46,9 @@ public enum SupportedDatabases {
                     Keywords.PRIMARY_KEY, "PRIMARY KEY"
             ),
             HashBiMap.create(Map.of(
-                    Boolean.class, new SQLType("TINYINT", 1),
+                    Boolean.class, new SQLType("TINYINT", 1), //BOOLEAN is an alias for TINYIT(1)
                     Double.class, new SQLType("FLOAT"),
-                    Integer.class, new SQLType("INTEGER"),
+                    Integer.class, new SQLType("INT"), //INTEGER is an alias for INT
                     LocalDate.class, new SQLType("DATE"),
                     String.class, new SQLType("VARCHAR", 255)
             )),
@@ -159,7 +159,13 @@ public enum SupportedDatabases {
      * @since 2u14
      */
     public Optional<Class<?>> getType(String sqlType) {
-        return Optional.ofNullable(types.inverse().get(new SQLType(sqlType)));
+        Optional<Class<?>> type = Optional.ofNullable(types.inverse().get(new SQLType(sqlType)));
+        if (!type.isPresent()) {
+            Logger.getLogger(SupportedDatabases.class.getName())
+                    .log(Level.WARNING, "The database {0} does not define a class for SQL type {1}.",
+                            new Object[]{displayName, sqlType});
+        }
+        return type;
     }
 
     /**

@@ -344,6 +344,7 @@ public abstract class DBConnection implements AutoCloseable {
                     List<List<String>> result = execQuery(table.generateQuery(Queries.GET_COLUMN_NAMES_AND_TYPES,
                             profileInfo.getValue(), profileInfo.getKey()));
                     List<Pair<String, Class<?>>> listOfColumns = result.stream()
+                            .skip(1) //Skip headings
                             .map(list -> {
                                 return profileInfo.getValue()
                                         .getType(list.get(1))
@@ -352,8 +353,11 @@ public abstract class DBConnection implements AutoCloseable {
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .collect(Collectors.toList());
-                    //NOTE Don´t use putIfAbsent(...) since it is lacking lazy evaluation for the second argument.
-                    EXISTING_COLUMNS_CACHE.put(table, listOfColumns.subList(1, listOfColumns.size()));
+                    /*
+                     * NOTE Use "if containsKey(...)" instead of putIfAbsent(...) since it is lacking lazy evaluation
+                     * for the second argument.
+                     */
+                    EXISTING_COLUMNS_CACHE.put(table, listOfColumns);
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -374,7 +378,9 @@ public abstract class DBConnection implements AutoCloseable {
         //TODO Think about ignoring small/capital letters in column names
         return EXISTING_COLUMNS_CACHE.get(table).stream()
                 .map(Pair::getKey)
-                .filter(c -> c.equalsIgnoreCase(column.getRealColumnName()))
+                .filter(c -> {
+                    return c.equalsIgnoreCase(column.getRealColumnName());
+                })
                 .findAny()
                 .isPresent();
     }
