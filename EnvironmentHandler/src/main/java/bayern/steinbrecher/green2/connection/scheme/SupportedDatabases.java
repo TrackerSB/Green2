@@ -147,7 +147,7 @@ public enum SupportedDatabases {
         if (types.containsKey(type)) {
             return types.get(type);
         } else {
-            throw new Error("For the database " + displayName + " no SQL type for type " + type + " is not defined.");
+            throw new Error("For the database " + displayName + " no SQL type for type " + type + " is defined.");
         }
     }
 
