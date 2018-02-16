@@ -4,7 +4,7 @@
 [![JDK Version](https://img.shields.io/badge/Java-9.0.4-blue.svg)](https://github.com/TrackerSB/Green2)
 [![CSS Version](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
 
-### Statistics
+### Statistics (master branch)
 [![Total](https://tokei.rs/b1/github/TrackerSB/Green2?category=lines)](https://github.com/TrackerSB/Green2)
 [![LoC](https://tokei.rs/b1/github/TrackerSB/Green2?category=code)](https://github.com/TrackerSB/Green2)
 [![comments](https://tokei.rs/b1/github/TrackerSB/Green2?category=comments)](https://github.com/TrackerSB/Green2)
