@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.query;
 
-import bayern.steinbrecher.green2.CheckedController;
+import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
@@ -24,7 +24,6 @@ import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -48,12 +47,13 @@ import javafx.util.Pair;
  *
  * @author Stefan Huber
  */
-public class QueryController extends CheckedController {
+public class QueryController extends WizardableController {
 
     @FXML
     private GridPane queryInput;
     private final ObjectProperty<DBConnection> dbConnection = new SimpleObjectProperty<>(this, "dbConnection");
-    private final List<CheckedInputField<?, ?>> inputFields = new ArrayList<>();
+    private final ObjectProperty<Optional<List<List<String>>>> lastQueryResult
+            = new SimpleObjectProperty<>(Optional.empty());
 
     private static <T> Optional<CheckedInputField<T, ?>> createInputField(Class<T> columnType) {
         CheckedInputField<T, ?> inputField;
@@ -159,8 +159,15 @@ public class QueryController extends CheckedController {
                 throw new IllegalStateException(
                         "The query dialog can not be opened since it can not show any column to query.");
             }
-            stage.sizeToScene(); //TODO Is it needed?
+            //TODO Should lastQueryResult be cleared when changing the DBConnection?
         });
+    }
+
+    private void updateLastQueryResult() {
+        //TODO Determine whether updating lastQueryResult is needed
+        //throw new UnsupportedOperationException("Querying itself is not supported yet.");
+        lastQueryResult.set(Optional.of(List.of(List.of("Spalte 1", "Spalte 2", "Spalte 3"),
+                List.of("Eintrag 1", "Eintrag 2", "Eintrag 3"), List.of("Eintrag 4", "Eintrag 5", "Eintrag 6"))));
     }
 
     @FXML
@@ -168,7 +175,17 @@ public class QueryController extends CheckedController {
             justification = "It is called by an appropriate fxml file")
     private void query() {
         if (isValid()) {
-            throw new UnsupportedOperationException("Querying itself is not supported yet.");
+            updateLastQueryResult();
+            stage.close();
+        }
+    }
+
+    public Optional<List<List<String>>> getQueryResult() {
+        if (userAbborted()) {
+            return Optional.empty();
+        } else {
+            updateLastQueryResult();
+            return lastQueryResult.get();
         }
     }
 
@@ -176,12 +193,12 @@ public class QueryController extends CheckedController {
         return dbConnection;
     }
 
-    public DBConnection getDbConnection() {
-        return dbConnectionProperty().get();
-    }
-
     public void setDbConnection(DBConnection dbConnection) {
         this.dbConnection.set(dbConnection);
+    }
+
+    public DBConnection getDbConnection() {
+        return dbConnectionProperty().get();
     }
 
     //FIXME May force somehow "N extends CheckedControl"

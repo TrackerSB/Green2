@@ -31,6 +31,7 @@ import bayern.steinbrecher.green2.generator.sepa.SequenceType;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.query.Query;
+import bayern.steinbrecher.green2.query.QueryResult;
 import bayern.steinbrecher.green2.selection.Selection;
 import bayern.steinbrecher.green2.selection.SelectionGroup;
 import bayern.steinbrecher.green2.sepaform.SepaForm;
@@ -479,10 +480,32 @@ public class MenuController extends Controller {
             justification = "It is called by an appropriate fxml file")
     private void openQueryDialog(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
-            Query queryDialog = new Query(dbConnection);
-            Stage queryStage = new Stage();
-            queryDialog.start(queryStage);
-            queryStage.showAndWait();
+            try {
+                Map<String, WizardPage<?>> pages = new HashMap<>();
+                WizardPage<Optional<List<List<String>>>> queryDialogPage = new Query(dbConnection).getWizardPage();
+                pages.put(WizardPage.FIRST_PAGE_KEY, queryDialogPage);
+                Wizard queryWizard = new Wizard(pages);
+                queryDialogPage.setNextFunction(() -> {
+                    WizardPage<Optional<Void>> queryResultPage
+                            = new QueryResult(queryDialogPage.getResultFunction().call().orElse(null))
+                                    .getWizardPage();
+                    queryResultPage.setFinish(true);
+                    queryWizard.put("queryResult", queryResultPage);
+                    return "queryResult";
+                });
+                Stage wizardStage = new Stage();
+                wizardStage.initOwner(stage);
+                wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryMemberTitle"));
+                wizardStage.setResizable(false);
+                wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+                queryWizard.start(wizardStage);
+                wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+                wizardStage.showAndWait();
+            } catch (IOException ex) {
+                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                DialogUtility.createStacktraceAlert(stage, ex, EnvironmentHandler.getResourceValue("noQueryDialog"))
+                        .showAndWait();
+            }
         });
     }
 

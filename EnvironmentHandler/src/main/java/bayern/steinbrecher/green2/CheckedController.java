@@ -21,8 +21,8 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * This controller extends {@link Controller} with the properties {@code anyMissingInput}, {@code anyInputToLong} and
- * {@code valid}.
+ * This controller extends {@link WizardableController} with the properties {@code anyMissingInput},
+ * {@code anyInputToLong} and {@code valid}.
  *
  * @author Stefan Huber
  */
@@ -71,25 +71,5 @@ public abstract class CheckedController extends WizardableController {
      */
     public boolean isAnyInputMissing() {
         return anyInputMissing.get();
-    }
-
-    /**
-     * Returns the property representing a boolean value indicating whether all input is valid.
-     *
-     * @return The property representing a boolean value indicating whether all input is valid.
-     */
-    @Override
-    public ReadOnlyBooleanProperty validProperty() {
-        return valid;
-    }
-
-    /**
-     * Checks whether all inserted data is valid.
-     *
-     * @return {@code true} only if all inserted data is valid.
-     */
-    @Override
-    public boolean isValid() {
-        return valid.get();
     }
 }

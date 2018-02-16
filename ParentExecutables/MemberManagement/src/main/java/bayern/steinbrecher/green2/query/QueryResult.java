@@ -18,8 +18,6 @@ package bayern.steinbrecher.green2.query;
 
 import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
-import bayern.steinbrecher.green2.connection.DBConnection;
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
 import java.util.List;
@@ -32,57 +30,45 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * Represents a form for querying member.
  *
  * @author Stefan Huber
  */
-public class Query extends WizardableView<Optional<List<List<String>>>, QueryController> {
+public class QueryResult extends WizardableView<Optional<Void>, QueryResultController> {
 
-    private final DBConnection dbConnection;
+    private List<List<String>> queryResult;
 
-    /**
-     * Creates a new query dialog which uses the given {@link DBConnection}.
-     *
-     * @param dbConnection The connection to use for queries.
-     */
-    public Query(DBConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public QueryResult(List<List<String>> queryResult) {
+        this.queryResult = queryResult;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void callWhenLoadFXML() {
-        getController().setDbConnection(dbConnection);
+        setQueryResult(queryResult);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("Query.fxml");
+            root = loadFXML("QueryResult.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
-        getController().setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle(EnvironmentHandler.getResourceValue("queryMemberTitle"));
-        stage.setResizable(false);
+    }
+
+    public void setQueryResult(List<List<String>> queryResult) {
+        getController().setQueryResult(queryResult);
     }
 
     @Override
-    public WizardPage<Optional<List<List<String>>>> getWizardPage() {
+    public WizardPage<Optional<Void>> getWizardPage() {
         try {
-            Pane root = loadFXML("Query_Wizard.fxml");
-            return new WizardPage<>(
-                    root, null, false, () -> getController().getQueryResult(), getController().validProperty());
+            Pane root = loadFXML("QueryResult_Wizard.fxml");
+            return new WizardPage<>(root, null, false, () -> Optional.empty());
         } catch (IOException ex) {
-            Logger.getLogger(Query.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(QueryResult.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
