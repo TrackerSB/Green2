@@ -66,7 +66,7 @@ public abstract class SpecificRegexTextField extends CheckedRegexTextField {
      */
     @Override
     public final StringProperty regexProperty() {
-        throw new UnsupportedOperationException("You're not allowed to change the regex used for IBANs");
+        throw new UnsupportedOperationException("You're not allowed to change the regex used.");
     }
 
     /**
@@ -76,6 +76,6 @@ public abstract class SpecificRegexTextField extends CheckedRegexTextField {
      */
     @Override
     public final void setRegex(String regex) {
-        throw new UnsupportedOperationException("You're not allowed to change the regex used for IBANs");
+        throw new UnsupportedOperationException("You're not allowed to change the regex used.");
     }
 }
