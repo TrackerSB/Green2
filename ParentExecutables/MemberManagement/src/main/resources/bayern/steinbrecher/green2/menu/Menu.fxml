@@ -70,12 +70,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           text="%checkData"
                           accelerator="Alt+P"/>
             </Menu>
-            <Menu fx:id="licensesMenu"
-                  text="%licenses"/>
             <Menu text="%about">
                 <MenuItem fx:id="creditsMenuItem"
                           text="%credits"
                           onAction="#showCredits"/>
+                <Menu fx:id="licensesMenu"
+                      text="%licenses"/>
                 <MenuItem text="%version"
                           onAction="#showVersion"/>
             </Menu>
