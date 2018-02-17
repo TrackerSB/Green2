@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <HBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.query.QueryResultController">
-    <TableView fx:id="queryResultView">
+    <TableView fx:id="queryResultView"
+               editable="false">
     </TableView>
 </HBox>
