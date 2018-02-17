@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
+import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import javafx.scene.control.TextField;
  *
  * @author Stefan Huber
  */
-public class CheckedTextField extends TextField {
+public class CheckedTextField extends TextField implements CheckedControl {
 
     /**
      * The CSS class representing this class.
@@ -160,28 +161,25 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Represents whether this text field is checked or not.
-     *
-     * @return The property representing whether this text field is checked or not.
+     * {@inheritDoc}
      */
+    @Override
     public BooleanProperty checkedProperty() {
         return checked;
     }
 
     /**
-     * Checks whether the text field is checked.
-     *
-     * @return {@code true} only if the text field is checked.
+     * {@inheritDoc}
      */
+    @Override
     public boolean isChecked() {
         return checked.get();
     }
 
     /**
-     * Sets whether to check the content of this field or not.
-     *
-     * @param checked {@code true} only if the content of this field has to be checked.
+     * {@inheritDoc}
      */
+    @Override
     public void setChecked(boolean checked) {
         this.checked.set(checked);
     }
@@ -224,20 +222,17 @@ public class CheckedTextField extends TextField {
     }
 
     /**
-     * Returns the property representing the validity of the inserted content.
-     *
-     * @return The property representing the validity of the inserted content.
+     * {@inheritDoc}
      */
+    @Override
     public ReadOnlyBooleanProperty validProperty() {
         return valid;
     }
 
     /**
-     * Checks whether the current content is valid.
-     *
-     * @return {@code true} only if the current content is valid.
-     * @see #valid
+     * {@inheritDoc}
      */
+    @Override
     public boolean isValid() {
         return valid.get();
     }

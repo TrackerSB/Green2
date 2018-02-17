@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.io.IOException;
 import java.net.URL;
@@ -42,7 +43,7 @@ import javafx.scene.paint.Color;
  *
  * @author Stefan Huber
  */
-public class ContributionField extends HBox implements Initializable {
+public class ContributionField extends HBox implements Initializable, CheckedControl {
 
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
@@ -53,6 +54,10 @@ public class ContributionField extends HBox implements Initializable {
     private ObjectProperty<ColorPicker> colorPickerProperty = new SimpleObjectProperty<>(this, "colorPicker");
     private BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
     private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    /**
+     * Holds {@code true} only if the content has to be checked.
+     */
+    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
 
     /**
      * Represents a combination of a spinner for entering a contribution and an associated color. The minimum value is
@@ -80,7 +85,7 @@ public class ContributionField extends HBox implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contributionSpinnerProperty.addListener((obs, oldVal, newVal) -> {
-            valid.bind(newVal.validProperty());
+            valid.bind(newVal.validProperty().or(checked.not()));
             ElementsUtility.addCssClassIf(newVal, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
         });
         colorPickerProperty.addListener((obs, oldVal, newVal) -> {
@@ -167,19 +172,41 @@ public class ContributionField extends HBox implements Initializable {
     }
 
     /**
-     * Returns the property containing whether the current input is valid.
-     *
-     * @return The property containing whether the current input is valid.
+     * {@inheritDoc}
      */
+    @Override
+    public BooleanProperty checkedProperty() {
+        return checked;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isChecked() {
+        return checked.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setChecked(boolean checked) {
+        this.checked.set(checked);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ReadOnlyBooleanProperty validProperty() {
         return valid;
     }
 
     /**
-     * Checks whether the current input is valid.
-     *
-     * @return {@code true} only if the current input is valid.
+     * {@inheritDoc}
      */
+    @Override
     public boolean isValid() {
         return valid.get();
     }

@@ -36,7 +36,7 @@ import javafx.scene.control.DatePicker;
  *
  * @author Stefan Huber
  */
-public class CheckedDatePicker extends DatePicker {
+public class CheckedDatePicker extends DatePicker implements CheckedControl {
 
     private static final DateTimeFormatter DATE_TIME_FORMAT_SHORT
             = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
@@ -47,6 +47,10 @@ public class CheckedDatePicker extends DatePicker {
      */
     private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
     private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    /**
+     * Holds {@code true} only if the content has to be checked.
+     */
+    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
     private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
     private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
     private final BooleanProperty invalidPastDate = new SimpleBooleanProperty(this, "invalidPastDate");
@@ -106,7 +110,7 @@ public class CheckedDatePicker extends DatePicker {
             return executionDate != null && executionDate.isAfter(LocalDate.now());
         }, executionDateBinding);
 
-        valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()));
+        valid.bind((executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not())).or(checked.not()));
         invalid.bind(valid.not());
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 
@@ -114,19 +118,41 @@ public class CheckedDatePicker extends DatePicker {
     }
 
     /**
-     * Returns the {@link BooleanProperty} representing whether the current value is valid or not.
-     *
-     * @return The {@link BooleanProperty} representing whether the current value is valid or not.
+     * {@inheritDoc}
      */
+    @Override
+    public BooleanProperty checkedProperty() {
+        return checked;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isChecked() {
+        return checked.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setChecked(boolean checked) {
+        this.checked.set(checked);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ReadOnlyBooleanProperty validProperty() {
         return valid;
     }
 
     /**
-     * Checks whether the current value is a valid date.
-     *
-     * @return {@code true} only if the current value is a valid date.
+     * {@inheritDoc}
      */
+    @Override
     public boolean isValid() {
         return valid.get();
     }

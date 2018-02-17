@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.elements.spinner;
 
+import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,13 +34,17 @@ import javafx.scene.control.SpinnerValueFactory;
  * @author Stefan Huber
  * @param <T> The type of the values to spin.
  */
-public class CheckedSpinner<T> extends Spinner<T> {
+public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl {
 
     /**
      * {@link BooleanProperty} indicating whether the current value is valid.
      */
     private BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
     private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    /**
+     * Holds {@code true} only if the content has to be checked.
+     */
+    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
 
     /**
      * Constructs a new {@code CheckedSpinner}.
@@ -54,26 +59,48 @@ public class CheckedSpinner<T> extends Spinner<T> {
             Optional<T> parsed = parser.apply(getEditor().textProperty().get());
             parsed.ifPresent(p -> factory.setValue(p));
             return parsed.isPresent();
-        }, getEditor().textProperty()));
+        }, getEditor().textProperty()).or(checked.not()));
         invalid.bind(valid.not());
 
         ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**
-     * Returns the {@link BooleanProperty} representing whether the current value is valid or not.
-     *
-     * @return The {@link BooleanProperty} representing whether the current value is valid or not.
+     * {@inheritDoc}
      */
+    @Override
+    public BooleanProperty checkedProperty() {
+        return checked;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isChecked() {
+        return checked.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setChecked(boolean checked) {
+        this.checked.set(checked);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ReadOnlyBooleanProperty validProperty() {
         return valid;
     }
 
     /**
-     * Checks whether the currently inserted value is valid.
-     *
-     * @return {@code true} only if the current value is valid.
+     * {@inheritDoc}
      */
+    @Override
     public boolean isValid() {
         return valid.get();
     }
