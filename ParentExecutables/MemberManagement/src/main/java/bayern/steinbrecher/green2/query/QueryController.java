@@ -19,27 +19,35 @@ package bayern.steinbrecher.green2.query;
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
-import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
-import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.spinner.ContributionField;
+import bayern.steinbrecher.green2.utility.BindingUtility;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.util.Pair;
 
 /**
@@ -54,82 +62,26 @@ public class QueryController extends WizardableController {
     private final ObjectProperty<DBConnection> dbConnection = new SimpleObjectProperty<>(this, "dbConnection");
     private final ObjectProperty<Optional<List<List<String>>>> lastQueryResult
             = new SimpleObjectProperty<>(Optional.empty());
+    private boolean isLastQueryUptodate = false;
 
-    private static <T> Optional<CheckedInputField<T, ?>> createInputField(Class<T> columnType) {
-        CheckedInputField<T, ?> inputField;
-        //FIXME Think about how to solve this in a different way.
+    //TODO Is there any way to connect these two questionmarks?
+    private Optional<CheckedConditionField<?>> createConditionField(Class<?> columnType) {
+        CheckedConditionField<?> conditionField;
+        //TODO How to avoid isAssignableFrom(...)?
         if (columnType.isAssignableFrom(Boolean.class)) {
-            inputField = new CheckedInputField<T, CheckBox>() {
-                @Override
-                protected CheckBox getNodeImpl() {
-                    return new CheckBox();
-                }
-
-                @Override
-                protected Function<CheckBox, T> getNodeValueFunction() {
-                    return cb -> (T) (Boolean) cb.isSelected();
-                }
-            };
+            conditionField = new BooleanConditionField();
         } else if (columnType.isAssignableFrom(String.class)) {
-            inputField = new CheckedInputField<T, TextField>() {
-                @Override
-                protected TextField getNodeImpl() {
-                    return new TextField();
-                }
-
-                @Override
-                protected Function<TextField, T> getNodeValueFunction() {
-                    return tf -> (T) tf.getText();
-                }
-            };
-        } else if (columnType.isAssignableFrom(LocalDate.class)) {
-            inputField = new CheckedInputField<T, DatePicker>() {
-                @Override
-                protected DatePicker getNodeImpl() {
-                    return new DatePicker();
-                }
-
-                @Override
-                protected Function<DatePicker, T> getNodeValueFunction() {
-                    return dp -> (T) dp.getValue();
-                }
-            };
+            conditionField = new StringConditionField();
         } else if (columnType.isAssignableFrom(Integer.class)) {
-            inputField = new CheckedInputField<T, CheckedIntegerSpinner>() {
-                @Override
-                protected CheckedIntegerSpinner getNodeImpl() {
-                    //FIXME Clear text of spinner
-                    CheckedIntegerSpinner cis = new CheckedIntegerSpinner(Integer.MIN_VALUE, 0, 1);
-                    cis.setEditable(true);
-                    cis.getEditor().setText("");
-                    return cis;
-                }
-
-                @Override
-                protected Function<CheckedIntegerSpinner, T> getNodeValueFunction() {
-                    return cis -> (T) cis.getValue();
-                }
-            };
+            conditionField = new IntegerConditionField();
         } else if (columnType.isAssignableFrom(Double.class)) {
-            inputField = new CheckedInputField<T, CheckedDoubleSpinner>() {
-                @Override
-                protected CheckedDoubleSpinner getNodeImpl() {
-                    //FIXME Clear text of spinner
-                    CheckedDoubleSpinner cds = new CheckedDoubleSpinner(Double.MIN_VALUE, 0, 1);
-                    cds.setEditable(true);
-                    cds.getEditor().setText("");
-                    return cds;
-                }
-
-                @Override
-                protected Function<CheckedDoubleSpinner, T> getNodeValueFunction() {
-                    return cds -> (T) cds.getValue();
-                }
-            };
+            conditionField = new DoubleConditionField();
+        } else if (columnType.isAssignableFrom(LocalDate.class)) {
+            conditionField = new LocalDateConditionField();
         } else {
-            inputField = null;
+            conditionField = null;
         }
-        return Optional.ofNullable(inputField);
+        return Optional.ofNullable(conditionField);
     }
 
     /**
@@ -145,9 +97,9 @@ public class QueryController extends WizardableController {
                     .collect(Collectors.toList());
             for (Pair<String, Class<?>> column : sortedColumns) {
                 Label columnLabel = new Label(column.getKey());
-                Optional<? extends CheckedInputField<?, ?>> inputField = createInputField(column.getValue());
-                if (inputField.isPresent()) {
-                    queryInput.addRow(rowCounter, columnLabel, inputField.get().getNode());
+                Optional<CheckedConditionField<?>> conditionField = createConditionField(column.getValue());
+                if (conditionField.isPresent()) {
+                    queryInput.addRow(rowCounter, columnLabel, conditionField.get());
                     rowCounter++;
                 } else {
                     Logger.getLogger(QueryController.class.getName())
@@ -159,15 +111,17 @@ public class QueryController extends WizardableController {
                 throw new IllegalStateException(
                         "The query dialog can not be opened since it can not show any column to query.");
             }
+            isLastQueryUptodate = false;
             //TODO Should lastQueryResult be cleared when changing the DBConnection?
         });
     }
 
+    //TODO Should this method be synchronized?
     private void updateLastQueryResult() {
-        //TODO Determine whether updating lastQueryResult is needed
-        //throw new UnsupportedOperationException("Querying itself is not supported yet.");
-        lastQueryResult.set(Optional.of(List.of(List.of("Spalte 1", "Spalte 2", "Spalte 3"),
-                List.of("Eintrag 1", "Eintrag 2", "Eintrag 3"), List.of("Eintrag 4", "Eintrag 5", "Eintrag 6"))));
+        if (!isLastQueryUptodate) {
+            isLastQueryUptodate = true;
+            throw new UnsupportedOperationException("Querying itself is not supported yet");
+        }
     }
 
     @FXML
@@ -201,28 +155,153 @@ public class QueryController extends WizardableController {
         return dbConnectionProperty().get();
     }
 
-    //FIXME May force somehow "N extends CheckedControl"
-    private static abstract class CheckedInputField<T, N extends Node> {
+    private static abstract class CheckedConditionField<T> extends HBox implements CheckedControl, Initializable {
 
-        private N node = null;
+        private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", false);
+        private final ListProperty<ObservableBooleanValue> validConditions
+                = new SimpleListProperty<>(FXCollections.observableArrayList());
+        private final BooleanProperty validCondition = new SimpleBooleanProperty(true);
+        private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid", true);
+        private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
 
-        protected abstract N getNodeImpl();
-
-        public final N getNode() {
-            if (node == null) {
-                node = getNodeImpl();
+        protected final void loadFXML(String fxmlFileName) {
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    CheckedConditionField.class.getResource(fxmlFileName), EnvironmentHandler.RESOURCE_BUNDLE);
+            try {
+                fxmlLoader.setRoot(this);
+                fxmlLoader.setController(this);
+                fxmlLoader.load();
+            } catch (IOException ex) {
+                Logger.getLogger(ContributionField.class.getName())
+                        .log(Level.SEVERE, "Could not load CheckedConditionField", ex);
             }
-            return node;
         }
 
-        protected abstract Function<N, T> getNodeValueFunction();
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public final void initialize(URL location, ResourceBundle resources) {
+            validConditions.addListener(
+                    (obs, oldVal, newVal) -> validCondition.bind(BindingUtility.reduceAnd(newVal.stream())));
+            valid.bind(validCondition.or(checked.not()));
+            invalid.bind(valid.not());
+        }
 
-        public final T getNodeValue() {
-            if (node == null) {
-                throw new IllegalStateException("No node has been created yet.");
+        protected abstract Optional<String> getConditionImpl();
+
+        public final Optional<String> getCondition() {
+            Optional<String> condition;
+            if (isValid()) {
+                condition = getConditionImpl();
             } else {
-                return getNodeValueFunction().apply(node);
+                condition = Optional.empty();
             }
+            return condition;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public BooleanProperty checkedProperty() {
+            return checked;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isChecked() {
+            return checked.get();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void setChecked(boolean checked) {
+            this.checked.set(checked);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ReadOnlyBooleanProperty validProperty() {
+            return valid;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isValid() {
+            return valid.get();
+        }
+
+        protected void addValidCondition(ObservableBooleanValue condition) {
+            validConditions.get().add(condition);
+        }
+    }
+
+    private static class BooleanConditionField extends CheckedConditionField<Boolean> {
+
+        public BooleanConditionField() {
+            loadFXML("BooleanConditionField.fxml");
+        }
+
+        @Override
+        protected Optional<String> getConditionImpl() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    private static class StringConditionField extends CheckedConditionField<String> {
+
+        public StringConditionField() {
+            loadFXML("StringConditionField.fxml");
+        }
+
+        @Override
+        protected Optional<String> getConditionImpl() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    private static class IntegerConditionField extends CheckedConditionField<Integer> {
+
+        public IntegerConditionField() {
+            loadFXML("IntegerConditionField.fxml");
+        }
+
+        @Override
+        protected Optional<String> getConditionImpl() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    private static class DoubleConditionField extends CheckedConditionField<Double> {
+
+        public DoubleConditionField() {
+            loadFXML("DoubleConditionField.fxml");
+        }
+
+        @Override
+        protected Optional<String> getConditionImpl() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    private static class LocalDateConditionField extends CheckedConditionField<LocalDate> {
+
+        public LocalDateConditionField() {
+            loadFXML("LocalDateConditionField.fxml");
+        }
+
+        @Override
+        protected Optional<String> getConditionImpl() {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
     }
 }
