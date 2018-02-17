@@ -112,9 +112,7 @@ public class MenuController extends Controller {
             () -> checkContributions());
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
-    //FIXME For <> JDK 9 is needed
-    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday
-            = new HashMap<Integer, CompletableFuture<List<Member>>>(3) {
+    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new HashMap<>(3) {
         /**
          * Returns the value hold at key {@code key}. In contrast to {@link HashMap#get(java.lang.Object)} this method
          * never returns {@code null}. When the searched element is not found the appropriate data is generated, put and

@@ -90,7 +90,7 @@ public class Wizard extends Application {
         controller.setStage(stage);
         controller.setPages(pages);
 
-        updateContentSize(); //TODO Think about whether an explicit call is needed.
+        updateContentSize();
     }
 
     private void updateContentSize() {
@@ -101,7 +101,6 @@ public class Wizard extends Application {
         boolean wasShowing = stage.isShowing();
         boolean wasImplicitExit = Platform.isImplicitExit();
 
-        //FIXME Avoid showing/hiding pages just for determining their size.
         Platform.setImplicitExit(false);
         for (Entry<String, WizardPage<?>> entry : controller.getPages().entrySet()) {
             Pane pane = entry.getValue().getRoot();
