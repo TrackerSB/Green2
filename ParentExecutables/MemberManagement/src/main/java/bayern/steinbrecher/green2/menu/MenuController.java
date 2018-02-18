@@ -320,6 +320,7 @@ public class MenuController extends Controller {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void generateSepa(Future<Set<Member>> memberToSelectFuture, boolean useMemberContributions,
             SequenceType sequenceType) {
         try {
@@ -361,6 +362,7 @@ public class MenuController extends Controller {
                     if (newVal) {
                         Map<String, ?> results = wizard.getResults().get();
                         Set<Member> selectedMember;
+                        //TODO Is there any way to avoid explicit casts?
                         if (askForContribution) {
                             Map<Color, Double> contribution
                                     = ((Optional<Map<Color, Double>>) results.get("contribution")).get();
