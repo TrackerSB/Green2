@@ -144,8 +144,9 @@ public class QueryController extends WizardableController {
             //TODO Should lastQueryResult be cleared when changing the DBConnection?
         });
         conditionFields.addListener((obs, oldVal, newVal) -> {
-            valid.bind(BindingUtility.reduceAnd(conditionFields.stream()
-                    .map(CheckedConditionField::validProperty)));
+            valid.bind(BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty))
+                    .and(BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::emptyProperty))
+                            .not()));
         });
     }
 
@@ -188,7 +189,8 @@ public class QueryController extends WizardableController {
         return dbConnectionProperty().get();
     }
 
-    private static abstract class CheckedConditionField<T> extends HBox implements ReadOnlyCheckedControl, Initializable {
+    private static abstract class CheckedConditionField<T> extends HBox
+            implements ReadOnlyCheckedControl, Initializable {
 
         private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
         private final ListProperty<ObservableBooleanValue> validConditions
@@ -196,6 +198,7 @@ public class QueryController extends WizardableController {
         private final BooleanProperty validCondition = new SimpleBooleanProperty(true);
         private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid", false);
         private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", false);
+        private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
         private final String realColumnName;
 
         /**
@@ -245,6 +248,7 @@ public class QueryController extends WizardableController {
                     (obs, oldVal, newVal) -> validCondition.bind(BindingUtility.reduceAnd(newVal.stream())));
             valid.bind(validCondition.or(checked.not()));
             invalid.bind(valid.not());
+            checked.bind(emptyProperty().not());
             initializeImpl();
         }
 
@@ -298,14 +302,31 @@ public class QueryController extends WizardableController {
         }
 
         /**
-         * Binds the {@code checkedProperty} to another value. Only if {@code obs} holds {@code true} the input is
-         * checked.
+         * Returns the property holding whether the input field is empty.
          *
-         * @param obs The value to bind the {@code checkedProperty} to.
-         * @see #checkedProperty()
+         * @return Holds {@code true} only if the input field is empty.
          */
-        protected void bindCheckedProperty(ObservableValue<? extends Boolean> obs) {
-            checked.bind(obs);
+        public ReadOnlyBooleanProperty emptyProperty() {
+            return empty;
+        }
+
+        /**
+         * Checks whether the input field is empty.
+         *
+         * @return {@code true} only if the input field is empty.
+         */
+        public boolean isEmpty() {
+            return emptyProperty().get();
+        }
+
+        /**
+         * Binds the {@code emptyProperty} to another value. Only if {@code obs} holds {@code true} the input is empty.
+         *
+         * @param obs The value to bind the {@code emptyProperty} to.
+         * @see #emptyProperty()
+         */
+        protected void bindEmptyProperty(ObservableValue<? extends Boolean> obs) {
+            empty.bind(obs);
         }
 
         /**
@@ -342,6 +363,11 @@ public class QueryController extends WizardableController {
 
         public BooleanConditionField(Pair<String, Class<Boolean>> column) {
             super(column);
+        }
+
+        @Override
+        protected void initializeImpl() {
+            bindEmptyProperty(checkbox.indeterminateProperty());
         }
 
         @Override
@@ -396,7 +422,7 @@ public class QueryController extends WizardableController {
 
         @Override
         protected void initializeImpl() {
-            bindCheckedProperty(inputField.emptyProperty().not());
+            bindEmptyProperty(inputField.emptyProperty());
             addValidCondition(inputField.validProperty());
             inputField.checkedProperty().bind(checkedProperty());
             final BiMap<Pair<String, String>, String> valueDisplayMap = HashBiMap.create(Map.of(
@@ -433,7 +459,7 @@ public class QueryController extends WizardableController {
 
         @Override
         protected void initializeImpl() {
-            bindCheckedProperty(spinner.getEditor().textProperty().isEmpty().not());
+            bindEmptyProperty(spinner.getEditor().textProperty().isEmpty());
             addValidCondition(spinner.validProperty());
             spinner.checkedProperty().bind(checkedProperty());
             spinner.setEditable(true);
@@ -497,7 +523,7 @@ public class QueryController extends WizardableController {
 
         @Override
         protected void initializeImpl() {
-            bindCheckedProperty(datePicker.emptyProperty().not());
+            bindEmptyProperty(datePicker.emptyProperty());
             addValidCondition(datePicker.validProperty());
             datePicker.checkedProperty().bind(checkedProperty());
             final BiMap<String, String> valueDisplayMap = HashBiMap.create(Map.of(
