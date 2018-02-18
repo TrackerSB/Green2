@@ -17,47 +17,23 @@
 package bayern.steinbrecher.green2.elements;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
  * Represents which represents controls like buttons, checkboxes, input fields, etc which have addional properties
- * describing whether the current input is valid or if it is checked whether it is valid.
+ * describing whether the current input is valid or if it is checked whether it is valid. In contrast to
+ * {@link ReadOnlyCheckedControl} the checked property can be changed.
+ *
+ * @see ReadOnlyCheckedControl
  *
  * @author Stefan Huber
  */
-public interface CheckedControl {
-
-    //TODO Is there any way to pull up the implementation to here?
-    //TODO How to force to return a ReadOnlyBooleanProperty instead of a BooleanProperty?
-    /**
-     * Returns the {@link BooleanProperty} representing whether the current input is valid or not.
-     *
-     * @return The {@link BooleanProperty} representing whether the current input is valid or not.
-     * @see #isValid()
-     */
-    ReadOnlyBooleanProperty validProperty();
+public interface CheckedControl extends ReadOnlyCheckedControl {
 
     /**
-     * Checks whether the currently input is valid or not checked.
-     *
-     * @return {@code true} only if the current input is valid or it is not checked.
-     * @see #isChecked()
+     * {@inheritDoc}
      */
-    boolean isValid();
-
-    /**
-     * Represents whether the input is checked or not.
-     *
-     * @return The property representing whether the input is checked or not.
-     */
+    @Override
     BooleanProperty checkedProperty();
-
-    /**
-     * Checks whether the input is checked.
-     *
-     * @return {@code true} only if the input is checked.
-     */
-    boolean isChecked();
 
     /**
      * Sets whether to check the input or not.

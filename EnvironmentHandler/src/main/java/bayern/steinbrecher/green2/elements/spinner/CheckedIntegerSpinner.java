@@ -37,6 +37,19 @@ public class CheckedIntegerSpinner extends CheckedSpinner<Integer> {
     };
 
     /**
+     * Constructs a new {@link CheckedIntegerSpinner} with maximum value {@link Integer#MAX_VALUE} and minimum value
+     * {@link Integer#MIN_VALUE}.
+     *
+     * @param initialValue The value of the Spinner when first instantiated, must be within the bounds of the min and
+     * max arguments, or else the min value will be used.
+     * @param amountToStepBy The amount to increment or decrement by, per step.
+     */
+    public CheckedIntegerSpinner(@NamedArg("initialValue") int initialValue,
+            @NamedArg("amountToStepBy") int amountToStepBy) {
+        this(Integer.MIN_VALUE, initialValue, amountToStepBy);
+    }
+
+    /**
      * Constructs a new {@link CheckedIntegerSpinner} with maximum value {@link Integer#MAX_VALUE}.
      *
      * @param min The minimum allowed value.

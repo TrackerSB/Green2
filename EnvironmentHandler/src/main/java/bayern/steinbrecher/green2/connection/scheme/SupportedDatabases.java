@@ -57,13 +57,15 @@ public enum SupportedDatabases {
                     + "WHERE table_schema=\"{0}\" AND table_name=\"{1}\";",
                     Queries.GET_TABLE_NAMES, "SELECT table_name FROM information_schema.tables "
                     + "WHERE table_schema=\"{0}\";"
-            ));
+            ),
+            '`');
 
     private final String displayName;
     private final int defaultPort;
     private final Map<Keywords, String> keywords;
     private final BiMap<Class<?>, SQLType> types;
     private final Map<Queries, String> queryTemplates;
+    private final char columnQuoteSymbol;
 
     /**
      * Creates an enum representing a supported dbms.
@@ -76,12 +78,13 @@ public enum SupportedDatabases {
      * removed in future versions since {@code information_schema} is standardized.
      */
     private SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywords,
-            BiMap<Class<?>, SQLType> types, Map<Queries, String> queryTemplates) {
+            BiMap<Class<?>, SQLType> types, Map<Queries, String> queryTemplates, char columnQuoteSymbol) {
         this.displayName = displayName;
         this.defaultPort = defaultPort;
         this.keywords = keywords;
         this.types = types;
         this.queryTemplates = queryTemplates;
+        this.columnQuoteSymbol = columnQuoteSymbol;
 
         String missingKeywords = keywords.keySet().stream()
                 .filter(keyword -> !keywords.containsKey(keyword))
@@ -181,6 +184,18 @@ public enum SupportedDatabases {
         } else {
             throw new Error("For the database " + displayName + " the query " + query + " is not defined.");
         }
+    }
+
+    /**
+     * Returns the given column name quoted with the database specific quote symbol. It also escapes occurrences of the
+     * quote symbol within the column name.
+     *
+     * @param columnName The column name to quote.
+     * @return The quoted column name.
+     */
+    public String quoteColumnName(String columnName) {
+        return columnQuoteSymbol + columnName.replaceAll(String.valueOf(columnQuoteSymbol), "\\" + columnQuoteSymbol)
+                + columnQuoteSymbol;
     }
 
     /**
