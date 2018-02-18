@@ -15,14 +15,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.HBox?>
 
 <fx:root type="javafx.scene.layout.HBox"
          xmlns:fx="http://javafx.com/fxml/1">
+    <HBox />
+    <HBox />
     <CheckBox fx:id="checkbox"
               indeterminate="true"
               allowIndeterminate="true"/>

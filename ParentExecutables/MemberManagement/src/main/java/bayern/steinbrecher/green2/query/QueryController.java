@@ -63,6 +63,7 @@ import javafx.util.Pair;
 import javafx.util.StringConverter;
 import bayern.steinbrecher.green2.elements.ReadOnlyCheckedControl;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
+import javafx.scene.Node;
 
 /**
  * Represents the controller of the dialog for querying member.
@@ -120,7 +121,14 @@ public class QueryController extends WizardableController {
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
                     conditionFields.add(conditionField.get());
-                    queryInput.addRow(rowCounter, columnLabel, conditionField.get());
+                    queryInput.addRow(rowCounter, columnLabel);
+                    Node[] conditionFieldChildren = conditionField.get().getChildren().toArray(new Node[0]);
+                    if (conditionFieldChildren.length != 3) {
+                        Logger.getLogger(QueryController.class.getName())
+                                .log(Level.WARNING, "An input field of the query dialog has not exactly 3 elements. "
+                                        + "It may cause displacement of elements.");
+                    }
+                    queryInput.addRow(rowCounter, conditionFieldChildren);
                     rowCounter++;
                 } else {
                     Logger.getLogger(QueryController.class.getName())

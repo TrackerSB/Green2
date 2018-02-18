@@ -19,7 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
 <?import javafx.scene.control.ComboBox?>
 
-<fx:root type="javafx.scene.layout.HBox" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root type="javafx.scene.layout.HBox"
+         xmlns:fx="http://javafx.com/fxml/1">
     <HelpButton helpMessage="%sqlWildcardsHelp"/>
     <ComboBox fx:id="compareMode"/>
     <CheckedTextField fx:id="inputField"/>

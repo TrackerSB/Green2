@@ -18,9 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.HBox?>
 
 <fx:root type="javafx.scene.layout.HBox"
          xmlns:fx="http://javafx.com/fxml/1">
+    <HBox />
     <ComboBox fx:id="compareSymbol"/>
     <CheckedIntegerSpinner fx:id="spinner"
                            initialValue="0"
