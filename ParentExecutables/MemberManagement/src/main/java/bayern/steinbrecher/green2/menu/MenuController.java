@@ -286,7 +286,8 @@ public class MenuController extends Controller {
             if (memberList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
-                Optional<File> path = EnvironmentHandler.askForSavePath(stage, "Serienbrief_alle", "csv");
+                Optional<File> path = EnvironmentHandler.askForSavePath(
+                        stage, LocalDate.now().toString() + "_Serienbrief_alle", "csv");
                 if (path.isPresent()) {
                     generateAddresses(memberList, path.get());
                 }
@@ -308,7 +309,8 @@ public class MenuController extends Controller {
             if (memberBirthdayList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
-                Optional<File> path = EnvironmentHandler.askForSavePath(stage, "Serienbrief_Geburtstag_" + year, "csv");
+                Optional<File> path = EnvironmentHandler.askForSavePath(
+                        stage, LocalDate.now().toString() + "_Serienbrief_Geburtstag_" + year, "csv");
                 if (path.isPresent()) {
                     generateAddresses(memberBirthdayList, path.get());
                 }
@@ -378,25 +380,26 @@ public class MenuController extends Controller {
                         }
                         Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
-                        EnvironmentHandler.askForSavePath(stage, "Sepa", "xml").ifPresent(file -> {
-                            try {
-                                List<Member> invalidMember
-                                        = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
-                                                sequenceType, file, EnvironmentHandler.getProfile()
-                                                        .getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
-                                String message = invalidMember.stream()
-                                        .map(Member::toString)
-                                        .collect(Collectors.joining("\n"));
-                                if (!message.isEmpty()) {
-                                    Alert alert = DialogUtility.createErrorAlert(stage, message + "\n"
-                                            + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
-                                    Platform.runLater(() -> alert.show());
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(MenuController.class.getName())
-                                        .log(Level.SEVERE, "The sepa xml file could not be created.", ex);
-                            }
-                        });
+                        EnvironmentHandler.askForSavePath(stage, LocalDate.now().toString() + "_Sepa", "xml")
+                                .ifPresent(file -> {
+                                    try {
+                                        List<Member> invalidMember
+                                                = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
+                                                        sequenceType, file, EnvironmentHandler.getProfile()
+                                                                .getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
+                                        String message = invalidMember.stream()
+                                                .map(Member::toString)
+                                                .collect(Collectors.joining("\n"));
+                                        if (!message.isEmpty()) {
+                                            Alert alert = DialogUtility.createErrorAlert(stage, message + "\n"
+                                                    + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
+                                            Platform.runLater(() -> alert.show());
+                                        }
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(MenuController.class.getName())
+                                                .log(Level.SEVERE, "The sepa xml file could not be created.", ex);
+                                    }
+                                });
                     }
                 });
                 wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
@@ -601,7 +604,8 @@ public class MenuController extends Controller {
                     if (birthdayList.isEmpty()) {
                         showNoMemberForOutputDialog();
                     } else {
-                        Optional<File> path = EnvironmentHandler.askForSavePath(stage, "/Geburtstag_" + year, "csv");
+                        Optional<File> path = EnvironmentHandler.askForSavePath(
+                                stage, LocalDate.now().toString() + "_Geburtstag_" + year, "csv");
                         if (path.isPresent()) {
                             IOStreamUtility.printContent(
                                     BirthdayGenerator.createGroupedOutput(birthdayList, year), path.get(), true);
