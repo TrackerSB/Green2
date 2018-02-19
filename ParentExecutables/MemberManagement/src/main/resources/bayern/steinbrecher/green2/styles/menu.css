@@ -38,6 +38,10 @@
     -fx-graphic: url("/bayern/steinbrecher/green2/icons/worldwide.png");
 }
 
+#queryDialogMenuItem > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/search.png");
+}
+
 .menu > .label {
 }
 
