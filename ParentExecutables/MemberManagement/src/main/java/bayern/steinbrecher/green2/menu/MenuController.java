@@ -487,7 +487,7 @@ public class MenuController extends Controller {
                 Wizard queryWizard = new Wizard(pages);
                 queryDialogPage.setNextFunction(() -> {
                     WizardPage<Optional<Void>> queryResultPage
-                            = new QueryResult(queryDialogPage.getResultFunction().call().orElse(null))
+                            = new QueryResult(queryDialogPage.getResultFunction().call().orElse(new ArrayList<>()))
                                     .getWizardPage();
                     queryResultPage.setFinish(true);
                     queryWizard.put("queryResult", queryResultPage);

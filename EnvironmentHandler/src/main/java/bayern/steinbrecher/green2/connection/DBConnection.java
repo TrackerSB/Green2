@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -205,26 +206,60 @@ public abstract class DBConnection implements AutoCloseable {
     /**
      * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
      * trailing space at the end. The select statement contains only columns existing and associated with {@code table}.
+     * The where clause excludes conditions references a column contained in {@code columnsToSelect} which do not exist.
+     * NOTE: Other non existing columns are not excluded from the where clause yet.
      *
      * @param table The table to select from.
-     * @param columnsToSelect The columns to select when they exist.
-     * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
-     * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
-     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection,
-     * bayern.steinbrecher.green2.connection.scheme.Columns[])
+     * @param columnsToSelect The columns to select when they exist. If it is empty all available columns are queried.
+     * @param conditions The conditions every row has to satisfy.
+     * @return The statement selecting all existing columns of {@code columnsToSelect} satisfying all
+     * {@code conditions}. Returns {@link Optional#empty()} if {@code columnsToSelect} contains no column which exists
+     * in the scheme accessible through {@code connection}.
+     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.scheme.Tables, java.util.Collection,
+     * java.util.Collection)
      */
-    public Optional<String> generateSearchQuery(Tables table, Collection<Columns<?>> columnsToSelect) {
+    //FIXME The method does not tell which columns and condtions were excluded.
+    public Optional<String> generateSearchQuery(Tables table, Collection<String> columnsToSelect,
+            Collection<String> conditions) {
         throwIfInvalid();
-        List<Columns> existingColumns = columnsToSelect.stream()
-                .filter(c -> columnExists(table, c))
-                .collect(Collectors.toList());
+        List<String> existingColumns;
+        List<String> notExistingColumns = new ArrayList<>();
+        if (columnsToSelect.isEmpty()) {
+            checkExistingColumnsCache(table);
+            existingColumns = EXISTING_COLUMNS_CACHE.get(table).stream()
+                    .map(Pair::getKey)
+                    .collect(Collectors.toList());
+        } else {
+            existingColumns = new ArrayList<>();
+            columnsToSelect.stream().forEach((String cn) -> {
+                if (columnExists(table, cn)) {
+                    existingColumns.add(cn);
+                } else {
+                    notExistingColumns.add(cn);
+                }
+            });
+        }
         if (existingColumns.isEmpty()) {
             return Optional.empty();
         } else {
+            String conditionString;
+            if (conditions.isEmpty()) {
+                conditionString = "";
+            } else {
+                List<Pattern> notExistingColumnsPattern = notExistingColumns.stream()
+                        //Used regex: (?:^|.*\W)columnName(?:\W.*|$)
+                        //Tested at: http://www.regexplanet.com/advanced/java/index.html
+                        //TODO Should it be case sensitive?
+                        .map(cn -> Pattern.compile("(?:^|.*\\\\W)" + cn + "(?:\\\\W.*|$)", Pattern.CASE_INSENSITIVE))
+                        .collect(Collectors.toList());
+                conditionString = conditions.stream()
+                        .filter(c -> notExistingColumnsPattern.stream().noneMatch(p -> p.matcher(c).matches()))
+                        .collect(Collectors.joining(" AND "));
+            }
             return Optional.of("SELECT " + existingColumns.stream()
-                    .map(Columns::getRealColumnName)
-                    .collect(Collectors.joining(","))
-                    + " FROM " + table.getRealTableName());
+                    .collect(Collectors.joining(", "))
+                    + " FROM " + table.getRealTableName()
+                    + (conditionString.isEmpty() ? "" : " WHERE " + conditionString));
         }
     }
 
@@ -233,13 +268,17 @@ public abstract class DBConnection implements AutoCloseable {
      * trailing space at the end. The select statement contains only columns existing and associated with {@code table}.
      *
      * @param table The table to select from.
-     * @param columnsToSelect The columns to select when they exist.
+     * @param columnsToSelect The columns to select when they exist. If it is empty all available columns are queried.
      * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
      * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
-     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.DBConnection, java.util.Collection)
+     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.scheme.Tables, java.util.Collection,
+     * java.util.Collection)
      */
-    public Optional<String> generateSearchQuery(Tables table, Columns... columnsToSelect) {
-        return generateSearchQuery(table, Arrays.asList(columnsToSelect));
+    public Optional<String> generateSearchQuery(Tables table, Collection<Columns<?>> columnsToSelect) {
+        List<String> columnNamesToSelect = columnsToSelect.stream()
+                .map(Columns::getRealColumnName)
+                .collect(Collectors.toList());
+        return generateSearchQuery(table, columnNamesToSelect, new ArrayList<>());
     }
 
     /**
@@ -336,6 +375,7 @@ public abstract class DBConnection implements AutoCloseable {
         }
     }
 
+    //FIXME How to make sure it is called every time HashMap<>#get(...) is called?
     private void checkExistingColumnsCache(Tables table) {
         synchronized (EXISTING_COLUMNS_CACHE) {
             if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
@@ -366,23 +406,33 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Checks whether the given table of the configured database contains a specific column. The column must be
-     * associated with {@code table} and has to be accessible.
+     * Checks whether the given table of the configured database contains a specific column and the column is
+     * accessible.
      *
      * @param table The name of the table to search for the column.
-     * @param column The column name to search for.
-     * @return {@code true} only if the given table contains the given column.
+     * @param columnName The column name to search for.
+     * @return {@code true} only if the given table contains the given column and it is accessible.
      */
-    public boolean columnExists(Tables table, Columns<?> column) {
+    public boolean columnExists(Tables table, String columnName) {
         checkExistingColumnsCache(table);
         //TODO Think about ignoring small/capital letters in column names
         return EXISTING_COLUMNS_CACHE.get(table).stream()
                 .map(Pair::getKey)
-                .filter(c -> {
-                    return c.equalsIgnoreCase(column.getRealColumnName());
-                })
+                .filter(c -> c.equalsIgnoreCase(columnName))
                 .findAny()
                 .isPresent();
+    }
+
+    /**
+     * Checks whether the given table of the configured database contains a specific column. The column must be
+     * associated with {@code table} and has to be accessible.
+     *
+     * @param table The table to search the column for.
+     * @param column The column for whose {@link Columns#getRealColumnName()} to search for.
+     * @return {@code true} only if the given table contains the given column.
+     */
+    public boolean columnExists(Tables table, Columns<?> column) {
+        return columnExists(table, column.getRealColumnName());
     }
 
     /**

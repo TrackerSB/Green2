@@ -35,7 +35,7 @@ import javafx.stage.Stage;
  */
 public class QueryResult extends WizardableView<Optional<Void>, QueryResultController> {
 
-    private List<List<String>> queryResult;
+    private final List<List<String>> queryResult;
 
     public QueryResult(List<List<String>> queryResult) {
         this.queryResult = queryResult;

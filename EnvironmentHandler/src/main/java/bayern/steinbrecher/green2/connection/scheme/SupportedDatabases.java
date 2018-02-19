@@ -188,7 +188,7 @@ public enum SupportedDatabases {
 
     /**
      * Returns the given column name quoted with the database specific quote symbol. It also escapes occurrences of the
-     * quote symbol within the column name.
+     * quote symbol within the column name. NOTE: It is not checked whether the column exists somewhere.
      *
      * @param columnName The column name to quote.
      * @return The quoted column name.

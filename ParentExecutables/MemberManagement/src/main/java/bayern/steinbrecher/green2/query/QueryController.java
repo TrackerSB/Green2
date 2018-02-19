@@ -63,6 +63,10 @@ import javafx.util.Pair;
 import javafx.util.StringConverter;
 import bayern.steinbrecher.green2.elements.ReadOnlyCheckedControl;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.scene.Node;
 
 /**
@@ -144,17 +148,34 @@ public class QueryController extends WizardableController {
             //TODO Should lastQueryResult be cleared when changing the DBConnection?
         });
         conditionFields.addListener((obs, oldVal, newVal) -> {
+            //FIXME When conditionFields is changing often a lot of listeners may be added but not removed.
+            conditionFields.stream().forEach(ccf -> ccf.addListener(invalidObs -> {
+                isLastQueryUptodate = false;
+            }));
             valid.bind(BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty))
                     .and(BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::emptyProperty))
                             .not()));
         });
     }
 
-    //TODO Should this method be synchronized?
-    private void updateLastQueryResult() {
+    //TODO What exactly should be synchronized?
+    private synchronized void updateLastQueryResult() {
         if (!isLastQueryUptodate) {
-            isLastQueryUptodate = true;
-            throw new UnsupportedOperationException("Querying itself is not supported yet");
+            List<String> conditions = conditionFields.stream()
+                    .map(CheckedConditionField::getCondition)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+            Optional<String> searchQuery = dbConnectionProperty().get()
+                    .generateSearchQuery(Tables.MEMBER, new ArrayList<>(), conditions);
+            searchQuery.ifPresent(query -> {
+                try {
+                    lastQueryResult.set(Optional.of(dbConnectionProperty().get().execQuery(query)));
+                    isLastQueryUptodate = true;
+                } catch (SQLException ex) {
+                    Logger.getLogger(QueryController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
         }
     }
 
@@ -190,7 +211,7 @@ public class QueryController extends WizardableController {
     }
 
     private static abstract class CheckedConditionField<T> extends HBox
-            implements ReadOnlyCheckedControl, Initializable {
+            implements ReadOnlyCheckedControl, Initializable, Observable {
 
         private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
         private final ListProperty<ObservableBooleanValue> validConditions
@@ -273,7 +294,7 @@ public class QueryController extends WizardableController {
          */
         public final Optional<String> getCondition() {
             Optional<String> condition;
-            if (isValid()) {
+            if (isValid() && !isEmpty()) {
                 SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
                 condition = getConditionImpl();
                 if (condition.isPresent()) {
@@ -354,6 +375,18 @@ public class QueryController extends WizardableController {
         protected void addValidCondition(ObservableBooleanValue condition) {
             validConditions.get().add(condition);
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public abstract void addListener(InvalidationListener listener);
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public abstract void removeListener(InvalidationListener listener);
     }
 
     private static class BooleanConditionField extends CheckedConditionField<Boolean> {
@@ -384,6 +417,18 @@ public class QueryController extends WizardableController {
                 condition = " = " + Columns.IS_MALE.toString(checkbox.isSelected());
             }
             return Optional.ofNullable(condition);
+        }
+
+        @Override
+        public void addListener(InvalidationListener listener) {
+            checkbox.selectedProperty().addListener(listener);
+            checkbox.indeterminateProperty().addListener(listener);
+        }
+
+        @Override
+        public void removeListener(InvalidationListener listener) {
+            checkbox.selectedProperty().removeListener(listener);
+            checkbox.indeterminateProperty().removeListener(listener);
         }
     }
 
@@ -426,12 +471,12 @@ public class QueryController extends WizardableController {
             addValidCondition(inputField.validProperty());
             inputField.checkedProperty().bind(checkedProperty());
             final BiMap<Pair<String, String>, String> valueDisplayMap = HashBiMap.create(Map.of(
-                    new Pair<>("LIKE ", ""), EnvironmentHandler.getResourceValue("exactlyMatches"),
-                    new Pair<>("LIKE %", "%"), EnvironmentHandler.getResourceValue("contains")
+                    new Pair<>("", ""), EnvironmentHandler.getResourceValue("exactlyMatches"),
+                    new Pair<>("%", "%"), EnvironmentHandler.getResourceValue("contains")
             ));
             compareMode.setConverter(createStringConverter(valueDisplayMap));
             compareMode.setItems(FXCollections.observableArrayList(valueDisplayMap.keySet()));
-            compareMode.getSelectionModel().select(new Pair<>("LIKE ", ""));
+            compareMode.getSelectionModel().select(new Pair<>("", ""));
         }
 
         @Override
@@ -442,7 +487,19 @@ public class QueryController extends WizardableController {
         @Override
         protected Optional<String> getConditionImpl() {
             Pair<String, String> mode = compareMode.getValue();
-            return Optional.of(Columns.BIC.toString(mode.getKey() + inputField.getText() + mode.getValue()));
+            return Optional.of("LIKE " + Columns.BIC.toString(mode.getKey() + inputField.getText() + mode.getValue()));
+        }
+
+        @Override
+        public void addListener(InvalidationListener listener) {
+            compareMode.valueProperty().addListener(listener);
+            inputField.textProperty().addListener(listener);
+        }
+
+        @Override
+        public void removeListener(InvalidationListener listener) {
+            compareMode.valueProperty().removeListener(listener);
+            inputField.textProperty().removeListener(listener);
         }
     }
 
@@ -473,6 +530,18 @@ public class QueryController extends WizardableController {
         @Override
         protected Optional<String> getConditionImpl() {
             return Optional.of(compareSymbol.getValue() + " " + convert(spinner.getValue()));
+        }
+
+        @Override
+        public void addListener(InvalidationListener listener) {
+            spinner.valueProperty().addListener(listener);
+            compareSymbol.valueProperty().addListener(listener);
+        }
+
+        @Override
+        public void removeListener(InvalidationListener listener) {
+            spinner.valueProperty().removeListener(listener);
+            compareSymbol.valueProperty().removeListener(listener);
         }
     }
 
@@ -544,6 +613,18 @@ public class QueryController extends WizardableController {
         @Override
         protected Optional<String> getConditionImpl() {
             return Optional.of(compareMode.getValue() + " " + Columns.BIRTHDAY.toString(datePicker.getValue()));
+        }
+
+        @Override
+        public void addListener(InvalidationListener listener) {
+            compareMode.valueProperty().addListener(listener);
+            datePicker.valueProperty().addListener(listener);
+        }
+
+        @Override
+        public void removeListener(InvalidationListener listener) {
+            compareMode.valueProperty().removeListener(listener);
+            datePicker.valueProperty().removeListener(listener);
         }
     }
 }
