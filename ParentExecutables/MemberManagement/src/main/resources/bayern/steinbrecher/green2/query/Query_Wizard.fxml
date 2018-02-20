@@ -15,9 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<GridPane xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="bayern.steinbrecher.green2.query.QueryController"
-          fx:id="queryInput">
-</GridPane>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.query.QueryController">
+    <GridPane fx:id="queryInput" />
+    <HBox>
+        <Label text="%invalidOrMissingInput"
+               visible="${!controller.valid}"
+               styleClass="warningLabel"/>
+    </HBox>
+</VBox>
