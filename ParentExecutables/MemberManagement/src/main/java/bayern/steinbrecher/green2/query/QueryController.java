@@ -189,6 +189,12 @@ public class QueryController extends WizardableController {
         }
     }
 
+    /**
+     * Returns the result based on the currently inserted valid conditions.
+     *
+     * @return The result based on the currently inserted valid conditions. Returns {@link Optional#empty()} if the user
+     * abborted the query or the query could not be successfully executed.
+     */
     public Optional<List<List<String>>> getQueryResult() {
         if (userAbborted()) {
             return Optional.empty();
@@ -198,14 +204,29 @@ public class QueryController extends WizardableController {
         }
     }
 
+    /**
+     * Returns the property holding the currently used {@link DBConnection}.
+     *
+     * @return The property holding the currently used {@link DBConnection}.
+     */
     public ObjectProperty<DBConnection> dbConnectionProperty() {
         return dbConnection;
     }
 
+    /**
+     * Sets a new {@link DBConnection}.
+     *
+     * @param dbConnection The {@link DBConnection} to use from now on.
+     */
     public void setDbConnection(DBConnection dbConnection) {
         this.dbConnection.set(dbConnection);
     }
 
+    /**
+     * Returns the currently used {@link DBConnection}.
+     *
+     * @return The currently used {@link DBConnection}.
+     */
     public DBConnection getDbConnection() {
         return dbConnectionProperty().get();
     }

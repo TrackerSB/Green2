@@ -50,6 +50,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
+ * The controller of {@link QueryResult}.
  *
  * @author Stefan Huber
  */
@@ -60,6 +61,9 @@ public class QueryResultController extends WizardableController {
     private final ObjectProperty<List<List<String>>> queryResult = new SimpleObjectProperty<>();
     private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         empty.bind(Bindings.createBooleanBinding(() -> {
@@ -105,18 +109,6 @@ public class QueryResultController extends WizardableController {
         VBox.setVgrow(queryResultView, Priority.ALWAYS);
     }
 
-    public ObjectProperty<List<List<String>>> queryResultProperty() {
-        return queryResult;
-    }
-
-    public List<List<String>> getQueryResult() {
-        return queryResultProperty().get();
-    }
-
-    public void setQueryResult(List<List<String>> queryResult) {
-        queryResultProperty().set(queryResult);
-    }
-
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
@@ -138,10 +130,49 @@ public class QueryResultController extends WizardableController {
         }
     }
 
+    /**
+     * Returns the property holding the currently shown query results.
+     *
+     * @return The property holding the currently shown query results.
+     */
+    public ObjectProperty<List<List<String>>> queryResultProperty() {
+        return queryResult;
+    }
+
+    /**
+     * Returns the currently shown query results.
+     *
+     * @return The currently shown query results.
+     */
+    public List<List<String>> getQueryResult() {
+        return queryResultProperty().get();
+    }
+
+    /**
+     * Replaces the currently shown query results with the given one.
+     *
+     * @param queryResult The results to replace the currently shown once with.
+     */
+    public void setQueryResult(List<List<String>> queryResult) {
+        queryResultProperty().set(queryResult);
+    }
+
+    /**
+     * Returns the property holding whether the shown result is empty.
+     *
+     * @return The property holding whether the shown result is empty. It holds {@code true} if and only if the current
+     * result contains no columns, no rows or only one row representing the headings of the columns.
+     */
     public ReadOnlyBooleanProperty emptyProperty() {
         return empty;
     }
 
+    /**
+     * Checks whether the shown result is empty.
+     *
+     * @return {@code true} if and only if the current result contains no columns, no rows or only one row representing
+     * the headings of the columns.
+     */
     public boolean isEmpty() {
         return emptyProperty().get();
     }

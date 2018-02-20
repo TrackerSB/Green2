@@ -30,6 +30,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
+ * A dialog for displaying tables of {@link String}s representing results of queries.
  *
  * @author Stefan Huber
  */
@@ -37,15 +38,26 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
 
     private final List<List<String>> queryResult;
 
+    /**
+     * Creates a new {@link QueryResult} initially showing the content of {@code queryResult}.
+     *
+     * @param queryResult The content to show initially.
+     */
     public QueryResult(List<List<String>> queryResult) {
         this.queryResult = queryResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void callWhenLoadFXML() {
         setQueryResult(queryResult);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void startImpl(Stage stage) {
         Parent root;
@@ -58,10 +70,18 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
         stage.setScene(new Scene(root));
     }
 
+    /**
+     * Sets the query result to show.
+     *
+     * @param queryResult The query result to show.
+     */
     public void setQueryResult(List<List<String>> queryResult) {
         getController().setQueryResult(queryResult);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public WizardPage<Optional<Void>> getWizardPage() {
         try {

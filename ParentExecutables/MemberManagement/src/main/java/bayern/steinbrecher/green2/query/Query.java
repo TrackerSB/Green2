@@ -75,6 +75,9 @@ public class Query extends WizardableView<Optional<List<List<String>>>, QueryCon
         stage.setResizable(false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public WizardPage<Optional<List<List<String>>>> getWizardPage() {
         try {
