@@ -120,11 +120,11 @@ public abstract class /*enum*/ Columns<T> {
     private final String realColumnName;
     private final T defaultValue;
 
-    public Columns(String realColumnName) {
+    private Columns(String realColumnName) {
         this(realColumnName, null);
     }
 
-    public Columns(String realColumnName, T defaultValue) {
+    private Columns(String realColumnName, T defaultValue) {
         this.realColumnName = realColumnName;
         this.defaultValue = defaultValue;
     }
