@@ -80,7 +80,10 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl {
     public CheckedDatePicker(LocalDate locale, boolean forceFuture) {
         super(locale);
         this.forceFuture.set(forceFuture);
+        initProperties();
+    }
 
+    private void initProperties() {
         empty.bind(getEditor().textProperty().isEmpty());
 
         ObjectBinding<LocalDate> executionDateBinding = Bindings.createObjectBinding(() -> {

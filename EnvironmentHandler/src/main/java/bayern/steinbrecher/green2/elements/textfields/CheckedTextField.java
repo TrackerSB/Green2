@@ -135,7 +135,7 @@ public class CheckedTextField extends TextField implements CheckedControl {
      *
      * @return The property representing the maximum column count.
      */
-    public IntegerProperty maxColumnCountProperty() {
+    public final IntegerProperty maxColumnCountProperty() {
         return maxColumnCount;
     }
 
@@ -144,8 +144,8 @@ public class CheckedTextField extends TextField implements CheckedControl {
      *
      * @return The current set maximum column count.
      */
-    public int getMaxColumnCount() {
-        return maxColumnCount.get();
+    public final int getMaxColumnCount() {
+        return maxColumnCountProperty().get();
     }
 
     /**
@@ -153,11 +153,11 @@ public class CheckedTextField extends TextField implements CheckedControl {
      *
      * @param maxColumnCount The new maximum column count.
      */
-    public void setMaxColumnCount(int maxColumnCount) {
+    public final void setMaxColumnCount(int maxColumnCount) {
         if (maxColumnCount < 1) {
             throw new IllegalArgumentException("maxColumnCount must be at least 1");
         }
-        this.maxColumnCount.set(maxColumnCount);
+        maxColumnCountProperty().set(maxColumnCount);
     }
 
     /**

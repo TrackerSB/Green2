@@ -246,16 +246,6 @@ public class MenuController extends Controller {
         queryData();
     }
 
-    /**
-     * Checks whether all given properties contain futures which are not {@code null}. If any is {@code null} it throws
-     * a {@link IllegalStateException}.
-     *
-     * @param properties The properties to test.
-     * @param <T> The type of result of the {@link Future}. This type parameter is currently not explicitely used.
-     */
-    /*private <T> void checkQueriesInitialized(ObjectProperty<Future<T>>... properties) {
-
-    }*/
     private List<Member> getBirthdayMember(int year) throws InterruptedException, ExecutionException {
         return member.get().get()
                 .parallelStream()

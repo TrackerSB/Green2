@@ -22,6 +22,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -234,7 +235,7 @@ public enum SupportedDatabases {
          * {@link Object#equals(java.lang.Object)}, {@link Comparable#compareTo(java.lang.Object)}, etc.
          */
         public SQLType(String sqlTypeKeyword, Object... parameter) {
-            this.sqlTypeKeyword = sqlTypeKeyword.toUpperCase();
+            this.sqlTypeKeyword = sqlTypeKeyword.toUpperCase(Locale.ROOT);
             this.parameter = parameter.length > 0
                     ? Arrays.stream(parameter)
                             .map(String::valueOf)

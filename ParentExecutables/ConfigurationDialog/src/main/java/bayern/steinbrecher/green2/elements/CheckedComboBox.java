@@ -49,6 +49,10 @@ public class CheckedComboBox<T> extends ComboBox<T> {
      */
     public CheckedComboBox(ObservableList<T> items) {
         super(items);
+        initProperties();
+    }
+
+    private void initProperties() {
         nothingSelected.bind(Bindings.createBooleanBinding(() -> getSelectionModel().isEmpty(),
                 selectionModelProperty(), getSelectionModel().selectedItemProperty()));
         ElementsUtility.addCssClassIf(this, nothingSelected, ElementsUtility.CSS_CLASS_INVALID_CONTENT);

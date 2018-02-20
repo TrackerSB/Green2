@@ -125,7 +125,7 @@ public class CheckedDoubleSpinnerValueFactory extends SpinnerValueFactory.Double
      *
      * @return The property holding whether the minimum value is included or not.
      */
-    public BooleanProperty includeMinProperty() {
+    public final BooleanProperty includeMinProperty() {
         return includeMin;
     }
 
@@ -134,7 +134,7 @@ public class CheckedDoubleSpinnerValueFactory extends SpinnerValueFactory.Double
      *
      * @return {@code true} if and only if the minimum value is include.
      */
-    public boolean isIncludeMin() {
+    public final boolean isIncludeMin() {
         return includeMin.get();
     }
 
@@ -143,7 +143,7 @@ public class CheckedDoubleSpinnerValueFactory extends SpinnerValueFactory.Double
      *
      * @param includeMin {@code true} only if the minimum value has to be included.
      */
-    public void setIncludeMin(boolean includeMin) {
+    public final void setIncludeMin(boolean includeMin) {
         this.includeMin.set(includeMin);
     }
 }

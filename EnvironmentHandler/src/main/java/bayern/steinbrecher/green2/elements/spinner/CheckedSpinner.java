@@ -39,8 +39,8 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl {
     /**
      * {@link BooleanProperty} indicating whether the current value is valid.
      */
-    private BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
-    private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
+    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
     /**
      * Holds {@code true} only if the content has to be checked.
      */
@@ -54,7 +54,10 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl {
      */
     public CheckedSpinner(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
         super(factory);
+        initProperties(factory, parser);
+    }
 
+    private void initProperties(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
         valid.bind(Bindings.createBooleanBinding(() -> {
             Optional<T> parsed = parser.apply(getEditor().textProperty().get());
             parsed.ifPresent(p -> factory.setValue(p));

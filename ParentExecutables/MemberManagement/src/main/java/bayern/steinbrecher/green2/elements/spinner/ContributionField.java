@@ -47,13 +47,13 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
 
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
-    private ObjectProperty<CheckedDoubleSpinner> contributionSpinnerProperty
+    private final ObjectProperty<CheckedDoubleSpinner> contributionSpinnerProperty
             = new SimpleObjectProperty<>(this, "contributionSpinner");
     @FXML
     private ColorPicker colorPicker;
-    private ObjectProperty<ColorPicker> colorPickerProperty = new SimpleObjectProperty<>(this, "colorPicker");
-    private BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
-    private BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    private final ObjectProperty<ColorPicker> colorPickerProperty = new SimpleObjectProperty<>(this, "colorPicker");
+    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
+    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
     /**
      * Holds {@code true} only if the content has to be checked.
      */
@@ -67,6 +67,10 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      * @see CheckedDoubleSpinner#CheckedDoubleSpinner(double, double, double, double)
      */
     public ContributionField() {
+        loadFXML();
+    }
+
+    private void loadFXML() {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 ContributionField.class.getResource("ContributionField.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
         try {
