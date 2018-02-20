@@ -65,7 +65,7 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
     @Override
     public WizardPage<Optional<Void>> getWizardPage() {
         try {
-            Pane root = loadFXML("QueryResult_Wizard.fxml");
+            Pane root = loadFXML("QueryResult.fxml");
             return new WizardPage<>(root, null, false, () -> Optional.empty());
         } catch (IOException ex) {
             Logger.getLogger(QueryResult.class.getName()).log(Level.SEVERE, null, ex);

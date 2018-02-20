@@ -15,10 +15,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
 
-<TableView xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="bayern.steinbrecher.green2.query.QueryResultController"
-           fx:id="queryResultView"
-           editable="false">
-</TableView>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.query.QueryResultController">
+    <TableView fx:id="queryResultView"
+               editable="false">
+    </TableView>
+    <Button text="%export"
+            onAction="#export"
+            disable="${controller.empty}"/>
+</VBox>
