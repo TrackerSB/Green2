@@ -93,16 +93,15 @@ public class QueryController extends WizardableController {
         //TODO How to avoid explicit cast?
         Class<?> columnType = column.getValue();
         if (columnType.isAssignableFrom(Boolean.class)) {
-            conditionField = new BooleanConditionField(new Pair<>(column.getKey(), (Class<Boolean>) column.getValue()));
+            conditionField = new BooleanConditionField(new Pair<>(column.getKey(), (Class<Boolean>) columnType));
         } else if (columnType.isAssignableFrom(String.class)) {
-            conditionField = new StringConditionField(new Pair<>(column.getKey(), (Class<String>) column.getValue()));
+            conditionField = new StringConditionField(new Pair<>(column.getKey(), (Class<String>) columnType));
         } else if (columnType.isAssignableFrom(Integer.class)) {
-            conditionField = new IntegerConditionField(new Pair<>(column.getKey(), (Class<Integer>) column.getValue()));
+            conditionField = new IntegerConditionField(new Pair<>(column.getKey(), (Class<Integer>) columnType));
         } else if (columnType.isAssignableFrom(Double.class)) {
-            conditionField = new DoubleConditionField(new Pair<>(column.getKey(), (Class<Double>) column.getValue()));
+            conditionField = new DoubleConditionField(new Pair<>(column.getKey(), (Class<Double>) columnType));
         } else if (columnType.isAssignableFrom(LocalDate.class)) {
-            conditionField = new LocalDateConditionField(
-                    new Pair<>(column.getKey(), (Class<LocalDate>) column.getValue()));
+            conditionField = new LocalDateConditionField(new Pair<>(column.getKey(), (Class<LocalDate>) columnType));
         } else {
             conditionField = null;
         }
