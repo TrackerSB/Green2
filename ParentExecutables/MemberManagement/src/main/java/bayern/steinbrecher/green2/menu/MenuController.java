@@ -486,7 +486,7 @@ public class MenuController extends Controller {
                 Stage wizardStage = new Stage();
                 wizardStage.initOwner(stage);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryMemberTitle"));
-                wizardStage.setResizable(false);
+                wizardStage.setResizable(true);
                 wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 queryWizard.start(wizardStage);
                 wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);

@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.scene.Node;
+import javafx.scene.layout.Priority;
 
 /**
  * Represents the controller of the dialog for querying member.
@@ -487,6 +488,7 @@ public class QueryController extends WizardableController {
 
         @Override
         protected void initializeImpl() {
+            GridPane.setHgrow(inputField, Priority.ALWAYS);
             bindEmptyProperty(inputField.emptyProperty());
             addValidCondition(inputField.validProperty());
             inputField.checkedProperty().bind(checkedProperty());
@@ -536,6 +538,7 @@ public class QueryController extends WizardableController {
 
         @Override
         protected void initializeImpl() {
+            GridPane.setHgrow(spinner, Priority.ALWAYS);
             bindEmptyProperty(spinner.getEditor().textProperty().isEmpty());
             addValidCondition(spinner.validProperty());
             spinner.checkedProperty().bind(checkedProperty());

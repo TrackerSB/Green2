@@ -15,15 +15,20 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.wizard.WizardController"
+      fx:id="wizardContainer"
       styleClass="wizard">
-    <StackPane fx:id="contents" styleClass="wizard-content"></StackPane>
+    <AnchorPane fx:id="contentsResizePane">
+        <StackPane fx:id="contents"
+                   styleClass="wizard-content"/>
+    </AnchorPane>
     <ButtonBar styleClass="wizard-controls">
         <buttons>
             <Button fx:id="wizardControlPrevious"
