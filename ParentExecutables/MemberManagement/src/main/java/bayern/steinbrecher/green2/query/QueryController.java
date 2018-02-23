@@ -121,10 +121,10 @@ public class QueryController extends WizardableController {
                     .sorted((c1, c2) -> c1.getKey().compareToIgnoreCase(c2.getKey()))
                     .collect(Collectors.toList());
             for (Pair<String, Class<?>> column : sortedColumns) {
-                Label columnLabel = new Label(column.getKey());
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
                     conditionFields.add(conditionField.get());
+                    Label columnLabel = new Label(column.getKey());
                     queryInput.addRow(rowCounter, columnLabel);
                     Node[] conditionFieldChildren = conditionField.get().getChildren().toArray(new Node[0]);
                     if (conditionFieldChildren.length != 3) {
