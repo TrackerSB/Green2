@@ -299,6 +299,7 @@ public abstract class /*enum*/ Columns<T> {
             LocalDate date = null;
             try {
                 if (value == null) {
+                    //NOTE This case is intruduced to throw a DateTimeParseException instead of a NPE.
                     throw new DateTimeParseException("Can´t parse null", "null", 0);
                 } else {
                     date = LocalDate.parse(value);
