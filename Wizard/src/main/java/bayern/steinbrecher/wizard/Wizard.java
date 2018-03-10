@@ -18,17 +18,14 @@ package bayern.steinbrecher.wizard;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.*;
-import javafx.collections.ListChangeListener.Change;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -77,9 +74,6 @@ public class Wizard extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         this.stage = stage;
-        stage.sceneProperty().addListener((obs, oldVal, newVal) -> {
-            newVal.getStylesheets().addListener((Change<? extends String> c) -> updateContentSize());
-        });
 
         FXMLLoader fxmlLoader = new FXMLLoader(Wizard.class.getResource("Wizard.fxml"));
         fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
@@ -89,43 +83,6 @@ public class Wizard extends Application {
         controller = fxmlLoader.getController();
         controller.setStage(stage);
         controller.setPages(pages);
-
-        updateContentSize();
-    }
-
-    private void updateContentSize() {
-        double maxWidth = -1;
-        double maxHeight = -1;
-
-        //Save settings
-        boolean wasShowing = stage.isShowing();
-        boolean wasImplicitExit = Platform.isImplicitExit();
-
-        Platform.setImplicitExit(false);
-        for (Entry<String, WizardPage<?>> entry : controller.getPages().entrySet()) {
-            Pane pane = entry.getValue().getRoot();
-            pane.getChildren().forEach(child -> child.getStyleClass().add("wizard-inner-content"));
-            pane.applyCss();
-            pane.layout();
-            pane.autosize();
-
-            double paneWidth = pane.getBoundsInLocal().getWidth();
-            double paneHeight = pane.getBoundsInLocal().getHeight();
-            if (paneWidth > maxWidth) {
-                maxWidth = paneWidth;
-            }
-            if (paneHeight > maxHeight) {
-                maxHeight = paneHeight;
-            }
-        }
-
-        //Restore settings
-        if (wasShowing) {
-            stage.show();
-        }
-        Platform.setImplicitExit(wasImplicitExit);
-
-        controller.setContentSize(maxWidth, maxHeight);
     }
 
     /**

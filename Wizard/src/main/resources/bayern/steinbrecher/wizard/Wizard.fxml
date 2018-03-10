@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -25,10 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       fx:controller="bayern.steinbrecher.wizard.WizardController"
       fx:id="wizardContainer"
       styleClass="wizard">
-    <AnchorPane fx:id="contentsResizePane">
+    <ScrollPane fx:id="scrollContent"
+                fitToHeight="true"
+                fitToWidth="true"
+                hbarPolicy="AS_NEEDED"
+                vbarPolicy="AS_NEEDED"
+                VBox.vgrow="ALWAYS">
         <StackPane fx:id="contents"
                    styleClass="wizard-content"/>
-    </AnchorPane>
+    </ScrollPane>
     <ButtonBar styleClass="wizard-controls">
         <buttons>
             <Button fx:id="wizardControlPrevious"

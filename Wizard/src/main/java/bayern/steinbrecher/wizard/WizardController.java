@@ -45,9 +45,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.scene.Node;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -66,43 +65,25 @@ public class WizardController implements Initializable {
 
     private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
     private final Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
-    private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>() {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void set(ObservableMap<String, WizardPage<?>> newValue) {
-            Wizard.checkPages(newValue);
-            super.set(newValue);
-        }
-    };
+    private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
     private final BooleanProperty atBeginning = new SimpleBooleanProperty(this, "atBeginning", true);
     private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
     private final BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
     private final BooleanProperty changingPage = new SimpleBooleanProperty(this, "swiping", false);
     private final Stack<String> history = new Stack<>();
     @FXML
+    private ScrollPane scrollContent;
+    @FXML
     private StackPane contents;
     private Stage stage;
     private static final String WIZARD_CONTENT_STYLECLASS = "wizard-content";
     private static final Duration SWIPE_DURATION = Duration.seconds(0.75);
-    /**
-     * This {@link AnchorPane} is only needed to force the {@link StackPane} {@code contents} to resize.
-     */
-    @FXML
-    private AnchorPane contentsResizePane;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        VBox.setVgrow(contentsResizePane, Priority.ALWAYS);
-        AnchorPane.setTopAnchor(contents, 0D);
-        AnchorPane.setRightAnchor(contents, 0D);
-        AnchorPane.setBottomAnchor(contents, 0D);
-        AnchorPane.setLeftAnchor(contents, 0D);
-
         pages.addListener((obs, oldVal, newVal) -> {
             newVal.values().stream()
                     .map(WizardPage::getRoot)
@@ -115,13 +96,6 @@ public class WizardController implements Initializable {
                 atFinish.set(newPage.isFinish());
                 currentPage.setValue(newPage);
             });
-
-            currentIndex.set(WizardPage.FIRST_PAGE_KEY);
-            currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
-            history.clear();
-            history.push(WizardPage.FIRST_PAGE_KEY);
-
-            updatePage(Optional.empty());
         });
     }
 
@@ -181,22 +155,6 @@ public class WizardController implements Initializable {
     }
 
     /**
-     * Sets the size of the {@code Pane} containing the content of the page. This function can be used to make all
-     * wizard pages the same size.
-     *
-     * @param width The width of the content of the page.
-     * @param height The height of the content of the page.
-     */
-    public void setContentSize(double width, double height) {
-        contents.setMinWidth(width);
-        contents.setPrefWidth(width);
-        contents.setMaxWidth(width);
-        contents.setMinHeight(height);
-        contents.setPrefHeight(height);
-        contents.setMaxHeight(height);
-    }
-
-    /**
      * Returns the property holding all pages visitable.
      *
      * @return The property holding all pages visitable.
@@ -232,8 +190,10 @@ public class WizardController implements Initializable {
         };
 
         Pane nextPane = pages.get(currentIndex.get()).getRoot();
-        contents.getChildren().add(nextPane);
-        nextPane.getStyleClass().add(WIZARD_CONTENT_STYLECLASS);
+        if (!optCurrentPane.isPresent() || optCurrentPane.get() != nextPane) {
+            contents.getChildren().add(nextPane);
+            nextPane.getStyleClass().add(WIZARD_CONTENT_STYLECLASS);
+        }
 
         swipeToLeft.ifPresentOrElse(swipeLeft -> {
             double halfParentWidth = nextPane.getParent().getLayoutBounds().getWidth() / 2;
@@ -276,7 +236,13 @@ public class WizardController implements Initializable {
      * @param pages The map of pages to set.
      */
     public void setPages(Map<String, WizardPage<?>> pages) {
+        Wizard.checkPages(pages);
+        currentIndex.set(WizardPage.FIRST_PAGE_KEY);
         this.pages.set(FXCollections.observableMap(pages));
+        currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
+        history.clear();
+        history.push(WizardPage.FIRST_PAGE_KEY);
+        updatePage(Optional.empty());
     }
 
     /**
