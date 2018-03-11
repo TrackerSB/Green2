@@ -144,7 +144,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     text="%save"
                     defaultButton="true"
                     onAction="#saveSettingsAndReturn"
-                    ButtonBar.buttonData="OK"/>
+                    ButtonBar.buttonData="OK_DONE"/>
             <Button fx:id="saveAndContinue"
                     disable="${!controller.valid}"
                     text="%saveAndContinue"
