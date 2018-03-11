@@ -173,7 +173,8 @@ public class QueryController extends WizardableController {
                     lastQueryResult.set(Optional.of(dbConnectionProperty().get().execQuery(query)));
                     isLastQueryUptodate = true;
                 } catch (SQLException ex) {
-                    Logger.getLogger(QueryController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(QueryController.class.getName())
+                            .log(Level.SEVERE, "The query \"" + query + "\" failed.", ex);
                 }
             });
         }
