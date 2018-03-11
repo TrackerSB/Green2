@@ -20,9 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml/1"
+<VBox alignment="CENTER"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.launcher.LauncherController">
-    <ProgressBar minWidth="200" progress="${controller.percentage}"/>
+    <ProgressBar minWidth="200"
+                 progress="${controller.percentage}"/>
     <HBox alignment="CENTER">
         <Label text="${controller.percentageString}"/>
         <Label text="%downloaded"/>
