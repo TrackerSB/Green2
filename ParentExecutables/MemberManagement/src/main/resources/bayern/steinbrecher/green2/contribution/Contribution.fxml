@@ -25,12 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.contribution.ContributionController">
     <ScrollPane>
-        <VBox spacing="10">
+        <VBox>
             <Label text="%contributionInEuro"/>
             <VBox fx:id="contributionFieldsBox" />
         </VBox>
     </ScrollPane>
-    <HBox spacing="10">
+    <HBox>
         <Button text="%add"
                 onAction="#addContributionField" />
         <Button disable="${!contributionSpinner.valid}"

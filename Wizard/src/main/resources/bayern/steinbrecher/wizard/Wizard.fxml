@@ -39,15 +39,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <Button fx:id="wizardControlPrevious"
                     text="%previous"
                     onAction="#showPrevious"
-                    disable="${controller.atBeginning || controller.changingPage}"/>
+                    disable="${controller.atBeginning || controller.changingPage}"
+                    ButtonBar.buttonData="BACK_PREVIOUS"/>
             <Button fx:id="wizardControlNext"
                     text="%next"
                     onAction="#showNext"
-                    disable="${(!controller.currentPage.hasNextFunction) || (!controller.currentPage.valid) || controller.changingPage}"/>
+                    disable="${(!controller.currentPage.hasNextFunction) || (!controller.currentPage.valid) || controller.changingPage}"
+                    ButtonBar.buttonData="NEXT_FORWARD"/>
             <Button fx:id="wizardControlFinish"
                     text="%finish"
                     onAction="#finish"
-                    disable="${(!controller.atFinish) || (!controller.currentPage.valid) || controller.changingPage}"/>
+                    disable="${(!controller.atFinish) || (!controller.currentPage.valid) || controller.changingPage}"
+                    ButtonBar.buttonData="FINISH"/>
             <!-- NOTE: These round braces are necessary! TODO: WHY?! -->
         </buttons>
     </ButtonBar>

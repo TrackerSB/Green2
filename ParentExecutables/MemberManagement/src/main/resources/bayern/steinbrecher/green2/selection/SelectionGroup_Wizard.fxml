@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -36,12 +37,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </VBox>
         </ScrollPane>
     </HBox>
-    <HBox>
-        <Button onAction="#selectAllOptions"
-                text="%selectAll"
-                disable="${controller.allSelected}" />
-        <Button onAction="#selectNoOption"
-                text="%selectNothing"
-                disable="${controller.nothingSelected}" />
-    </HBox>
+    <ButtonBar>
+        <buttons>
+            <Button onAction="#selectAllOptions"
+                    text="%selectAll"
+                    disable="${controller.allSelected}"
+                    ButtonBar.buttonData="OTHER"/>
+            <Button onAction="#selectNoOption"
+                    text="%selectNothing"
+                    disable="${controller.nothingSelected}"
+                    ButtonBar.buttonData="OTHER"/>
+        </buttons>
+    </ButtonBar>
 </VBox>
