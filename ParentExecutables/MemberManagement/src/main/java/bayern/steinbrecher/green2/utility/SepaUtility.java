@@ -132,6 +132,7 @@ public final class SepaUtility {
      *
      * @param iban The IBAN to check.
      * @return {@code true} only if IBAN has a valid checksum.
+     * @see #IBAN_PATTERN
      */
     public static boolean isValidIban(String iban) {
         if (iban == null || iban.isEmpty()) {
