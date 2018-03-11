@@ -210,15 +210,19 @@ public final class SshConnection extends DBConnection {
         }
     }
 
+    private String generateQueryCommand(String sqlCode) {
+        SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
+        return sqlCommands.get(dbms).apply(sqlCode);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public List<List<String>> execQuery(String sqlCode) throws SQLException {
-        SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
         String result;
         try {
-            result = execCommand(sqlCommands.get(dbms).apply(sqlCode));
+            result = execCommand(generateQueryCommand(sqlCode));
         } catch (JSchException | CommandException ex) {
             throw new SQLException(ex);
         }
@@ -239,24 +243,9 @@ public final class SshConnection extends DBConnection {
     @Override
     public void execUpdate(String sqlCode) throws SQLException {
         try {
-            Channel channel = sshSession.openChannel("exec");
-            ByteArrayOutputStream errStream = new ByteArrayOutputStream();
-            ((ChannelExec) channel).setErrStream(errStream);
-            ((ChannelExec) channel).setCommand("mysql"
-                    + " -u" + databaseUsername
-                    + " -p" + databasePasswd
-                    + " -h" + databaseHost
-                    + " -e'" + sqlCode + "' " + databaseName);
-
-            channel.connect();
-
-            if (errStream.size() > 0) {
-                throw new SQLException("Invalid SQL-Code");
-            }
-
-            channel.disconnect();
-        } catch (JSchException ex) {
-            Logger.getLogger(SshConnection.class.getName()).log(Level.SEVERE, null, ex);
+            execCommand(generateQueryCommand(sqlCode));
+        } catch (JSchException | CommandException ex) {
+            throw new SQLException(ex);
         }
     }
 
