@@ -101,6 +101,11 @@ public final class SepaUtility {
             = "[A-Z]{" + SEPA_CC_LENGTH + "}\\d{2," + (MAX_CHAR_IBAN - SEPA_CC_LENGTH) + "}";
     private static final Pattern IBAN_PATTERN = Pattern.compile(IBAN_REGEX);
     /**
+     * Regex describing a possible valid BIC. NOTE Currently only length and valid characters are checked.
+     */
+    public static final String BIC_REGEX = "([A-Z]|\\d){8}(([A-Z]|\\d){3})?";
+    private static final Pattern BIC_PATTERN = Pattern.compile(BIC_REGEX);
+    /**
      * The regex for checking whether a message id is valid. Which characters are supported by Sepa is taken from
      * http://www.sepaforcorporates.com/sepa-implementation/valid-xml-characters-sepa-payments/
      */
@@ -158,6 +163,18 @@ public final class SepaUtility {
                 + posAlphabetSecondChar + trimmedIban.substring(SEPA_CC_LENGTH, SEPA_CC_CHECKSUM_LENGTH);
         return new BigInteger(trimmedIban).mod(BigInteger.valueOf(IBAN_CHECKSUM_MODULO))
                 .equals(BigInteger.ONE);
+    }
+
+    /**
+     * Checks whether the given BIC is valid. Currently only the length and the allowed characters are checked.
+     *
+     * @param bic The BIC to check.
+     * @return {@code false} only if the BIC is invalid.
+     * @see #BIC_PATTERN
+     */
+    public static boolean isValidBic(String bic) {
+        return BIC_PATTERN.matcher(bic)
+                .matches();
     }
 
     /**

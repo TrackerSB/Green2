@@ -103,6 +103,7 @@ public class MenuController extends Controller {
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
     private final List<Callable<String>> checkFunctions = Arrays.asList(
             () -> checkIbans(),
+            () -> checkBics(),
             () -> checkDates(m -> m.getPerson().getBirthday(),
                     EnvironmentHandler.getResourceValue("memberBadBirthday"),
                     EnvironmentHandler.getResourceValue("allBirthdaysCorrect")),
@@ -533,6 +534,29 @@ public class MenuController extends Controller {
                     })
                     .collect(Collectors.joining("\n"));
             return EnvironmentHandler.getResourceValue("memberBadIban") + "\n" + message;
+        }
+    }
+
+    private String checkBics() {
+        List<Member> badBic = new ArrayList<>();
+        try {
+            badBic = member.get().get().parallelStream()
+                    .filter(m -> !SepaUtility.isValidBic(m.getAccountHolder().getBic()))
+                    .collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (badBic.isEmpty()) {
+            return EnvironmentHandler.getResourceValue("correctBics");
+        } else {
+            String noBic = EnvironmentHandler.getResourceValue("noBic");
+            String message = badBic.stream()
+                    .map(m -> {
+                        String bic = m.getAccountHolder().getBic();
+                        return m + ": \"" + (bic.isEmpty() ? noBic : bic) + "\"";
+                    })
+                    .collect(Collectors.joining("\n"));
+            return EnvironmentHandler.getResourceValue("memberBadBic") + "\n" + message;
         }
     }
 
