@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="bayern.steinbrecher.green2.sepaform.SepaFormController">
     <Label text="%nameOfCreator"
+           labelFor="${creatorTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="0"/>
     <HelpButton fx:id="creatorHelpButton"
@@ -41,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                    GridPane.columnIndex="2"
                    GridPane.rowIndex="0"/>
     <Label text="%accountHolder"
+           labelFor="${creditorTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="1"/>
     <HelpButton helpMessage="%helpCreditor"
@@ -51,6 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                    GridPane.columnIndex="2"
                    GridPane.rowIndex="1"/>
     <Label text="%iban"
+           labelFor="${ibanTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="2"/>
     <HelpButton helpMessage="%helpIban"
@@ -61,6 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                    GridPane.columnIndex="2"
                    GridPane.rowIndex="2"/>
     <Label text="%bic"
+           labelFor="${bicTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="3"/>
     <HelpButton helpMessage="%helpBic"
@@ -71,6 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   GridPane.columnIndex="2"
                   GridPane.rowIndex="3"/>
     <Label text="%creditorId"
+           labelFor="${creditorIdTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="4"/>
     <HelpButton helpMessage="%helpCreditorId"
@@ -81,6 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          GridPane.columnIndex="2"
                          GridPane.rowIndex="4"/>
     <Label text="%purpose"
+           labelFor="${purposeTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="5"/>
     <CheckedTextField fx:id="purposeTextField"
@@ -88,6 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                       GridPane.columnIndex="2"
                       GridPane.rowIndex="5"/>
     <Label text="%executionDate"
+           labelFor="${executionDatePicker}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="6"/>
     <HelpButton helpMessage="%helpExecutionDate"
@@ -99,6 +106,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                        GridPane.columnIndex="2"
                        GridPane.rowIndex="6"/>
     <Label text="%messageId"
+           labelFor="${messageIdTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="7"/>
     <HelpButton fx:id="messageIdHelpButton"
@@ -113,6 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 onAction="#generateMessageId"/>
     </HBox>
     <Label text="%pmtInfId"
+           labelFor="${pmtInfIdTextField}"
            GridPane.columnIndex="0"
            GridPane.rowIndex="8"/>
     <HelpButton fx:id="pmtInfIdHelpButton"

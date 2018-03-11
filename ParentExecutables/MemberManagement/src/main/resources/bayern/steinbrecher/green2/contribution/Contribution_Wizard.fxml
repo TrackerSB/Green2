@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       fx:controller="bayern.steinbrecher.green2.contribution.ContributionController">
     <ScrollPane>
         <VBox>
-            <Label text="%contributionInEuro"/>
+            <Label text="%contributionInEuro"
+               labelFor="${contributionFieldsBox}"/>
             <VBox fx:id="contributionFieldsBox" />
         </VBox>
     </ScrollPane>

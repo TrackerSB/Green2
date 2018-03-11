@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               GridPane.columnIndex="0"/>
 
     <Label text="%databaseUsername"
+           labelFor="${databaseUsernameField}"
            GridPane.rowIndex="1"
            GridPane.columnIndex="0"/>
     <NameTextField fx:id="databaseUsernameField"
@@ -39,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                    GridPane.rowIndex="1"
                    GridPane.columnIndex="1"/>
     <Label text="%databasePassword"
+           labelFor="${databasePasswordField}"
            GridPane.rowIndex="2"
            GridPane.columnIndex="0"/>
     <CheckedPasswordField fx:id="databasePasswordField"

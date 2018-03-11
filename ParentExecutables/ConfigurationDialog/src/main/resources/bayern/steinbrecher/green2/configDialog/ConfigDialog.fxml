@@ -44,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   GridPane.columnIndex="0"
                   GridPane.columnSpan="2"/>
         <Label text="%sshHost"
+               labelFor="${sshHostTextField}"
                GridPane.rowIndex="2"
                GridPane.columnIndex="0"/>
         <CheckedTextField fx:id="sshHostTextField"
@@ -53,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           GridPane.rowIndex="2"
                           GridPane.columnIndex="1"/>
         <Label text="%sshPort"
+               labelFor="${sshPort}"
                GridPane.rowIndex="3"
                GridPane.columnIndex="0"/>
         <CheckedIntegerSpinner fx:id="sshPort"
@@ -62,6 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                GridPane.rowIndex="3"
                                GridPane.columnIndex="1"/>
         <Label text="%sshCharset"
+               labelFor="${sshCharsetTextField}"
                GridPane.rowIndex="4"
                GridPane.columnIndex="0"/>
         <CharsetTextField fx:id="sshCharsetTextField"
@@ -71,6 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           GridPane.rowIndex="4"
                           GridPane.columnIndex="1"/>
         <Label text="%databaseHost"
+               labelFor="${databaseHostTextField}"
                GridPane.rowIndex="5"
                GridPane.columnIndex="0"/>
         <CheckedTextField fx:id="databaseHostTextField"
@@ -78,6 +82,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           GridPane.rowIndex="5"
                           GridPane.columnIndex="1"/>
         <Label text="%databasePort"
+               labelFor="${databasePort}"
                GridPane.rowIndex="6"
                GridPane.columnIndex="0"/>
         <CheckedIntegerSpinner fx:id="databasePort"
@@ -87,6 +92,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                GridPane.rowIndex="6"
                                GridPane.columnIndex="1"/>
         <Label text="%databaseName"
+               labelFor="${databaseNameTextField}"
                GridPane.rowIndex="7"
                GridPane.columnIndex="0"/>
         <CheckedTextField fx:id="databaseNameTextField"
@@ -102,6 +108,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     GridPane.rowIndex="8"
                     GridPane.columnIndex="1"/>
         <Label text="%birthdayExpression"
+               labelFor="${birthdayExpressionTextField}"
                GridPane.rowIndex="9"
                GridPane.columnIndex="0"/>
         <CheckedRegexTextField fx:id="birthdayExpressionTextField"
@@ -119,6 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     GridPane.rowIndex="10"
                     GridPane.columnIndex="1"/>
         <Label text="%dbms"
+               labelFor="${dbmsComboBox}"
                GridPane.rowIndex="11"
                GridPane.columnIndex="0"/>
         <CheckedComboBox fx:id="dbmsComboBox"
