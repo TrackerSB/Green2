@@ -47,11 +47,11 @@ public enum SupportedDatabases {
                     Keywords.PRIMARY_KEY, "PRIMARY KEY"
             ),
             HashBiMap.create(Map.of(
-                    Boolean.class, new SQLType("TINYINT", 1), //BOOLEAN is an alias for TINYIT(1)
-                    Double.class, new SQLType("FLOAT"),
-                    Integer.class, new SQLType("INT"), //INTEGER is an alias for INT
-                    LocalDate.class, new SQLType("DATE"),
-                    String.class, new SQLType("VARCHAR", 255)
+                    Boolean.class, new SQLTypeKeyword("TINYINT", 1), //BOOLEAN is an alias for TINYIT(1)
+                    Double.class, new SQLTypeKeyword("FLOAT"),
+                    Integer.class, new SQLTypeKeyword("INT"), //INTEGER is an alias for INT
+                    LocalDate.class, new SQLTypeKeyword("DATE"),
+                    String.class, new SQLTypeKeyword("VARCHAR", 255)
             )),
             Map.of(Queries.CREATE_TABLE, "CREATE TABLE {0} ({1});",
                     Queries.GET_COLUMN_NAMES_AND_TYPES, "SELECT column_name, data_type FROM information_schema.columns "
@@ -64,7 +64,7 @@ public enum SupportedDatabases {
     private final String displayName;
     private final int defaultPort;
     private final Map<Keywords, String> keywords;
-    private final BiMap<Class<?>, SQLType> types;
+    private final BiMap<Class<?>, SQLTypeKeyword> types;
     private final Map<Queries, String> queryTemplates;
     private final char columnQuoteSymbol;
 
@@ -79,7 +79,7 @@ public enum SupportedDatabases {
      * removed in future versions since {@code information_schema} is standardized.
      */
     private SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywords,
-            BiMap<Class<?>, SQLType> types, Map<Queries, String> queryTemplates, char columnQuoteSymbol) {
+            BiMap<Class<?>, SQLTypeKeyword> types, Map<Queries, String> queryTemplates, char columnQuoteSymbol) {
         this.displayName = displayName;
         this.defaultPort = defaultPort;
         this.keywords = keywords;
@@ -163,7 +163,7 @@ public enum SupportedDatabases {
      * @since 2u14
      */
     public Optional<Class<?>> getType(String sqlType) {
-        Optional<Class<?>> type = Optional.ofNullable(types.inverse().get(new SQLType(sqlType)));
+        Optional<Class<?>> type = Optional.ofNullable(types.inverse().get(new SQLTypeKeyword(sqlType)));
         if (!type.isPresent()) {
             Logger.getLogger(SupportedDatabases.class.getName())
                     .log(Level.WARNING, "The database {0} does not define a class for SQL type {1}.",
@@ -221,20 +221,20 @@ public enum SupportedDatabases {
      * keyword. This includes {@link Object#equals(java.lang.Object)}, {@link Comparable#compareTo(java.lang.Object)},
      * etc. NOTE: Specified parameters are ignored.
      */
-    private static class SQLType implements Comparable<SQLType> {
+    private static class SQLTypeKeyword implements Comparable<SQLTypeKeyword> {
 
         private final String sqlTypeKeyword;
         private final String parameter;
 
         /**
-         * Creates a new {@link SQLType}.
+         * Creates a new {@link SQLTypeKeyword}.
          *
          * @param sqlTypeKeyword The keyword is always saved and handled in uppercase. This keyword must represent the
          * type saved in {@code information_schema.columns}. Be careful with aliases.
          * @param parameter Additional parameters related to the keyword. These are ignored concerning
          * {@link Object#equals(java.lang.Object)}, {@link Comparable#compareTo(java.lang.Object)}, etc.
          */
-        public SQLType(String sqlTypeKeyword, Object... parameter) {
+        public SQLTypeKeyword(String sqlTypeKeyword, Object... parameter) {
             this.sqlTypeKeyword = sqlTypeKeyword.toUpperCase(Locale.ROOT);
             this.parameter = parameter.length > 0
                     ? Arrays.stream(parameter)
@@ -248,8 +248,8 @@ public enum SupportedDatabases {
          */
         @Override
         public boolean equals(Object other) {
-            if (other instanceof SQLType) {
-                return sqlTypeKeyword.equalsIgnoreCase(((SQLType) other).sqlTypeKeyword);
+            if (other instanceof SQLTypeKeyword) {
+                return sqlTypeKeyword.equalsIgnoreCase(((SQLTypeKeyword) other).sqlTypeKeyword);
             } else {
                 return false;
             }
@@ -267,7 +267,7 @@ public enum SupportedDatabases {
          * {@inheritDoc}
          */
         @Override
-        public int compareTo(SQLType other) {
+        public int compareTo(SQLTypeKeyword other) {
             return sqlTypeKeyword.compareToIgnoreCase(other.sqlTypeKeyword);
         }
 
