@@ -20,7 +20,6 @@ import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -30,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,11 +128,14 @@ public final class SshConnection extends DBConnection {
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.charset = charset;
 
-        sqlCommands.put(SupportedDatabases.MY_SQL, query -> COMMANDS.get(SupportedDatabases.MY_SQL)
+        //NOTE The echo command is needed for handling UTF8 chars on non UTF8 terminals.
+        sqlCommands.put(SupportedDatabases.MY_SQL, query -> "echo -e '" + replaceNonAscii(query) + "' | "
+                + COMMANDS.get(SupportedDatabases.MY_SQL)
+                + " --default-character-set=utf8"
                 + " -u" + databaseUsername
                 + " -p" + databasePasswd
                 + " -h" + databaseHost
-                + " -e'" + query + "' " + databaseName);
+                + " " + databaseName);
 
         try {
             this.sshSession.connect();
@@ -160,6 +163,24 @@ public final class SshConnection extends DBConnection {
                 throw new AuthException("Auth fail", ex);
             }
         }
+    }
+
+    private String replaceNonAscii(String nonAscii) {
+        StringBuilder ascii = new StringBuilder();
+        nonAscii.chars()
+                .forEach(codePoint -> {
+                    Character character = (char) codePoint;
+                    if (codePoint > 31 && codePoint < 127) { //32-126 is the printable ascii range
+                        ascii.append(character);
+                    } else {
+                        byte[] bytes = String.valueOf(character).getBytes(StandardCharsets.UTF_8);
+                        ascii.append("\\u");
+                        for (byte utf8byte : bytes) {
+                            ascii.append(Integer.toHexString(utf8byte));
+                        }
+                    }
+                });
+        return ascii.toString();
     }
 
     /**
