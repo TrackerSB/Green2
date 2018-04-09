@@ -119,7 +119,7 @@ public class ConfigDialogController extends CheckedController {
         profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(profile.getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
         sshCharsetTextField.setText(
-                profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1).name());
+                profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8).name());
         dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(SupportedDatabases.values())));
         dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ProfileSettings.DBMS, null));
         birthdayFeaturesCheckbox.setSelected(profile.getOrDefault(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES, true));
