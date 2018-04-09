@@ -68,6 +68,10 @@ public final class SshConnection extends DBConnection {
      */
     private final String databaseHost;
     /**
+     * The port of the database.
+     */
+    private final int databasePort;
+    /**
      * The username used to login into the database.
      */
     private final String databaseUsername;
@@ -109,6 +113,7 @@ public final class SshConnection extends DBConnection {
      * @param sshUsername The username for the ssh connection.
      * @param sshPassword The password for the ssh connection.
      * @param databaseHost The address of the database host (without protocol).
+     * @param databasePort The port of the database.
      * @param databaseUsername The username for the database.
      * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
@@ -118,10 +123,11 @@ public final class SshConnection extends DBConnection {
      * @throws UnsupportedDatabaseException Thrown only if no supported database was found.
      * @see SupportedDatabases
      */
-    public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost,
+    public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost, int databasePort,
             String databaseUsername, String databasePasswd, String databaseName, Charset charset)
             throws AuthException, UnknownHostException, UnsupportedDatabaseException {
         this.databaseHost = databaseHost;
+        this.databasePort = databasePort;
         this.databaseUsername = databaseUsername;
         this.databasePasswd = databasePasswd;
         this.databaseName = databaseName;
@@ -135,6 +141,7 @@ public final class SshConnection extends DBConnection {
                 + " -u" + databaseUsername
                 + " -p" + databasePasswd
                 + " -h" + databaseHost
+                + " -P" + databasePort
                 + " " + databaseName);
 
         try {

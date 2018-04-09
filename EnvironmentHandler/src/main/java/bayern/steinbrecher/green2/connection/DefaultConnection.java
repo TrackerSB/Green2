@@ -58,20 +58,23 @@ public final class DefaultConnection extends DBConnection {
      * Constructs a new database connection.
      *
      * @param databaseHost The address of the database host.
+     * @param databasePort The port of the database.
      * @param databaseUsername The username for the database.
      * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
      * @throws AuthException Is thrown if some username, password or address is wrong.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      */
-    public DefaultConnection(String databaseHost, String databaseUsername, String databasePasswd, String databaseName)
+    public DefaultConnection(String databaseHost, int databasePort, String databaseUsername, String databasePasswd,
+            String databaseName)
             throws AuthException, UnknownHostException {
-        if (!databaseHost.endsWith("/")) {
-            databaseHost += "/";
+        if (databaseHost.endsWith("/")) {
+            databaseHost = databaseHost.substring(0, databaseHost.length() - 1);
         }
+        String databaseAddress = databaseHost + ":" + databasePort + "/";
         SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
         try {
-            connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(dbms) + databaseHost
+            connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(dbms) + databaseAddress
                     + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
                     + "&serverTimezone=UTC",
                     databaseUsername, databasePasswd);

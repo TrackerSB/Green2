@@ -40,6 +40,7 @@ import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.List;
@@ -256,22 +257,22 @@ public class MemberManagement extends Application {
         if (loginInfos.isPresent()) {
             Map<LoginKey, String> loginValues = loginInfos.get();
             try {
+                String databaseHost = profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
+                int databasePort = profile.getOrDefault(ProfileSettings.DATABASE_PORT,
+                        profile.get(ProfileSettings.DBMS).getDefaultPort());
+                String databaseUsername = loginValues.get(LoginKey.DATABASE_USERNAME);
+                String databasePassword = loginValues.get(LoginKey.DATABASE_PASSWORD);
+                String databaseName = profile.getOrDefault(ProfileSettings.DATABASE_NAME, "dbname");
                 if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
-                    con = new SshConnection(
-                            profile.getOrDefault(ProfileSettings.SSH_HOST, "localhost"),
-                            loginValues.get(LoginKey.SSH_USERNAME),
-                            loginValues.get(LoginKey.SSH_PASSWORD),
-                            profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost"),
-                            loginValues.get(LoginKey.DATABASE_USERNAME),
-                            loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefault(ProfileSettings.DATABASE_NAME, "dbname"),
-                            profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.ISO_8859_1));
+                    String sshHost = profile.getOrDefault(ProfileSettings.SSH_HOST, "localhost");
+                    String sshUsername = loginValues.get(LoginKey.SSH_USERNAME);
+                    String sshPassword = loginValues.get(LoginKey.SSH_PASSWORD);
+                    Charset sshCharset = profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
+                    con = new SshConnection(sshHost, sshUsername, sshPassword, databaseHost, databasePort,
+                            databaseUsername, databasePassword, databaseName, sshCharset);
                 } else {
                     con = new DefaultConnection(
-                            profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost"),
-                            loginValues.get(LoginKey.DATABASE_USERNAME),
-                            loginValues.get(LoginKey.DATABASE_PASSWORD),
-                            profile.getOrDefault(ProfileSettings.DATABASE_NAME, "dbname"));
+                            databaseHost, databasePort, databaseUsername, databasePassword, databaseName);
                 }
             } catch (UnknownHostException | AuthException ex) {
                 handleAuthException(login, waitScreen, ex);
