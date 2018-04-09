@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.wizard.WizardPage;
+import com.google.common.collect.BiMap;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -34,11 +35,11 @@ import javafx.stage.Stage;
  * @author Stefan Huber
  * @param <T> The type of the options to select.
  */
-public class SelectionGroup<T extends Comparable<T>>
-        extends WizardableView<Optional<Map<T, Color>>, SelectionGroupController<T>> {
+public class SelectionGroup<T extends Comparable<T>, G>
+        extends WizardableView<Optional<Map<T, G>>, SelectionGroupController<T, G>> {
 
     private final Set<T> options;
-    private final Map<Color, ?> groups;
+    private final BiMap<G, Color> groups;
 
     /**
      * Creates a new SelectionGroup for selecting and grouping the given options into the given groups.
@@ -46,7 +47,7 @@ public class SelectionGroup<T extends Comparable<T>>
      * @param options The options to select.
      * @param groups The groups to group the options into.
      */
-    public SelectionGroup(Set<T> options, Map<Color, ?> groups) {
+    public SelectionGroup(Set<T> options, BiMap<G, Color> groups) {
         this.options = options;
         this.groups = groups;
     }
@@ -73,7 +74,7 @@ public class SelectionGroup<T extends Comparable<T>>
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<Map<T, Color>>> getWizardPage() {
+    public WizardPage<Optional<Map<T, G>>> getWizardPage() {
         try {
             Pane root = loadFXML("SelectionGroup_Wizard.fxml");
             return new WizardPage<>(

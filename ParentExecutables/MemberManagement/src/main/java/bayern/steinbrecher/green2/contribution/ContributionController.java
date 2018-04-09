@@ -19,11 +19,11 @@ package bayern.steinbrecher.green2.contribution;
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.spinner.ContributionField;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -61,11 +61,7 @@ public class ContributionController extends WizardableController {
     private ListProperty<ContributionField> contributionFields
             = new SimpleListProperty<>(this, "contributionSpinner", FXCollections.observableArrayList());
     private BooleanProperty uniqueColors = new SimpleBooleanProperty(this, "uniqueColors", true);
-    private final ChangeListener<Object> calculateUniqueColors = (obs, oldVal, newVal) -> {
-        //Check for duplicate colors
-        Set<Color> colors = new HashSet<>();
-        uniqueColors.set(contributionFields.stream().allMatch(cf -> colors.add(cf.getColor())));
-    };
+    private final BooleanProperty uniqueContributions = new SimpleBooleanProperty(this, "uniqueContributions", true);
     private BooleanProperty allContributionFieldsValid
             = new SimpleBooleanProperty(this, "allContributionFieldsValid", true);
     private final ChangeListener<Object> calculateAllContributionFieldsValid = (obs, oldVal, newVal) -> {
@@ -77,7 +73,21 @@ public class ContributionController extends WizardableController {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        ChangeListener<Object> calculateUniqueColors = (obs, oldVal, newVal) -> {
+            //Check for duplicate colors
+            Set<Color> colors = new HashSet<>();
+            uniqueColors.set(contributionFields.stream()
+                    .allMatch(cf -> colors.add(cf.getColor())));
+        };
+        ChangeListener<Object> calculateUniqueContributions = (obs, oldVal, newVal) -> {
+            //Check for duplicate colors
+            Set<Double> contributions = new HashSet<>();
+            uniqueContributions.set(contributionFields.stream()
+                    .allMatch(cf -> contributions.add(cf.getContribution())));
+        };
+
         contributionFields.addListener(calculateUniqueColors);
+        contributionFields.addListener(calculateUniqueContributions);
         contributionFields.addListener(calculateAllContributionFieldsValid);
         contributionFields.addListener((ListChangeListener.Change<? extends ContributionField> change) -> {
             while (change.next()) {
@@ -95,6 +105,7 @@ public class ContributionController extends WizardableController {
                     addedCf.getContributionSpinner().getEditor().setOnAction(aevt -> submitContributions());
                     contributionFieldsBox.getChildren().add(createContributionRow(addedCf));
                     addedCf.colorProperty().addListener(calculateUniqueColors);
+                    addedCf.contributionProperty().addListener(calculateUniqueContributions);
                     addedCf.getContributionSpinner().validProperty().addListener(calculateAllContributionFieldsValid);
                 });
                 change.getRemoved().forEach(removedCf -> {
@@ -119,7 +130,7 @@ public class ContributionController extends WizardableController {
                 });
             }
         });
-        valid.bind(allContributionFieldsValid.and(uniqueColors));
+        valid.bind(allContributionFieldsValid.and(uniqueColors).and(uniqueContributions));
         addContributionField();
     }
 
@@ -155,12 +166,12 @@ public class ContributionController extends WizardableController {
      *
      * @return The currently inserted contributions and their colors.
      */
-    public Optional<Map<Color, Double>> getContribution() {
+    public Optional<BiMap<Double, Color>> getContribution() {
         if (userAbborted() || !valid.get()) {
             return Optional.empty();
         } else {
-            Map<Color, Double> contributions = new HashMap<>(contributionFields.getSize());
-            contributionFields.forEach(cf -> contributions.put(cf.getColor(), cf.getContribution()));
+            BiMap<Double, Color> contributions = HashBiMap.create(contributionFields.getSize());
+            contributionFields.forEach(cf -> contributions.put(cf.getContribution(), cf.getColor()));
             return Optional.of(contributions);
         }
     }

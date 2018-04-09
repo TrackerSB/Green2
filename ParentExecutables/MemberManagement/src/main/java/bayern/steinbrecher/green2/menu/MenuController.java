@@ -40,6 +40,8 @@ import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Desktop;
 import java.io.File;
@@ -325,7 +327,7 @@ public class MenuController extends Controller {
 
                 WizardPage<Optional<Originator>> sepaFormPage = new SepaForm().getWizardPage();
                 sepaFormPage.setNextFunction(() -> askForContribution ? "contribution" : "selection");
-                WizardPage<Optional<Map<Color, Double>>> contributionPage = new Contribution().getWizardPage();
+                WizardPage<Optional<BiMap<Double, Color>>> contributionPage = new Contribution().getWizardPage();
                 WizardPage<Optional<Set<Member>>> selectionPage = new Selection<>(memberToSelect).getWizardPage();
                 selectionPage.setFinish(true);
 
@@ -335,9 +337,9 @@ public class MenuController extends Controller {
                 pages.put("selection", selectionPage);
                 Wizard wizard = new Wizard(pages);
                 contributionPage.setNextFunction(() -> {
-                    WizardPage<Optional<Map<Member, Color>>> selectionGroupPage
+                    WizardPage<Optional<Map<Member, Double>>> selectionGroupPage
                             = new SelectionGroup<>(new HashSet<>(memberToSelect),
-                                    contributionPage.getResultFunction().call().orElse(new HashMap<>()))
+                                    contributionPage.getResultFunction().call().orElse(HashBiMap.create()))
                                     .getWizardPage();
                     selectionGroupPage.setFinish(true);
                     wizard.put("selectionGroup", selectionGroupPage);

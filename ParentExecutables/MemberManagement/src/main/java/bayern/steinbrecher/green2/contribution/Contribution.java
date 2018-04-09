@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
+import com.google.common.collect.BiMap;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +38,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Contribution extends WizardableView<Optional<Map<Color, Double>>, ContributionController> {
+public class Contribution extends WizardableView<Optional<BiMap<Double, Color>>, ContributionController> {
 
     /**
      * Default constructor. Represents a view for entering multiple values (in €) which are connected to a certain
@@ -73,7 +74,7 @@ public class Contribution extends WizardableView<Optional<Map<Color, Double>>, C
      * @return The values and colors entered if any.
      * @see ContributionController#getContribution()
      */
-    public Optional<Map<Color, Double>> getContribution() {
+    public Optional<BiMap<Double, Color>> getContribution() {
         showOnceAndWait();
         return getController().getContribution();
     }
@@ -82,7 +83,7 @@ public class Contribution extends WizardableView<Optional<Map<Color, Double>>, C
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<Map<Color, Double>>> getWizardPage() {
+    public WizardPage<Optional<BiMap<Double, Color>>> getWizardPage() {
         try {
             Pane root = loadFXML("Contribution_Wizard.fxml");
             return new WizardPage<>(
