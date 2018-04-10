@@ -357,16 +357,14 @@ public class MenuController extends Controller {
                         Set<Member> selectedMember;
                         //TODO Is there any way to avoid explicit casts?
                         if (askForContribution) {
-                            Map<Color, Double> contribution
-                                    = ((Optional<Map<Color, Double>>) results.get("contribution")).get();
-                            Map<Member, Color> groupedMember
-                                    = ((Optional<Map<Member, Color>>) results.get("selectionGroup")).get();
+                            BiMap<Double, Color> contribution
+                                    = ((Optional<BiMap<Double, Color>>) results.get("contribution")).get();
+                            Map<Member, Double> groupedMember
+                                    = ((Optional<Map<Member, Double>>) results.get("selectionGroup")).get();
                             selectedMember = groupedMember.entrySet().stream()
                                     .map(entry -> {
                                         Member m = entry.getKey();
-                                        assert contribution.containsKey(entry.getValue()) :
-                                                "SelectionGroup returned group which has no associated contribution";
-                                        m.setContribution(contribution.get(entry.getValue()));
+                                        m.setContribution(entry.getValue());
                                         return m;
                                     })
                                     .collect(Collectors.toSet());

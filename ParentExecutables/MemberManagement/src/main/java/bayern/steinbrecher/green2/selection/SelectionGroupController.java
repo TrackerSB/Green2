@@ -19,11 +19,11 @@ package bayern.steinbrecher.green2.selection;
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.BindingUtility;
+import com.google.common.collect.BiMap;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -31,7 +31,7 @@ import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.MapProperty;
@@ -44,17 +44,22 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -65,24 +70,26 @@ import javafx.scene.shape.Rectangle;
  * @author Stefan Huber
  * @see SelectionGroup
  * @param <T> The type of the options to select.
+ * @param <G> The type of the groups to associate items with.
  */
-public class SelectionGroupController<T extends Comparable<T>> extends WizardableController {
+public class SelectionGroupController<T extends Comparable<T>, G> extends WizardableController {
 
-    private static final int DEFAULT_RECT_SIZE = 10;
-    private final MapProperty<T, CheckBoxGroupPair> options
-            = new SimpleMapProperty<>(this, "options", FXCollections.observableHashMap());
-    private final ReadOnlyIntegerProperty totalCount = options.sizeProperty();
-    private final MapProperty<Color, Object> groups //FIXME Try using ? or _ in JDK 9 instead of Object
+    private final ObservableValue<ObservableList<AssociatedItem>> options
+            = new SimpleObjectProperty<>(this, "options",
+                    FXCollections.observableArrayList(i -> new Observable[]{i.itemProperty(), i.groupProperty()}));
+    private final IntegerProperty totalCount = new SimpleIntegerProperty(this, "totalCount");
+    //FIXME Since the value should also be unique it should be something like a BiMapProperty.
+    private final MapProperty<G, Color> groups
             = new SimpleMapProperty<>(this, "groups", FXCollections.observableHashMap());
-    private final ObjectProperty<Optional<Color>> currentGroup
+    private final ObjectProperty<Optional<G>> currentGroup
             = new SimpleObjectProperty<>(this, "selectedGroup", Optional.empty());
-    private final MapProperty<Color, IntegerProperty> selectedPerGroup
+    private final MapProperty<G, IntegerProperty> selectedPerGroup
             = new SimpleMapProperty<>(this, "selectedPerGroup", FXCollections.observableHashMap());
     private final IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount", 0);
     private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected", true);
     private final BooleanProperty allSelected = new SimpleBooleanProperty(this, "allSelected");
     @FXML
-    private ListView<CheckBox> optionsListView;
+    private ListView<AssociatedItem> optionsListView;
     @FXML
     private ToggleGroup groupsToggleGroup;
     @FXML
@@ -96,142 +103,149 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     public void initialize(URL location, ResourceBundle resources) {
         valid.bind(nothingSelected.not());
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
-        allSelected.bind(selectedCount.greaterThanOrEqualTo(options.sizeProperty()));
+        allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
+
+        optionsListView.itemsProperty().bind(options);
+        optionsListView.setCellFactory(listview -> new ListCell<AssociatedItem>() {
+            private CheckBox groupGraphic = null;
+            //TODO Find actual box used for (un-)selecting
+            private List<Region> groupGraphicBoxes = null;
+
+            @Override
+            protected void updateItem(AssociatedItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!empty && item != null) {
+                    setText(item.getItem().toString());
+
+                    if (groupGraphic == null) {
+                        groupGraphic = new CheckBox();
+                        groupGraphic.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                            //TODO Find a simplyfied boolean expression
+                            if (newVal) {
+                                if (currentGroup.get().isPresent()) {
+                                    item.setGroup(currentGroup.get());
+                                } else {
+                                    groupGraphic.setSelected(false);
+                                }
+                            } else {
+                                if (currentGroup.get().isPresent() && !item.getGroup().equals(currentGroup.get())) {
+                                    groupGraphic.setSelected(true);
+                                } else {
+                                    item.setGroup(Optional.empty());
+                                }
+                            }
+                        });
+                        setGraphic(groupGraphic);
+                    }
+                    item.groupProperty().addListener((obs, oldVal, newVal) -> {
+                        if (groupGraphicBoxes == null) {
+                            groupGraphicBoxes = groupGraphic.getChildrenUnmodifiable()
+                                    .stream()
+                                    .filter(node -> node instanceof Region)
+                                    .map(node -> (Region) node)
+                                    .collect(Collectors.toList());
+                        }
+                        groupGraphic.setSelected(newVal.isPresent());
+                        String styleString;
+                        if (newVal.isPresent()) {
+                            Color fill = groups.get(newVal.get());
+                            styleString = new StringJoiner(", ", "-fx-background-color: rgba(", ")")
+                                    .add(Double.toString(255 * fill.getRed()))
+                                    .add(Double.toString(255 * fill.getGreen()))
+                                    .add(Double.toString(255 * fill.getBlue()))
+                                    .add(Double.toString(fill.getOpacity()))
+                                    .toString();
+                        } else {
+                            styleString = "";
+                        }
+                        groupGraphicBoxes.stream().forEach(box -> box.setStyle(styleString));
+                    });
+                }
+            }
+        });
 
         unselectGroup = addGroupRadioButton(EnvironmentHandler.getResourceValue("unselect"), Optional.empty(), false);
-        selectedPerGroup.addListener((MapChangeListener.Change<? extends Color, ? extends IntegerProperty> change) -> {
+        selectedPerGroup.addListener((MapChangeListener.Change<? extends G, ? extends IntegerProperty> change) -> {
             selectedCount.bind(BindingUtility.reduceSum(selectedPerGroup.values().stream()));
         });
 
-        options.addListener((MapChangeListener.Change<? extends T, ? extends CheckBoxGroupPair> change) -> {
+        groups.addListener((MapChangeListener.Change<? extends G, ? extends Color> change) -> {
+            G group = change.getKey();
             if (change.wasAdded()) {
-                if (!change.getValueAdded().getCheckbox().isPresent()) {
-                    CheckBox checkbox = new CheckBox(change.getKey().toString());
-                    checkbox.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                        if (newVal) {
-                            applyCurrentGroupToCheckBox(change.getKey());
-                            checkbox.setSelected(currentGroup.get().isPresent());
-                        } else {
-                            boolean setSelected = currentGroup.get().isPresent()
-                                    && !options.get(change.getKey()).getColor().equals(currentGroup.get());
-
-                            Optional<Color> previous = currentGroup.get();
-                            currentGroup.set(Optional.empty());
-                            applyCurrentGroupToCheckBox(change.getKey());
-                            currentGroup.set(previous);
-
-                            checkbox.setSelected(setSelected);
-                        }
-                    });
-                    options.get(change.getKey()).setCheckbox(Optional.of(checkbox));
-                    optionsListView.getItems().add(checkbox);
-                }
-            }
-            if (change.wasRemoved()) { //TODO Check whether removing checkboxes works
-                //Remove from selectedPerGroup
-                options.forEach((key, pair) -> {
-                    if (pair.equals(change.getValueRemoved())) {
-                        IntegerProperty count = selectedPerGroup.get(pair.getColor().get());
-                        count.set(count.get() - 1);
-                    }
-                });
-
-                //Remove from ListView
-                List<CheckBox> checkboxes = optionsListView.getItems().stream()
-                        .filter(cb -> cb.getText().equals(change.getKey().toString()))
-                        .collect(Collectors.toList());
-                if (checkboxes.isEmpty()) {
-                    Logger.getLogger(SelectionGroupController.class.getName())
-                            .log(Level.WARNING, "Could not remove row of removed CheckBox.");
-                } else {
-                    if (checkboxes.size() > 1) {
-                        Logger.getLogger(SelectionGroupController.class.getName())
-                                .log(Level.WARNING, "Found multiple rows which contain CheckBox.\n"
-                                        + "Only the first got removed.");
-                    }
-                    optionsListView.getItems().remove(checkboxes.get(0));
-                }
-            }
-        });
-        groups.addListener((MapChangeListener.Change<? extends Color, ?> change) -> {
-            if (change.wasAdded()) {
-                selectedPerGroup.put(change.getKey(), new SimpleIntegerProperty(0));
-                addGroupRadioButton(change.getValueAdded().toString(), Optional.of(change.getKey()), false);
+                selectedPerGroup.put(group, new SimpleIntegerProperty(0));
+                RadioButton groupRadioButton
+                        = addGroupRadioButton(change.getKey().toString(), Optional.of(group), false);
                 if (groups.size() == 1) {
-                    Optional<RadioButton> aloneSelectGroup = streamGroupsRadioButtons()
-                            .filter(rb -> !rb.equals(unselectGroup))
-                            .findAny();
-                    aloneSelectGroup.get().setSelected(true);
+                    groupRadioButton.setSelected(true);
                 }
             }
-            if (change.wasRemoved()) { //TODO Check whether removing radiobuttons works
-                List<RadioButton> radiobuttons = streamGroupsRadioButtons()
-                        .filter(rb -> rb.getText().equals(change.getValueRemoved().toString()))
-                        .collect(Collectors.toList());
-                if (radiobuttons.isEmpty()) {
-                    Logger.getLogger(SelectionGroupController.class.getName())
-                            .log(Level.WARNING, "Could not remove row of removed CheckBox.");
-                } else {
-                    if (radiobuttons.size() > 1) {
-                        Logger.getLogger(SelectionGroupController.class.getName())
-                                .log(Level.WARNING, "Found multiple rows which contain CheckBox.\n"
-                                        + "Only the first got removed.");
-                    }
-                    RadioButton radiobuttonToRemove = radiobuttons.get(0);
-                    groupsBox.getChildren().remove(radiobuttonToRemove);
-                    streamGroupsRadioButtons().findFirst()
-                            .orElse(unselectGroup)
-                            .setSelected(true);
-                }
+            if (change.wasRemoved()) {
                 selectedPerGroup.remove(change.getKey());
+                //Remove RadioButton representing the group
+                Color removedColor = groups.get(group);
+                groupsToggleGroup.getToggles().stream()
+                        //Per construction Toggles are always Radiobuttons
+                        .filter(toggle -> toggle instanceof RadioButton)
+                        .map(toggle -> (RadioButton) toggle)
+                        .filter(radiobutton -> {
+                            Node graphic = radiobutton.getGraphic();
+                            //Per construction graphics are always Rectangles
+                            return graphic instanceof Rectangle && ((Rectangle) graphic).getFill().equals(removedColor);
+                        })
+                        //FIXME Without BiMapProperty the number of found radiobuttons is not limited to 1.
+                        .findAny()
+                        .ifPresentOrElse(
+                                radiobutton -> {
+                                    if (radiobutton.isSelected()) {
+                                        unselectGroup.setSelected(true);
+                                    }
+                                    groupsToggleGroup.getToggles().remove(radiobutton);
+                                },
+                                () -> Logger.getLogger(SelectionGroupController.class.getName())
+                                        .log(Level.WARNING, "Could not find the group radiobutton to remove."));
+
+                //Remove all associations of items with this group.
+                options.getValue().stream()
+                        .filter(ai -> ai.getGroup().equals(group))
+                        .forEach(ai -> ai.setGroup(Optional.empty()));
             }
         });
+
+        options.getValue().addListener((ListChangeListener.Change<? extends AssociatedItem> change) -> {
+            while (change.next()) {
+                totalCount.set(totalCount.get() + change.getAddedSize() - change.getRemovedSize());
+                change.getAddedSubList().stream()
+                        .forEach(item -> {
+                            item.groupProperty().addListener((obs, oldVal, newVal) -> {
+                                oldVal.ifPresent(oldGroup -> {
+                                    IntegerProperty countProperty = selectedPerGroup.get(oldGroup);
+                                    countProperty.set(countProperty.get() - 1);
+                                });
+                                newVal.ifPresent(newGroup -> {
+                                    IntegerProperty countProperty = selectedPerGroup.get(newGroup);
+                                    countProperty.set(countProperty.get() + 1);
+                                });
+                            });
+                        });
+            }
+        });
+        totalCount.set(options.getValue().size());
 
         HBox.setHgrow(optionsListView, Priority.ALWAYS);
     }
 
-    private Stream<RadioButton> streamGroupsRadioButtons() {
-        return groupsBox.getChildren().stream()
-                .filter(n -> n instanceof RadioButton)
-                .map(n -> (RadioButton) n);
-    }
-
-    private void applyCurrentGroupToCheckBox(T key) {
-        Optional<Color> optNewColor = currentGroup.get();
-        CheckBoxGroupPair valuePair = options.get(key);
-        Optional<Color> optOldColor = valuePair.getColor();
-
-        optOldColor.ifPresent(color -> selectedPerGroup.get(color).set(selectedPerGroup.get(color).get() - 1));
-        optNewColor.ifPresent(color -> selectedPerGroup.get(color).set(selectedPerGroup.get(color).get() + 1));
-
-        valuePair.setColor(optNewColor);
-        assert valuePair.getCheckbox().isPresent() : "CheckBox has to be set before calling setColorToCheckBox";
-        if (optNewColor.isPresent()) {
-            //TODO Set style only for elements necessary
-            Color newColor = optNewColor.get();
-            valuePair.getCheckbox().get().getChildrenUnmodifiable().stream()
-                    .forEach(node -> node.setStyle(new StringJoiner(", ", "-fx-background-color: rgba(", ")")
-                    .add(Double.toString(255 * newColor.getRed()))
-                    .add(Double.toString(255 * newColor.getGreen()))
-                    .add(Double.toString(255 * newColor.getBlue()))
-                    .add(Double.toString(newColor.getOpacity()))
-                    .toString()));
-        } else {
-            //TODO Set style only for elements necessary
-            valuePair.getCheckbox().get().getChildrenUnmodifiable().forEach(node -> node.setStyle(""));
-        }
-    }
-
-    private RadioButton addGroupRadioButton(String text, Optional<Color> color, boolean setSelected) {
+    private RadioButton addGroupRadioButton(String text, Optional<G> group, boolean setSelected) {
         RadioButton radioButton = new RadioButton(text);
         radioButton.textProperty().bind(new SimpleStringProperty(text).concat(" (")
-                .concat(color.isPresent() ? selectedPerGroup.get(color.get()) : totalCount.subtract(selectedCount))
+                .concat(group.isPresent() ? selectedPerGroup.get(group.get()) : totalCount.subtract(selectedCount))
                 .concat(")"));
-        radioButton.setGraphic(new Rectangle(DEFAULT_RECT_SIZE, DEFAULT_RECT_SIZE, color.orElse(Color.TRANSPARENT)));
+        double fontSize = radioButton.getFont().getSize();
+        radioButton.setGraphic(new Rectangle(
+                fontSize, fontSize, group.isPresent() ? groups.get(group.get()) : Color.TRANSPARENT));
         radioButton.setToggleGroup(groupsToggleGroup);
         radioButton.selectedProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
-                currentGroup.set(color);
+                currentGroup.set(group);
             }
         });
         radioButton.setSelected(setSelected);
@@ -253,21 +267,19 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void selectAllOptions() {
-        optionsListView.getItems().stream()
-                .filter(cb -> !cb.isSelected())
-                .forEach(cb -> cb.setSelected(true)); //TODO May be parallel?
+        options.getValue().stream()
+                .forEach(option -> {
+                    if (!option.isAssociated()) {
+                        option.setGroup(currentGroup.get());
+                    }
+                });
     }
 
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void selectNoOption() {
-        optionsListView.getItems().stream()
-                .forEach(cb -> cb.setSelected(false));
-        //When unselecting a checkbox it may reselect itself if the currently chosen group differs from its own group.
-        //So the options have to be unselected a second time.
-        optionsListView.getItems().stream()
-                .forEach(cb -> cb.setSelected(false));
+        options.getValue().stream().forEach(option -> option.setGroup(Optional.empty()));
     }
 
     /**
@@ -276,13 +288,13 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      *
      * @return An {@link Optional} containing the selection if any.
      */
-    public Optional<Map<T, Color>> getSelection() {
+    public Optional<Map<T, G>> getSelection() {
         if (userAbborted()) {
             return Optional.empty();
         } else {
-            Map<T, Color> selection = options.entrySet().stream()
-                    .filter(entry -> entry.getValue().getColor().isPresent())
-                    .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getColor().get()));
+            Map<T, G> selection = options.getValue().stream()
+                    .filter(entry -> entry.getGroup().isPresent())
+                    .collect(Collectors.toMap(AssociatedItem::getItem, entry -> entry.getGroup().get()));
             return Optional.of(selection);
         }
     }
@@ -293,8 +305,8 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      * @param options The new options to show.
      */
     public void setOptions(Set<T> options) {
-        this.options.clear();
-        options.stream().sorted().forEach(o -> this.options.put(o, new CheckBoxGroupPair()));
+        this.options.getValue().clear();
+        options.stream().sorted().forEach(o -> this.options.getValue().add(new AssociatedItem(o)));
     }
 
     /**
@@ -303,7 +315,9 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      * @return The currently set options.
      */
     public Set<T> getOptions() {
-        return options.keySet();
+        return options.getValue().stream()
+                .map(AssociatedItem::getItem)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -311,7 +325,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      *
      * @param groups The new groups to set.
      */
-    public void setGroups(Map<Color, ?> groups) {
+    public void setGroups(BiMap<G, Color> groups) {
         this.groups.clear();
         this.groups.putAll(groups);
     }
@@ -321,16 +335,16 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      *
      * @return The currently set groups but the unselect group.
      */
-    public Set<Color> getGroups() {
+    public Set<G> getGroups() {
         return groups.keySet();
     }
 
     /**
-     * Returns the property representing the currently set groups.
+     * Returns the property representing the number of items associated with a group.
      *
-     * @return The property representing the currently set groups.
+     * @return The property representing the number of items associated with a group.
      */
-    public ReadOnlyMapProperty<Color, ? extends ReadOnlyIntegerProperty> selectedPerGroupProperty() {
+    public ReadOnlyMapProperty<G, ? extends ReadOnlyIntegerProperty> selectedPerGroupProperty() {
         return selectedPerGroup;
     }
 
@@ -339,7 +353,7 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
      *
      * @return The mapping between each group and the number of options associated with it.
      */
-    public ObservableMap<Color, ? extends ReadOnlyIntegerProperty> getSelectedPerGroup() {
+    public ObservableMap<G, ? extends ReadOnlyIntegerProperty> getSelectedPerGroup() {
         return selectedPerGroupProperty().getValue();
     }
 
@@ -397,66 +411,43 @@ public class SelectionGroupController<T extends Comparable<T>> extends Wizardabl
         return allSelected.get();
     }
 
-    private class CheckBoxGroupPair {
+    private class AssociatedItem {
 
-        private Optional<Color> color;
-        private Optional<CheckBox> checkbox;
+        private final ObjectProperty<T> item = new SimpleObjectProperty<>();
+        private final ObjectProperty<Optional<G>> group = new SimpleObjectProperty<>(Optional.empty());
 
-        public CheckBoxGroupPair() {
-            this(Optional.empty(), Optional.empty());
+        public AssociatedItem(T item) {
+            this.item.set(item);
         }
 
-        public CheckBoxGroupPair(Optional<Color> color, Optional<CheckBox> checkbox) {
-            this.color = color;
-            this.checkbox = checkbox;
+        public ObjectProperty<T> itemProperty() {
+            return item;
         }
 
-        public Optional<Color> getColor() {
-            return color;
+        public T getItem() {
+            return itemProperty().get();
         }
 
-        public void setColor(Optional<Color> color) {
-            this.color = color;
+        public void setItem(T item) {
+            this.itemProperty().set(item);
         }
 
-        public Optional<CheckBox> getCheckbox() {
-            return checkbox;
+        public ObjectProperty<Optional<G>> groupProperty() {
+            return group;
         }
 
-        public void setCheckbox(Optional<CheckBox> checkbox) {
-            this.checkbox = checkbox;
+        public Optional<G> getGroup() {
+            return groupProperty().get();
         }
 
-        public void setValues(Optional<Color> color, Optional<CheckBox> checkbox) {
-            setColor(color);
-            setCheckbox(checkbox);
-        }
-    }
-
-    private class LabelCountPair {
-
-        private Optional<Label> label;
-        private final IntegerProperty count;
-
-        public LabelCountPair() {
-            this(Optional.empty(), 0);
+        public void setGroup(Optional<G> group) {
+            if (!group.isPresent() || groups.containsKey(group.get())) {
+                this.group.set(group);
+            }
         }
 
-        public LabelCountPair(Optional<Label> label, int initialCount) {
-            this.label = label;
-            this.count = new SimpleIntegerProperty(this, "count", initialCount);
-        }
-
-        public Optional<Label> getLabel() {
-            return label;
-        }
-
-        public void setLabel(Optional<Label> label) {
-            this.label = label;
-        }
-
-        public IntegerProperty getCount() {
-            return count;
+        public boolean isAssociated() {
+            return group.get().isPresent();
         }
     }
 }

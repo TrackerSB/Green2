@@ -34,6 +34,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  * @param <T> The type of the options to select.
+ * @param <G> The type of the groups to associate items with.
  */
 public class SelectionGroup<T extends Comparable<T>, G>
         extends WizardableView<Optional<Map<T, G>>, SelectionGroupController<T, G>> {
