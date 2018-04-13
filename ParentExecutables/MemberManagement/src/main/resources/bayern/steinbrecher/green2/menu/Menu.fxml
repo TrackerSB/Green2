@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <?import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -31,18 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
            fx:controller="bayern.steinbrecher.green2.menu.MenuController">
     <VBox>
         <MenuBar>
-            <Menu visible="${controller.activateBirthdayFeatures}">
-                <graphic>
-                    <HBox>
-                        <Label text="%year"/>
-                        <CheckedIntegerSpinner fx:id="yearSpinner"
-                                               min="0"
-                                               max="5000"
-                                               amountToStepBy="1"
-                                               editable="true"/>
-                    </HBox>
-                </graphic>
-            </Menu>
             <Menu fx:id="sepaMenu" text="%allAboutSepa">
                 <MenuItem text="%contributions"
                           onAction="#generateContributionSepa"
@@ -52,6 +41,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </Menu>
             <Menu fx:id="addressesMenu"
                   text="%serialLetters">
+                <CustomMenuItem hideOnClick="false"
+                                visible="${controller.activateBirthdayFeatures}">
+                    <content>
+                        <CheckedIntegerSpinner fx:id="yearSpinner"
+                                               min="0"
+                                               max="5000"
+                                               amountToStepBy="1"
+                                               editable="true"/>
+                    </content>
+                </CustomMenuItem>
                 <MenuItem onAction="#generateAddressesAll"
                           text="%ofAllMember"
                           accelerator="Alt+A"/>
@@ -63,6 +62,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <Menu fx:id="birthdayMenu"
                   text="%birthdays"
                   visible="${controller.activateBirthdayFeatures}">
+                <CustomMenuItem hideOnClick="false"
+                                visible="${controller.activateBirthdayFeatures}">
+                    <content>
+                        <CheckedIntegerSpinner fx:id="yearSpinner2"
+                                               min="0"
+                                               max="5000"
+                                               amountToStepBy="1"
+                                               editable="true"/>
+                    </content>
+                </CustomMenuItem>
                 <MenuItem fx:id="generateBirthdayInfos"
                           onAction="#generateBirthdayInfos"
                           disable="${!yearSpinner.valid}"

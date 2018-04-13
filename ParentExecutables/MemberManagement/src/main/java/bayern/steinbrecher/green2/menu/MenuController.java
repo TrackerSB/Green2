@@ -161,6 +161,8 @@ public class MenuController extends Controller {
     @FXML
     private CheckedIntegerSpinner yearSpinner;
     @FXML
+    private CheckedIntegerSpinner yearSpinner2;
+    @FXML
     private javafx.scene.control.Menu licensesMenu;
     @FXML
     private Label dataLastUpdatedLabel;
@@ -182,6 +184,7 @@ public class MenuController extends Controller {
         generateAddressesBirthday.textProperty().bind(
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("birthdayExpression") + " ")
                         .concat(yearBinding));
+        yearSpinner2.valueFactoryProperty().bind(yearSpinner.valueFactoryProperty());
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
         //Bind availability informations
