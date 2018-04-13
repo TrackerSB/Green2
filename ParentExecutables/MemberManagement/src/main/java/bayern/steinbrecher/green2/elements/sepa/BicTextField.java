@@ -16,13 +16,15 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
+import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
+import bayern.steinbrecher.green2.utility.SepaUtility;
 
 /**
  * Represents a {@link CheckedTextField} which contains a BIC. Currently it is completely the same but it adds an
  * additional CSS style class.
  */
-public class BicTextField extends CheckedTextField {
+public class BicTextField extends CheckedRegexTextField {
 
     /**
      * The CSS class representing this class.
@@ -54,7 +56,7 @@ public class BicTextField extends CheckedTextField {
      * @param text The initial content.
      */
     public BicTextField(int maxColumnCount, String text) {
-        super(maxColumnCount, text);
+        super(maxColumnCount, text, SepaUtility.BIC_REGEX);
         getStyleClass().add(CSS_CLASS_BIC_TEXTFIELD);
     }
 }
