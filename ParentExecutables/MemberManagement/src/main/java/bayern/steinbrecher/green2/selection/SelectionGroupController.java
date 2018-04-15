@@ -37,6 +37,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyMapProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleMapProperty;
@@ -84,6 +85,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
             = new SimpleMapProperty<>(this, "groups", FXCollections.observableHashMap());
     private final ObjectProperty<Optional<G>> currentGroup
             = new SimpleObjectProperty<>(this, "selectedGroup", Optional.empty());
+    private final BooleanProperty currentGroupSelected = new SimpleBooleanProperty(this, "currentGroupSelected");
     private final MapProperty<G, IntegerProperty> selectedPerGroup
             = new SimpleMapProperty<>(this, "selectedPerGroup", FXCollections.observableHashMap());
     private final IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount", 0);
@@ -105,6 +107,10 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
         valid.bind(nothingSelected.not());
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
+        currentGroup.addListener((obs, oldVal, newVal) -> {
+            System.out.println("CurrentGroup changed: " + newVal.isPresent());
+            currentGroupSelected.set(newVal.isPresent());
+        });
 
         optionsListView.itemsProperty().bind(options);
         optionsListView.setCellFactory(listview -> new ListCell<AssociatedItem>() {
@@ -327,6 +333,24 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
      */
     public Set<G> getGroups() {
         return groups.keySet();
+    }
+
+    /**
+     * Returns the property holding whether a group is selected which is not the unselect group.
+     *
+     * @return The property holding whether a group is selected which is not the unselect group.
+     */
+    public ReadOnlyBooleanProperty currentGroupSelectedProperty() {
+        return currentGroupSelected;
+    }
+
+    /**
+     * Checks a group is selected which is not the unselect group.
+     *
+     * @return {@code true} if and only if a group is selected which is not the unselect group.
+     */
+    public boolean isCurrentGroupSelected() {
+        return currentGroupSelectedProperty().get();
     }
 
     /**

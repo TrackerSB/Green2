@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <buttons>
             <Button onAction="#selectAllOptions"
                     text="%selectAll"
-                    disable="${controller.allSelected}"
+                    disable="${(controller.allSelected) || (!controller.currentGroupSelected)}"
                     ButtonBar.buttonData="OTHER"/>
             <Button onAction="#selectNoOption"
                     text="%selectNothing"
