@@ -16,14 +16,6 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
-import java.util.regex.Pattern;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
@@ -31,17 +23,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Stefan Huber
  */
-public class CheckedRegexTextField extends CheckedTextField {
-
-    /**
-     * Holds the string representation of the css class attribute added when the content of this text field does not
-     * match the current regex.
-     */
-    //public static final String CSS_CLASS_REGEX_NO_MATCH = "unmatchRegex";
-    private StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
-    private BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
-    private ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
-    private BooleanProperty eliminateSpaces = new SimpleBooleanProperty(this, "eliminateSpaces", false);
+public class CheckedRegexTextField extends SpecificRegexTextField {
 
     /**
      * Constructs a new {@link CheckedRegexTextField} without initial content, maximum column count of
@@ -94,49 +76,16 @@ public class CheckedRegexTextField extends CheckedTextField {
      * @param eliminateSpaces Indicates whether spaces have to be removed before checking using the given regex.
      */
     public CheckedRegexTextField(int maxColumnCount, String text, String regex, boolean eliminateSpaces) {
-        super(maxColumnCount, text);
-        this.regex.set(regex);
-        this.eliminateSpaces.set(eliminateSpaces);
-        pattern.bind(Bindings.createObjectBinding(() -> Pattern.compile(this.regex.get()), this.regex));
-        regexValid.bind(Bindings.createBooleanBinding(() -> {
-            Pattern patternValue = this.pattern.get();
-            String regexText = textProperty().get();
-            if (this.eliminateSpaces.get()) {
-                regexText = regexText.replaceAll(" ", "");
-            }
-            return patternValue != null && patternValue.matcher(regexText).matches();
-        }, pattern, textProperty(), this.eliminateSpaces));
-        addValidCondition(regexValid);
-        //ElementsUtility.addCssClassIf(this, regexValid.not(), CSS_CLASS_REGEX_NO_MATCH);
+        super(maxColumnCount, text, regex, eliminateSpaces);
     }
 
     /**
-     * Returns the text of the {@link CheckedTextField} only if the currently inserted text is valid according to the
-     * given regex.
-     *
-     * @return The text of the {@link CheckedTextField} only if the currently inserted text is valid according to the
-     * given regex. Otherwise it returns an empty {@link String}.
+     * {@inheritDoc}
      */
-    public String getRegexValidText() {
-        return isRegexValid() ? getText() : "";
-    }
-
-    /**
-     * Returns the property representing the regex used for validation.
-     *
-     * @return The property representing the regex used for validation.
-     */
+    @Override
     public StringProperty regexProperty() {
+        //TODO Any way to avoid protected modifier?
         return regex;
-    }
-
-    /**
-     * Returns the regex used for validation.
-     *
-     * @return The regex used for validation.
-     */
-    public String getRegex() {
-        return regex.get();
     }
 
     /**
@@ -145,54 +94,6 @@ public class CheckedRegexTextField extends CheckedTextField {
      * @param regex The new regex to be used for validation.
      */
     public void setRegex(String regex) {
-        this.regex.set(regex);
-    }
-
-    /**
-     * Returns the property containing whether the current input is valid according to the current regex.
-     *
-     * @return The property containing whether the current input is valid according to the current regex.
-     * @see CheckedRegexTextField#getRegex()
-     */
-    public ReadOnlyBooleanProperty regexValidProperty() {
-        return regexValid;
-    }
-
-    /**
-     * Checks whether the current input is valid according to the current regex.
-     *
-     * @return {@code true} only if the current regex matches the current input.
-     */
-    public boolean isRegexValid() {
-        return regexValid.get();
-    }
-
-    /**
-     * Returns the property containing a value indicating whether spaces are eliminated before checking using the given
-     * regex.
-     *
-     * @return The property containing a value indicating whether spaces are eliminated before checking using the given
-     * regex.
-     */
-    public BooleanProperty eliminateSpacesProperty() {
-        return eliminateSpaces;
-    }
-
-    /**
-     * Checks whether currently spaces are removed before checking using the given regex.
-     *
-     * @return {@code true} only if spaces are removed before checking using the given regex.
-     */
-    public boolean isElininateSpaces() {
-        return eliminateSpaces.get();
-    }
-
-    /**
-     * Sets the value indicating whether spaces are removed before checking using the given regex.
-     *
-     * @param eliminateSpaces {@code true} only if spaces have to be removed before checking using the given regex.
-     */
-    public void setEliminateSpaces(boolean eliminateSpaces) {
-        this.eliminateSpaces.set(eliminateSpaces);
+        regexProperty().set(regex);
     }
 }
