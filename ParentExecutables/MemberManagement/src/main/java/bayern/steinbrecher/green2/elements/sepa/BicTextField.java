@@ -16,20 +16,24 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
+import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * Represents a {@link CheckedTextField} which contains a BIC. Currently it is completely the same but it adds an
  * additional CSS style class.
  */
-public class BicTextField extends CheckedRegexTextField {
+public class BicTextField extends SpecificRegexTextField {
 
     /**
      * The CSS class representing this class.
      */
     public static final String CSS_CLASS_BIC_TEXTFIELD = "bic-textfield";
+    private final BooleanProperty bicValid = new SimpleBooleanProperty(this, "bicValid");
 
     /**
      * Constructs a new {@link BicTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
@@ -56,7 +60,10 @@ public class BicTextField extends CheckedRegexTextField {
      * @param text The initial content.
      */
     public BicTextField(int maxColumnCount, String text) {
-        super(maxColumnCount, text, SepaUtility.BIC_REGEX);
+        super(maxColumnCount, text, SepaUtility.BIC_REGEX, false);
+        bicValid.bind(Bindings.createBooleanBinding(
+                () -> SepaUtility.isValidBic(textProperty().get()), textProperty()));
+        addValidCondition(bicValid);
         getStyleClass().add(CSS_CLASS_BIC_TEXTFIELD);
     }
 }
