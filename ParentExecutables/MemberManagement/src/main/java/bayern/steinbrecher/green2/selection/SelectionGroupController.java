@@ -22,8 +22,8 @@ import bayern.steinbrecher.green2.utility.BindingUtility;
 import com.google.common.collect.BiMap;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -51,12 +51,16 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -107,59 +111,49 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
 
         optionsListView.itemsProperty().bind(options);
         optionsListView.setCellFactory(listview -> new ListCell<AssociatedItem>() {
-            private CheckBox groupGraphic = null;
-            //TODO Find actual box used for (un-)selecting
-            private List<Region> groupGraphicBoxes = null;
 
             @Override
             protected void updateItem(AssociatedItem item, boolean empty) {
                 super.updateItem(item, empty);
                 if (!empty && item != null) {
                     setText(item.getItem().toString());
+                    Optional<G> newGroup = item.getGroup();
 
-                    if (groupGraphic == null) {
-                        groupGraphic = new CheckBox();
-                        groupGraphic.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                            //TODO Find a simplyfied boolean expression
-                            if (newVal) {
-                                if (currentGroup.get().isPresent()) {
-                                    item.setGroup(currentGroup.get());
-                                } else {
-                                    groupGraphic.setSelected(false);
-                                }
-                            } else {
-                                if (currentGroup.get().isPresent() && !item.getGroup().equals(currentGroup.get())) {
-                                    groupGraphic.setSelected(true);
-                                } else {
-                                    item.setGroup(Optional.empty());
-                                }
-                            }
-                        });
-                        setGraphic(groupGraphic);
-                    }
-                    item.groupProperty().addListener((obs, oldVal, newVal) -> {
-                        if (groupGraphicBoxes == null) {
-                            groupGraphicBoxes = groupGraphic.getChildrenUnmodifiable()
-                                    .stream()
-                                    .filter(node -> node instanceof Region)
-                                    .map(node -> (Region) node)
-                                    .collect(Collectors.toList());
-                        }
-                        groupGraphic.setSelected(newVal.isPresent());
-                        String styleString;
-                        if (newVal.isPresent()) {
-                            Color fill = groups.get(newVal.get());
-                            styleString = new StringJoiner(", ", "-fx-background-color: rgba(", ")")
-                                    .add(Double.toString(255 * fill.getRed()))
-                                    .add(Double.toString(255 * fill.getGreen()))
-                                    .add(Double.toString(255 * fill.getBlue()))
-                                    .add(Double.toString(fill.getOpacity()))
-                                    .toString();
+                    //TODO Spare creations of CheckBoxes
+                    CheckBox groupGraphic = new CheckBox();
+                    groupGraphic.setSelected(newGroup.isPresent());
+                    groupGraphic.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                        //TODO Find a simplyfied boolean expression
+                        if (newVal) {
+                            //System.out.println("Selected");
+                            item.setGroup(currentGroup.get());
                         } else {
-                            styleString = "";
+                            if (currentGroup.get().equals(newGroup) || !currentGroup.get().isPresent()) {
+                                //System.out.println("Unselected");
+                                item.setGroup(Optional.empty());
+                            } else {
+                                //System.out.println("Reselect");
+                                item.setGroup(currentGroup.get());
+                            }
                         }
-                        groupGraphicBoxes.stream().forEach(box -> box.setStyle(styleString));
+                        updateItem(item, empty);
                     });
+
+                    if (newGroup.isPresent()) {
+                        Color fill = groups.get(newGroup.get());
+                        groupGraphic.setBackground(
+                                new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY)));
+                        /*String styleString = new StringJoiner(", ", "-fx-background-color: rgba(", ")")
+                                .add(Double.toString(255 * fill.getRed()))
+                                .add(Double.toString(255 * fill.getGreen()))
+                                .add(Double.toString(255 * fill.getBlue()))
+                                .add(Double.toString(fill.getOpacity()))
+                                .toString();
+                        groupGraphic.setStyle(styleString);
+                        groupGraphic.applyCss();
+                        groupGraphic.layout();*/
+                    }
+                    setGraphic(groupGraphic);
                 }
             }
         });
@@ -279,7 +273,15 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void selectNoOption() {
-        options.getValue().stream().forEach(option -> option.setGroup(Optional.empty()));
+        options.getValue().stream().forEach(option -> {
+            /*
+             * NOTE When only deselecting once it may be reselected since the user can change the group association
+             * directly without explicitely deselecting an item.
+             */
+            //TODO Check it this is really true
+            option.setGroup(Optional.empty());
+            option.setGroup(Optional.empty());
+        });
     }
 
     /**
