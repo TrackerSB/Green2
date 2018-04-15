@@ -25,9 +25,11 @@ import javafx.util.Pair;
 
 /**
  * Represents a {@link CheckedTextField} which may be only valid if no by SEPA unsupported charaters are used. This
- * implementation refers to the list found at .
+ * implementation refers to the list found at
+ * https://www.hettwer-beratung.de/sepa-spezialwissen/sepa-technische-anforderungen/sepa-utf-8-zeichensatz/.
  *
  * @author Stefan Huber
+ * @since 2u14
  */
 public class CheckedSepaTextField extends CheckedTextField {
 
