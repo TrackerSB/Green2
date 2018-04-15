@@ -23,11 +23,9 @@ import com.google.common.collect.BiMap;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -63,7 +61,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -125,14 +122,14 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                     groupGraphic.selectedProperty().addListener((obs, oldVal, newVal) -> {
                         //TODO Find a simplyfied boolean expression
                         if (newVal) {
-                            //System.out.println("Selected");
+                            //Selected
                             item.setGroup(currentGroup.get());
                         } else {
                             if (currentGroup.get().equals(newGroup) || !currentGroup.get().isPresent()) {
-                                //System.out.println("Unselected");
+                                //Unselected
                                 item.setGroup(Optional.empty());
                             } else {
-                                //System.out.println("Reselect");
+                                //Reselect
                                 item.setGroup(currentGroup.get());
                             }
                         }
@@ -143,15 +140,6 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                         Color fill = groups.get(newGroup.get());
                         groupGraphic.setBackground(
                                 new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY)));
-                        /*String styleString = new StringJoiner(", ", "-fx-background-color: rgba(", ")")
-                                .add(Double.toString(255 * fill.getRed()))
-                                .add(Double.toString(255 * fill.getGreen()))
-                                .add(Double.toString(255 * fill.getBlue()))
-                                .add(Double.toString(fill.getOpacity()))
-                                .toString();
-                        groupGraphic.setStyle(styleString);
-                        groupGraphic.applyCss();
-                        groupGraphic.layout();*/
                     }
                     setGraphic(groupGraphic);
                 }
