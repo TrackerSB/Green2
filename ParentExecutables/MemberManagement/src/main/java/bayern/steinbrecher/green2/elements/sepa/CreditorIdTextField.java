@@ -16,7 +16,6 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -29,7 +28,7 @@ import javafx.scene.control.TextField;
  *
  * @author Stefan Huber
  */
-public final class CreditorIdTextField extends SpecificRegexTextField {
+public final class CreditorIdTextField extends CheckedSepaTextField {
 
     /**
      * The CSS class representing objects of this class.
@@ -50,7 +49,7 @@ public final class CreditorIdTextField extends SpecificRegexTextField {
      * @param text The initial content of this field.
      */
     public CreditorIdTextField(String text) {
-        super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX, true);
+        super(Integer.MAX_VALUE, text);
         creditorIdValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidCreditorId(textProperty().get()), textProperty()));
         addValidCondition(creditorIdValid);
