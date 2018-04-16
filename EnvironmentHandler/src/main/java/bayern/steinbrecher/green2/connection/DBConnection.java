@@ -275,8 +275,10 @@ public abstract class DBConnection implements AutoCloseable {
      * java.util.Collection)
      */
     public Optional<String> generateSearchQuery(Tables table, Collection<Columns<?>> columnsToSelect) {
+        SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
         List<String> columnNamesToSelect = columnsToSelect.stream()
                 .map(Columns::getRealColumnName)
+                .map(dbms::quoteColumnName)
                 .collect(Collectors.toList());
         return generateSearchQuery(table, columnNamesToSelect, new ArrayList<>());
     }

@@ -77,6 +77,7 @@ public enum SupportedDatabases {
      * @param types The mapping of the types to the database specific types.
      * @param queryTemplates The templates for all queries in {@link Queries#values()}. NOTE: This parameter may be
      * removed in future versions since {@code information_schema} is standardized.
+     * @param columnQuoteSymbol The symbol to use for quoting columns, tables,...
      */
     private SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywords,
             BiMap<Class<?>, SQLTypeKeyword> types, Map<Queries, String> queryTemplates, char columnQuoteSymbol) {
