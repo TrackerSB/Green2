@@ -61,6 +61,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     private static final Map<Tables, List<Pair<String, Class<?>>>> EXISTING_COLUMNS_CACHE = new HashMap<>();
     private static final List<String> TABLES_CACHE = new ArrayList<>();
+    //TODO Any solution to decouple Profile from DBConnection?
     private static final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> NAME_AND_TYPE_OF_DATABASE
             = new SimpleObjectProperty<>(Optional.empty());
 
