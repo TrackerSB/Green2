@@ -241,6 +241,8 @@ public abstract class DBConnection implements AutoCloseable {
             });
         }
         if (existingColumns.isEmpty()) {
+            Logger.getLogger(DBConnection.class.getName())
+                    .log(Level.WARNING, "Generating search query without selecting any existing column.");
             return Optional.empty();
         } else {
             String conditionString;
@@ -257,7 +259,9 @@ public abstract class DBConnection implements AutoCloseable {
                         .filter(c -> notExistingColumnsPattern.stream().noneMatch(p -> p.matcher(c).matches()))
                         .collect(Collectors.joining(" AND "));
             }
+            SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
             return Optional.of("SELECT " + existingColumns.stream()
+                    .map(dbms::quoteColumnName)
                     .collect(Collectors.joining(", "))
                     + " FROM " + table.getRealTableName()
                     + (conditionString.isEmpty() ? "" : " WHERE " + conditionString));
@@ -276,10 +280,8 @@ public abstract class DBConnection implements AutoCloseable {
      * java.util.Collection)
      */
     public Optional<String> generateSearchQuery(Tables table, Collection<Columns<?>> columnsToSelect) {
-        SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
         List<String> columnNamesToSelect = columnsToSelect.stream()
                 .map(Columns::getRealColumnName)
-                .map(dbms::quoteColumnName)
                 .collect(Collectors.toList());
         return generateSearchQuery(table, columnNamesToSelect, new ArrayList<>());
     }
