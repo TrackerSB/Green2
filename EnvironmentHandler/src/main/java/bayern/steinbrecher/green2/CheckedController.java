@@ -21,8 +21,8 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * This controller extends {@link WizardableController} with the properties {@code anyMissingInput},
- * {@code anyInputToLong} and {@code valid}.
+ * This controller extends {@link WizardableController} with the properties {@code anyMissingInput} and
+ * {@code anyInputToLong}.
  *
  * @author Stefan Huber
  */
