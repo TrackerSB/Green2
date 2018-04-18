@@ -37,7 +37,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyMapProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleMapProperty;
@@ -107,10 +106,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
         valid.bind(nothingSelected.not());
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
-        currentGroup.addListener((obs, oldVal, newVal) -> {
-            System.out.println("CurrentGroup changed: " + newVal.isPresent());
-            currentGroupSelected.set(newVal.isPresent());
-        });
+        currentGroup.addListener((obs, oldVal, newVal) -> currentGroupSelected.set(newVal.isPresent()));
 
         optionsListView.itemsProperty().bind(options);
         optionsListView.setCellFactory(listview -> new ListCell<AssociatedItem>() {
