@@ -20,4 +20,5 @@
 ### Controller
 * Only the most upper controller containing actual implementations for a specific windows should override `initializable(URL, ResourceBundle)`.
 * An actual controller should not have any subclasses unless it is related to a wizardable window. If so it should have exactly one subclass which has no subclasses itself.
-* Controller without subclasses should be declared as final
+* Controller without subclasses should be declared as final.
+* Controller have to be associated within FXML files.
