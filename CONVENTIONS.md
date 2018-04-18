@@ -16,3 +16,4 @@
     1. `SomeClassControllerWizard` extending WizardableController and providing all functions and properties needed by SomeClassWizard.fxml. This controller also contains methods methods for requesting the actual results of the window.
     2. `SomeClassControllerParent` extending SomeClassControllerWizard and adding only the functions needed for the additional controls of SomeClassParent.fxml.
 * There has to be only one view which references solely SomeClassControllerWizard for requesting results and loads either SomeClassParent.fxml or SomeClassWizard.fxml.
+* It may be neccessary for SomeClassControllerParent to add a listener to some property of SomeClassControllerWizard e.g. to add submit-on-enter functionality. This should be realized by defining a protected method called addListenerToSomeProperty(ChangeListener<...>).
