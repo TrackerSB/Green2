@@ -15,30 +15,25 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
-<?import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.contribution.ContributionController">
     <ScrollPane>
         <VBox>
             <Label text="%contributionInEuro"
-               labelFor="${contributionFieldsBox}"/>
+                   labelFor="${contributionFieldsBox}"/>
             <VBox fx:id="contributionFieldsBox" />
         </VBox>
     </ScrollPane>
     <HBox>
         <Button text="%add"
                 onAction="#addContributionField" />
-        <Button disable="${!contributionSpinner.valid}"
-                text="%ready"
-                defaultButton="true"
-                onAction="#submitContributions"/>
-        <Label visible="${!contributionSpinner.valid}"
+        <Label visible="${!controller.valid}"
                text="%invalidOrMissingInput"
                styleClass="warningLabel"/>
     </HBox>

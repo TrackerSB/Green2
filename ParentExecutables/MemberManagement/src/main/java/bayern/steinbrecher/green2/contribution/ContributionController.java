@@ -103,7 +103,7 @@ public class ContributionController extends WizardableController {
                             .findFirst()
                             .orElse(Color.rgb(COLOR_RANDOM.nextInt(256),
                                     COLOR_RANDOM.nextInt(256), COLOR_RANDOM.nextInt(256))));
-                    addedCf.getContributionSpinner().getEditor().setOnAction(aevt -> submitContributions());
+                    //addedCf.getContributionSpinner().getEditor().setOnAction(aevt -> submitContributions()); //FIXME MOVE IT!!!
                     contributionFieldsBox.getChildren().add(createContributionRow(addedCf));
                     addedCf.colorProperty().addListener(calculateUniqueColors);
                     addedCf.contributionProperty().addListener(calculateUniqueContributions);
@@ -135,6 +135,15 @@ public class ContributionController extends WizardableController {
         addContributionField();
     }
 
+    /**
+     * Adds the given listener to the property holding all contribution fields.
+     *
+     * @param listener The listener to be called when the property holding all contribution fields changes.
+     */
+    protected void addListenerToContributionFields(ListChangeListener<ContributionField> listener) {
+        contributionFields.addListener(listener);
+    }
+
     private HBox createContributionRow(ContributionField cf) {
         String remove = EnvironmentHandler.getResourceValue("remove");
         Button removeButton = new Button(remove);
@@ -151,14 +160,6 @@ public class ContributionController extends WizardableController {
     @FXML
     private void removeContributionField(ContributionField contributionField) {
         contributionFields.remove(contributionField);
-    }
-
-    @FXML
-    private void submitContributions() {
-        checkStage();
-        if (valid.get()) {
-            stage.close();
-        }
     }
 
     /**

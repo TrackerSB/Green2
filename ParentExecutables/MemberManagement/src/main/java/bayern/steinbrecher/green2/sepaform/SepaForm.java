@@ -50,7 +50,7 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
     public void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("SepaForm.fxml");
+            root = loadFXML("SepaFormParent.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
@@ -77,7 +77,7 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
     @Override
     public WizardPage<Optional<Originator>> getWizardPage() {
         try {
-            Pane root = loadFXML("SepaForm_Wizard.fxml");
+            Pane root = loadFXML("SepaFormWizard.fxml");
             return new WizardPage<>(root, null, false, this::getOriginator, getController().validProperty());
         } catch (IOException ex) {
             Logger.getLogger(SepaForm.class.getName()).log(Level.SEVERE, null, ex);

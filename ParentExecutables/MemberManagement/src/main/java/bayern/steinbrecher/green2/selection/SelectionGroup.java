@@ -36,7 +36,7 @@ import javafx.stage.Stage;
  * @param <T> The type of the options to select.
  * @param <G> The type of the groups to associate items with.
  */
-public class SelectionGroup<T extends Comparable<T>, G>
+public final class SelectionGroup<T extends Comparable<T>, G>
         extends WizardableView<Optional<Map<T, G>>, SelectionGroupController<T, G>> {
 
     private final Set<T> options;
@@ -77,7 +77,7 @@ public class SelectionGroup<T extends Comparable<T>, G>
     @Override
     public WizardPage<Optional<Map<T, G>>> getWizardPage() {
         try {
-            Pane root = loadFXML("SelectionGroup_Wizard.fxml");
+            Pane root = loadFXML("SelectionGroupWizard.fxml");
             return new WizardPage<>(
                     root, null, false, () -> getController().getSelection(), getController().validProperty());
         } catch (IOException ex) {

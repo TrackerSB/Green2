@@ -22,7 +22,6 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;
 import com.google.common.collect.BiMap;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,7 +53,7 @@ public class Contribution extends WizardableView<Optional<BiMap<Double, Color>>,
     public void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("Contribution.fxml");
+            root = loadFXML("ContributionParent.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
@@ -85,7 +84,7 @@ public class Contribution extends WizardableView<Optional<BiMap<Double, Color>>,
     @Override
     public WizardPage<Optional<BiMap<Double, Color>>> getWizardPage() {
         try {
-            Pane root = loadFXML("Contribution_Wizard.fxml");
+            Pane root = loadFXML("ContributionWizard.fxml");
             return new WizardPage<>(
                     root, null, false, () -> getController().getContribution(), getController().validProperty());
         } catch (IOException ex) {

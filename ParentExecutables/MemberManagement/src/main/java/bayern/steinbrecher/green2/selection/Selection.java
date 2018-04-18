@@ -67,7 +67,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     public void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("Selection.fxml");
+            root = loadFXML("SelectionParent.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
@@ -93,7 +93,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     @Override
     public WizardPage<Optional<Set<T>>> getWizardPage() {
         try {
-            Pane root = loadFXML("Selection_Wizard.fxml");
+            Pane root = loadFXML("SelectionWizard.fxml");
             return new WizardPage<>(
                     root, null, false, () -> getController().getSelection(), getController().validProperty());
         } catch (IOException ex) {

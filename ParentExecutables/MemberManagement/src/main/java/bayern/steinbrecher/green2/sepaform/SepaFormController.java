@@ -124,7 +124,7 @@ public class SepaFormController extends CheckedController {
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
 
-    private void saveOriginator() {
+    protected void saveOriginator() {
         if (isValid()) {
             originator.setCreator(creatorTextField.getText());
             originator.setCreditor(creditorTextField.getText());
@@ -136,17 +136,6 @@ public class SepaFormController extends CheckedController {
             originator.setPmtInfId(pmtInfIdTextField.getText());
             originator.setExecutiondate(executionDatePicker.getValue());
             originator.saveOriginator();
-        }
-    }
-
-    @FXML
-    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
-            justification = "It is called by an appropriate fxml file")
-    private void ready() {
-        checkStage();
-        if (isValid()) {
-            saveOriginator();
-            stage.close();
         }
     }
 
