@@ -16,4 +16,7 @@
     1. `SomeClassController` extending WizardableController and providing all functions and properties needed by SomeClassWizard.fxml. This controller also contains methods methods for requesting the actual results of the window.
     2. Package private class `SomeClassControllerParent` extending SomeClassController and adding only the functions needed for the additional controls of SomeClassParent.fxml.
 * There has to be only one view which references solely SomeClassController for requesting results and loads either SomeClassParent.fxml or SomeClassWizard.fxml.
-* It may be neccessary for SomeClassControllerParent to add a listener to some property of SomeClassController e.g. to add submit-on-enter functionality. This should be realized by defining a protected method called addListenerToSomeProperty(ChangeListener<...>).
+* It may be neccessary for SomeClassControllerParent to add a listener to some property of SomeClassController e.g. to add submit-on-enter functionality. This should be realized by defining a protected method called addListenerToSomeProperty(ChangeListener<...>). This method should be called in the default constructor of the subclass.
+### Controller
+* Only the most upper controller containing actual implementations for a specific windows should override `initializable(URL, ResourceBundle)`.
+* An actual controller should not have any subclasses unless it is related to a wizardable window. If so it should have exactly one subclass which has no subclasses itself.
