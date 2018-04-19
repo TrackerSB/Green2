@@ -6,7 +6,8 @@
     * `xProperty()`
     * `getXProperty()`
     * `setXProperty(...)`
-    * If the property should be readonly omit `setXProperty(...)` and make sure `xProperty()` returns a readonly property.
+* If the property should be readonly omit `setXProperty(...)` and make sure `xProperty()` returns a readonly property.
+* All properties of classes serving as instance variables should be defined where they are declared and have to be final.
 * When accessing a property calling `getXProperty()` should be preffered instead of directly accessing it.
 ### FXML files used in wizards
 * There have to be two fxml files:
