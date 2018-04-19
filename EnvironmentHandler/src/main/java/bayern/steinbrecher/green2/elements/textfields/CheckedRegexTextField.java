@@ -19,7 +19,8 @@ package bayern.steinbrecher.green2.elements.textfields;
 import javafx.beans.property.StringProperty;
 
 /**
- * Represents a {@link CheckedTextField} which also checks whether the current text is matching a given regex.
+ * Represents a {@link CheckedTextField} which also checks whether the current text is matching a given regex. In
+ * contrast to {@link SpecificRegexTextField} the regex can be changed.
  *
  * @author Stefan Huber
  */

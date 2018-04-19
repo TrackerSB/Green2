@@ -40,6 +40,9 @@ public class SpecificRegexTextField extends CheckedTextField {
      * match the current regex.
      */
     public static final String CSS_CLASS_REGEX_NO_MATCH = "unmatch-regex";
+    /**
+     * The property holding the regex used for validation.
+     */
     protected final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
     private final BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
     private final ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
