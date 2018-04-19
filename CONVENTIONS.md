@@ -23,3 +23,6 @@
 * An actual controller should not have any subclasses unless it is related to a wizardable window. If so it should have exactly one subclass which has no subclasses itself.
 * Controller without subclasses should be declared as final.
 * Controller have to be associated within FXML files.
+### var keyword
+* The var keyword has to be avoided in general
+* It is allowed in direct definitions of variables like `var someObject = new SomeObject()`
