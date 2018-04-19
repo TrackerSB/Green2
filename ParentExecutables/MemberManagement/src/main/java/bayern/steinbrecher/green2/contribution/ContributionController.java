@@ -61,7 +61,7 @@ public class ContributionController extends WizardableController {
     private VBox contributionFieldsBox;
     private ListProperty<ContributionField> contributionFields
             = new SimpleListProperty<>(this, "contributionSpinner", FXCollections.observableArrayList());
-    private BooleanProperty uniqueColors = new SimpleBooleanProperty(this, "uniqueColors", true);
+    private final BooleanProperty uniqueColors = new SimpleBooleanProperty(this, "uniqueColors", true);
     private final BooleanProperty uniqueContributions = new SimpleBooleanProperty(this, "uniqueContributions", true);
     private BooleanProperty allContributionFieldsValid
             = new SimpleBooleanProperty(this, "allContributionFieldsValid", true);

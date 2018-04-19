@@ -124,6 +124,10 @@ public class SepaFormController extends CheckedController {
                 + Calendar.getInstance().get(Calendar.YEAR));
     }
 
+    /**
+     * If the currently inserted data is complete and valid it is written to the model representing the originator and
+     * the file holding the model is updated.
+     */
     protected void saveOriginator() {
         if (isValid()) {
             originator.setCreator(creatorTextField.getText());
