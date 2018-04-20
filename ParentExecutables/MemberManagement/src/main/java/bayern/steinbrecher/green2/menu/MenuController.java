@@ -103,16 +103,15 @@ import javafx.stage.Stage;
 public class MenuController extends Controller {
 
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
-    private final List<Callable<String>> checkFunctions = Arrays.asList(
-            () -> checkIbans(),
-            () -> checkBics(),
-            () -> checkDates(m -> m.getPerson().getBirthday(),
-                    EnvironmentHandler.getResourceValue("memberBadBirthday"),
-                    EnvironmentHandler.getResourceValue("allBirthdaysCorrect")),
-            () -> checkDates(m -> m.getAccountHolder().getMandateSigned(),
-                    EnvironmentHandler.getResourceValue("memberBadMandatSigned"),
-                    EnvironmentHandler.getResourceValue("allMandatSignedCorrect")),
-            () -> checkContributions());
+    /**
+     * Maps resource keys ({@link EnvironmentHandler#getResourceValue(java.lang.String, java.lang.Object...)} to
+     * functions generating checks.
+     */
+    private final Map<String, Callable<List<String>>> checkFunctions = Map.of("iban", () -> checkIbans(),
+            "bic", () -> checkBics(),
+            "birthdays", () -> checkDates(m -> m.getPerson().getBirthday()),
+            "columnMandatSigned", () -> checkDates(m -> m.getAccountHolder().getMandateSigned()),
+            "contributions", () -> checkContributions());
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
     private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new HashMap<>(3) {
@@ -517,93 +516,48 @@ public class MenuController extends Controller {
         callOnDisabled(aevt, () -> generateSepa(member.get(), false, SequenceType.RCUR));
     }
 
-    private String checkIbans() {
-        List<Member> badIban = new ArrayList<>();
-        try {
-            badIban = member.get().get().parallelStream()
-                    .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
-                    .collect(Collectors.toList());
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (badIban.isEmpty()) {
-            return EnvironmentHandler.getResourceValue("correctIbans");
-        } else {
-            String noIban = EnvironmentHandler.getResourceValue("noIban");
-            String message = badIban.stream()
-                    .map(m -> {
-                        String iban = m.getAccountHolder().getIban();
-                        return m + ": \"" + (iban.isEmpty() ? noIban : iban) + "\"";
+    private List<String> checkIbans() throws InterruptedException, ExecutionException {
+        String noIban = EnvironmentHandler.getResourceValue("noIban");
+        return member.get().get().parallelStream()
+                .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
+                .map(m -> {
+                    String iban = m.getAccountHolder().getIban();
+                    return m + ": \"" + (iban.isEmpty() ? noIban : iban) + "\"";
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<String> checkBics() throws InterruptedException, ExecutionException {
+        String noBic = EnvironmentHandler.getResourceValue("noBic");
+        return member.get().get().parallelStream()
+                .filter(m -> !SepaUtility.isValidBic(m.getAccountHolder().getBic()))
+                .map(m -> {
+                    String bic = m.getAccountHolder().getBic();
+                    return m + ": \"" + (bic.isEmpty() ? noBic : bic) + "\"";
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<String> checkDates(Function<Member, LocalDate> dateFunction)
+            throws ExecutionException, InterruptedException {
+        return member.get().get().parallelStream()
+                .filter(m -> dateFunction.apply(m) == null)
+                .map(m -> m.toString() + ": \"" + dateFunction.apply(m) + "\"")
+                .collect(Collectors.toList());
+    }
+
+    private List<String> checkContributions() throws InterruptedException, ExecutionException {
+        if (dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION)) {
+            return member.get().get().parallelStream()
+                    .filter(m -> {
+                        Optional<Double> contribution = m.getContribution();
+                        return !contribution.isPresent() || contribution.get() < 0
+                                || (contribution.get() == 0 && !m.isContributionfree());
                     })
-                    .collect(Collectors.joining("\n"));
-            return EnvironmentHandler.getResourceValue("memberBadIban") + "\n" + message;
-        }
-    }
-
-    private String checkBics() {
-        List<Member> badBic = new ArrayList<>();
-        try {
-            badBic = member.get().get().parallelStream()
-                    .filter(m -> !SepaUtility.isValidBic(m.getAccountHolder().getBic()))
-                    .collect(Collectors.toList());
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (badBic.isEmpty()) {
-            return EnvironmentHandler.getResourceValue("correctBics");
-        } else {
-            String noBic = EnvironmentHandler.getResourceValue("noBic");
-            String message = badBic.stream()
-                    .map(m -> {
-                        String bic = m.getAccountHolder().getBic();
-                        return m + ": \"" + (bic.isEmpty() ? noBic : bic) + "\"";
-                    })
-                    .collect(Collectors.joining("\n"));
-            return EnvironmentHandler.getResourceValue("memberBadBic") + "\n" + message;
-        }
-    }
-
-    private String checkDates(Function<Member, LocalDate> dateFunction, String invalidDatesIntro,
-            String allCorrectMessage) {
-        try {
-            String message = member.get().get().parallelStream()
-                    .filter(m -> dateFunction.apply(m) == null)
-                    .map(m -> m.toString() + ": \"" + dateFunction.apply(m) + "\"")
-                    .collect(Collectors.joining("\n"));
-            return message.isEmpty() ? allCorrectMessage
-                    : invalidDatesIntro + "\n" + message;
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-            return "";
-        }
-    }
-
-    private String checkContributions() {
-        List<Member> contributionDefined = new ArrayList<>();
-        try {
-            contributionDefined = member.get().get().parallelStream()
-                    .filter(m -> m.getContribution().isPresent())
-                    .collect(Collectors.toList());
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (contributionDefined.isEmpty()) {
-            return EnvironmentHandler.getResourceValue("skipCheckingContribution");
-        } else {
-            String message = contributionDefined.parallelStream()
-                    .filter(m -> m.getContribution().get() < 0)
                     .map(m -> m.toString() + ": " + m.getContribution())
-                    .collect(Collectors.joining("\n"));
-            message += contributionDefined.parallelStream()
-                    .filter(m -> !m.isContributionfree())
-                    .filter(m -> m.getContribution().get() == 0)
-                    .map(m -> EnvironmentHandler.getResourceValue("zeroContribution", m.toString()))
-                    .collect(Collectors.joining("\n"));
-            if (message.isEmpty()) {
-                return EnvironmentHandler.getResourceValue("correctContributions");
-            } else {
-                return EnvironmentHandler.getResourceValue("memberBadContributions") + "\n" + message;
-            }
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
         }
     }
 
@@ -612,20 +566,23 @@ public class MenuController extends Controller {
             justification = "It is called by an appropriate fxml file")
     private void checkData(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
-            StringJoiner messageJoiner = new StringJoiner("\n\n");
-            checkFunctions.forEach(cf -> {
-                try {
-                    String message = cf.call();
-                    if (!message.isEmpty()) {
-                        messageJoiner.add(message);
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-            String checkData = EnvironmentHandler.getResourceValue("checkData");
-            DialogUtility.showAndWait(
-                    DialogUtility.createMessageAlert(stage, messageJoiner.toString(), checkData, checkData));
+            Map<String, List<String>> reports = new HashMap<>();
+            checkFunctions.entrySet().stream()
+                    .forEach(entry -> {
+                        List<String> messages;
+                        try {
+                            messages = entry.getValue().call();
+                        } catch (Exception ex) {
+                            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                            messages = Arrays.asList(ex.getLocalizedMessage().split("\n"));
+                        }
+                        reports.put(EnvironmentHandler.getResourceValue(entry.getKey()), messages);
+                    });
+
+            Stage reportsStage = new Stage();
+            reportsStage.setTitle(EnvironmentHandler.getResourceValue("checkData"));
+            DialogUtility.createCheckReportDialog(stage, reportsStage, reports);
+            reportsStage.showAndWait();
         });
     }
 

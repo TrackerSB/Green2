@@ -20,6 +20,8 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -33,10 +35,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 /**
@@ -59,11 +66,19 @@ public final class DialogUtility {
         return alert;
     }
 
+    private static void addDefaultStyle(Scene scene) {
+        scene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+    }
+
+    private static void addDefaultIcon(Stage stage) {
+        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+    }
+
     private static Alert addStyleAndIcon(Alert alert) {
         Scene scene = alert.getDialogPane().getScene();
-        scene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+        addDefaultStyle(scene);
         Stage stage = (Stage) scene.getWindow();
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+        addDefaultIcon(stage);
 
         Node graphic;
         switch (alert.getAlertType()) {
@@ -284,5 +299,38 @@ public final class DialogUtility {
             }
         }
         return result;
+    }
+
+    /**
+     * Creates a dialog showing a list of {@link TitledPane}s containing messages.
+     *
+     * @param owner The owner of this dialog.
+     * @param stage The stage to create the dialog for.
+     * @param reports The {@link Map} associating message headlines with a list of messages.
+     */
+    public static void createCheckReportDialog(Window owner, Stage stage, Map<String, List<String>> reports) {
+        VBox reportsBox = new VBox();
+        reports.entrySet().stream()
+                .map(entry -> {
+                    VBox messagesBox = new VBox();
+                    List<String> messages = entry.getValue();
+                    messages.stream()
+                            .map(message -> new Label(message))
+                            .forEach(messagesBox.getChildren()::add);
+                    TitledPane reportPane = new TitledPane(entry.getKey() + " (" + messages.size() + ")", messagesBox);
+                    reportPane.setCollapsible(!messages.isEmpty());
+                    reportPane.setExpanded(false);
+                    return reportPane;
+                })
+                .forEach(reportsBox.getChildren()::add);
+
+        stage.initOwner(owner);
+        stage.initStyle(StageStyle.UTILITY);
+        addDefaultIcon(stage);
+        ScrollPane scrollableReportsBox = new ScrollPane(reportsBox);
+        HBox.setHgrow(scrollableReportsBox, Priority.ALWAYS);
+        Scene scene = new Scene(scrollableReportsBox);
+        addDefaultStyle(scene);
+        stage.setScene(scene);
     }
 }
