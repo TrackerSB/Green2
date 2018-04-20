@@ -40,6 +40,7 @@ CSS files containing rules only for specific classes or dialogs have to be place
 #### var keyword
 * The var keyword has to be avoided in general
 * It is allowed in direct definitions of variables like `var someObject = new SomeObject()
+* If the type is generic and `var` is used on the left side the right side should not use the diamond operator `<>`.
 #### CSS
 * Avoid `!important`.
 * Omit any unit when specifying lengths or sizes of zero.
