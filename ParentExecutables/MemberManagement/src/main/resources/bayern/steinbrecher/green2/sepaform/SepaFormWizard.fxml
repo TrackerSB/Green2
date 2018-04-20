@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.IbanTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField?>
+<?import bayern.steinbrecher.green2.elements.sepa.SepaNameField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -37,10 +38,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <HelpButton fx:id="creatorHelpButton"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="0"/>
-    <CheckedSepaTextField fx:id="creatorTextField"
-                          promptText="%nameOfCreator"
-                          GridPane.columnIndex="2"
-                          GridPane.rowIndex="0"/>
+    <SepaNameField fx:id="creatorTextField"
+                   promptText="%nameOfCreator"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="0"/>
     <Label text="%accountHolder"
            labelFor="${creditorTextField}"
            GridPane.columnIndex="0"
@@ -48,10 +49,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <HelpButton helpMessage="%helpCreditor"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="1"/>
-    <CheckedSepaTextField fx:id="creditorTextField"
-                          promptText="%accountHolder"
-                          GridPane.columnIndex="2"
-                          GridPane.rowIndex="1"/>
+    <SepaNameField fx:id="creditorTextField"
+                   promptText="%accountHolder"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="1"/>
     <Label text="%iban"
            labelFor="${ibanTextField}"
            GridPane.columnIndex="0"

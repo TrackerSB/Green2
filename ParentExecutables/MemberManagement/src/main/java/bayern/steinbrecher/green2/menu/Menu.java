@@ -62,7 +62,6 @@ public class Menu extends View<MenuController> {
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
-        root.getStylesheets().add("/bayern/steinbrecher/green2/styles/menu.css");
 
         getController().setStage(stage);
 

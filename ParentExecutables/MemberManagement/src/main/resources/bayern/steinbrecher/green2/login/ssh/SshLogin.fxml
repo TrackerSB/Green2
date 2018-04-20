@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
+<?import bayern.steinbrecher.green2.elements.textfields.NameField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
@@ -34,11 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
            labelFor="${sshUsernameField}"
            GridPane.rowIndex="0"
            GridPane.columnIndex="0"/>
-    <CheckedTextField fx:id="sshUsernameField"
-                      promptText="%sshUsername"
-                      checked="${!allowEmptyFieldsCheckbox.selected}"
-                      GridPane.rowIndex="0"
-                      GridPane.columnIndex="1"/>
+    <NameField fx:id="sshUsernameField"
+               promptText="%sshUsername"
+               checked="${!allowEmptyFieldsCheckbox.selected}"
+               GridPane.rowIndex="0"
+               GridPane.columnIndex="1"/>
     <Label text="%sshPassword"
            labelFor="${sshPasswordField}"
            GridPane.rowIndex="1"
@@ -52,11 +53,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
            labelFor="${databaseUsernameField}"
            GridPane.rowIndex="2"
            GridPane.columnIndex="0"/>
-    <CheckedTextField fx:id="databaseUsernameField"
-                      promptText="%databaseUsername"
-                      checked="${!allowEmptyFieldsCheckbox.selected}"
-                      GridPane.rowIndex="2"
-                      GridPane.columnIndex="1"/>
+    <NameField fx:id="databaseUsernameField"
+               promptText="%databaseUsername"
+               checked="${!allowEmptyFieldsCheckbox.selected}"
+               GridPane.rowIndex="2"
+               GridPane.columnIndex="1"/>
     <Label text="%databasePassword"
            labelFor="${databasePasswordField}"
            GridPane.rowIndex="3"

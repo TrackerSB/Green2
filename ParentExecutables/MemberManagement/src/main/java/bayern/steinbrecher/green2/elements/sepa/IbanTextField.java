@@ -55,5 +55,6 @@ public final class IbanTextField extends SpecificRegexTextField {
                 () -> SepaUtility.isValidIban(textProperty().get()), textProperty()));
         addValidCondition(ibanValid);
         getStyleClass().add(CSS_CLASS_IBAN_TEXTFIELD);
+        getStylesheets().add(IbanTextField.class.getResource("ibanTextField.css").toExternalForm());
     }
 }

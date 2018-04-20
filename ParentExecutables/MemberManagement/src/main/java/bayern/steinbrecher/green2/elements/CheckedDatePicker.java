@@ -38,6 +38,10 @@ import javafx.scene.control.DatePicker;
  */
 public class CheckedDatePicker extends DatePicker implements CheckedControl {
 
+    /**
+     * The CSS class associated with this class.
+     */
+    public static final String CSS_CLASS_CHECKED_DATE_PICKER = "checked-date-picker";
     private static final DateTimeFormatter DATE_TIME_FORMAT_SHORT
             = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
     private static final DateTimeFormatter DATE_TIME_FORMAT_MEDIUM
@@ -81,6 +85,9 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl {
         super(locale);
         this.forceFuture.set(forceFuture);
         initProperties();
+
+        getStyleClass().add(CSS_CLASS_CHECKED_DATE_PICKER);
+        getStylesheets().add(CheckedDatePicker.class.getResource("checkedDatePicker.css").toExternalForm());
     }
 
     private void initProperties() {

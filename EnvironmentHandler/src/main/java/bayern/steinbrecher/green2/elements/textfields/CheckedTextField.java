@@ -115,6 +115,7 @@ public class CheckedTextField extends TextField implements CheckedControl {
 
         setMaxColumnCount(maxColumnCount);
         getStyleClass().add(CSS_CLASS_CHECKED_TEXTFIELD);
+        getStylesheets().add(CharsetTextField.class.getResource("checkedTextField.css").toExternalForm());
     }
 
     /**

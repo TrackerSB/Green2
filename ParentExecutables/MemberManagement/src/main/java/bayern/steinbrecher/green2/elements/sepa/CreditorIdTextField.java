@@ -54,5 +54,6 @@ public final class CreditorIdTextField extends CheckedSepaTextField {
                 () -> SepaUtility.isValidCreditorId(textProperty().get()), textProperty()));
         addValidCondition(creditorIdValid);
         getStyleClass().add(CSS_CLASS_CREDITORID_TEXTFIELD);
+        getStylesheets().add(CreditorIdTextField.class.getResource("creditorIdTextField.css").toExternalForm());
     }
 }

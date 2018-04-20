@@ -65,5 +65,6 @@ public class BicTextField extends SpecificRegexTextField {
                 () -> SepaUtility.isValidBic(textProperty().get()), textProperty()));
         addValidCondition(bicValid);
         getStyleClass().add(CSS_CLASS_BIC_TEXTFIELD);
+        getStylesheets().add(BicTextField.class.getResource("bicTextField.css").toExternalForm());
     }
 }
