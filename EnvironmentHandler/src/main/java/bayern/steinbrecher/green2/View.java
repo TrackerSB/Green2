@@ -111,7 +111,8 @@ public abstract class View<T extends Controller> extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
         fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
-        root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+        //Make sure the default stylesheet does not override other stylesheets.
+        root.getStylesheets().add(0, EnvironmentHandler.DEFAULT_STYLESHEET);
         controller = fxmlLoader.getController();
         callWhenLoadFXML();
         return root;
