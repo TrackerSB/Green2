@@ -95,7 +95,8 @@ public abstract class View<T extends Controller> extends Application {
 
     /**
      * Loads the given FXML ressource. If it is needed to call certain methods each time this method is called, override
-     * {@link #callWhenLoadFXML()}. E.g. set some options to the {@link Controller}.
+     * {@link #callWhenLoadFXML()}. E.g. set some options to the {@link Controller} or adding stylesheets and resource
+     * bundles.
      *
      * @param <P> The concrete type of the root element of the given resource.
      * @param resource The FXML resource.
