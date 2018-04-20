@@ -21,15 +21,14 @@ import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -47,11 +46,8 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
 
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
-    private final ObjectProperty<CheckedDoubleSpinner> contributionSpinnerProperty
-            = new SimpleObjectProperty<>(this, "contributionSpinner");
     @FXML
     private ColorPicker colorPicker;
-    private final ObjectProperty<ColorPicker> colorPickerProperty = new SimpleObjectProperty<>(this, "colorPicker");
     private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
     private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
     /**
@@ -88,19 +84,13 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        contributionSpinnerProperty.addListener((obs, oldVal, newVal) -> {
-            valid.bind(newVal.validProperty().or(checked.not()));
-            ElementsUtility.addCssClassIf(newVal, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
-        });
-        colorPickerProperty.addListener((obs, oldVal, newVal) -> {
-            ElementsUtility.addCssClassIf(newVal, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
-        });
+        valid.bind(contributionSpinner.validProperty().or(checked.not()));
         invalid.bind(valid.not());
 
-        contributionSpinnerProperty.set(contributionSpinner);
-        colorPickerProperty.set(colorPicker);
-
         colorPicker.setValue(Color.TRANSPARENT);
+
+        ElementsUtility.addCssClassIf(contributionSpinner, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(colorPicker, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**
@@ -108,17 +98,27 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      *
      * @return The property holding the currently inserted contribution.
      */
-    public ReadOnlyObjectProperty<Double> contributionProperty() {
-        return contributionSpinner.valueProperty();
+    public ObjectProperty<Double> contributionProperty() {
+        return contributionSpinner.getValueFactory().valueProperty();
     }
 
     /**
      * Returns the currently inserted contribution.
      *
-     * @return The currently inserted contribution.
+     * @return The currently inserted contribution. Returns {@link Optional#empty()} if and only if no value is
+     * inserted.
      */
-    public double getContribution() {
-        return contributionProperty().getValue();
+    public Optional<Double> getContribution() {
+        return Optional.ofNullable(contributionProperty().getValue());
+    }
+
+    /**
+     * Sets a new contribution to show.
+     *
+     * @param contribution The new contribution to set.
+     */
+    public void setContribution(double contribution) {
+        contributionProperty().set(contribution);
     }
 
     /**
@@ -126,7 +126,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      *
      * @return The property holding the currently associated color.
      */
-    public ReadOnlyObjectProperty<Color> colorProperty() {
+    public ObjectProperty<Color> colorProperty() {
         return colorPicker.valueProperty();
     }
 
@@ -140,39 +140,12 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
     }
 
     /**
-     * Returns the property holding the currently used spinner for entering the contribution.
+     * Sets the color of the {@link ColorPicker}
      *
-     * @return The property holding the currently used spinner for entering the contribution.
+     * @param color The color to set.
      */
-    public ReadOnlyObjectProperty<CheckedDoubleSpinner> contributionSpinnerProperty() {
-        return contributionSpinnerProperty;
-    }
-
-    /**
-     * Returns the currently used spinner for entering the contribution.
-     *
-     * @return The currently used spinner for entering the contribution.
-     */
-    public CheckedDoubleSpinner getContributionSpinner() {
-        return contributionSpinnerProperty().get();
-    }
-
-    /**
-     * Returns the property holding the currently used {@link ColorPicker} for choosing an associated color.
-     *
-     * @return The property holding the currently used {@link ColorPicker} for choosing an associated color.
-     */
-    public ReadOnlyObjectProperty<ColorPicker> colorPickerProperty() {
-        return colorPickerProperty;
-    }
-
-    /**
-     * Returns the currently used {@link ColorPicker} for choosing an associated color.
-     *
-     * @return The currently used {@link ColorPicker} for choosing an associated color.
-     */
-    public ColorPicker getColorPicker() {
-        return colorPickerProperty().get();
+    public void setColor(Color color) {
+        colorProperty().set(color);
     }
 
     /**

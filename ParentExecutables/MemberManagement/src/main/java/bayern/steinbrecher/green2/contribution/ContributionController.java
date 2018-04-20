@@ -18,7 +18,9 @@ package bayern.steinbrecher.green2.contribution;
 
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
 import bayern.steinbrecher.green2.elements.spinner.ContributionField;
+import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.net.URL;
@@ -28,6 +30,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -39,6 +42,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.HBox;
@@ -52,6 +56,10 @@ import javafx.scene.paint.Color;
  */
 public class ContributionController extends WizardableController {
 
+    /**
+     * A CSS class added to all subelements if it contains duplicated values where not allowed.
+     */
+    public static final String CSS_CLASS_DUPLICATE_ENTRY = "duplicate";
     private static final List<Color> PREDEFINED_COLORS = List.of(Color.FORESTGREEN, Color.rgb(232, 181, 14),
             Color.rgb(255, 48, 28), Color.rgb(78, 14, 232), Color.rgb(16, 255, 234), Color.rgb(135, 139, 38),
             Color.rgb(232, 115, 21), Color.rgb(246, 36, 255), Color.rgb(23, 115, 232), Color.rgb(24, 255, 54));
@@ -74,18 +82,18 @@ public class ContributionController extends WizardableController {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ChangeListener<Object> calculateUniqueColors = (obs, oldVal, newVal) -> {
-            //Check for duplicate colors
-            Set<Color> colors = new HashSet<>();
-            uniqueColors.set(contributionFields.stream()
-                    .allMatch(cf -> colors.add(cf.getColor())));
-        };
-        ChangeListener<Object> calculateUniqueContributions = (obs, oldVal, newVal) -> {
-            //Check for duplicate colors
-            Set<Double> contributions = new HashSet<>();
-            uniqueContributions.set(contributionFields.stream()
-                    .allMatch(cf -> contributions.add(cf.getContribution())));
-        };
+        ChangeListener<Object> calculateUniqueColors
+                = createCalculateUniqueListener(ContributionField::getColor, uniqueColors, cf -> {
+                    return cf.getChildren().stream()
+                            .filter(child -> child instanceof ColorPicker)
+                            .findAny();
+                });
+        ChangeListener<Object> calculateUniqueContributions
+                = createCalculateUniqueListener(ContributionField::getContribution, uniqueContributions, cf -> {
+                    return cf.getChildren().stream()
+                            .filter(child -> child instanceof CheckedDoubleSpinner)
+                            .findAny();
+                });
 
         contributionFields.addListener(calculateUniqueColors);
         contributionFields.addListener(calculateUniqueContributions);
@@ -93,21 +101,19 @@ public class ContributionController extends WizardableController {
         contributionFields.addListener((ListChangeListener.Change<? extends ContributionField> change) -> {
             while (change.next()) {
                 change.getAddedSubList().forEach(addedCf -> {
-                    addedCf.getColorPicker().setValue(PREDEFINED_COLORS.stream()
+                    addedCf.setColor(PREDEFINED_COLORS.stream()
                             .sequential()
                             .filter(
                                     predefColor -> contributionFields.stream()
-                                            .map(ContributionField::getColorPicker)
-                                            .map(ColorPicker::getValue)
+                                            .map(ContributionField::getColor)
                                             .noneMatch(c -> c.equals(predefColor)))
                             .findFirst()
                             .orElse(Color.rgb(COLOR_RANDOM.nextInt(256),
                                     COLOR_RANDOM.nextInt(256), COLOR_RANDOM.nextInt(256))));
-                    //addedCf.getContributionSpinner().getEditor().setOnAction(aevt -> submitContributions()); //FIXME MOVE IT!!!
                     contributionFieldsBox.getChildren().add(createContributionRow(addedCf));
                     addedCf.colorProperty().addListener(calculateUniqueColors);
                     addedCf.contributionProperty().addListener(calculateUniqueContributions);
-                    addedCf.getContributionSpinner().validProperty().addListener(calculateAllContributionFieldsValid);
+                    addedCf.validProperty().addListener(calculateAllContributionFieldsValid);
                 });
                 change.getRemoved().forEach(removedCf -> {
                     List<HBox> hboxes = contributionFieldsBox.getChildren().stream()
@@ -133,6 +139,33 @@ public class ContributionController extends WizardableController {
         });
         valid.bind(allContributionFieldsValid.and(uniqueColors).and(uniqueContributions));
         addContributionField();
+    }
+
+    private <T> ChangeListener<Object> createCalculateUniqueListener(Function<ContributionField, T> toCheck,
+            BooleanProperty toStore, Function<ContributionField, Optional<? extends Node>> toMark) {
+        return (obs, oldVal, newVal) -> {
+            //Check for duplicate colors
+            Set<T> uniqueElements = new HashSet<>();
+            Set<T> duplicateElements = contributionFields.stream()
+                    .map(toCheck)
+                    .filter(element -> !uniqueElements.add(element))
+                    .collect(Collectors.toSet());
+            toStore.set(duplicateElements.isEmpty());
+            contributionFields.stream()
+                    .forEach(cf -> {
+                        //TODO Any way to use ElementsUtility#addCssClassIf(...)?
+                        toMark.apply(cf).ifPresentOrElse(element -> {
+                            if (duplicateElements.contains(toCheck.apply(cf))) {
+                                if (!element.getStyleClass().contains(CSS_CLASS_DUPLICATE_ENTRY)) {
+                                    element.getStyleClass().add(CSS_CLASS_DUPLICATE_ENTRY);
+                                }
+                            } else {
+                                element.getStyleClass().remove(CSS_CLASS_DUPLICATE_ENTRY);
+                            }
+                        }, () -> Logger.getLogger(ContributionController.class.getName())
+                                .log(Level.WARNING, "No element present to mark."));
+                    });
+        };
     }
 
     /**
@@ -173,7 +206,11 @@ public class ContributionController extends WizardableController {
             return Optional.empty();
         } else {
             BiMap<Double, Color> contributions = HashBiMap.create(contributionFields.getSize());
-            contributionFields.forEach(cf -> contributions.put(cf.getContribution(), cf.getColor()));
+            contributionFields.forEach(cf -> {
+                cf.getContribution().ifPresent(contribution -> {
+                    contributions.put(contribution, cf.getColor());
+                });
+            });
             return Optional.of(contributions);
         }
     }
