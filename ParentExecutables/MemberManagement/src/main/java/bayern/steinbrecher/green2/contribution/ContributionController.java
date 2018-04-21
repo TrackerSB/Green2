@@ -18,9 +18,9 @@ package bayern.steinbrecher.green2.contribution;
 
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.ReportSummary;
 import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
 import bayern.steinbrecher.green2.elements.spinner.ContributionField;
-import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.net.URL;
@@ -67,6 +67,8 @@ public class ContributionController extends WizardableController {
     //TODO Use ListView<Pair<Color, Double>> instead?
     @FXML
     private VBox contributionFieldsBox;
+    @FXML
+    private ReportSummary reportSummary;
     private ListProperty<ContributionField> contributionFields
             = new SimpleListProperty<>(this, "contributionSpinner", FXCollections.observableArrayList());
     private final BooleanProperty uniqueColors = new SimpleBooleanProperty(this, "uniqueColors", true);
@@ -116,6 +118,12 @@ public class ContributionController extends WizardableController {
                     addedCf.validProperty().addListener(calculateAllContributionFieldsValid);
                 });
                 change.getRemoved().forEach(removedCf -> {
+                    removedCf.getChildren().stream()
+                            .filter(child -> child.getStyleClass().contains(CSS_CLASS_DUPLICATE_ENTRY))
+                            .forEach(
+                                    child -> reportSummary.decreaseReportEntry(
+                                            EnvironmentHandler.getResourceValue("duplicateEntry")));
+
                     List<HBox> hboxes = contributionFieldsBox.getChildren().stream()
                             //If working as expected there should only be objects of the class HBox
                             .filter(node -> node instanceof HBox)
@@ -155,12 +163,16 @@ public class ContributionController extends WizardableController {
                     .forEach(cf -> {
                         //TODO Any way to use ElementsUtility#addCssClassIf(...)?
                         toMark.apply(cf).ifPresentOrElse(element -> {
+                            String duplicateMessage = EnvironmentHandler.getResourceValue("duplicateEntry");
                             if (duplicateElements.contains(toCheck.apply(cf))) {
                                 if (!element.getStyleClass().contains(CSS_CLASS_DUPLICATE_ENTRY)) {
                                     element.getStyleClass().add(CSS_CLASS_DUPLICATE_ENTRY);
+                                    reportSummary.increaseReportEntry(duplicateMessage, ReportSummary.ReportType.ERROR);
                                 }
                             } else {
-                                element.getStyleClass().remove(CSS_CLASS_DUPLICATE_ENTRY);
+                                if (element.getStyleClass().remove(CSS_CLASS_DUPLICATE_ENTRY)) {
+                                    reportSummary.decreaseReportEntry(duplicateMessage);
+                                }
                             }
                         }, () -> Logger.getLogger(ContributionController.class.getName())
                                 .log(Level.WARNING, "No element present to mark."));
