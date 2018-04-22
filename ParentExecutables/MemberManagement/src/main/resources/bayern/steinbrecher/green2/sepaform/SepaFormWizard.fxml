@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <?import bayern.steinbrecher.green2.elements.buttons.HelpButton?>
 <?import bayern.steinbrecher.green2.elements.CheckedDatePicker?>
+<?import bayern.steinbrecher.green2.elements.report.ReportSummary?>
 <?import bayern.steinbrecher.green2.elements.sepa.BicTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.CheckedSepaTextField?>
 <?import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField?>
@@ -133,19 +134,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           GridPane.columnIndex="2"
                           GridPane.rowIndex="8"/>
 
-    <Label text="%inputToLong"
-           styleClass="warningLabel"
-           visible="${controller.anyInputToLong}"
-           GridPane.columnIndex="2"
-           GridPane.rowIndex="9"/>
-    <Label text="%invalidOrMissingInput"
-           styleClass="warningLabel"
-           visible="${(!controller.valid) || controller.anyInputMissing}"
-           GridPane.columnIndex="0"
-           GridPane.rowIndex="10"/>
-    <Label text="%pastExecutionDate"
-           styleClass="warningLabel"
-           visible="${executionDatePicker.invalidPastDate}"
-           GridPane.columnIndex="2"
-           GridPane.rowIndex="10"/>
+    <ReportSummary fx:id="reportSummary"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="9"/>
 </GridPane>

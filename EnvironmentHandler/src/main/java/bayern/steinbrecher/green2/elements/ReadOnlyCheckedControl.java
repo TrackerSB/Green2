@@ -30,10 +30,12 @@ public interface ReadOnlyCheckedControl {
     //TODO Is there any way to pull up the implementation to here?
     //TODO How to force to return a ReadOnlyBooleanProperty instead of a BooleanProperty?
     /**
-     * Returns the {@link BooleanProperty} representing whether the current input is valid or not.
+     * Returns the {@link BooleanProperty} representing whether the current input is valid or not. NOTE: When the input
+     * is not checked it is always valid.
      *
      * @return The {@link BooleanProperty} representing whether the current input is valid or not.
      * @see #isValid()
+     * @see #checkedProperty()
      */
     ReadOnlyBooleanProperty validProperty();
 

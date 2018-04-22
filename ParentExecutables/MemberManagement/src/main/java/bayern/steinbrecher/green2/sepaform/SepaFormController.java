@@ -20,6 +20,8 @@ import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.buttons.HelpButton;
+import bayern.steinbrecher.green2.elements.report.ReportSummary;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField;
 import bayern.steinbrecher.green2.elements.sepa.IbanTextField;
 import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField;
@@ -72,6 +74,8 @@ public class SepaFormController extends CheckedController {
     private HelpButton messageIdHelpButton;
     @FXML
     private HelpButton pmtInfIdHelpButton;
+    @FXML
+    private ReportSummary reportSummary;
 
     /**
      * {@inheritDoc}
@@ -100,8 +104,19 @@ public class SepaFormController extends CheckedController {
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));
 
-        originator = Originator.readCurrentOriginatorInfo().orElse(new Originator());
+        checkedTextFields.stream()
+                .forEach(ctf -> {
+                    reportSummary.addInputMissingReportEntry(ctf.checkedProperty().and(ctf.emptyProperty()));
+                    reportSummary.addInputToLongReportEntry(ctf.checkedProperty().and(ctf.toLongProperty()));
+                    reportSummary.addInputInvalidReportEntry(ctf.validProperty().not());
+                });
+        reportSummary.addInputMissingReportEntry(
+                executionDatePicker.checkedProperty().not().and(executionDatePicker.emptyProperty()));
+        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("pastExecutionDate"), ReportType.ERROR,
+                executionDatePicker.checkedProperty().not().and(executionDatePicker.invalidPastDateProperty()));
+        reportSummary.addInputInvalidReportEntry(executionDatePicker.validProperty().not());
 
+        originator = Originator.readCurrentOriginatorInfo().orElse(new Originator());
         creatorTextField.setText(originator.getCreator());
         creditorTextField.setText(originator.getCreditor());
         ibanTextField.setText(originator.getIban());

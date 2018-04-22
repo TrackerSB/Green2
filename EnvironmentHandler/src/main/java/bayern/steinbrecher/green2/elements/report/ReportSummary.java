@@ -153,6 +153,33 @@ public class ReportSummary extends TitledPane {
     }
 
     /**
+     * Adds a report entry showing a message stating missing input when {@code validation} returns {@code true}.
+     *
+     * @param validation The expression stating whether input is missing.
+     */
+    public void addInputMissingReportEntry(BooleanExpression validation) {
+        addReportEntry(EnvironmentHandler.getResourceValue("inputMissing"), ReportType.ERROR, validation);
+    }
+
+    /**
+     * Adds a report entry showing a message stating invalid input when {@code validation} returns {@code true}.
+     *
+     * @param validation The expression stating whether input is invalid.
+     */
+    public void addInputInvalidReportEntry(BooleanExpression validation) {
+        addReportEntry(EnvironmentHandler.getResourceValue("inputInvalid"), ReportType.ERROR, validation);
+    }
+
+    /**
+     * Adds a report entry showing a message stating to long input when {@code validation} returns {@code true}.
+     *
+     * @param validation The expression stating whether input is to long.
+     */
+    public void addInputToLongReportEntry(BooleanExpression validation) {
+        addReportEntry(EnvironmentHandler.getResourceValue("inputToLong"), ReportType.ERROR, validation);
+    }
+
+    /**
      * Removes a report having the given message and all its validations.
      *
      * @param message The message of the report to remove.
