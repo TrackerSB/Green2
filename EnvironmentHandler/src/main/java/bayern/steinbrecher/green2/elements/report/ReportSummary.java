@@ -17,6 +17,8 @@
 package bayern.steinbrecher.green2.elements.report;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.spinner.CheckedSpinner;
+import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.io.IOException;
@@ -177,6 +179,16 @@ public class ReportSummary extends TitledPane {
      */
     public void addInputToLongReportEntry(BooleanExpression validation) {
         addReportEntry(EnvironmentHandler.getResourceValue("inputToLong"), ReportType.ERROR, validation);
+    }
+
+    /**
+     * Adds multiple entries representing various properties of a {@link CheckedSpinner}.
+     *
+     * @param spinner The spinner to add entries for.
+     */
+    public void addEntries(CheckedSpinner<?> spinner) {
+        addInputInvalidReportEntry(spinner.validProperty().not());
+        addInputMissingReportEntry(spinner.valueProperty().isNull());
     }
 
     /**

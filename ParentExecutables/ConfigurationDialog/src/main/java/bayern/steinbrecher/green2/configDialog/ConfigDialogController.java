@@ -22,6 +22,8 @@ import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedComboBox;
+import bayern.steinbrecher.green2.elements.report.ReportSummary;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
@@ -72,6 +74,8 @@ public class ConfigDialogController extends CheckedController {
     @FXML
     private CheckBox birthdayFeaturesCheckbox;
     @FXML
+    private ReportSummary reportSummary;
+    @FXML
     private CheckedRegexTextField birthdayExpressionTextField;
     private final List<CheckedTextField> checkedTextFields = new ArrayList<>();
     private Profile profile;
@@ -104,6 +108,20 @@ public class ConfigDialogController extends CheckedController {
                 .and(dbmsComboBox.nothingSelectedProperty().not())
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
+
+        reportSummary.addReportEntry(
+                EnvironmentHandler.getResourceValue("profileAlreadyExists"), ReportType.ERROR, profileAlreadyExists);
+        checkedTextFields.stream()
+                .forEach(ctf -> {
+                    reportSummary.addInputMissingReportEntry(ctf.emptyProperty().and(ctf.checkedProperty()));
+                    reportSummary.addInputToLongReportEntry(ctf.toLongProperty().and(ctf.checkedProperty()));
+                    reportSummary.addInputInvalidReportEntry(ctf.validProperty().not());
+                });
+        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
+                birthdayExpressionTextField.regexValidProperty().not()
+                        .and(birthdayFeaturesCheckbox.selectedProperty()));
+        reportSummary.addEntries(sshPort);
+        reportSummary.addEntries(databasePort);
 
         //TODO Can loading/saving be abstracted?
         //Load settings
