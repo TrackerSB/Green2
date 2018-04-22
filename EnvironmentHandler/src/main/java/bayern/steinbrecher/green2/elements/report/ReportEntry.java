@@ -23,7 +23,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,12 +43,11 @@ final class ReportEntry {
     private final ObjectProperty<ReportType> reportType = new SimpleObjectProperty<>(this, "reportType");
     private final IntegerProperty occurrences = new SimpleIntegerProperty(this, "occurrences");
     private final ListProperty<BooleanExpression> reportValidations
-            = new SimpleListProperty<>(this, "reportValidations", FXCollections.observableArrayList()); //TODO Extractor needed?
+            = new SimpleListProperty<>(this, "reportValidations", FXCollections.observableArrayList());
 
     public ReportEntry(String message, ReportType type) {
         setMessage(message);
         setReportType(type);
-        //TODO Should it be really forced to use a change listener?
         reportValidations.addListener((ListChangeListener.Change<? extends BooleanExpression> change) -> {
             occurrences.bind(BindingUtility.reduceSum(
                     change.getList().stream()

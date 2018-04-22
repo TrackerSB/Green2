@@ -16,7 +16,8 @@
  */
 package bayern.steinbrecher.green2.elements.report;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.data.EnvironmentHandler.ImageSet;
+import java.util.Locale;
 import javafx.scene.image.ImageView;
 
 /**
@@ -29,11 +30,11 @@ public enum ReportType {
     /**
      * Marks a report entry as errors.
      */
-    ERROR("error"),
+    ERROR(ImageSet.ERROR_SMALL),
     /**
      * Marks a report entry as additional information.
      */
-    INFO("info"),
+    INFO(ImageSet.INFO_SMALL),
     /**
      * Marks not yet classified report entries.
      */
@@ -41,11 +42,11 @@ public enum ReportType {
     /**
      * Marks a report entry as warning.
      */
-    WARNING("warning");
+    WARNING(ImageSet.WARNING_SMALL);
 
-    private final String graphic;
+    private final ImageSet graphic;
 
-    private ReportType(String graphic) {
+    private ReportType(ImageSet graphic) {
         this.graphic = graphic;
     }
 
@@ -54,8 +55,12 @@ public enum ReportType {
         if (graphic == null) {
             view = null;
         } else {
-            view = EnvironmentHandler.ImageSet.valueOf(graphic).getAsImageView();
+            view = graphic.getAsImageView();
         }
         return view;
+    }
+
+    public String getCSSClass() {
+        return "report-type-" + name().toLowerCase(Locale.ROOT);
     }
 }

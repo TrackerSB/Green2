@@ -18,4 +18,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : Stefan Huber
 */
 
+.titled-pane > *.content{
+    -fx-background-color: white;
+}
 
+.report-type-error{
+    -fx-text-fill: red;
+}
+
+.report-type-warning{
+    -fx-text-fill: #e7e708;
+}
+
+.report-type-info{
+    -fx-text-fill: grey;
+}
+
+.report-type-undefined{
+    -fx-text-fill: black;
+}

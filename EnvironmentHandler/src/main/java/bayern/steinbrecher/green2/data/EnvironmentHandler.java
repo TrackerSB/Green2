@@ -373,13 +373,25 @@ public final class EnvironmentHandler {
          */
         INFO("info.png", true),
         /**
+         * An info sign.
+         */
+        INFO_SMALL("info.png", false),
+        /**
          * An error sign.
          */
         ERROR("error.png", true),
         /**
+         * An error sign.
+         */
+        ERROR_SMALL("error.png", false),
+        /**
          * A warning sign.
          */
         WARNING("warning.png", true),
+        /**
+         * A warning sign.
+         */
+        WARNING_SMALL("warning.png", false),
         /**
          * An image for confirmations or checklists.
          */
