@@ -45,7 +45,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     ButtonBar.buttonData="OTHER"/>
         </buttons>
     </ButtonBar>
-    <Label text="%invalidOrMissingInput"
-           visible="${controller.nothingSelected}"
-           styleClass="warningLabel"/>
 </VBox>

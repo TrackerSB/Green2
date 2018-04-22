@@ -56,7 +56,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
     private final BooleanProperty allSelected = new SimpleBooleanProperty(this, "allSelected");
     @FXML
-    private ListView<CheckBox> optionsListView; //TODO May use CheckBoxListCell
+    private ListView<CheckBox> optionsListView; //TODO Use ListView<T>
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> selectedCount.set(selectedCount.get() + (newVal ? 1 : -1));
 
@@ -83,14 +83,6 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
                     .collect(Collectors.toList()));
         }, optionsProperty));
 
-        /*optionsProperty.addListener((obs, oldVal, newVal) -> {
-            optionsListView.getItems().clear();
-            newVal.stream().forEachOrdered(op -> {
-                CheckBox newItem = new CheckBox(op.toString());
-                newItem.selectedProperty().addListener(selectionChange);
-                optionsListView.getItems().add(newItem);
-            });
-        });*/
         HBox.setHgrow(optionsListView, Priority.ALWAYS);
     }
 
