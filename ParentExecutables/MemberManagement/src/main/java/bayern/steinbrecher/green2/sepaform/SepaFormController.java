@@ -28,6 +28,7 @@ import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
+import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
@@ -104,17 +105,14 @@ public class SepaFormController extends CheckedController {
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));
 
+        ReportSummaryBuilder reportBuilder = new ReportSummaryBuilder(reportSummary)
+                .addInputMissingReportEntry(
+                        executionDatePicker.checkedProperty().not().and(executionDatePicker.emptyProperty()))
+                .addReportEntry(EnvironmentHandler.getResourceValue("pastExecutionDate"), ReportType.ERROR,
+                        executionDatePicker.invalidPastDateProperty())
+                .addInputInvalidReportEntry(executionDatePicker.validProperty().not());
         checkedTextFields.stream()
-                .forEach(ctf -> {
-                    reportSummary.addInputMissingReportEntry(ctf.checkedProperty().and(ctf.emptyProperty()));
-                    reportSummary.addInputToLongReportEntry(ctf.checkedProperty().and(ctf.toLongProperty()));
-                    reportSummary.addInputInvalidReportEntry(ctf.validProperty().not());
-                });
-        reportSummary.addInputMissingReportEntry(
-                executionDatePicker.checkedProperty().not().and(executionDatePicker.emptyProperty()));
-        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("pastExecutionDate"), ReportType.ERROR,
-                executionDatePicker.checkedProperty().not().and(executionDatePicker.invalidPastDateProperty()));
-        reportSummary.addInputInvalidReportEntry(executionDatePicker.validProperty().not());
+                .forEach(reportBuilder::addEntries);
 
         originator = Originator.readCurrentOriginatorInfo().orElse(new Originator());
         creatorTextField.setText(originator.getCreator());

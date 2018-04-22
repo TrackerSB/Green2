@@ -29,6 +29,7 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.Programs;
+import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -109,19 +110,15 @@ public class ConfigDialogController extends CheckedController {
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
 
-        reportSummary.addReportEntry(
-                EnvironmentHandler.getResourceValue("profileAlreadyExists"), ReportType.ERROR, profileAlreadyExists);
-        checkedTextFields.stream()
-                .forEach(ctf -> {
-                    reportSummary.addInputMissingReportEntry(ctf.emptyProperty().and(ctf.checkedProperty()));
-                    reportSummary.addInputToLongReportEntry(ctf.toLongProperty().and(ctf.checkedProperty()));
-                    reportSummary.addInputInvalidReportEntry(ctf.validProperty().not());
-                });
-        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
-                birthdayExpressionTextField.regexValidProperty().not()
-                        .and(birthdayFeaturesCheckbox.selectedProperty()));
-        reportSummary.addEntries(sshPort);
-        reportSummary.addEntries(databasePort);
+        ReportSummaryBuilder reportBuilder = new ReportSummaryBuilder(reportSummary)
+                .addReportEntry(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
+                        ReportType.ERROR, profileAlreadyExists)
+                .addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
+                        birthdayExpressionTextField.regexValidProperty().not()
+                                .and(birthdayFeaturesCheckbox.selectedProperty()))
+                .addEntries(sshPort)
+                .addEntries(databasePort);
+        checkedTextFields.stream().forEach(reportBuilder::addEntries);
 
         //TODO Can loading/saving be abstracted?
         //Load settings

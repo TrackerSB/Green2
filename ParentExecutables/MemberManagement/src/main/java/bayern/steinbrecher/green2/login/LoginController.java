@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.CheckedController;
 import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
+import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.List;
@@ -53,12 +54,8 @@ public abstract class LoginController extends CheckedController {
         anyInputToLong.bind(BindingUtility.reduceOr(textInputFields.stream().map(CheckedTextField::toLongProperty)));
         valid.bind(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));
 
-        textInputFields.stream()
-                .forEach(tif -> {
-                    reportSummary.addInputMissingReportEntry(tif.emptyProperty().and(tif.checkedProperty()));
-                    reportSummary.addInputToLongReportEntry(tif.toLongProperty().and(tif.checkedProperty()));
-                    reportSummary.addInputInvalidReportEntry(tif.validProperty().not());
-                });
+        ReportSummaryBuilder reportBuilder = new ReportSummaryBuilder(reportSummary);
+        textInputFields.stream().forEach(reportBuilder::addEntries);
     }
 
     /**

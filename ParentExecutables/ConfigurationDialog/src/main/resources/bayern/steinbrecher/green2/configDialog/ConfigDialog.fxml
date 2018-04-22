@@ -34,10 +34,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       fx:controller="bayern.steinbrecher.green2.configDialog.ConfigDialogController">
     <GridPane>
         <NameField fx:id="profileNameTextField"
-                       promptText="%profileName"
-                       GridPane.rowIndex="0"
-                       GridPane.columnIndex="0"
-                       GridPane.columnSpan="2"/>
+                   promptText="%profileName"
+                   GridPane.rowIndex="0"
+                   GridPane.columnIndex="0"
+                   GridPane.columnSpan="2"/>
         <CheckBox fx:id="useSSHCheckBox"
                   selected="true"
                   text="%useSSH"
@@ -134,17 +134,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          promptText="%chooseDbms"
                          GridPane.rowIndex="11"
                          GridPane.columnIndex="1"/>
-
-        <Label text="%invalidOrMissingInput"
-               visible="${!controller.valid}"
-               styleClass="warningLabel"
-               GridPane.rowIndex="12"
-               GridPane.columnIndex="0"/>
-        <Label text="%profileAlreadyExists"
-               visible="${controller.profileAlreadyExists}"
-               styleClass="warningLabel"
-               GridPane.rowIndex="12"
-               GridPane.columnIndex="1"/>
     </GridPane>
     <ButtonBar>
         <buttons>

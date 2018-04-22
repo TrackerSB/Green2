@@ -21,6 +21,7 @@ import bayern.steinbrecher.green2.elements.spinner.CheckedSpinner;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
+import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -45,7 +46,8 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 /**
- * Allows to display a summary of given errors and warnings.
+ * Allows to display a summary of given errors and warnings. For handling a {@link ReportSummary} a
+ * {@link ReportSummaryBuilder} may be used.
  *
  * @author Stefan Huber
  */
@@ -152,43 +154,6 @@ public class ReportSummary extends TitledPane {
             entry.addReportValidation(validation);
             reportEntries.add(entry);
         });
-    }
-
-    /**
-     * Adds a report entry showing a message stating missing input when {@code validation} returns {@code true}.
-     *
-     * @param validation The expression stating whether input is missing.
-     */
-    public void addInputMissingReportEntry(BooleanExpression validation) {
-        addReportEntry(EnvironmentHandler.getResourceValue("inputMissing"), ReportType.ERROR, validation);
-    }
-
-    /**
-     * Adds a report entry showing a message stating invalid input when {@code validation} returns {@code true}.
-     *
-     * @param validation The expression stating whether input is invalid.
-     */
-    public void addInputInvalidReportEntry(BooleanExpression validation) {
-        addReportEntry(EnvironmentHandler.getResourceValue("inputInvalid"), ReportType.ERROR, validation);
-    }
-
-    /**
-     * Adds a report entry showing a message stating to long input when {@code validation} returns {@code true}.
-     *
-     * @param validation The expression stating whether input is to long.
-     */
-    public void addInputToLongReportEntry(BooleanExpression validation) {
-        addReportEntry(EnvironmentHandler.getResourceValue("inputToLong"), ReportType.ERROR, validation);
-    }
-
-    /**
-     * Adds multiple entries representing various properties of a {@link CheckedSpinner}.
-     *
-     * @param spinner The spinner to add entries for.
-     */
-    public void addEntries(CheckedSpinner<?> spinner) {
-        addInputInvalidReportEntry(spinner.validProperty().not());
-        addInputMissingReportEntry(spinner.valueProperty().isNull());
     }
 
     /**
