@@ -17,9 +17,7 @@
 package bayern.steinbrecher.green2.login;
 
 import bayern.steinbrecher.green2.CheckedController;
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.report.ReportSummary;
-import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -57,12 +55,9 @@ public abstract class LoginController extends CheckedController {
 
         textInputFields.stream()
                 .forEach(tif -> {
-                    reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("inputMissing"),
-                            ReportType.ERROR, tif.emptyProperty().and(tif.checkedProperty()));
-                    reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("inputToLong"),
-                            ReportType.ERROR, tif.toLongProperty().and(tif.checkedProperty()));
-                    reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("inputInvalid"),
-                            ReportType.ERROR, tif.validProperty().not().and(tif.checkedProperty()));
+                    reportSummary.addInputMissingReportEntry(tif.emptyProperty().and(tif.checkedProperty()));
+                    reportSummary.addInputToLongReportEntry(tif.toLongProperty().and(tif.checkedProperty()));
+                    reportSummary.addInputInvalidReportEntry(tif.validProperty().not());
                 });
     }
 
