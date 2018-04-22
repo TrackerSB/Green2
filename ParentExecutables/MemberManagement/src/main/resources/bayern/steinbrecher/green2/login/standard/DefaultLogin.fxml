@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<?import bayern.steinbrecher.green2.elements.report.ReportSummary?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.NameField?>
@@ -29,17 +30,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <CheckBox fx:id="allowEmptyFieldsCheckbox"
               text="%allowEmptyFields"
               GridPane.rowIndex="3"
-              GridPane.columnIndex="0"/>
+              GridPane.columnIndex="1"/>
 
     <Label text="%databaseUsername"
            labelFor="${databaseUsernameField}"
            GridPane.rowIndex="1"
            GridPane.columnIndex="0"/>
     <NameField fx:id="databaseUsernameField"
-                      promptText="%databaseUsername"
-                      checked="${!allowEmptyFieldsCheckbox.selected}"
-                      GridPane.rowIndex="1"
-                      GridPane.columnIndex="1"/>
+               promptText="%databaseUsername"
+               checked="${!allowEmptyFieldsCheckbox.selected}"
+               GridPane.rowIndex="1"
+               GridPane.columnIndex="1"/>
     <Label text="%databasePassword"
            labelFor="${databasePasswordField}"
            GridPane.rowIndex="2"
@@ -50,15 +51,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           GridPane.rowIndex="2"
                           GridPane.columnIndex="1"/>
 
-    <Label text="%invalidOrMissingInput"
-           styleClass="warningLabel"
-           visible="${!controller.valid}"
-           GridPane.rowIndex="3"
-           GridPane.columnIndex="1"/>
     <Button defaultButton="true"
             text="Login"
             onAction="#login"
             disable="${!controller.valid}"
-            GridPane.rowIndex="4"
+            GridPane.rowIndex="3"
             GridPane.columnIndex="0"/>
+    <ReportSummary fx:id="reportSummary"
+                   GridPane.rowIndex="4"
+                   GridPane.columnIndex="0"/>
 </GridPane>

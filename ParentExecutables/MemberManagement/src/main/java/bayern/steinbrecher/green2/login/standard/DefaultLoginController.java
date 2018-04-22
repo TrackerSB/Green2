@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.login.standard;
 
+import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
@@ -36,6 +37,8 @@ import javafx.fxml.FXML;
 public class DefaultLoginController extends LoginController {
 
     @FXML
+    private ReportSummary reportSummary;
+    @FXML
     private CheckedTextField databaseUsernameField;
     @FXML
     private CheckedPasswordField databasePasswordField;
@@ -45,7 +48,7 @@ public class DefaultLoginController extends LoginController {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        initProperties(databaseUsernameField, databasePasswordField);
+        initProperties(reportSummary, databaseUsernameField, databasePasswordField);
         Platform.runLater(() -> databaseUsernameField.requestFocus());
     }
 
