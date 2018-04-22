@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import bayern.steinbrecher.green2.elements.textfields.CharsetTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
-<?import bayern.steinbrecher.green2.elements.textfields.NameTextField?>
+<?import bayern.steinbrecher.green2.elements.textfields.NameField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.CheckBox?>
@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.configDialog.ConfigDialogController">
     <GridPane>
-        <NameTextField fx:id="profileNameTextField"
+        <NameField fx:id="profileNameTextField"
                        promptText="%profileName"
                        GridPane.rowIndex="0"
                        GridPane.columnIndex="0"
