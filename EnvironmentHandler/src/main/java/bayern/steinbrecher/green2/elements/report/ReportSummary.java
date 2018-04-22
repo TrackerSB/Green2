@@ -14,33 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.elements;
+package bayern.steinbrecher.green2.elements.report;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javafx.beans.Observable;
+import javafx.beans.binding.BooleanExpression;
+import javafx.beans.binding.ListExpression;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 /**
@@ -122,154 +119,50 @@ public class ReportSummary extends TitledPane {
     }
 
     /**
-     * If a report with given message already exists its counter is increased and its type is set to {@code type}.
-     * Otherwise a new report with the given message and type is added.
+     * If a report with given message already exists the validation is added and its type is set to
+     * {@code type}.Otherwise a new report with the given message, type and first validation is added.
      *
      * @param message The message of the report to increase its counter to add.
      * @param type The type the new report has or the existing report has to be set to.
+     * @param validation The initial expression checked whether the message occurrs.
      */
-    public void increaseReportEntry(String message, ReportType type) {
+    public void addReportEntry(String message, ReportType type, BooleanExpression validation) {
         findReportEntry(message).ifPresentOrElse(entry -> {
-            entry.setReportType(type);
-            entry.increaseOccurrences();
-        }, () -> reportEntries.add(new ReportEntry(message, type)));
+            entry.addReportValidation(validation);
+        }, () -> {
+            ReportEntry entry = new ReportEntry(message, type);
+            entry.addReportValidation(validation);
+            reportEntries.add(entry);
+        });
     }
 
     /**
-     * Decreases the counter of the report having this message. If the new number of occurrences is less than one the
-     * report is removed.
-     *
-     * @param message The message of the report whose counter has to be decreased.
-     */
-    public void decreaseReportEntry(String message) {
-        ReportEntry entry = findReportEntry(message).orElseThrow();
-        entry.decreaseOccurrences();
-        if (entry.getOccurrences() < 1) {
-            reportEntries.remove(entry);
-        }
-    }
-
-    /**
-     * Removes the report having the given message no matter how many occurrences currently are registered.
+     * Removes a report having the given message and all its validations.
      *
      * @param message The message of the report to remove.
+     * @return {@code true} only if the report entry was removed.
+     * @see ListExpression#remove(java.lang.Object)
      */
-    public void removeReportEntry(String message) {
+    public boolean removeReportEntry(String message) {
         ReportEntry entry = findReportEntry(message).orElseThrow();
-        reportEntries.remove(entry);
+        return reportEntries.remove(entry);
     }
 
     /**
-     * Represents classifications of report entries.
+     * Removes the given validation from the report having the given message. If no validations are left at the report
+     * the report itself is removed.
+     *
+     * @param message The message of the report to remove from.
+     * @param validation The validation to remove.
+     * @return {@code true} only if the validation was removed.
+     * @see ListExpression#remove(java.lang.Object)
      */
-    public static enum ReportType {
-        /**
-         * Marks a report entry as errors.
-         */
-        ERROR("error"),
-        /**
-         * Marks a report entry as additional information.
-         */
-        INFO("info"),
-        /**
-         * Marks not yet classified report entries.
-         */
-        UNDEFINED(null),
-        /**
-         * Marks a report entry as warning.
-         */
-        WARNING("warning");
-
-        private final String graphic;
-
-        private ReportType(String graphic) {
-            this.graphic = graphic;
+    public boolean removeReportValidation(String message, BooleanExpression validation) {
+        ReportEntry entry = findReportEntry(message).orElseThrow();
+        boolean validationRemoved = entry.removeReportValidation(validation);
+        if (validationRemoved && entry.reportValidationsSizeProperty().get() < 1) {
+            removeReportEntry(message);
         }
-
-        public ImageView getGraphic() {
-            ImageView view;
-            if (graphic == null) {
-                view = null;
-            } else {
-                view = EnvironmentHandler.ImageSet.valueOf(graphic).getAsImageView();
-            }
-            return view;
-        }
-    }
-
-    private static class ReportEntry {
-
-        private final StringProperty message = new SimpleStringProperty(this, "message");
-        private final ObjectProperty<ReportType> reportType = new SimpleObjectProperty<>(this, "reportType");
-        private final IntegerProperty occurrences = new SimpleIntegerProperty(this, "occurrences", 1);
-
-        public ReportEntry(String message, ReportType type) {
-            setMessage(message);
-            setReportType(type);
-        }
-
-        public StringProperty messageProperty() {
-            return message;
-        }
-
-        public String getMessage() {
-            return messageProperty().get();
-        }
-
-        public void setMessage(String message) {
-            messageProperty().set(message);
-        }
-
-        public ObjectProperty<ReportType> reportTypeProperty() {
-            return reportType;
-        }
-
-        public ReportType getReportType() {
-            return reportTypeProperty().get();
-        }
-
-        public void setReportType(ReportType reportType) {
-            reportTypeProperty().set(reportType);
-        }
-
-        public IntegerProperty occurrencesProperty() {
-            return occurrences;
-        }
-
-        public int getOccurrences() {
-            return occurrencesProperty().get();
-        }
-
-        public void setOccurrences(int occurrenes) {
-            occurrencesProperty().set(occurrenes);
-        }
-
-        public void increaseOccurrences() {
-            occurrencesProperty().set(occurrencesProperty().get() + 1);
-        }
-
-        public void decreaseOccurrences() {
-            occurrencesProperty().set(occurrencesProperty().get() - 1);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof ReportEntry) {
-                ReportEntry entry = (ReportEntry) obj;
-                return getMessage().equalsIgnoreCase(entry.getMessage());
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            //NOTE This is the default implementation of NetBeans
-            int hash = 3;
-            hash = 97 * hash + Objects.hashCode(this.message);
-            hash = 97 * hash + Objects.hashCode(this.reportType);
-            hash = 97 * hash + Objects.hashCode(this.occurrences);
-            return hash;
-        }
+        return validationRemoved;
     }
 }
