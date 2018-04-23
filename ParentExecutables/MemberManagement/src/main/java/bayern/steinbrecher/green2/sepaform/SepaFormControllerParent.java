@@ -30,7 +30,6 @@ final class SepaFormControllerParent extends SepaFormController {
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void ready() {
-        checkStage();
         if (isValid()) {
             saveOriginator();
             stage.close();

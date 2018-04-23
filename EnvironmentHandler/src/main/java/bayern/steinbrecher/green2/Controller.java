@@ -47,15 +47,6 @@ public abstract class Controller implements Initializable {
     }
 
     /**
-     * Throws a {@link IllegalStateException} only if stage is {@code null}.
-     */
-    protected void checkStage() {
-        if (stage == null) {
-            throw new IllegalStateException("You have to call setStage(...) first");
-        }
-    }
-
-    /**
      * Checks whether the user aborted his input.
      *
      * @return {@code true} only if the user aborted his input explicitly.

@@ -37,7 +37,6 @@ final class ContributionControllerParent extends ContributionController {
 
     @FXML
     private void submitContributions() {
-        checkStage();
         if (valid.get()) {
             stage.close();
         }

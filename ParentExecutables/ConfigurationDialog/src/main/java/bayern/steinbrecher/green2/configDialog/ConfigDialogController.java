@@ -141,7 +141,6 @@ public class ConfigDialogController extends CheckedController {
     }
 
     private boolean saveSettings() {
-        checkStage();
         boolean isValid = isValid();
         if (isValid) {
             profile.set(ProfileSettings.USE_SSH, useSSHCheckBox.isSelected());

@@ -241,7 +241,6 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void select() {
-        checkStage();
         if (valid.get()) {
             stage.close();
         }

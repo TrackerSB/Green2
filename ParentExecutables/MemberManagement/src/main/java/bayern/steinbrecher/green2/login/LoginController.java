@@ -65,7 +65,6 @@ public abstract class LoginController extends CheckedController {
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void login() {
-        checkStage();
         if (isValid()) {
             stage.close();
         }
