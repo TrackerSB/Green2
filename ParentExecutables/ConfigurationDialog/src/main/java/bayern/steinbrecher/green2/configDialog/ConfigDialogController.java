@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -91,10 +92,13 @@ public class ConfigDialogController extends CheckedController {
                 birthdayExpressionTextField, profileNameTextField));
 
         birthdayExpressionTextField.setRegex(ProfileSettings.BIRTHDAY_FUNCTION_PATTERN.pattern());
+        stageProperty().addListener((obs, oldVal, newVal) -> {
+            newVal.titleProperty().bind(
+                    new SimpleStringProperty(EnvironmentHandler.getResourceValue("configureApplication"))
+                            .concat(": ")
+                            .concat(profileNameTextField.textProperty()));
+        });
         profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (stage != null) {
-                stage.setTitle(EnvironmentHandler.getResourceValue("configureApplication") + ": " + newVal);
-            }
             profileAlreadyExists.set(!profile.getProfileName().equals(newVal)
                     && Profile.getAvailableProfiles().contains(newVal));
         });
@@ -156,7 +160,7 @@ public class ConfigDialogController extends CheckedController {
             profile.set(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES, birthdayFeaturesCheckbox.isSelected());
             profile.saveSettings();
             profile.renameProfile(profileNameTextField.getText());
-            stage.close();
+            getStage().close();
         }
         return isValid;
     }

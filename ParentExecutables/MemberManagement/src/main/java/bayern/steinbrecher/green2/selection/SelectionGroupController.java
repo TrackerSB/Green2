@@ -242,7 +242,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
             justification = "It is called by an appropriate fxml file")
     private void select() {
         if (valid.get()) {
-            stage.close();
+            getStage().close();
         }
     }
 

@@ -186,7 +186,7 @@ public class QueryController extends WizardableController {
     private void query() {
         if (isValid()) {
             updateLastQueryResult();
-            stage.close();
+            getStage().close();
         }
     }
 

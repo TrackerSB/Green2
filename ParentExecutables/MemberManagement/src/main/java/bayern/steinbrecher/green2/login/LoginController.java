@@ -66,7 +66,7 @@ public abstract class LoginController extends CheckedController {
             justification = "It is called by an appropriate fxml file")
     private void login() {
         if (isValid()) {
-            stage.close();
+            getStage().close();
         }
     }
 

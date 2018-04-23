@@ -115,7 +115,7 @@ public class QueryResultController extends WizardableController {
     private void export() {
         if (!isEmpty()) {
             Optional<File> path
-                    = EnvironmentHandler.askForSavePath(stage, LocalDate.now().toString() + "_Abfrage", "csv");
+                    = EnvironmentHandler.askForSavePath(getStage(), LocalDate.now().toString() + "_Abfrage", "csv");
             if (path.isPresent()) {
                 String content = queryResult.get().stream()
                         .map(row -> row.stream().collect(Collectors.joining(";")))
@@ -124,7 +124,8 @@ public class QueryResultController extends WizardableController {
                     IOStreamUtility.printContent(content, path.get(), true);
                 } catch (IOException ex) {
                     Logger.getLogger(QueryResultController.class.getName()).log(Level.SEVERE, null, ex);
-                    DialogUtility.createStacktraceAlert(stage, ex, EnvironmentHandler.getResourceValue("exportFailed"));
+                    DialogUtility.createStacktraceAlert(
+                            getStage(), ex, EnvironmentHandler.getResourceValue("exportFailed"));
                 }
             }
         }

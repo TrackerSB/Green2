@@ -16,6 +16,8 @@
  */
 package bayern.steinbrecher.green2;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 
@@ -29,11 +31,20 @@ public abstract class Controller implements Initializable {
     /**
      * The stage the controller has to interact with.
      */
-    protected Stage stage = null;
+    private ObjectProperty<Stage> stage = new SimpleObjectProperty<>();
     /**
      * Only {@code true} when the user explicitly aborted his input. (E.g. pressing the X of the window.)
      */
     private boolean userAborted = false;
+
+    /**
+     * Returns the property holding the currently set {@link Stage}.
+     *
+     * @return The property holding the currently set {@link Stage}.
+     */
+    public ObjectProperty<Stage> stageProperty() {
+        return stage;
+    }
 
     /**
      * Sets the stage the controller can refer to. (E.g. for closing the stage) NOTE: It overrides
@@ -42,8 +53,17 @@ public abstract class Controller implements Initializable {
      * @param stage The stage to refer to.
      */
     public void setStage(Stage stage) {
-        this.stage = stage;
+        stageProperty().set(stage);
         stage.setOnCloseRequest(evt -> userAborted = true);
+    }
+
+    /**
+     * Returns the currently set {@link Stage}.
+     *
+     * @return The currently set {@link Stgae}.
+     */
+    public Stage getStage() {
+        return stageProperty().get();
     }
 
     /**

@@ -260,7 +260,7 @@ public class MenuController extends Controller {
 
     private void showNoMemberForOutputDialog() {
         String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
-        DialogUtility.showAndWait(DialogUtility.createInfoAlert(stage, noMemberForOutput, noMemberForOutput));
+        DialogUtility.showAndWait(DialogUtility.createInfoAlert(getStage(), noMemberForOutput, noMemberForOutput));
     }
 
     private void generateAddresses(Collection<Member> member, File outputFile)
@@ -282,7 +282,7 @@ public class MenuController extends Controller {
                 showNoMemberForOutputDialog();
             } else {
                 Optional<File> path = EnvironmentHandler.askForSavePath(
-                        stage, LocalDate.now().toString() + "_Serienbrief_alle", "csv");
+                        getStage(), LocalDate.now().toString() + "_Serienbrief_alle", "csv");
                 if (path.isPresent()) {
                     generateAddresses(memberList, path.get());
                 }
@@ -305,7 +305,7 @@ public class MenuController extends Controller {
                 showNoMemberForOutputDialog();
             } else {
                 Optional<File> path = EnvironmentHandler.askForSavePath(
-                        stage, LocalDate.now().toString() + "_Serienbrief_Geburtstag_" + year, "csv");
+                        getStage(), LocalDate.now().toString() + "_Serienbrief_Geburtstag_" + year, "csv");
                 if (path.isPresent()) {
                     generateAddresses(memberBirthdayList, path.get());
                 }
@@ -348,7 +348,7 @@ public class MenuController extends Controller {
                     return "selectionGroup";
                 });
                 Stage wizardStage = new Stage();
-                wizardStage.initOwner(stage);
+                wizardStage.initOwner(getStage());
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
                 wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
@@ -375,7 +375,7 @@ public class MenuController extends Controller {
                         }
                         Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
-                        EnvironmentHandler.askForSavePath(stage, LocalDate.now().toString() + "_Sepa", "xml")
+                        EnvironmentHandler.askForSavePath(getStage(), LocalDate.now().toString() + "_Sepa", "xml")
                                 .ifPresent(file -> {
                                     try {
                                         List<Member> invalidMember
@@ -386,7 +386,7 @@ public class MenuController extends Controller {
                                                 .map(Member::toString)
                                                 .collect(Collectors.joining("\n"));
                                         if (!message.isEmpty()) {
-                                            Alert alert = DialogUtility.createErrorAlert(stage, message + "\n"
+                                            Alert alert = DialogUtility.createErrorAlert(getStage(), message + "\n"
                                                     + EnvironmentHandler.getResourceValue("haveBadAccountInformation"));
                                             Platform.runLater(() -> alert.show());
                                         }
@@ -403,7 +403,7 @@ public class MenuController extends Controller {
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
             String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
-            DialogUtility.showAndWait(DialogUtility.createErrorAlert(stage, noSepaDebit, noSepaDebit));
+            DialogUtility.showAndWait(DialogUtility.createErrorAlert(getStage(), noSepaDebit, noSepaDebit));
         }
     }
 
@@ -487,7 +487,7 @@ public class MenuController extends Controller {
                     return "queryResult";
                 });
                 Stage wizardStage = new Stage();
-                wizardStage.initOwner(stage);
+                wizardStage.initOwner(getStage());
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryMemberTitle"));
                 wizardStage.setResizable(true);
                 wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
@@ -496,7 +496,7 @@ public class MenuController extends Controller {
                 wizardStage.showAndWait();
             } catch (IOException ex) {
                 Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                DialogUtility.createStacktraceAlert(stage, ex, EnvironmentHandler.getResourceValue("noQueryDialog"))
+                DialogUtility.createStacktraceAlert(getStage(), ex, EnvironmentHandler.getResourceValue("noQueryDialog"))
                         .showAndWait();
             }
         });
@@ -581,7 +581,7 @@ public class MenuController extends Controller {
 
             Stage reportsStage = new Stage();
             reportsStage.setTitle(EnvironmentHandler.getResourceValue("checkData"));
-            DialogUtility.createCheckReportDialog(stage, reportsStage, reports);
+            DialogUtility.createCheckReportDialog(getStage(), reportsStage, reports);
             reportsStage.showAndWait();
         });
     }
@@ -615,7 +615,7 @@ public class MenuController extends Controller {
                         showNoMemberForOutputDialog();
                     } else {
                         Optional<File> path = EnvironmentHandler.askForSavePath(
-                                stage, LocalDate.now().toString() + "_Geburtstag_" + year, "csv");
+                                getStage(), LocalDate.now().toString() + "_Geburtstag_" + year, "csv");
                         if (path.isPresent()) {
                             IOStreamUtility.printContent(
                                     BirthdayGenerator.createGroupedOutput(birthdayList, year), path.get(), true);
@@ -635,7 +635,7 @@ public class MenuController extends Controller {
     private void showCredits() {
         String credits = EnvironmentHandler.getResourceValue("credits");
         Alert alert = DialogUtility.createMessageAlert(
-                stage, EnvironmentHandler.getResourceValue("creditsContent"), null, credits, credits);
+                getStage(), EnvironmentHandler.getResourceValue("creditsContent"), null, credits, credits);
         Platform.runLater(() -> alert.show());
     }
 
@@ -644,7 +644,7 @@ public class MenuController extends Controller {
             justification = "It is called by an appropriate fxml file")
     private void showVersion() {
         String version = EnvironmentHandler.getResourceValue("version");
-        Alert alert = DialogUtility.createInfoAlert(stage, EnvironmentHandler.VERSION, version, version, version);
+        Alert alert = DialogUtility.createInfoAlert(getStage(), EnvironmentHandler.VERSION, version, version, version);
         Platform.runLater(() -> alert.show());
     }
 

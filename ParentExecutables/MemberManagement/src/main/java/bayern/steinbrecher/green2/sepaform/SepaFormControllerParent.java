@@ -32,7 +32,7 @@ final class SepaFormControllerParent extends SepaFormController {
     private void ready() {
         if (isValid()) {
             saveOriginator();
-            stage.close();
+            getStage().close();
         }
     }
 }

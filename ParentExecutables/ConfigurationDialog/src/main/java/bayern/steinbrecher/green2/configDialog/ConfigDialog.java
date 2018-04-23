@@ -66,7 +66,6 @@ public class ConfigDialog extends Application {
                 stage.setResizable(false);
                 stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 stage.setScene(new Scene(root));
-                stage.setTitle(EnvironmentHandler.getResourceValue("configureApplication") + ": " + profile.getProfileName());
                 stage.show();
             } catch (IOException ex) {
                 Logger.getLogger(ConfigDialog.class.getName()).log(Level.SEVERE, null, ex);

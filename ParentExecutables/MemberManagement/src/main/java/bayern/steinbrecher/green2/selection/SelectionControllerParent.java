@@ -32,7 +32,7 @@ final class SelectionControllerParent<T extends Comparable<T>> extends Selection
             justification = "It is called by an appropriate fxml file")
     private void select() {
         if (valid.get()) {
-            stage.close();
+            getStage().close();
         }
     }
 }
