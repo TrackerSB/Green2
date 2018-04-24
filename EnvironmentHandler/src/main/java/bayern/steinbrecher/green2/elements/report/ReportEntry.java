@@ -28,8 +28,8 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 
 /**
  * Represents an entry in a {@link ReportSummary}.
@@ -48,14 +48,16 @@ final class ReportEntry {
     public ReportEntry(String message, ReportType type) {
         setMessage(message);
         setReportType(type);
-        reportValidations.addListener((ListChangeListener.Change<? extends BooleanExpression> change) -> {
+        reportValidations.addListener((obs, oldVal, newVal) -> {
             occurrences.bind(BindingUtility.reduceSum(
-                    change.getList().stream()
+                    newVal.stream()
                             .map(exp -> {
                                 SimpleIntegerProperty mayOccur = new SimpleIntegerProperty();
-                                exp.addListener((obs, oldVal, newVal) -> {
-                                    mayOccur.set(newVal ? 1 : 0);
-                                });
+                                ChangeListener<? super Boolean> listener = (obsInner, oldValInner, newValInner) -> {
+                                    mayOccur.set(newValInner ? 1 : 0);
+                                };
+                                exp.addListener(listener);
+                                listener.changed(null, null, exp.get()); //TODO How to avoid explicit call?
                                 return mayOccur;
                             })));
         });
