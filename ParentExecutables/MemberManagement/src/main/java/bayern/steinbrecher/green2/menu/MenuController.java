@@ -280,8 +280,7 @@ public class MenuController extends Controller {
             if (memberList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
-                Optional<File> path = EnvironmentHandler.askForSavePath(
-                        getStage(), LocalDate.now().toString() + "_Serienbrief_alle", "csv");
+                Optional<File> path = EnvironmentHandler.askForSavePath(getStage(), "serialLetterAll", "csv");
                 if (path.isPresent()) {
                     generateAddresses(memberList, path.get());
                 }
@@ -303,8 +302,8 @@ public class MenuController extends Controller {
             if (memberBirthdayList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
-                Optional<File> path = EnvironmentHandler.askForSavePath(
-                        getStage(), LocalDate.now().toString() + "_Serienbrief_Geburtstag_" + year, "csv");
+                Optional<File> path
+                        = EnvironmentHandler.askForSavePath(getStage(), "serialLetterBirthday", "csv", year);
                 if (path.isPresent()) {
                     generateAddresses(memberBirthdayList, path.get());
                 }
@@ -374,7 +373,7 @@ public class MenuController extends Controller {
                         }
                         Originator originator = ((Optional<Originator>) results.get(WizardPage.FIRST_PAGE_KEY)).get();
 
-                        EnvironmentHandler.askForSavePath(getStage(), LocalDate.now().toString() + "_Sepa", "xml")
+                        EnvironmentHandler.askForSavePath(getStage(), "sepa", "xml")
                                 .ifPresent(file -> {
                                     try {
                                         List<Member> invalidMember
@@ -613,8 +612,7 @@ public class MenuController extends Controller {
                     if (birthdayList.isEmpty()) {
                         showNoMemberForOutputDialog();
                     } else {
-                        Optional<File> path = EnvironmentHandler.askForSavePath(
-                                getStage(), LocalDate.now().toString() + "_Geburtstag_" + year, "csv");
+                        Optional<File> path = EnvironmentHandler.askForSavePath(getStage(), "birthdays", "csv", year);
                         if (path.isPresent()) {
                             IOStreamUtility.printContent(
                                     BirthdayGenerator.createGroupedOutput(birthdayList, year), path.get(), true);

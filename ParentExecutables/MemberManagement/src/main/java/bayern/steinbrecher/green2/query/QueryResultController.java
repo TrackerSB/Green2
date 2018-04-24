@@ -24,7 +24,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -115,7 +114,7 @@ public class QueryResultController extends WizardableController {
     private void export() {
         if (!isEmpty()) {
             Optional<File> path
-                    = EnvironmentHandler.askForSavePath(getStage(), LocalDate.now().toString() + "_Abfrage", "csv");
+                    = EnvironmentHandler.askForSavePath(getStage(), "query", "csv");
             if (path.isPresent()) {
                 String content = queryResult.get().stream()
                         .map(row -> row.stream().collect(Collectors.joining(";")))

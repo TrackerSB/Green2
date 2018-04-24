@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.utility;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,8 +30,14 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  * Implements methods for writing data into files.
@@ -46,6 +53,43 @@ public final class IOStreamUtility {
      */
     private IOStreamUtility() {
         throw new UnsupportedOperationException("Construction of a new object is not allowed.");
+    }
+
+    /**
+     * Opens a dialog asking the user to choose a directory. It does not change any user specific registry keys relating
+     * to any profile. If the profile settings should be updated
+     * {@link EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String)} should be used.
+     *
+     * @param owner The owner of the dialog.
+     * @param filePrefix The name of the file which is prefixed with the current date and may be extended by a number if
+     * it already exists.
+     * @param fileEnding The format of the file. NOTE: Without leading point.
+     * @param initialDirectoryPath The path of the directory to show initially.
+     * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.
+     * @see EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String)
+     */
+    public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding,
+            String initialDirectoryPath) {
+        String today = LocalDate.now().toString();
+        String dateFilePrefix = today + "_" + filePrefix;
+        File initialDirectory = new File(initialDirectoryPath);
+        File initialFile = new File(initialDirectory, dateFilePrefix + "." + fileEnding);
+        Random random = new Random();
+        while (initialFile.exists()) {
+            initialFile = new File(initialDirectory, dateFilePrefix + "_" + random.nextInt(1000) + "." + fileEnding);
+        }
+
+        FileChooser saveDialog = new FileChooser();
+        saveDialog.setTitle(EnvironmentHandler.getResourceValue("save"));
+        saveDialog.setInitialDirectory(initialDirectory);
+        saveDialog.setInitialFileName(initialFile.getName());
+        FileChooser.ExtensionFilter givenExtensionFilter
+                = new FileChooser.ExtensionFilter(fileEnding.toUpperCase(Locale.ROOT), "*." + fileEnding);
+        saveDialog.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter(EnvironmentHandler.getResourceValue("allFiles"), "*.*"),
+                givenExtensionFilter);
+        saveDialog.setSelectedExtensionFilter(givenExtensionFilter);
+        return Optional.ofNullable(saveDialog.showSaveDialog(owner));
     }
 
     /**

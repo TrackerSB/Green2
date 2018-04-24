@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.data;
 
+import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -262,35 +263,27 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Opens a dialog asking the user to choose a directory.
+     * Opens a dialog asking the user to choose a directory based on the directory selected last time which is updated
+     * on success.
      *
      * @param owner The owner of the dialog.
-     * @param filePrefix The name of the file which may be extended by a number if it already exists.
+     * @param filePrefixKey The key of the name of the file which may be extended by a number if it already exists.
      * @param fileEnding The format of the file. NOTE: Without leading point.
+     * @param filePrefixKeyArguments Arguments passed when resolving {@code filePrefixKey}.
      * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.
+     * @see IOStreamUtility#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String, java.lang.String)
+     * @see #getResourceValue(java.lang.String, java.lang.Object...)
      */
-    public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding) {
+    public static Optional<File> askForSavePath(Stage owner, String filePrefixKey, String fileEnding,
+            Object... filePrefixKeyArguments) {
         File initialDirectory = new File(PREFERENCES_USER_NODE.get(LAST_SAVE_PATH_KEY, DEFAULT_SAVE_PATH));
         if (!initialDirectory.exists()) {
             initialDirectory = new File(DEFAULT_SAVE_PATH);
         }
-        File initialFile = new File(initialDirectory, filePrefix + "." + fileEnding);
-        Random random = new Random();
-        while (initialFile.exists()) {
-            initialFile = new File(initialDirectory, filePrefix + "_" + random.nextInt(1000) + "." + fileEnding);
-        }
 
-        FileChooser saveDialog = new FileChooser();
-        saveDialog.setTitle(getResourceValue("save"));
-        saveDialog.setInitialDirectory(initialDirectory);
-        saveDialog.setInitialFileName(initialFile.getName());
-        FileChooser.ExtensionFilter givenExtensionFilter
-                = new FileChooser.ExtensionFilter(fileEnding.toUpperCase(Locale.ROOT), "*." + fileEnding);
-        saveDialog.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter(EnvironmentHandler.getResourceValue("allFiles"), "*.*"),
-                givenExtensionFilter);
-        saveDialog.setSelectedExtensionFilter(givenExtensionFilter);
-        Optional<File> chosenFile = Optional.ofNullable(saveDialog.showSaveDialog(owner));
+        String filePrefix = getResourceValue(filePrefixKey, filePrefixKeyArguments);
+        Optional<File> chosenFile
+                = IOStreamUtility.askForSavePath(owner, filePrefix, fileEnding, initialDirectory.getAbsolutePath());
         chosenFile.ifPresent(file -> {
             String parentDir = file.getParent();
             if (parentDir != null) {
