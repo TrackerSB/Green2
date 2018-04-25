@@ -55,7 +55,7 @@ import javafx.scene.paint.Color;
  *
  * @author Stefan Huber
  */
-public class ContributionController extends WizardableController {
+public class ContributionController extends WizardableController<Optional<BiMap<Double, Color>>> {
 
     /**
      * A CSS class added to all subelements if it contains duplicated values where not allowed.
@@ -190,18 +190,15 @@ public class ContributionController extends WizardableController {
      *
      * @return The currently inserted contributions and their colors.
      */
-    public Optional<BiMap<Double, Color>> getContribution() {
-        if (userAbborted() || !valid.get()) {
-            return Optional.empty();
-        } else {
-            BiMap<Double, Color> contributions = HashBiMap.create(contributionFields.getSize());
-            contributionFields.forEach(cf -> {
-                cf.getContribution().ifPresent(contribution -> {
-                    contributions.put(contribution, cf.getColor());
-                });
+    @Override
+    protected Optional<BiMap<Double, Color>> calculateResult() {
+        BiMap<Double, Color> contributions = HashBiMap.create(contributionFields.getSize());
+        contributionFields.forEach(cf -> {
+            cf.getContribution().ifPresent(contribution -> {
+                contributions.put(contribution, cf.getColor());
             });
-            return Optional.of(contributions);
-        }
+        });
+        return Optional.of(contributions);
     }
 
     /**

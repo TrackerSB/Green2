@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2;
 
+import java.util.Optional;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -25,8 +26,9 @@ import javafx.beans.property.SimpleBooleanProperty;
  * {@code anyInputToLong}.
  *
  * @author Stefan Huber
+ * @param <T> The type of the result.
  */
-public abstract class CheckedController extends WizardableController {
+public abstract class CheckedController<T extends Optional<?>> extends WizardableController<T> {
 
     /**
      * A property indicating whether any input handled by the controller is to long.

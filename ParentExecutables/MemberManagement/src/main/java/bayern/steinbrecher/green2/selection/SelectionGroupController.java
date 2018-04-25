@@ -73,7 +73,7 @@ import javafx.scene.shape.Rectangle;
  * @param <T> The type of the options to select.
  * @param <G> The type of the groups to associate items with.
  */
-public class SelectionGroupController<T extends Comparable<T>, G> extends WizardableController {
+public class SelectionGroupController<T extends Comparable<T>, G> extends WizardableController<Optional<Map<T, G>>> {
 
     private final ObservableValue<ObservableList<AssociatedItem>> options
             = new SimpleObjectProperty<>(this, "options",
@@ -274,20 +274,13 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     }
 
     /**
-     * Returns the list of currently selected items. Returns {@link Optional#empty()} if the user didn't confirm the
-     * selection yet.
-     *
-     * @return An {@link Optional} containing the selection if any.
+     * {@inheritDoc}
      */
-    public Optional<Map<T, G>> getSelection() {
-        if (userAbborted()) {
-            return Optional.empty();
-        } else {
-            Map<T, G> selection = options.getValue().stream()
-                    .filter(entry -> entry.getGroup().isPresent())
-                    .collect(Collectors.toMap(AssociatedItem::getItem, entry -> entry.getGroup().get()));
-            return Optional.of(selection);
-        }
+    protected Optional<Map<T, G>> calculateResult() {
+        Map<T, G> selection = options.getValue().stream()
+                .filter(entry -> entry.getGroup().isPresent())
+                .collect(Collectors.toMap(AssociatedItem::getItem, entry -> entry.getGroup().get()));
+        return Optional.of(selection);
     }
 
     /**

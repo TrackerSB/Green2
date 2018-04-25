@@ -56,14 +56,10 @@ public class DefaultLoginController extends LoginController {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Map<LoginKey, String>> getLoginInformation() {
-        if (userAbborted()) {
-            return Optional.empty();
-        } else {
-            Map<LoginKey, String> loginInfo = new HashMap<>(2);
-            loginInfo.put(LoginKey.DATABASE_USERNAME, databaseUsernameField.getText());
-            loginInfo.put(LoginKey.DATABASE_PASSWORD, databasePasswordField.getText());
-            return Optional.of(loginInfo);
-        }
+    protected Optional<Map<LoginKey, String>> calculateResult() {
+        Map<LoginKey, String> loginInfo = new HashMap<>(2);
+        loginInfo.put(LoginKey.DATABASE_USERNAME, databaseUsernameField.getText());
+        loginInfo.put(LoginKey.DATABASE_PASSWORD, databasePasswordField.getText());
+        return Optional.of(loginInfo);
     }
 }

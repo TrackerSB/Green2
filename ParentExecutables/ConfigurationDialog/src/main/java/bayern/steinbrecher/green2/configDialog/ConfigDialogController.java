@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -51,7 +52,7 @@ import javafx.scene.control.CheckBox;
  *
  * @author Stefan Huber
  */
-public class ConfigDialogController extends CheckedController {
+public class ConfigDialogController extends CheckedController<Optional<Void>> {
 
     @FXML
     private CheckBox useSSHCheckBox;
@@ -199,5 +200,13 @@ public class ConfigDialogController extends CheckedController {
      */
     public boolean isProfileAlreadyExists() {
         return profileAlreadyExists.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Optional<Void> calculateResult() {
+        return Optional.empty();
     }
 }

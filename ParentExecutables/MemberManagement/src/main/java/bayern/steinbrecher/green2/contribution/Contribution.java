@@ -19,16 +19,12 @@ package bayern.steinbrecher.green2.contribution;
 import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.wizard.WizardPage;
 import com.google.common.collect.BiMap;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -71,25 +67,18 @@ public class Contribution extends WizardableView<Optional<BiMap<Double, Color>>,
      * blocked until the window is closed.
      *
      * @return The values and colors entered if any.
-     * @see ContributionController#getContribution()
+     * @see ContributionController#getResult()
      */
     public Optional<BiMap<Double, Color>> getContribution() {
         showOnceAndWait();
-        return getController().getContribution();
+        return getController().getResult();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<BiMap<Double, Color>>> getWizardPage() {
-        try {
-            Pane root = loadFXML("ContributionWizard.fxml");
-            return new WizardPage<>(
-                    root, null, false, () -> getController().getContribution(), getController().validProperty());
-        } catch (IOException ex) {
-            Logger.getLogger(Contribution.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    protected String getWizardFxmlPath() {
+        return "ContributionWizard.fxml";
     }
 }

@@ -79,26 +79,10 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     }
 
     /**
-     * Returns the list of currently selected items. Returns {@link Optional#empty()} if the user aborted the selection.
-     *
-     * @return The selection if any.
-     */
-    public Optional<Set<T>> getSelection() {
-        return getController().getSelection();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<Set<T>>> getWizardPage() {
-        try {
-            Pane root = loadFXML("SelectionWizard.fxml");
-            return new WizardPage<>(
-                    root, null, false, () -> getController().getSelection(), getController().validProperty());
-        } catch (IOException ex) {
-            Logger.getLogger(Selection.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    protected String getWizardFxmlPath() {
+        return "SelectionWizard.fxml";
     }
 }

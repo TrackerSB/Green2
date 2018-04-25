@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -53,7 +54,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Stefan Huber
  */
-public class QueryResultController extends WizardableController {
+public class QueryResultController extends WizardableController<Optional<Void>> {
 
     @FXML
     private TableView<List<ReadOnlyStringProperty>> queryResultView;
@@ -128,6 +129,14 @@ public class QueryResultController extends WizardableController {
                 }
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Optional<Void> calculateResult() {
+        return Optional.empty();
     }
 
     /**

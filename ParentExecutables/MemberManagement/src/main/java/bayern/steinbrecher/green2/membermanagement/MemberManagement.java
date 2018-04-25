@@ -253,7 +253,7 @@ public class MemberManagement extends Application {
     private Optional<DBConnection> getConnection(Login login, WaitScreen waitScreen) {
         DBConnection con = null;
 
-        Optional<Map<LoginKey, String>> loginInfos = login.getLoginInformation();
+        Optional<Map<LoginKey, String>> loginInfos = login.getResult();
         if (loginInfos.isPresent()) {
             Map<LoginKey, String> loginValues = loginInfos.get();
             try {

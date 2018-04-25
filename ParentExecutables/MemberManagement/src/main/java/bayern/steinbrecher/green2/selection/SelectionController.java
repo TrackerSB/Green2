@@ -47,7 +47,7 @@ import javafx.scene.layout.Priority;
  * @param <T> The type of the objects being able to select.
  * @author Stefan Huber
  */
-public class SelectionController<T extends Comparable<T>> extends WizardableController {
+public class SelectionController<T extends Comparable<T>> extends WizardableController<Optional<Set<T>>> {
 
     private final MapProperty<T, Optional<CheckBox>> optionsProperty
             = new SimpleMapProperty<>(FXCollections.observableHashMap());
@@ -111,25 +111,19 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     }
 
     /**
-     * Returns the list of currently selected items. Returns {@link Optional#empty()} if the user didn't confirm the
-     * selection yet.
-     *
-     * @return An {@link Optional} containing the selection if any.
+     * {@inheritDoc}
      */
-    public Optional<Set<T>> getSelection() {
-        if (userAbborted()) {
-            return Optional.empty();
-        } else {
-            Set<T> selection = new HashSet<>();
-            optionsProperty.forEach((option, checkbox) -> {
-                checkbox.ifPresent(c -> {
-                    if (c.isSelected()) {
-                        selection.add(option);
-                    }
-                });
+    @Override
+    protected Optional<Set<T>> calculateResult() {
+        Set<T> selection = new HashSet<>();
+        optionsProperty.forEach((option, checkbox) -> {
+            checkbox.ifPresent(c -> {
+                if (c.isSelected()) {
+                    selection.add(option);
+                }
             });
-            return Optional.of(selection);
-        }
+        });
+        return Optional.of(selection);
     }
 
     /**

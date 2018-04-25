@@ -47,7 +47,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public class SepaFormController extends CheckedController {
+public class SepaFormController extends CheckedController<Optional<Originator>> {
 
     private Originator originator;
     @FXML
@@ -157,16 +157,11 @@ public class SepaFormController extends CheckedController {
     }
 
     /**
-     * Returns the currently set originator. Returns {@link Optional#empty()} if the user did not confirm input.
-     *
-     * @return The currently set originator or {@link Optional#empty()}.
+     * {@inheritDoc}
      */
-    public Optional<Originator> getOriginator() {
-        if (userAbborted()) {
-            return Optional.empty();
-        } else {
-            saveOriginator();
-            return Optional.of(originator);
-        }
+    @Override
+    protected Optional<Originator> calculateResult() {
+        saveOriginator();
+        return Optional.of(originator);
     }
 }

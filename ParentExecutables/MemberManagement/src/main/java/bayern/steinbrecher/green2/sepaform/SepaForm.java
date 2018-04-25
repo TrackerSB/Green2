@@ -20,14 +20,10 @@ import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.people.Originator;
-import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -62,26 +58,10 @@ public class SepaForm extends WizardableView<Optional<Originator>, SepaFormContr
     }
 
     /**
-     * Returns the originator currently represented. Returns {@link Optional#empty()} if the user did not confirm the
-     * input.
-     *
-     * @return The originator or {@link Optional#empty()}.
-     */
-    public Optional<Originator> getOriginator() {
-        return getController().getOriginator();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<Originator>> getWizardPage() {
-        try {
-            Pane root = loadFXML("SepaFormWizard.fxml");
-            return new WizardPage<>(root, null, false, this::getOriginator, getController().validProperty());
-        } catch (IOException ex) {
-            Logger.getLogger(SepaForm.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    protected String getWizardFxmlPath() {
+        return "SepaFormWizard.fxml";
     }
 }

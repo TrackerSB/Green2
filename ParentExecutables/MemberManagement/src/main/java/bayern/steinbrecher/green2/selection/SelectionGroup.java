@@ -17,15 +17,10 @@
 package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableView;
-import bayern.steinbrecher.wizard.WizardPage;
 import com.google.common.collect.BiMap;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -75,14 +70,7 @@ public final class SelectionGroup<T extends Comparable<T>, G>
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<Map<T, G>>> getWizardPage() {
-        try {
-            Pane root = loadFXML("SelectionGroupWizard.fxml");
-            return new WizardPage<>(
-                    root, null, false, () -> getController().getSelection(), getController().validProperty());
-        } catch (IOException ex) {
-            Logger.getLogger(SelectionGroup.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    protected String getWizardFxmlPath() {
+        return "SelectionGroupWizard.fxml";
     }
 }

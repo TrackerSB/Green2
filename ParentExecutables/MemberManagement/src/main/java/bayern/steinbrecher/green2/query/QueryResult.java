@@ -18,15 +18,11 @@ package bayern.steinbrecher.green2.query;
 
 import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
-import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -83,13 +79,7 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<Void>> getWizardPage() {
-        try {
-            Pane root = loadFXML("QueryResult.fxml");
-            return new WizardPage<>(root, null, false, () -> Optional.empty());
-        } catch (IOException ex) {
-            Logger.getLogger(QueryResult.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    protected String getWizardFxmlPath() {
+        return "QueryResult.fxml";
     }
 }

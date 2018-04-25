@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2;
 
+import java.util.Optional;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,13 +25,26 @@ import javafx.beans.property.SimpleBooleanProperty;
  * Represents a controller of a {@link WizardableView}.
  *
  * @author Stefan Huber
+ * @param <T> The type of the result represented by this controller.
  */
-public abstract class WizardableController extends Controller {
+public abstract class WizardableController<T extends Optional<?>> extends ResultController<T> {
 
     /**
      * A property indicating whether all input handled by this controller is valid.
      */
     protected BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T getResult() {
+        if (userAbborted() || !isValid()) {
+            return (T) Optional.empty();
+        } else {
+            return calculateResult();
+        }
+    }
 
     /**
      * Returns the property containing whether the current input of this controller is valid.

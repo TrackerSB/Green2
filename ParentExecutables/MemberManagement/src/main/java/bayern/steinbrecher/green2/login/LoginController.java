@@ -33,7 +33,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public abstract class LoginController extends CheckedController {
+public abstract class LoginController extends CheckedController<Optional<Map<LoginKey, String>>> {
 
     /**
      * An useful list of all textfields which the login contains.
@@ -69,12 +69,4 @@ public abstract class LoginController extends CheckedController {
             getStage().close();
         }
     }
-
-    /**
-     * Returns the currently entered login information. It returns {@link Optional#empty()} only if the window was
-     * closed without pressing a confirm button. That means if {@code userConfirmed} is {@code false}.
-     *
-     * @return The currently entered login information.
-     */
-    public abstract Optional<Map<LoginKey, String>> getLoginInformation();
 }

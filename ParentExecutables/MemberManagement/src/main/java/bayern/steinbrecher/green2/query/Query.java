@@ -20,15 +20,11 @@ import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -79,14 +75,7 @@ public class Query extends WizardableView<Optional<List<List<String>>>, QueryCon
      * {@inheritDoc}
      */
     @Override
-    public WizardPage<Optional<List<List<String>>>> getWizardPage() {
-        try {
-            Pane root = loadFXML("Query_Wizard.fxml");
-            return new WizardPage<>(
-                    root, null, false, () -> getController().getQueryResult(), getController().validProperty());
-        } catch (IOException ex) {
-            Logger.getLogger(Query.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    protected String getWizardFxmlPath() {
+        return "Query_Wizard.fxml";
     }
 }

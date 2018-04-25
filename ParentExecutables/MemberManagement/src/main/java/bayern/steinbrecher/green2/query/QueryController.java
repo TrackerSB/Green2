@@ -75,7 +75,7 @@ import javafx.scene.layout.Priority;
  *
  * @author Stefan Huber
  */
-public class QueryController extends WizardableController {
+public class QueryController extends WizardableController<Optional<List<List<String>>>> {
 
     @FXML
     private GridPane queryInput;
@@ -191,18 +191,12 @@ public class QueryController extends WizardableController {
     }
 
     /**
-     * Returns the result based on the currently inserted valid conditions.
-     *
-     * @return The result based on the currently inserted valid conditions. Returns {@link Optional#empty()} if the user
-     * abborted the query or the query could not be successfully executed.
+     * {@inheritDoc}
      */
-    public Optional<List<List<String>>> getQueryResult() {
-        if (userAbborted()) {
-            return Optional.empty();
-        } else {
-            updateLastQueryResult();
-            return lastQueryResult.get();
-        }
+    @Override
+    protected Optional<List<List<String>>> calculateResult() {
+        updateLastQueryResult();
+        return lastQueryResult.get();
     }
 
     /**

@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.login;
 
-import bayern.steinbrecher.green2.View;
+import bayern.steinbrecher.green2.ResultView;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,7 +25,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public abstract class Login extends View<LoginController> {
+public abstract class Login extends ResultView<Optional<Map<LoginKey, String>>, LoginController> {
 
     /**
      * {@inheritDoc}
@@ -40,8 +40,9 @@ public abstract class Login extends View<LoginController> {
      *
      * @return The Information that was entered in the login.
      */
-    public Optional<Map<LoginKey, String>> getLoginInformation() {
+    @Override
+    public Optional<Map<LoginKey, String>> getResult() {
         showOnceAndWait();
-        return getController().getLoginInformation();
+        return super.getResult();
     }
 }

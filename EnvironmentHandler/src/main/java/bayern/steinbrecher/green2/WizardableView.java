@@ -18,7 +18,11 @@ package bayern.steinbrecher.green2;
 
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
+import java.io.IOException;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.scene.layout.Pane;
 
 /**
  * Represents a class which can be in a {@link Wizard}.
@@ -27,7 +31,16 @@ import java.util.Optional;
  * @param <C> The type of the controller used by the {@link View}.
  * @author Stefan Huber
  */
-public abstract class WizardableView<T extends Optional<?>, C extends WizardableController> extends View<C> {
+public abstract class WizardableView<T extends Optional<?>, C extends WizardableController<T>>
+        extends ResultView<T, C> {
+
+    /**
+     * Returns the path of the FXML file to load to be used by a wizard.
+     *
+     * @return The path of the FXML file to load to be used by a wizard.
+     * @see #getWizardPage()
+     */
+    protected abstract String getWizardFxmlPath();
 
     /**
      * Creates a {@link WizardPage}. The nextFunction is set to {@code null} and isFinish is set to {@code false}.
@@ -35,5 +48,14 @@ public abstract class WizardableView<T extends Optional<?>, C extends Wizardable
      * @return The newly created {@link WizardPage}. Returns {@code null} if the {@link WizardPage} could not be
      * created.
      */
-    public abstract WizardPage<T> getWizardPage();
+    public WizardPage<T> getWizardPage() {
+        try {
+            Pane root = loadFXML(getWizardFxmlPath());
+            return new WizardPage<>(
+                    root, null, false, () -> getController().getResult(), getController().validProperty());
+        } catch (IOException ex) {
+            Logger.getLogger(WizardableView.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 }
