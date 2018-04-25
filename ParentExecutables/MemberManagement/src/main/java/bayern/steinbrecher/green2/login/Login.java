@@ -33,16 +33,4 @@ public abstract class Login extends ResultView<Optional<Map<LoginKey, String>>, 
     //@Override
     //TODO Is it possible to specify some kind of "an uppper bound" of ViewStartException?
     //public abstract void startImpl(Stage primaryStage) throws IOException;
-    /**
-     * Returns the information that was entered in the login. This method blocks until the frame is closed or hidden. It
-     * won't show more than once even if multiple threads call it. They will be blocked and notified when the login
-     * window closes.
-     *
-     * @return The Information that was entered in the login.
-     */
-    @Override
-    public Optional<Map<LoginKey, String>> getResult() {
-        showOnceAndWait();
-        return super.getResult();
-    }
 }

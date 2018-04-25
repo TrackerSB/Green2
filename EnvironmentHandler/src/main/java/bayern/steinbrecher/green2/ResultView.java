@@ -28,12 +28,15 @@ import java.util.Optional;
 public abstract class ResultView<T extends Optional<?>, C extends ResultController<T>> extends View<C> {
 
     /**
-     * Returns the result currently represented by the associated {@link ResultController}.
+     * Shows the window if not shown yet, waits for it being closed and returns the result currently represented by the
+     * associated {@link ResultController}. If multiple threads call this method only the first opens the window and
+     * notifies the other threads when the window is getting closed.
      *
      * @return The result currently represented by the associated {@link ResultController}.
      * @see ResultController#getResult()
      */
     public T getResult() {
+        showOnceAndWait();
         return getController().getResult();
     }
 }

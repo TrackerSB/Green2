@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Optional;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -58,20 +57,6 @@ public class Contribution extends WizardableView<Optional<BiMap<Double, Color>>,
         stage.setScene(new Scene(root));
         stage.setTitle(EnvironmentHandler.getResourceValue("contributionTitle"));
         stage.setResizable(false);
-    }
-
-    /**
-     * Opens the contribution window if no other process yet opened one, blocks until the window is closed and returns
-     * the value entered in the {@link TextField}. Returns {@link Optional#empty()} if the user did not confirm the
-     * values. The window will only be opened ONCE; even if multiple threads are calling this function. They will be
-     * blocked until the window is closed.
-     *
-     * @return The values and colors entered if any.
-     * @see ContributionController#getResult()
-     */
-    public Optional<BiMap<Double, Color>> getContribution() {
-        showOnceAndWait();
-        return getController().getResult();
     }
 
     /**
