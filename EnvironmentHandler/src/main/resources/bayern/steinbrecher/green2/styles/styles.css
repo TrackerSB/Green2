@@ -63,6 +63,10 @@ VBox, HBox {
     -fx-spacing: 10px;
 }
 
+.titled-pane > *.content{
+    -fx-background-color: white;
+}
+
 /*******************************************
 //Drop down menus
 *******************************************/
