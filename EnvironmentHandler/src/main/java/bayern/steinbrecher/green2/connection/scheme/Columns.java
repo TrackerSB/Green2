@@ -60,6 +60,10 @@ public abstract class /*enum*/ Columns<T> {
      */
     public static final Columns<LocalDate> BIRTHDAY = new LocalDateColumn("Geburtstag");
     /**
+     * The date when a member was accepted.
+     */
+    public static final Columns<LocalDate> MEMBER_SINCE = new LocalDateColumn("MitgliedSeit");
+    /**
      * The streetname of an address.
      */
     public static final Columns<String> STREET = new StringColumn("Strasse");
