@@ -39,6 +39,7 @@ public enum Tables {
             Map.entry(Columns.TITLE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
             Map.entry(Columns.IS_MALE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
             Map.entry(Columns.BIRTHDAY, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
+            Map.entry(Columns.MEMBER_SINCE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
             Map.entry(Columns.STREET, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
             Map.entry(Columns.HOUSENUMBER, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
             Map.entry(Columns.CITY_CODE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
