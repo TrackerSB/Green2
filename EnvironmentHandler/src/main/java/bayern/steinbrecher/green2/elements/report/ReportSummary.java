@@ -17,8 +17,6 @@
 package bayern.steinbrecher.green2.elements.report;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.elements.spinner.CheckedSpinner;
-import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
@@ -41,9 +39,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 
 /**
  * Allows to display a summary of given errors and warnings. For handling a {@link ReportSummary} a
@@ -69,6 +70,24 @@ public class ReportSummary extends TitledPane {
                 .concat(numEntries)
                 .concat(")");
         textProperty().bind(title);
+
+        heightProperty().addListener((obs, oldVal, newVal) -> {
+            double sceneHeight = getScene().getHeight();
+            Window window = getScene().getWindow();
+            double windowHeight = window.getHeight();
+            Parent parent = getParent();
+            while (parent != null && !(parent instanceof ScrollPane)) {
+                parent = parent.getParent();
+            }
+            if (parent instanceof ScrollPane) {
+                ScrollPane scrollPane = (ScrollPane) parent;
+                if (newVal.longValue() > oldVal.longValue()) {
+                    scrollPane.setVvalue(scrollPane.getVmax());
+                }
+            } else {
+                window.setHeight(sceneHeight);
+            }
+        });
 
         reportEntries.addListener((ListChangeListener.Change<? extends ReportEntry> change) -> {
             numEntries.bind(BindingUtility.reduceSum(reportEntries.stream().map(ReportEntry::occurrencesProperty)));

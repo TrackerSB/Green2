@@ -19,7 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import javafx.scene.layout.VBox?>
 
 <fx:root type="javafx.scene.control.TitledPane"
-         xmlns:fx="http://javafx.com/fxml/1">
+         xmlns:fx="http://javafx.com/fxml/1"
+         expanded="false">
     <stylesheets>
         <URL value="@reportSummary.css"/>
     </stylesheets>
