@@ -23,6 +23,7 @@ import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
 import bayern.steinbrecher.green2.elements.spinner.ContributionField;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
+import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.net.URL;
@@ -112,6 +113,14 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                     addedCf.colorProperty().addListener(calculateUniqueColors);
                     addedCf.contributionProperty().addListener(calculateUniqueContributions);
                     addedCf.validProperty().addListener(calculateAllContributionFieldsValid);
+                    addedCf.getChildren().stream()
+                            .filter(node -> node instanceof CheckedDoubleSpinner)
+                            .map(node -> (CheckedDoubleSpinner) node)
+                            .findAny()
+                            .ifPresentOrElse(spinner -> new ReportSummaryBuilder(reportSummary).addEntries(spinner),
+                                    () -> Logger.getLogger(ContributionController.class.getName())
+                                            .log(Level.WARNING,
+                                                    "Errors and warnings of a ContributionField could not be added."));
                 });
                 change.getRemoved().forEach(removedCf -> {
                     reportSummary.removeReportValidation(DUPLICATE_COLOR_MESSAGE, removedCf.duplicateColorProperty());
