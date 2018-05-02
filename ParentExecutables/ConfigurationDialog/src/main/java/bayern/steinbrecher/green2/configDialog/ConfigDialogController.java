@@ -29,7 +29,6 @@ import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.Programs;
-import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -115,15 +114,14 @@ public class ConfigDialogController extends CheckedController<Optional<Void>> {
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
 
-        ReportSummaryBuilder reportBuilder = new ReportSummaryBuilder(reportSummary)
-                .addReportEntry(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
-                        ReportType.ERROR, profileAlreadyExists)
+        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
+                ReportType.ERROR, profileAlreadyExists)
                 .addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
                         birthdayExpressionTextField.regexValidProperty().not()
                                 .and(birthdayFeaturesCheckbox.selectedProperty()))
-                .addEntries(sshPort)
-                .addEntries(databasePort);
-        checkedTextFields.stream().forEach(reportBuilder::addEntries);
+                .addReportEntry(sshPort)
+                .addReportEntry(databasePort);
+        checkedTextFields.stream().forEach(reportSummary::addReportEntry);
 
         //TODO Can loading/saving be abstracted?
         //Load settings

@@ -19,12 +19,12 @@ package bayern.steinbrecher.green2.elements.report;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
-import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
@@ -164,8 +164,9 @@ public class ReportSummary extends TitledPane {
      * @param message The message of the report to increase its counter to add.
      * @param type The type the new report has or the existing report has to be set to.
      * @param validation The initial expression checked whether the message occurrs.
+     * @return Returns {@code this} {@link ReportSummary} which may be used for chaining additions.
      */
-    public void addReportEntry(String message, ReportType type, BooleanExpression validation) {
+    public ReportSummary addReportEntry(String message, ReportType type, BooleanExpression validation) {
         findReportEntry(message).ifPresentOrElse(entry -> {
             entry.addReportValidation(validation);
         }, () -> {
@@ -173,6 +174,24 @@ public class ReportSummary extends TitledPane {
             entry.addReportValidation(validation);
             reportEntries.add(entry);
         });
+        return this;
+    }
+
+    /**
+     * Adds all reports {@code reportable} offers to this {@link ReportSummary}.
+     *
+     * @param reportable The {@link Reportable} whose reports have to be added.
+     * @return Returns {@code this} {@link ReportSummary} which may be used for chaining additions.
+     * @see #addReportEntry(java.lang.String, bayern.steinbrecher.green2.elements.report.ReportType,
+     * javafx.beans.binding.BooleanExpression)
+     */
+    public ReportSummary addReportEntry(Reportable reportable) {
+        reportable.getReports().entrySet()
+                .stream()
+                .forEach(
+                        entry -> addReportEntry(
+                                entry.getKey(), entry.getValue().getKey(), entry.getValue().getValue()));
+        return this;
     }
 
     /**
@@ -203,5 +222,23 @@ public class ReportSummary extends TitledPane {
             removeReportEntry(message);
         }
         return validationRemoved;
+    }
+
+    /**
+     * Removes all validation associated with {@code reportable}.
+     *
+     * @param reportable The {@link Reportable} whose reports have to be removed.
+     * @return {@code true} only if all reports could be removed.
+     * @see #removeReportValidation(java.lang.String, javafx.beans.binding.BooleanExpression)
+     */
+    public boolean removeReportValidation(Reportable reportable) {
+        return reportable.getReports()
+                .entrySet()
+                .stream()
+                .map(entry -> removeReportValidation(entry.getKey(), entry.getValue().getValue()))
+                //Make sure execution is not abborted by lazyness of allMatch(...)
+                .collect(Collectors.toList())
+                .stream()
+                .allMatch(result -> result);
     }
 }

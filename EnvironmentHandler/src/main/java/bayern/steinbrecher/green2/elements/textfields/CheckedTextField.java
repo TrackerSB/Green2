@@ -16,11 +16,16 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.report.ReportType;
+import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -29,6 +34,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
+import javafx.util.Pair;
 
 /**
  * Represents text fields that detect whether their input text is longer than a given maximum column count. These text
@@ -40,7 +46,7 @@ import javafx.scene.control.TextField;
  *
  * @author Stefan Huber
  */
-public class CheckedTextField extends TextField implements CheckedControl {
+public class CheckedTextField extends TextField implements CheckedControl, Reportable {
 
     /**
      * The CSS class representing this class.
@@ -82,6 +88,13 @@ public class CheckedTextField extends TextField implements CheckedControl {
     private final List<ObservableBooleanValue> validConditions = new ArrayList<>();
     private final BooleanProperty validCondition = new SimpleBooleanProperty(this, "validCondition", true);
     private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    private final Map<String, Pair<ReportType, BooleanExpression>> reports
+            = Map.of(EnvironmentHandler.getResourceValue("inputMissing"),
+                    new Pair<>(ReportType.ERROR, emptyProperty().and(checkedProperty())),
+                    EnvironmentHandler.getResourceValue("inputToLong"),
+                    new Pair<>(ReportType.ERROR, toLongProperty().and(checkedProperty())),
+                    EnvironmentHandler.getResourceValue("inputInvalid"),
+                    new Pair<>(ReportType.ERROR, invalid.and(checkedProperty())));
 
     /**
      * Constructs a new {@link CheckedTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
@@ -129,6 +142,14 @@ public class CheckedTextField extends TextField implements CheckedControl {
         ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
         ElementsUtility.addCssClassIf(this, emptyContent, CSS_CLASS_NO_CONTENT);
         ElementsUtility.addCssClassIf(this, toLongContent, CSS_CLASS_TOO_LONG_CONTENT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return reports;
     }
 
     /**

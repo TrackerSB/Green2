@@ -21,14 +21,12 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.buttons.HelpButton;
 import bayern.steinbrecher.green2.elements.report.ReportSummary;
-import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField;
 import bayern.steinbrecher.green2.elements.sepa.IbanTextField;
 import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.utility.BindingUtility;
-import bayern.steinbrecher.green2.utility.ReportSummaryBuilder;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
@@ -105,14 +103,9 @@ public class SepaFormController extends CheckedController<Optional<Originator>> 
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));
 
-        ReportSummaryBuilder reportBuilder = new ReportSummaryBuilder(reportSummary)
-                .addInputMissingReportEntry(
-                        executionDatePicker.checkedProperty().not().and(executionDatePicker.emptyProperty()))
-                .addReportEntry(EnvironmentHandler.getResourceValue("pastExecutionDate"), ReportType.ERROR,
-                        executionDatePicker.invalidPastDateProperty())
-                .addInputInvalidReportEntry(executionDatePicker.validProperty().not());
+        reportSummary.addReportEntry(executionDatePicker);
         checkedTextFields.stream()
-                .forEach(reportBuilder::addEntries);
+                .forEach(reportSummary::addReportEntry);
 
         originator = Originator.readCurrentOriginatorInfo().orElse(new Originator());
         creatorTextField.setText(originator.getCreator());

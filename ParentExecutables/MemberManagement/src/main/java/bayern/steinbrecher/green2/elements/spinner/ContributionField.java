@@ -18,13 +18,17 @@ package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.report.ReportType;
+import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -35,6 +39,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 /**
  * Represents a contribution spinner. It is a {@link CheckedDoubleSpinner} which has a further field for associating a
@@ -42,7 +47,7 @@ import javafx.scene.paint.Color;
  *
  * @author Stefan Huber
  */
-public class ContributionField extends HBox implements Initializable, CheckedControl {
+public class ContributionField extends HBox implements Initializable, CheckedControl, Reportable {
 
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
@@ -91,6 +96,14 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
 
         ElementsUtility.addCssClassIf(contributionSpinner, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
         ElementsUtility.addCssClassIf(colorPicker, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return contributionSpinner.getReports();
     }
 
     /**

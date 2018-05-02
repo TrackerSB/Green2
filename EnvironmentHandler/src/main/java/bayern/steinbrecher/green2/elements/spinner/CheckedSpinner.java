@@ -16,16 +16,22 @@
  */
 package bayern.steinbrecher.green2.elements.spinner;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.report.ReportType;
+import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.util.Pair;
 
 /**
  * Extends the class {@link Spinner} with a valid property and sets {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} if
@@ -34,7 +40,7 @@ import javafx.scene.control.SpinnerValueFactory;
  * @author Stefan Huber
  * @param <T> The type of the values to spin.
  */
-public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl {
+public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Reportable {
 
     /**
      * {@link BooleanProperty} indicating whether the current value is valid.
@@ -45,6 +51,11 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl {
      * Holds {@code true} only if the content has to be checked.
      */
     private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
+    private final Map<String, Pair<ReportType, BooleanExpression>> reports
+            = Map.of(EnvironmentHandler.getResourceValue("inputMissing"),
+                    new Pair<>(ReportType.ERROR, valueProperty().isNull().and(checkedProperty())),
+                    EnvironmentHandler.getResourceValue("inputInvalid"),
+                    new Pair<>(ReportType.ERROR, invalid.and(checkedProperty())));
 
     /**
      * Constructs a new {@code CheckedSpinner}.
@@ -66,6 +77,14 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl {
         invalid.bind(valid.not());
 
         ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return reports;
     }
 
     /**

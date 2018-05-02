@@ -16,27 +16,33 @@
  */
 package bayern.steinbrecher.green2.elements;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportType;
+import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.DatePicker;
+import javafx.util.Pair;
 
 /**
  * Represents a DatePicker which sets a css class attribute when it is empty or an invalid date is inserted.
  *
  * @author Stefan Huber
  */
-public class CheckedDatePicker extends DatePicker implements CheckedControl {
+public class CheckedDatePicker extends DatePicker implements CheckedControl, Reportable {
 
     /**
      * The CSS class associated with this class.
@@ -58,6 +64,12 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl {
     private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
     private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
     private final BooleanProperty invalidPastDate = new SimpleBooleanProperty(this, "invalidPastDate");
+    private final Map<String, Pair<ReportType, BooleanExpression>> reports
+            = Map.of(EnvironmentHandler.getResourceValue("pastExecutionDate"),
+                    new Pair<>(ReportType.ERROR, invalidPastDateProperty()),
+                    EnvironmentHandler.getResourceValue("inputMissing"),
+                    new Pair<>(ReportType.ERROR, checkedProperty().and(emptyProperty())),
+                    EnvironmentHandler.getResourceValue("inputInvalid"), new Pair<>(ReportType.ERROR, invalid));
 
     /**
      * Constructs {@link CheckedDatePicker} without initial date and {@code forceFuture} set to {@code false}.
@@ -125,6 +137,14 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl {
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 
         ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return reports;
     }
 
     /**
