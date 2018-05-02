@@ -12,7 +12,6 @@
 * All properties of classes serving as instance variables should be defined where they are declared and have to be final.
 * When accessing a property calling `getXProperty()` should be preffered instead of directly accessing it.
 #### Controller
-* Only the most upper controller containing actual implementations for a specific windows should override `initializable(URL, ResourceBundle)`.
 * An actual controller should not have any subclasses unless it is related to a wizardable window. If so it should have exactly one subclass which has no subclasses itself.
 * Controller without subclasses should be declared as final.
 * Controller have to be associated within FXML files.
@@ -44,3 +43,5 @@ CSS files containing rules only for specific classes or dialogs have to be place
 #### CSS
 * Avoid `!important`.
 * Omit any unit when specifying lengths or sizes of zero.
+#### Initializable(...)
+* When overriding initializable(...) of any class `super.initializable(...)` has to be called.
