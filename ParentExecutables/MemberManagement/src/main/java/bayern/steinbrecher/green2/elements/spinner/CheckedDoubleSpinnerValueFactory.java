@@ -104,7 +104,7 @@ public class CheckedDoubleSpinnerValueFactory extends SpinnerValueFactory.Double
                     setValue(getMin());
                 }
             } else {
-                if (newVal <= getMin()) {
+                if (newVal != null && newVal <= getMin()) {
                     /* NOTE Here the boxed version of double is used otherwise it may happend that oldVal is unboxed but
                      * is null.
                      */
