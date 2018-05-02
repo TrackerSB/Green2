@@ -161,8 +161,8 @@ public final class Launcher extends Application {
 
     private void showProgressWindow() {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Launcher.fxml"));
-            fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    getClass().getResource("Launcher.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
             Parent root = fxmlLoader.load();
             root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
             controller = fxmlLoader.getController();

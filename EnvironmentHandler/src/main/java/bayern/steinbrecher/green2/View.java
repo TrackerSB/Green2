@@ -108,8 +108,7 @@ public abstract class View<T extends Controller> extends Application {
             + "the views are located in the same package relative paths have to be used.")
     protected final <P extends Parent> P loadFXML(String resource) throws IOException {
         //NOTE getClass() is needed since View.class may result in bad paths
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource));
-        fxmlLoader.setResources(EnvironmentHandler.RESOURCE_BUNDLE);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(resource), EnvironmentHandler.RESOURCE_BUNDLE);
         P root = fxmlLoader.load();
         //Make sure the default stylesheet does not override other stylesheets.
         root.getStylesheets().add(0, EnvironmentHandler.DEFAULT_STYLESHEET);
