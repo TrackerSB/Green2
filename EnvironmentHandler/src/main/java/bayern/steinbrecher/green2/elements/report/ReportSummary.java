@@ -85,7 +85,7 @@ public class ReportSummary extends TitledPane {
                     scrollPane.setVvalue(scrollPane.getVmax());
                 }
             } else {
-                window.setHeight(sceneHeight);
+                window.sizeToScene();
             }
         });
 
