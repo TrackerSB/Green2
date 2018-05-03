@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.login;
 
-import bayern.steinbrecher.green2.CheckedController;
+import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
@@ -32,7 +32,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public abstract class LoginController extends CheckedController<Optional<Map<LoginKey, String>>> {
+public abstract class LoginController extends WizardableController<Optional<Map<LoginKey, String>>> {
 
     /**
      * An useful list of all textfields which the login contains.
@@ -48,12 +48,9 @@ public abstract class LoginController extends CheckedController<Optional<Map<Log
      */
     protected void initProperties(ReportSummary reportSummary, CheckedTextField... fields) {
         textInputFields = Arrays.asList(fields);
-
-        anyInputMissing.bind(BindingUtility.reduceOr(textInputFields.stream().map(CheckedTextField::emptyProperty)));
-        anyInputToLong.bind(BindingUtility.reduceOr(textInputFields.stream().map(CheckedTextField::toLongProperty)));
-        valid.bind(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));
-
         textInputFields.stream().forEach(reportSummary::addReportEntry);
+
+        valid.bind(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));
     }
 
     /**

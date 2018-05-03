@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.sepaform;
 
-import bayern.steinbrecher.green2.CheckedController;
+import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.buttons.HelpButton;
@@ -45,7 +45,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public class SepaFormController extends CheckedController<Optional<Originator>> {
+public class SepaFormController extends WizardableController<Optional<Originator>> {
 
     private Originator originator;
     @FXML
@@ -94,11 +94,6 @@ public class SepaFormController extends CheckedController<Optional<Originator>> 
         messageIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
                 "helpMessageId", SepaUtility.UNIQUE_DAYS_MESSAGEID, SepaUtility.MAX_CHAR_MESSAGE_ID));
 
-        anyInputToLong.bind(BindingUtility.reduceOr(checkedTextFields.stream()
-                .map(CheckedTextField::toLongProperty)));
-        anyInputMissing.bind(executionDatePicker.emptyProperty()
-                .or(BindingUtility.reduceOr(checkedTextFields.stream()
-                        .map(CheckedTextField::emptyProperty))));
         valid.bind(executionDatePicker.validProperty()
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));

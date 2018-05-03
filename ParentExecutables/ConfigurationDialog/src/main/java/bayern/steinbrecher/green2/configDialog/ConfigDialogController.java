@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.configDialog;
 
-import bayern.steinbrecher.green2.CheckedController;
+import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -51,7 +51,7 @@ import javafx.scene.control.CheckBox;
  *
  * @author Stefan Huber
  */
-public class ConfigDialogController extends CheckedController<Optional<Void>> {
+public class ConfigDialogController extends WizardableController<Optional<Void>> {
 
     @FXML
     private CheckBox useSSHCheckBox;
@@ -103,11 +103,6 @@ public class ConfigDialogController extends CheckedController<Optional<Void>> {
                     && Profile.getAvailableProfiles().contains(newVal));
         });
 
-        anyInputMissing.bind(BindingUtility.reduceOr(checkedTextFields.stream().map(CheckedTextField::emptyProperty))
-                .or(dbmsComboBox.nothingSelectedProperty())
-                .or(sshPort.valueProperty().isNull())
-                .or(databasePort.valueProperty().isNull()));
-        anyInputToLong.bind(BindingUtility.reduceOr(checkedTextFields.stream().map(CheckedTextField::toLongProperty)));
         valid.bind(BindingUtility.reduceAnd(checkedTextFields.stream().map(CheckedTextField::validProperty))
                 .and(profileAlreadyExists.not())
                 .and(dbmsComboBox.nothingSelectedProperty().not())
