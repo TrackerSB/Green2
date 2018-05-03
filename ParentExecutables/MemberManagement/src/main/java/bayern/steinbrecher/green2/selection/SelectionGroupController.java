@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.utility.BindingUtility;
 import com.google.common.collect.BiMap;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -61,6 +62,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -140,8 +142,27 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
 
                     if (newGroup.isPresent()) {
                         Color fill = groups.get(newGroup.get());
-                        groupGraphic.setBackground(
-                                new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY)));
+                        List<Region> boxes = groupGraphic.lookupAll(".box")
+                                .stream()
+                                //There should be only boxes (which are regions)
+                                .filter(node -> node instanceof Region)
+                                .map(node -> (Region) node)
+                                .collect(Collectors.toList());
+                        boxes.forEach(region -> region.setBackground(
+                                new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY))));
+                        groupGraphic.getChildrenUnmodifiable().addListener((ListChangeListener.Change<? extends Node> change) -> {
+                            while (change.next()) {
+                                change.getAddedSubList()
+                                        .stream()
+                                        .filter(node -> node.getStyleClass().contains("box"))
+                                        .filter(node -> node instanceof Region)
+                                        .map(node -> (Region) node)
+                                        .forEach(
+                                                region -> region.setStyle("-fx-background-color: rgba("
+                                                        + (255 * fill.getRed()) + ", " + (255 * fill.getGreen()) + ", "
+                                                        + (255 * fill.getBlue()) + ", " + fill.getOpacity() + ")"));
+                            }
+                        });
                     }
                     setGraphic(groupGraphic);
                 }
