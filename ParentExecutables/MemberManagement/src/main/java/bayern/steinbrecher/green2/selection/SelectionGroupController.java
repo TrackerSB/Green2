@@ -276,6 +276,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     /**
      * {@inheritDoc}
      */
+    @Override
     protected Optional<Map<T, G>> calculateResult() {
         Map<T, G> selection = options.getValue().stream()
                 .filter(entry -> entry.getGroup().isPresent())
