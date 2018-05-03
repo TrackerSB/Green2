@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <?import bayern.steinbrecher.green2.elements.CheckedComboBox?>
 <?import bayern.steinbrecher.green2.elements.buttons.HelpButton?>
+<?import bayern.steinbrecher.green2.elements.ProfileNameField?>
 <?import bayern.steinbrecher.green2.elements.report.ReportSummary?>
 <?import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner?>
 <?import bayern.steinbrecher.green2.elements.textfields.CharsetTextField?>
@@ -33,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.configDialog.ConfigDialogController">
     <GridPane>
-        <NameField fx:id="profileNameTextField"
+        <ProfileNameField fx:id="profileNameTextField"
                    promptText="%profileName"
                    GridPane.rowIndex="0"
                    GridPane.columnIndex="0"

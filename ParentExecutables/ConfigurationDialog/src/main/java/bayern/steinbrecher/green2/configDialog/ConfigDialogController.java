@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedComboBox;
+import bayern.steinbrecher.green2.elements.ProfileNameField;
 import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
@@ -38,9 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -70,7 +68,7 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
     @FXML
     private CheckedTextField databaseNameTextField;
     @FXML
-    private CheckedTextField profileNameTextField;
+    private ProfileNameField profileNameTextField;
     @FXML
     private CheckedComboBox<SupportedDatabases> dbmsComboBox;
     @FXML
@@ -81,7 +79,6 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
     private CheckedRegexTextField birthdayExpressionTextField;
     private final List<CheckedTextField> checkedTextFields = new ArrayList<>();
     private Profile profile;
-    private final BooleanProperty profileAlreadyExists = new SimpleBooleanProperty(this, "profileAlreadyExists");
 
     /**
      * {@inheritDoc}
@@ -98,22 +95,15 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
                             .concat(": ")
                             .concat(profileNameTextField.textProperty()));
         });
-        profileNameTextField.textProperty().addListener((obs, oldVal, newVal) -> {
-            profileAlreadyExists.set(!profile.getProfileName().equals(newVal)
-                    && Profile.getAvailableProfiles().contains(newVal));
-        });
 
         valid.bind(BindingUtility.reduceAnd(checkedTextFields.stream().map(CheckedTextField::validProperty))
-                .and(profileAlreadyExists.not())
                 .and(dbmsComboBox.nothingSelectedProperty().not())
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
 
-        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
-                ReportType.ERROR, profileAlreadyExists)
-                .addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
-                        birthdayExpressionTextField.regexValidProperty().not()
-                                .and(birthdayFeaturesCheckbox.selectedProperty()))
+        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
+                birthdayExpressionTextField.regexValidProperty().not()
+                        .and(birthdayFeaturesCheckbox.selectedProperty()))
                 .addReportEntry(sshPort)
                 .addReportEntry(databasePort);
         checkedTextFields.stream().forEach(reportSummary::addReportEntry);
@@ -175,24 +165,6 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
         if (saveSettings()) {
             Programs.MEMBER_MANAGEMENT.call();
         }
-    }
-
-    /**
-     * Returns the property containing a value indicating whether the current profile could be renamed to given profile.
-     *
-     * @return The property containing a value indicating whether the current profile could be renamed to given profile.
-     */
-    public ReadOnlyBooleanProperty profileAlreadyExistsProperty() {
-        return profileAlreadyExists;
-    }
-
-    /**
-     * Checks whether the current profile could be renamed to given profile.
-     *
-     * @return {@code true} only if the current profile could be renamed to given profile.
-     */
-    public boolean isProfileAlreadyExists() {
-        return profileAlreadyExists.get();
     }
 
     /**
