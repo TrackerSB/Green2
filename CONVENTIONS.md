@@ -59,3 +59,6 @@ Place CSS files containing rules for specific classes or dialogs in the same pac
 * Omit any unit when specifying lengths or sizes of zero.
 #### Initializable(...)
 * When overriding initializable(...) of any class call `super.initializable(...)`.
+
+## JavaDoc
+* Document every non-`private` class, method, field,...
