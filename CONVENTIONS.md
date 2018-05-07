@@ -15,6 +15,20 @@
 * An actual controller should not have any subclasses unless it is related to a wizardable window. If so it should have exactly one subclass which has no subclasses itself.
 * Controller without subclasses should be declared as final.
 * Controller have to be associated within FXML files.
+#### Utility classes
+* A utility class has to be in a package under `bayern.steinbrecher.green2.utility`
+* It has to have a name like `SomeUtility`.
+* It has to be a `final class`.
+* It has to define a `private` constructor like:
+    ```
+    private SomeUtility(){
+        throw new UnsupportedOperationException("Construction of an object is not allowed.");
+    }
+    ```
+#### Packages
+* Every package name has to start with `bayern.steinbrecher.green2`
+* All packages have to define a `package-info.java`
+    * If a certain package is part of multiple projects `package-info.java` has to be identical.
 
 ### FXML
 #### FXML based classes used in wizards
