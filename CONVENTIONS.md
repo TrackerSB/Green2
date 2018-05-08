@@ -25,7 +25,7 @@
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
     }
     ```
-#### Packages
+### Packages
 * Every package name has to start with `bayern.steinbrecher.green2`
 * All packages have to define a `package-info.java`
     * If a certain package is part of projects `package-info.java` has to be identical.
