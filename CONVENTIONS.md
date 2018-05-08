@@ -47,6 +47,10 @@
 #### CSS files
 Place CSS files containing rules for specific classes or dialogs in the same package as the class they are refered to.
 
+## Licenses
+* Add the license to every file before the package declaration.
+* Do not add a license to `package-info.java` files.
+
 ## Language features
 
 ### Java
