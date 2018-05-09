@@ -1,9 +1,5 @@
 #!/bin/bash -x
 
-if [[ $# -lt 1 ]]; then
-    (>&2 echo "You have to specify the version to set after install.")
-fi
-
 # Determine sudo command
 KdeSudoExists=$(command -v kdesudo >/dev/null)
 GkSudoExists=$(command -v gksudo >/dev/null)

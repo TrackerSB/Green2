@@ -1,9 +1,3 @@
-'Check parameter count
-If WScript.Arguments.Count < 1 Then
-    WScript.Echo "Parameter holding the version to set is missing"
-    WScript.Quit
-End If
-
 'Check admin rights
 If Not WScript.Arguments.Named.Exists("elevate") Then
   CreateObject("Shell.Application").ShellExecute """" & WScript.FullName & """", """" & WScript.ScriptFullName & """ /elevate", "", "runas", 1
