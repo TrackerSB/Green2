@@ -19,11 +19,11 @@ package bayern.steinbrecher.green2.launcher;
 import bayern.steinbrecher.green2.data.Collector;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
+import bayern.steinbrecher.green2.progress.ProgressDialog;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
+import bayern.steinbrecher.green2.utility.PathUtility;
 import bayern.steinbrecher.green2.utility.Programs;
-import bayern.steinbrecher.green2.utility.ServiceFactory;
-import bayern.steinbrecher.green2.utility.URLUtility;
 import bayern.steinbrecher.green2.utility.ZipUtility;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,17 +36,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 /**
  * Installs Green2 and checks for updates.
@@ -56,30 +52,23 @@ import javafx.stage.StageStyle;
 public final class Launcher extends Application {
 
     /**
-     * The URL of the online repository containing the installation files.
-     */
-    public static final String PROGRAMFOLDER_PATH_ONLINE
-            = URLUtility.resolveURL("https://traunviertler-traunwalchen.de/programme")
-                    .orElse("");
-    /**
      * The URL of the version file describing the version of the files at {@code PROGRAMFOLDER_PATH_ONLINE}.
      */
-    private static final String VERSIONFILE_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
+    private static final String VERSIONFILE_PATH_ONLINE = PathUtility.PROGRAMFOLDER_PATH_ONLINE + "/version.txt";
     /**
      * The URL of the zip containing the installation files of the application.
      */
-    private static final String GREEN2_ZIP_URL = PROGRAMFOLDER_PATH_ONLINE + "/Green2.zip";
+    private static final String GREEN2_ZIP_URL = PathUtility.PROGRAMFOLDER_PATH_ONLINE + "/Green2.zip";
     /**
      * The URL of the file containing the used charset of the zip and its files.
      */
-    private static final String CHARSET_PATH_ONLINE = PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
+    private static final String CHARSET_PATH_ONLINE = PathUtility.PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
     /**
      * Zipfile is currently delivered ISO-8859-1 (Latin-1) encoded.
      */
     private static Charset ZIP_CHARSET = StandardCharsets.UTF_8;
     private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
-    private LauncherController controller;
 
     static {
         try (Scanner sc = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream(), StandardCharsets.UTF_8.name())) {
@@ -98,7 +87,7 @@ public final class Launcher extends Application {
 
         Optional<String> optOnlineVersion = readOnlineVersion();
 
-        Service<Void> serv = null;
+        CompletableFuture<Void> installUpdateProcess = null;
         boolean isInstalled = new File(Programs.PROGRAMFOLDER_PATH_LOCAL).exists();
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
@@ -107,8 +96,8 @@ public final class Launcher extends Application {
                     Optional<Boolean> installUpdates = ChoiceDialog.askForUpdate();
                     if (installUpdates.isPresent()) {
                         if (installUpdates.get()) {
-                            serv = createDownloadAndInstallService(onlineVersion);
-                            serv.setOnSucceeded(evt -> Programs.MEMBER_MANAGEMENT.call());
+                            installUpdateProcess = createInstallTask();
+                            installUpdateProcess.thenRunAsync(Programs.MEMBER_MANAGEMENT::call);
                         } else {
                             Programs.MEMBER_MANAGEMENT.call();
                         }
@@ -117,8 +106,8 @@ public final class Launcher extends Application {
                     Programs.MEMBER_MANAGEMENT.call();
                 }
             } else {
-                serv = createDownloadAndInstallService(onlineVersion);
-                serv.setOnSucceeded(evt -> Programs.CONFIGURATION_DIALOG.call());
+                installUpdateProcess = createInstallTask();
+                installUpdateProcess.thenRunAsync(Programs.CONFIGURATION_DIALOG::call);
             }
         } else if (isInstalled) {
             Programs.MEMBER_MANAGEMENT.call();
@@ -130,15 +119,13 @@ public final class Launcher extends Application {
                     "Green2 is currently not installed and there´s no connection to install it.");
         }
 
-        if (serv != null) {
-            serv.setOnFailed(evt -> {
-                Throwable thrown = evt.getSource().getException();
+        if (installUpdateProcess != null) {
+            installUpdateProcess.exceptionally(ex -> {
                 Logger.getLogger(Launcher.class.getName())
-                        .log(Level.SEVERE, "The downloadAndInstall service failed.", thrown);
+                        .log(Level.SEVERE, "The download/update/install process failed.", ex);
                 Platform.exit();
+                return null;
             });
-            showProgressWindow();
-            serv.start();
         }
     }
 
@@ -159,92 +146,81 @@ public final class Launcher extends Application {
         return Optional.empty();
     }
 
-    private void showProgressWindow() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    getClass().getResource("Launcher.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
-            Parent root = fxmlLoader.load();
-            root.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-            controller = fxmlLoader.getController();
-            stage.setScene(new Scene(root));
-            stage.setResizable(false);
-            stage.setTitle(EnvironmentHandler.getResourceValue("downloadNewVersion"));
-            stage.initStyle(StageStyle.UTILITY);
-            stage.show();
-        } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.WARNING, null, ex);
-        }
-    }
-
-    private File download() throws IOException {
+    private File download(ProgressDialog progress) throws IOException {
         File tempFile = Files.createTempFile(null, ".zip").toFile();
+        tempFile.deleteOnExit();
         URLConnection downloadConnection = new URL(GREEN2_ZIP_URL).openConnection();
         long fileSize = Long.parseLong(downloadConnection.getHeaderField("Content-Length"));
         long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
 
         IOStreamUtility.transfer(downloadConnection.getInputStream(),
                 new FileOutputStream(tempFile), fileSize, bytesPerLoop, () -> {
-                    if (controller != null) {
-                        Platform.runLater(() -> controller.incPercentage(DOWNLOAD_STEPS));
+                    if (progress != null) {
+                        Platform.runLater(() -> progress.incPercentage(DOWNLOAD_STEPS));
                     }
                 });
         return tempFile;
     }
 
-    private Process install(File downloadedDir, String newVersion) throws IOException, InterruptedException {
-        String dirPath = downloadedDir.getAbsolutePath();
+    private void install(File extractDir) throws IOException, InterruptedException {
+        String dirPath = extractDir.getAbsolutePath();
         String[] command;
         switch (EnvironmentHandler.CURRENT_OS) {
             case WINDOWS:
                 command = new String[]{"powershell", "Start-Process",
-                    "\"wscript '" + dirPath + "/install.vbs " + newVersion + "'\"", "-Verb runAs", "-Wait"};
+                    "\"wscript '" + dirPath + "/install.vbs'\"", "-Verb runAs", "-Wait"};
                 break;
             case LINUX:
             default:
                 command = new String[]{"chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh"};
                 new ProcessBuilder(command).start().waitFor();
 
-                command = new String[]{"sh", dirPath + "/install.sh", newVersion};
+                command = new String[]{"sh", dirPath + "/install.sh"};
         }
 
-        return new ProcessBuilder(command).start();
+        Process installProcess = new ProcessBuilder(command).start();
+        installProcess.waitFor();
+
+        int installExitValue = installProcess.exitValue();
+        if (installExitValue != 0) {
+            try (InputStream errorStream = installProcess.getErrorStream()) {
+                String errorMessage = IOStreamUtility.readAll(errorStream, Charset.defaultCharset());
+                throw new CompletionException("Installation failed:" + errorMessage, null);
+            }
+        }
     }
 
-    /**
-     * Returns a service which downloads and installs Green2.
-     */
-    private Service<Void> createDownloadAndInstallService(String newVersion) {
-        //TODO May replace this Service by a CompletableFuture
-        return ServiceFactory.createService(() -> {
-            try {
-                File tempFile = download();
-                File tempDir = Files.createTempDirectory(null).toFile();
-
-                ZipUtility.unzip(tempFile, tempDir, ZIP_CHARSET);
-                tempFile.delete();
-
-                Process installer = install(tempDir, newVersion);
-                installer.waitFor();
-
-                int installerExitValue = installer.exitValue();
-                tempDir.delete();
-                if (installerExitValue != 0) {
-                    String errorMessage;
-                    try (InputStream errorStream = installer.getErrorStream()) {
-                        errorMessage = IOStreamUtility.readAll(errorStream, Charset.defaultCharset());
+    private CompletableFuture<Void> createInstallTask() {
+        return CompletableFuture.supplyAsync(() -> new ProgressDialog())
+                .thenApply(progressDialog -> {
+                    try {
+                        Platform.runLater(() -> {
+                            progressDialog.start(stage);
+                            stage.show();
+                        });
+                        return download(progressDialog);
+                    } catch (IOException ex) {
+                        throw new CompletionException("The download of the application failed.", ex);
                     }
-                    if (!errorMessage.isEmpty()) {
-                        Logger.getLogger(Launcher.class.getName())
-                                .log(Level.SEVERE, "The installer got follwing error:\n{0}", errorMessage);
+                })
+                .thenApply(downloadedFile -> {
+                    try {
+                        File extractDir = Files.createTempDirectory(null).toFile();
+                        ZipUtility.unzip(downloadedFile, extractDir, ZIP_CHARSET);
+                        extractDir.deleteOnExit();
+                        return extractDir;
+                    } catch (IOException ex) {
+                        throw new CompletionException("The extraction of the downloaded application failed,", ex);
                     }
-                } else {
-                    Collector.sendData();
-                }
-            } catch (InterruptedException | IOException ex) {
-                throw new CompletionException(ex);
-            }
-            return null;
-        });
+                })
+                .thenAccept(extractDir -> {
+                    try {
+                        install(extractDir);
+                    } catch (IOException | InterruptedException ex) {
+                        throw new CompletionException("The installation failed.", ex);
+                    }
+                })
+                .thenRun(() -> Collector.sendData());
     }
 
     /**

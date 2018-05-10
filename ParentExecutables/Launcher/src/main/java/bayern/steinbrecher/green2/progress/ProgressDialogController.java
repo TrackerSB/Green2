@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.launcher;
+package bayern.steinbrecher.green2.progress;
 
+import bayern.steinbrecher.green2.Controller;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
@@ -25,27 +26,27 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.fxml.Initializable;
 
 /**
- * Controller of download dialog.
+ * The controller of a {@link ProgressDialog}.
  *
  * @author Stefan Huber
+ * @since 2u14
  */
-public class LauncherController implements Initializable {
+public class ProgressDialogController extends Controller {
 
     private static final DecimalFormat FORMAT = new DecimalFormat("#0.0");
     private final DoubleProperty percentage = new SimpleDoubleProperty();
-    private final StringProperty percentageString
-            = new SimpleStringProperty("0%");
+    private final StringProperty percentageString = new SimpleStringProperty("0%");
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        percentage.addListener(
-                (obs, oldVal, newVal) -> percentageString.set(FORMAT.format(newVal.doubleValue() * 100) + "% "));
+        percentage.addListener((obs, oldVal, newVal) -> {
+            percentageString.set(FORMAT.format(Math.min(newVal.doubleValue(), 1) * 100) + "% ");
+        });
     }
 
     /**

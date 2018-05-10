@@ -17,34 +17,14 @@
 package bayern.steinbrecher.green2.utility;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigInteger;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import org.w3c.dom.Document;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Contains methods for checking some Sepa Direct Debit attributes which are especially needed by {@code Originator} and
@@ -111,19 +91,11 @@ public final class SepaUtility {
      */
     public static final String MESSAGE_ID_REGEX = "([a-zA-Z0-9]|/| |-|\\?|:|\\(|\\)|\\.|,|'|\\+)*";
     private static final Pattern MESSAGE_ID_PATTERN = Pattern.compile(MESSAGE_ID_REGEX);
-    private static /*final*/ Validator SEPA_VALIDATOR;
-
-    static {
-        try {
-            SEPA_VALIDATOR = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-                    //Source of schema:
-                    //https://github.com/w2c/sepa-sdd-xml-generator/blob/master/validation_schemes/pain.008.003.02.xsd
-                    .newSchema(SepaUtility.class.getResource("pain.008.003.02.xsd"))
-                    .newValidator();
-        } catch (SAXException ex) {
-            Logger.getLogger(SepaUtility.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    /**
+     * Source of schema:
+     * https://github.com/w2c/sepa-sdd-xml-generator/blob/master/validation_schemes/pain.008.003.02.xsd
+     */
+    private static final URL SEPA_XSD_SCHEMA = SepaUtility.class.getResource("pain.008.003.02.xsd");
 
     /**
      * Prohibit instantiation.
@@ -235,78 +207,9 @@ public final class SepaUtility {
      * is returned the XML does not contain errors but it may still contain warnings. If so these are logged.
      * @throws SAXException If any parse error occurs.
      * @throws IOException If any I/O error occurs.
+     * @see XMLUtility#isValidXML(java.lang.String, java.net.URL)
      */
     public static Optional<String> validateSepaXML(String xml) throws SAXException, IOException {
-        //Validate against xsd schema
-        DocumentBuilderFactory xmlBuilderFactory = DocumentBuilderFactory.newInstance();
-        xmlBuilderFactory.setIgnoringComments(true);
-        xmlBuilderFactory.setNamespaceAware(true);
-        xmlBuilderFactory.setValidating(false);
-        DocumentBuilder xmlBuilder;
-        try {
-            xmlBuilder = xmlBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException ex) {
-            throw new Error("The DocumentBuilder used for SEPA xml validation is invalid.", ex);
-        }
-        Map<String, List<String>> validationProblemsMap = new HashMap<String, List<String>>() {
-            @Override
-            public List<String> get(Object key) {
-                if (key instanceof String) {
-                    String keyString = (String) key;
-                    if (!containsKey(keyString)) {
-                        super.put(keyString, new ArrayList<>());
-                    }
-                }
-                return super.get(key);
-            }
-        };
-        BooleanProperty isValid = new SimpleBooleanProperty(true);
-        xmlBuilder.setErrorHandler(new ErrorHandler() {
-            private String createLine(SAXParseException ex) {
-                return "line: " + ex.getLineNumber() + ": " + ex.getMessage();
-            }
-
-            @Override
-            public void warning(SAXParseException exception) throws SAXException {
-                validationProblemsMap.get("warning").add(createLine(exception));
-            }
-
-            @Override
-            public void error(SAXParseException exception) throws SAXException {
-                validationProblemsMap.get("error").add(createLine(exception));
-                isValid.set(false);
-            }
-
-            @Override
-            public void fatalError(SAXParseException exception) throws SAXException {
-                validationProblemsMap.get("fatalError").add(createLine(exception));
-                isValid.set(false);
-            }
-        });
-        Document xmlDocument = xmlBuilder.parse(new InputSource(new StringReader(xml)));
-        try {
-            SEPA_VALIDATOR.validate(new DOMSource(xmlDocument.getFirstChild()));
-        } catch (SAXException ex) {
-            /*
-             * NOTE: When a fatal error occurs some implementations may or may not continue evaluation.
-             * (See {@link ErrorHandler#fatalError(SAXParseException)})
-             */
-            validationProblemsMap.get("fatalError (discontinue)").add(ex.getMessage());
-            isValid.set(false);
-        }
-
-        String validationOutput = validationProblemsMap.entrySet()
-                .stream()
-                .sorted((entryA, entryB) -> entryA.getKey().compareTo(entryB.getKey()))
-                .flatMap(entry -> entry.getValue().stream().map(cause -> entry.getKey() + ": " + cause))
-                .collect(Collectors.joining("\n"));
-        if (isValid.get()) {
-            if (!validationOutput.isEmpty()) {
-                Logger.getLogger(SepaUtility.class.getName()).log(Level.WARNING, validationOutput);
-            }
-            return Optional.empty();
-        } else {
-            return Optional.of(validationOutput);
-        }
+        return XMLUtility.isValidXML(xml, SEPA_XSD_SCHEMA);
     }
 }

@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <VBox alignment="CENTER"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="bayern.steinbrecher.green2.launcher.LauncherController">
+      fx:controller="bayern.steinbrecher.green2.progress.ProgressDialogController">
     <ProgressBar minWidth="200"
                  progress="${controller.percentage}"/>
     <HBox alignment="CENTER">
