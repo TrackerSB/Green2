@@ -21,7 +21,6 @@ import bayern.steinbrecher.green2.utility.URLUtility;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
@@ -37,6 +36,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -49,8 +49,8 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public final class Collector {
 
-    private static final URL POST_URL = resolvePostURL();
     private static boolean preparedToSend = false;
+    private static final URL POST_URL = resolvePostURL();
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     private Collector() {
@@ -74,12 +74,13 @@ public final class Collector {
     private static String generateDataString() {
         List<String> parameters = new ArrayList<>(DataParams.values().length);
         for (DataParams dp : DataParams.values()) {
-            try {
-                parameters.add(URLEncoder.encode(
-                        dp.toString(), "UTF-8") + "=" + URLEncoder.encode(dp.getValue(), "UTF-8"));
-            } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(Collector.class.getName()).log(Level.INFO, dp + " skipped on sending.", ex);
-            }
+            dp.getValue()
+                    .ifPresentOrElse(
+                            value -> parameters.add(URLEncoder.encode(dp.toString(), StandardCharsets.UTF_8)
+                                    + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)),
+                            () -> Logger.getLogger(Collector.class.getName())
+                                    .log(Level.WARNING, "{0} not transmitted since it could not be computed.",
+                                            dp.toString()));
         }
         return parameters.stream().collect(Collectors.joining("&"));
     }
@@ -133,18 +134,26 @@ public final class Collector {
              * {@inheritDoc}
              */
             @Override
-            public String getValue() {
+            public Optional<String> getValue() {
+                String macAddress = null;
                 try {
-                    byte[] mac = NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress();
-                    StringBuilder macString = new StringBuilder();
-                    for (int i = 0; i < mac.length; i++) {
-                        macString.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+                    NetworkInterface localhostInetAddress
+                            = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+                    if (localhostInetAddress == null) {
+                        Logger.getLogger(DataParams.class.getName())
+                                .log(Level.SEVERE, "Could not resolve InetAddress of localhost.");
+                    } else {
+                        byte[] mac = localhostInetAddress.getHardwareAddress();
+                        StringJoiner macJoiner = new StringJoiner("-");
+                        for (int i = 0; i < mac.length; i++) {
+                            macJoiner.add(String.format("%02X", mac[i]));
+                        }
+                        macAddress = macJoiner.toString();
                     }
-                    return macString.toString();
                 } catch (SocketException | UnknownHostException ex) {
-                    Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DataParams.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                return null;
+                return Optional.ofNullable(macAddress);
             }
         },
         MESSAGE_CREATION_DATE {
@@ -152,10 +161,10 @@ public final class Collector {
              * {@inheritDoc}
              */
             @Override
-            public String getValue() {
+            public Optional<String> getValue() {
                 Calendar today = GregorianCalendar.getInstance();
-                return today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
-                        + today.get(Calendar.DAY_OF_MONTH);
+                return Optional.of(today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
+                        + today.get(Calendar.DAY_OF_MONTH));
             }
         },
         VERSION {
@@ -163,17 +172,18 @@ public final class Collector {
              * {@inheritDoc}
              */
             @Override
-            public String getValue() {
-                return EnvironmentHandler.VERSION;
+            public Optional<String> getValue() {
+                return Optional.of(EnvironmentHandler.VERSION);
             }
         };
 
         /**
          * Returns the value represented by the enum.
          *
-         * @return The value represented by the enum.
+         * @return The value represented by the enum. Returns {@link Optional#empty()} only if the value could not be
+         * determined.
          */
-        public abstract String getValue();
+        public abstract Optional<String> getValue();
 
         /**
          * Calls {@code toString()} of superclass and makes it lowercase.
