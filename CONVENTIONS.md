@@ -1,5 +1,18 @@
 # Guidelines and conventions
 
+## Style
+
+### Java
+* If not explicitely otherwise specified apply the Java coding conventions [(http://www.oracle.com/technetwork/java/codeconventions-150003.pdf)](http://www.oracle.com/technetwork/java/codeconventions-150003.pdf).
+* The line length mentioned in section 4.1 is limited to 120 characters.
+* When chaining commands every command is in its own line like:
+    ```
+    someObject.commandA()
+        .commandB()
+        .commandC()
+        .commandD();
+    ```
+
 ## Structure
 
 ### Classes

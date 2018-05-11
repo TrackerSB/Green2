@@ -34,10 +34,6 @@ The reason for introducing such a client is providing a simple tool making it fo
 ## What´s next?
 What to do next is depending in first instance on the people using it. They just say something like "Wouldn´t it be great if..." And that´s the next goal!
 
-## Coding conventions
-This projects coding conventions are basically the same as the Java coding conventions [(http://www.oracle.com/technetwork/java/codeconventions-150003.pdf)](http://www.oracle.com/technetwork/java/codeconventions-150003.pdf) but the recommended maximum line length mentioned in section 4.1 is extended to 120 characters.
-Further in CONVENTIONS.md are additional style guidelines and hints listed.
-
 ## Badges
 [![forthebadge](http://forthebadge.com/images/badges/uses-css.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/uses-git.svg)](http://forthebadge.com)
