@@ -58,11 +58,11 @@ Place CSS files containing rules for specific classes or dialogs in the same pac
 * Avoid the var keyword in general
 * `var` is allowed in direct definitions of variables like `var someObject = new SomeObject()
 * If the type is generic and `var` is used on the left side the right side should not use the diamond operator `<>` but specify the generic type explitely.
-#### CSS
-* Avoid `!important`.
-* Omit any unit when specifying lengths or sizes of zero.
 #### Initializable(...)
 * When overriding initializable(...) of any class call `super.initializable(...)`.
+### CSS
+* Avoid `!important`.
+* Omit any unit when specifying lengths or sizes of zero.
 
 ## JavaDoc
 * Document every non-`private` class, method, field,...
