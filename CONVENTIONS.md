@@ -24,6 +24,7 @@
 * If the property should be readonly omit `setXProperty(...)` and make sure `xProperty()` returns a readonly property.
 * Define all properties of classes serving as instance variables where you declared them and make them final.
 * When accessing a property prefer calling `getXProperty()` instead of directly accessing it.
+* When accessing a property within a constructor prefer direct access.
 #### Controller
 * An actual controller should not have any subclasses unless related to a wizardable window. If so it should have one subclass which has no subclasses itself.
 * Declare controller without subclasses as final.
