@@ -19,11 +19,13 @@ package bayern.steinbrecher.green2.launcher;
 import bayern.steinbrecher.green2.data.Collector;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
+import bayern.steinbrecher.green2.elements.report.ConditionReport;
 import bayern.steinbrecher.green2.progress.ProgressDialog;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.PathUtility;
 import bayern.steinbrecher.green2.utility.Programs;
+import bayern.steinbrecher.green2.utility.UpdateUtility;
 import bayern.steinbrecher.green2.utility.ZipUtility;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,15 +36,20 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 /**
  * Installs Green2 and checks for updates.
@@ -84,6 +91,7 @@ public final class Launcher extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.stage = primaryStage;
+        Platform.setImplicitExit(false);
 
         Optional<String> optOnlineVersion = readOnlineVersion();
 
@@ -96,8 +104,8 @@ public final class Launcher extends Application {
                     Optional<Boolean> installUpdates = ChoiceDialog.askForUpdate();
                     if (installUpdates.isPresent()) {
                         if (installUpdates.get()) {
-                            installUpdateProcess = createInstallTask();
-                            installUpdateProcess.thenRunAsync(Programs.MEMBER_MANAGEMENT::call);
+                            installUpdateProcess = createInstallTask()
+                                    .thenRun(Programs.MEMBER_MANAGEMENT::call);
                         } else {
                             Programs.MEMBER_MANAGEMENT.call();
                         }
@@ -106,8 +114,8 @@ public final class Launcher extends Application {
                     Programs.MEMBER_MANAGEMENT.call();
                 }
             } else {
-                installUpdateProcess = createInstallTask();
-                installUpdateProcess.thenRunAsync(Programs.CONFIGURATION_DIALOG::call);
+                installUpdateProcess = createInstallTask()
+                        .thenRun(Programs.CONFIGURATION_DIALOG::call);
             }
         } else if (isInstalled) {
             Programs.MEMBER_MANAGEMENT.call();
@@ -120,9 +128,11 @@ public final class Launcher extends Application {
         }
 
         if (installUpdateProcess != null) {
-            installUpdateProcess.exceptionally(ex -> {
-                Logger.getLogger(Launcher.class.getName())
-                        .log(Level.SEVERE, "The download/update/install process failed.", ex);
+            installUpdateProcess.handle((voidResult, ex) -> {
+                if (ex != null) {
+                    Logger.getLogger(Launcher.class.getName())
+                            .log(Level.SEVERE, "The download/update/install process failed.", ex);
+                }
                 Platform.exit();
                 return null;
             });
@@ -144,6 +154,25 @@ public final class Launcher extends Application {
             Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return Optional.empty();
+    }
+
+    private Map<String, Optional<Callable<Boolean>>> checkUpdateConditions() {
+        return UpdateUtility.getUpdateConditions()
+                .orElseThrow(() -> new IllegalStateException("Update conditions could not be checked"))
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    Optional<Callable<Boolean>> result;
+                    try {
+                        result = Optional.of(entry.getValue());
+                    } catch (Exception ex) {
+                        Logger.getLogger(Launcher.class.getName())
+                                .log(Level.SEVERE, "Checking update condition " + entry.getKey() + " failed.", ex);
+                        result = Optional.empty();
+                    }
+                    return new Pair<>(entry.getKey(), result);
+                })
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     private File download(ProgressDialog progress) throws IOException {
@@ -191,12 +220,40 @@ public final class Launcher extends Application {
     }
 
     private CompletableFuture<Void> createInstallTask() {
-        return CompletableFuture.supplyAsync(() -> new ProgressDialog())
+        return CompletableFuture.supplyAsync(() -> checkUpdateConditions())
+                .thenApply(conditions -> {
+                    boolean allConditionsSuccessful = conditions.entrySet()
+                            .stream()
+                            .allMatch(entry -> {
+                                try {
+                                    return entry.getValue()
+                                            .orElse(() -> false)
+                                            .call();
+                                } catch (Exception ignored) {
+                                    return false;
+                                }
+                            });
+                    return allConditionsSuccessful ? null : new ConditionReport(conditions);
+                })
+                .thenAccept(conditionReport -> {
+                    if (conditionReport != null) {
+                        Platform.runLater(() -> conditionReport.start(new Stage()));
+                        boolean noConditionFailed = conditionReport.getResult()
+                                .orElseThrow(
+                                        () -> new CancellationException(
+                                                "The user cancelled the install process at the conditions report."));
+                        if (!noConditionFailed) {
+                            throw new IllegalStateException("There are unfulfilled conditions needed for installing.");
+                        }
+                    }
+                })
+                .thenApply(voidResult -> new ProgressDialog())
                 .thenApply(progressDialog -> {
                     try {
                         Platform.runLater(() -> {
-                            progressDialog.start(stage);
-                            stage.show();
+                            Stage processDialogStage = new Stage();
+                            progressDialog.start(processDialogStage);
+                            processDialogStage.show();
                         });
                         return download(progressDialog);
                     } catch (IOException ex) {

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- author: Stefan Huber -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           targetNamespace="bayern:steinbrecher:green2">
+    <xs:element xmlns:bay="bayern:steinbrecher:green2"
+                name="conditions"
+                type="bay:conditionsType"/>
+    <xs:complexType name="conditionType">
+        <xs:sequence>
+            <xs:element type="xs:string"
+                        name="name"/>
+            <xs:element type="xs:string"
+                        name="function"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="conditionsType">
+        <xs:sequence>
+            <xs:element xmlns:bay="bayern:steinbrecher:green2"
+                        type="bay:conditionType"
+                        name="condition"
+                        maxOccurs="unbounded"
+                        minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
