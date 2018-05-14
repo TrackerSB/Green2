@@ -249,16 +249,22 @@ public final class Launcher extends Application {
                 })
                 .thenApply(voidResult -> new ProgressDialog())
                 .thenApply(progressDialog -> {
-                    try {
-                        Platform.runLater(() -> {
-                            Stage processDialogStage = new Stage();
-                            progressDialog.start(processDialogStage);
-                            processDialogStage.show();
+                    CompletableFuture<File> downloadProcess = CompletableFuture.supplyAsync(() -> {
+                        try {
+                            return download(progressDialog);
+                        } catch (IOException ex) {
+                            throw new CompletionException("The download of the application failed.", ex);
+                        }
+                    });
+                    Platform.runLater(() -> {
+                        Stage processDialogStage = new Stage();
+                        progressDialog.start(processDialogStage);
+                        processDialogStage.show();
+                        downloadProcess.thenRun(() -> {
+                            Platform.runLater(processDialogStage::hide);
                         });
-                        return download(progressDialog);
-                    } catch (IOException ex) {
-                        throw new CompletionException("The download of the application failed.", ex);
-                    }
+                    });
+                    return downloadProcess.join();
                 })
                 .thenApply(downloadedFile -> {
                     try {
