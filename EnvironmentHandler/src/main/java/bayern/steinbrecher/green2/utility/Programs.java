@@ -20,7 +20,6 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -71,10 +70,7 @@ public enum Programs {
         System.arraycopy(options, 0, args, 3, options.length);
         try {
             Process callProcess = new ProcessBuilder(args).start();
-            if (!callProcess.waitFor(2, TimeUnit.SECONDS)) {
-                Logger.getLogger(Programs.class.getName())
-                        .log(Level.WARNING, "Only printing errors of the called program which occurred until now.");
-            }
+            callProcess.waitFor();
             String errorMessage = IOStreamUtility.readAll(callProcess.getErrorStream(), Charset.defaultCharset());
             if (!errorMessage.isEmpty()) {
                 Logger.getLogger(Programs.class.getName()).log(Level.WARNING, errorMessage);
