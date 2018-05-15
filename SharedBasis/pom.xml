@@ -10,10 +10,10 @@
         <version>2u14</version>
     </parent>
 
-    <artifactId>EnvironmentHandler</artifactId>
+    <artifactId>SharedBasis</artifactId>
     <packaging>jar</packaging>
 
-    <name>EnvironmentHandler</name>
+    <name>SharedBasis</name>
 
     <dependencies>
         <dependency>

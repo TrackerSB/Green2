@@ -50,11 +50,10 @@
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>EnvironmentHandler</artifactId>
+            <artifactId>SharedBasis</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

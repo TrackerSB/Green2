@@ -15,12 +15,12 @@
 
     <modules>
         <module>..</module> <!-- parent -->
-        <module>../EnvironmentHandler</module>
         <module>../Wizard</module>
         <module>../ParentExecutables/ConfigurationDialog</module>
         <module>../ParentExecutables/Launcher</module>
         <module>../ParentExecutables/MemberManagement</module>
         <module>../ParentExecutables/Uninstaller</module>
+        <module>../SharedBasis</module>
     </modules>
     <name>Aggregation</name>
 

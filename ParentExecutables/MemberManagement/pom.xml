@@ -14,15 +14,15 @@
     <packaging>jar</packaging>
 
     <name>MemberManagement</name>
-
+    
     <properties>
         <mainClass>bayern.steinbrecher.green2.membermanagement.MemberManagement</mainClass>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>EnvironmentHandler</artifactId>
+            <artifactId>SharedBasis</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
