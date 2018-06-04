@@ -323,3 +323,6 @@ OpenCover/
 
 # Specific projects
 ManualTest/
+
+# JShell temp files
+jshell.history
