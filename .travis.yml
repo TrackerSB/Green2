@@ -2,8 +2,10 @@ language: java
 
 install: true
 
+script: "cd Aggregation; mvn test -B"
+
 jdk:
-  - oraclejdk9
+  - oraclejdk10
 
 sudo: false
 addons:
