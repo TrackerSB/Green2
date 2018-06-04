@@ -13,6 +13,12 @@
     <artifactId>ParentExecutables</artifactId>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>ConfigurationDialog</module>
+        <module>Launcher</module>
+        <module>MemberManagement</module>
+        <module>Uninstaller</module>
+    </modules>
     <name>ParentExecutables</name>
 
     <build>

@@ -11,6 +11,7 @@
 
     <modules>
         <module>ParentExecutables</module>
+        <module>SharedBasis</module>
     </modules>
     <name>Parent</name>
 
