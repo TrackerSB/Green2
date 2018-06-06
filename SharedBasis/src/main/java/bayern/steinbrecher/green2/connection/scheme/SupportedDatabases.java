@@ -47,7 +47,7 @@ public enum SupportedDatabases {
                     Keywords.PRIMARY_KEY, "PRIMARY KEY"
             ),
             HashBiMap.create(Map.of(
-                    Boolean.class, new SQLTypeKeyword("TINYINT", 1), //BOOLEAN is an alias for TINYIT(1)
+                    Boolean.class, new SQLTypeKeyword("TINYINT", 1), //BOOLEAN is an alias for TINYINT(1)
                     Double.class, new SQLTypeKeyword("FLOAT"),
                     Integer.class, new SQLTypeKeyword("INT"), //INTEGER is an alias for INT
                     LocalDate.class, new SQLTypeKeyword("DATE"),
