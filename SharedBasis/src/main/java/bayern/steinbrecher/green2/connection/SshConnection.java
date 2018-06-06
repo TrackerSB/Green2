@@ -135,7 +135,8 @@ public final class SshConnection extends DBConnection {
         this.charset = charset;
 
         //NOTE The echo command is needed for handling UTF8 chars on non UTF8 terminals.
-        sqlCommands.put(SupportedDatabases.MY_SQL, query -> "echo -e '" + replaceNonAscii(query) + "' | "
+        sqlCommands.put(SupportedDatabases.MY_SQL, query -> "echo -e '" + escapeSingleQuotes(replaceNonAscii(query))
+                + "' | "
                 + COMMANDS.get(SupportedDatabases.MY_SQL)
                 + " --default-character-set=utf8"
                 + " -u" + databaseUsername
@@ -172,6 +173,16 @@ public final class SshConnection extends DBConnection {
         }
     }
 
+    /**
+     * Escapes every single quote in such way that the resulting {@link String} can be inserted between single quotes.
+     *
+     * @param nonEscaped The {@link String} whose single quotes to escape.
+     * @return The {@link String} who can be quoted in single quotes itself.
+     */
+    private static String escapeSingleQuotes(String nonEscaped) {
+        return nonEscaped.replace("'", "'\"'\"'");
+    }
+
     private String replaceNonAscii(String nonAscii) {
         StringBuilder ascii = new StringBuilder();
         nonAscii.chars()
@@ -181,9 +192,10 @@ public final class SshConnection extends DBConnection {
                         ascii.append(character);
                     } else {
                         byte[] bytes = String.valueOf(character).getBytes(StandardCharsets.UTF_8);
-                        ascii.append("\\u");
                         for (byte utf8byte : bytes) {
-                            ascii.append(Integer.toHexString(utf8byte));
+                            int toConvert = utf8byte < 0 ? utf8byte + 256 : utf8byte;
+                            ascii.append("\\x")
+                                    .append(Integer.toHexString(toConvert));
                         }
                     }
                 });

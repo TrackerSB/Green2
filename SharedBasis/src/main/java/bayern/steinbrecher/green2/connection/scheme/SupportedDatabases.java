@@ -53,11 +53,16 @@ public enum SupportedDatabases {
                     LocalDate.class, new SQLTypeKeyword("DATE"),
                     String.class, new SQLTypeKeyword("VARCHAR", 255)
             )),
+            /*
+             * NOTE To make a query work with MessageFormat placeholder like {0} which have to be quoted with single
+             * quotes in the resulting String have to be quoted by doubled single quotes.
+             */
             Map.of(Queries.CREATE_TABLE, "CREATE TABLE {0} ({1});",
-                    Queries.GET_COLUMN_NAMES_AND_TYPES, "SELECT column_name, data_type FROM information_schema.columns "
-                    + "WHERE table_schema=\"{0}\" AND table_name=\"{1}\";",
-                    Queries.GET_TABLE_NAMES, "SELECT table_name FROM information_schema.tables "
-                    + "WHERE table_schema=\"{0}\";"
+                    Queries.GET_COLUMN_NAMES_AND_TYPES, "SELECT `column_name`, `data_type` "
+                    + "FROM `information_schema`.`columns` "
+                    + "WHERE `table_schema`=''{0}'' AND `table_name`=''{1}'';",
+                    Queries.GET_TABLE_NAMES, "SELECT `table_name` FROM `information_schema`.`tables` "
+                    + "WHERE `table_schema`=''{0}'';"
             ),
             '`');
 
@@ -66,7 +71,7 @@ public enum SupportedDatabases {
     private final Map<Keywords, String> keywords;
     private final BiMap<Class<?>, SQLTypeKeyword> types;
     private final Map<Queries, String> queryTemplates;
-    private final char columnQuoteSymbol;
+    private final char identifierQuoteSymbol;
 
     /**
      * Creates an enum representing a supported dbms.
@@ -77,16 +82,16 @@ public enum SupportedDatabases {
      * @param types The mapping of the types to the database specific types.
      * @param queryTemplates The templates for all queries in {@link Queries#values()}. NOTE: This parameter may be
      * removed in future versions since {@code information_schema} is standardized.
-     * @param columnQuoteSymbol The symbol to use for quoting columns, tables,...
+     * @param identifierQuoteSymbol The symbol to use for quoting columns, tables,...
      */
     private SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywords,
-            BiMap<Class<?>, SQLTypeKeyword> types, Map<Queries, String> queryTemplates, char columnQuoteSymbol) {
+            BiMap<Class<?>, SQLTypeKeyword> types, Map<Queries, String> queryTemplates, char identifierQuoteSymbol) {
         this.displayName = displayName;
         this.defaultPort = defaultPort;
         this.keywords = keywords;
         this.types = types;
         this.queryTemplates = queryTemplates;
-        this.columnQuoteSymbol = columnQuoteSymbol;
+        this.identifierQuoteSymbol = identifierQuoteSymbol;
 
         String missingKeywords = keywords.keySet().stream()
                 .filter(keyword -> !keywords.containsKey(keyword))
@@ -189,15 +194,22 @@ public enum SupportedDatabases {
     }
 
     /**
-     * Returns the given column name quoted with the database specific quote symbol. It also escapes occurrences of the
-     * quote symbol within the column name. NOTE: It is not checked whether the column exists somewhere.
+     * Returns the given identifier quoted with the database specific quote symbol. It also escapes occurrences of the
+     * quote symbol within the identifier. NOTE: It is not checked whether the column, table,... described by the
+     * identifier exists somewhere.
      *
-     * @param columnName The column name to quote.
-     * @return The quoted column name.
+     * @param identifier The identifier to quote. If an identifier {@code first_part.second_part} contains a dot it is
+     * quoted like (e.g. quoted with double quotes) {@code "first_part"."second_part"}.
+     * @return The quoted identifier.
      */
-    public String quoteColumnName(String columnName) {
-        return columnQuoteSymbol + columnName.replaceAll(String.valueOf(columnQuoteSymbol), "\\" + columnQuoteSymbol)
-                + columnQuoteSymbol;
+    public String quoteIdentifier(String identifier) {
+        return Arrays.stream(identifier.split("."))
+                .map(
+                        i -> identifierQuoteSymbol
+                        + i.replaceAll(String.valueOf(identifierQuoteSymbol), "\\" + identifierQuoteSymbol)
+                        + identifierQuoteSymbol
+                )
+                .collect(Collectors.joining("."));
     }
 
     /**

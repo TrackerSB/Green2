@@ -314,7 +314,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                 SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
                 condition = getConditionImpl();
                 if (condition.isPresent()) {
-                    condition = Optional.of(dbms.quoteColumnName(realColumnName) + " " + condition.get());
+                    condition = Optional.of(dbms.quoteIdentifier(realColumnName) + " " + condition.get());
                 }
             } else {
                 condition = Optional.empty();

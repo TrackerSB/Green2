@@ -212,7 +212,8 @@ public abstract class DBConnection implements AutoCloseable {
      *
      * @param table The table to select from.
      * @param columnsToSelect The columns to select when they exist. If it is empty all available columns are queried.
-     * @param conditions The conditions every row has to satisfy.
+     * @param conditions The conditions every row has to satisfy. NOTE Occurrences of identifiers with conditions are
+     * not automatically quoted by this method.
      * @return The statement selecting all existing columns of {@code columnsToSelect} satisfying all
      * {@code conditions}. Returns {@link Optional#empty()} if {@code columnsToSelect} contains no column which exists
      * in the scheme accessible through {@code connection}.
@@ -261,9 +262,9 @@ public abstract class DBConnection implements AutoCloseable {
             }
             SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
             return Optional.of("SELECT " + existingColumns.stream()
-                    .map(dbms::quoteColumnName)
+                    .map(dbms::quoteIdentifier)
                     .collect(Collectors.joining(", "))
-                    + " FROM " + table.getRealTableName()
+                    + " FROM " + dbms.quoteIdentifier(table.getRealTableName())
                     + (conditionString.isEmpty() ? "" : " WHERE " + conditionString));
         }
     }

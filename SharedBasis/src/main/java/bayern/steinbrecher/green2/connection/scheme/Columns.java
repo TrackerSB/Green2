@@ -225,6 +225,10 @@ public abstract class /*enum*/ Columns<T> {
 
         @Override
         protected String toStringImpl(String value) {
+            /*
+             * Single quotes for Strings should be preffered since single quotes always work in ANSI SQL whereas e.g. in
+             * MySQL they only work if ANSI_QUOTES is NOT enabled (it is per default disabled).
+             */
             return "'" + value + "'";
         }
 
