@@ -16,6 +16,9 @@
  */
 package bayern.steinbrecher.green2;
 
+import android.support.annotation.CallSuper;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
@@ -36,6 +39,13 @@ public abstract class Controller implements Initializable {
      * Only {@code true} when the user explicitly aborted his input. (E.g. pressing the X of the window.)
      */
     private boolean userAborted = false;
+
+    @Override
+    @CallSuper
+    public void initialize(URL location, ResourceBundle resources) {
+        //no-op.
+        //TODO Force call of super.initialize(...)
+    }
 
     /**
      * Returns the property holding the currently set {@link Stage}.

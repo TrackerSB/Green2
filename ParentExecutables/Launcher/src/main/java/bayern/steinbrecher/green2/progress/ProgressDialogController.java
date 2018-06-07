@@ -44,6 +44,7 @@ public class ProgressDialogController extends Controller {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        super.initialize(url, rb);
         percentage.addListener((obs, oldVal, newVal) -> {
             percentageString.set(FORMAT.format(Math.min(newVal.doubleValue(), 1) * 100) + "% ");
         });
