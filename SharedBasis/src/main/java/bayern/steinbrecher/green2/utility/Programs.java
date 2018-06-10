@@ -20,6 +20,8 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -68,16 +70,39 @@ public enum Programs {
         args[2] = Paths.get((EnvironmentHandler.IS_USED_AS_LIBRARY
                 ? EnvironmentHandler.APPLICATION_ROOT : PROGRAMFOLDER_PATH_LOCAL).toString(), jarname).toString();
         System.arraycopy(options, 0, args, 3, options.length);
-        try {
-            Process callProcess = new ProcessBuilder(args).start();
-            callProcess.waitFor();
-            String errorMessage = IOStreamUtility.readAll(callProcess.getErrorStream(), Charset.defaultCharset());
-            if (!errorMessage.isEmpty()) {
-                Logger.getLogger(Programs.class.getName()).log(Level.WARNING, errorMessage);
-            }
-            Platform.exit();
-        } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(Programs.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Platform.setImplicitExit(false);
+        CompletableFuture.supplyAsync(
+                () -> {
+                    try {
+                        return new ProcessBuilder(args).start();
+                    } catch (IOException ex) {
+                        throw new CompletionException("Could not start calling the program.", ex);
+                    }
+                })
+                .thenApply(process -> {
+                    try {
+                        process.waitFor();
+                        return process;
+                    } catch (InterruptedException ex) {
+                        throw new CompletionException("Waiting for end of called program was interrupted.", ex);
+                    }
+                })
+                .thenApply(process -> {
+                    try {
+                        return IOStreamUtility.readAll(process.getErrorStream(), Charset.defaultCharset());
+                    } catch (IOException ex) {
+                        throw new CompletionException("Could not read the error stream of the called program.", ex);
+                    }
+                })
+                .whenComplete((errorMessage, ex) -> {
+                    if (ex != null) {
+                        Logger.getLogger(Programs.class.getName())
+                                .log(Level.SEVERE, null, ex);
+                    } else if (!errorMessage.isEmpty()) {
+                        Logger.getLogger(Programs.class.getName())
+                                .log(Level.WARNING, "The called program reported errors:\n{0}", errorMessage);
+                    }
+                    Platform.exit();
+                });
     }
 }
