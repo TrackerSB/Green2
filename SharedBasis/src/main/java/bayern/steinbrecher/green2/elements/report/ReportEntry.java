@@ -121,10 +121,12 @@ final class ReportEntry {
     @Override
     public int hashCode() {
         //NOTE This is the default implementation of NetBeans
+        //CHECKSTYLE.OFF: MagicNumber - This is the default implementation of NetBeans
         int hash = 3;
         hash = 97 * hash + Objects.hashCode(this.message);
         hash = 97 * hash + Objects.hashCode(this.reportType);
         hash = 97 * hash + Objects.hashCode(this.occurrences);
+        //CHECKSTYLE.ON: MagicNumber
         return hash;
     }
 }

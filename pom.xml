@@ -25,6 +25,11 @@
 
     <repositories>
         <repository>
+            <id>Maven.org</id>
+            <name>Maven.org</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
             <id>android</id>
             <name>Android</name>
             <url>https://dl.google.com/dl/android/maven2</url>
