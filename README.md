@@ -1,5 +1,6 @@
 ### Technology
 [![Build Status](https://travis-ci.org/TrackerSB/Green2.svg?branch=master)](https://travis-ci.org/TrackerSB/Green2)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9ca54dc10bd74e1bbd5235d70558d578)](https://www.codacy.com/app/junktogo/Green2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TrackerSB/Green2&amp;utm_campaign=Badge_Grade)
 [![GitHub release](https://img.shields.io/github/release/trackersb/green2.svg)](https://github.com/TrackerSB/Green2)
 [![JDK Version](https://img.shields.io/badge/Java-10-blue.svg)](https://github.com/TrackerSB/Green2)
 [![CSS Version](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
