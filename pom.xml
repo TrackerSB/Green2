@@ -14,6 +14,7 @@
         <module>SharedBasis</module>
     </modules>
     <name>Parent</name>
+    <inceptionYear>2016</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
