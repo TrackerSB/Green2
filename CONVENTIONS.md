@@ -1,5 +1,7 @@
 # Guidelines and conventions
 
+As far as possible these conventions are checked by the checkstyle plugin.
+
 ## Style
 
 ### Java
