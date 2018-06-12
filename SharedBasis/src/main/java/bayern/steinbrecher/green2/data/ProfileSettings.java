@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -258,7 +258,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
 
         @Override
         public boolean isValid(Charset value) {
-            return true; //NOTE: A Charset can only be constructed if and only if it is supported and therefore is valid.
+            return true; //NOTE A Charset can only be constructed if and only if it is supported and therefore is valid.
         }
 
         @Override

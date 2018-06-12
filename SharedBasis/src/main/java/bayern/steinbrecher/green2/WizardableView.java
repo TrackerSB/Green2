@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package bayern.steinbrecher.green2;
 
-import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
 import java.util.Optional;
@@ -25,7 +24,7 @@ import java.util.logging.Logger;
 import javafx.scene.layout.Pane;
 
 /**
- * Represents a class which can be in a {@link Wizard}.
+ * Represents a class which can be in a {@link bayern.steinbrecher.wizard.Wizard}.
  *
  * @param <T> The type of the result of the {@link WizardPage}.
  * @param <C> The type of the controller used by the {@link View}.

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -451,7 +451,7 @@ public class Profile {
 
     private static class ConfigurationsMap extends SimpleMapProperty<ProfileSettings<?>, Property<?>> {
 
-        public ConfigurationsMap() {
+        ConfigurationsMap() {
             super(FXCollections.observableMap(new HashMap<>()));
         }
 

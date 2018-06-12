@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -148,6 +148,7 @@ public final class DialogUtility {
                     .log(Level.WARNING, "You passed more than {0} parameters. Only the first {0} will be used.",
                             NUMBER_USED_PARAMETERS);
         }
+        //CHECKSTYLE.OFF: MagicNumber - The JavaDoc explicitely describes these three possible parameters
         switch (parameterCount) {
             case 3:
                 if (args[2] != null) {
@@ -169,6 +170,7 @@ public final class DialogUtility {
                 throw new IllegalArgumentException(
                         "This number of parameters can not be handled. How could that happen? Scary!");
         }
+        //CHECKSTYLE.ON: MagicNumber
         return alert;
     }
 

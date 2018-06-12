@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  *
  * @author Stefan Huber
  */
-public class MemberGenerator {
+public final class MemberGenerator {
 
     /**
      * Prohibit construction.

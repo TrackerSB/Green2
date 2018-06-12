@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -324,11 +324,11 @@ public final class EnvironmentHandler {
 
         private final Image image;
 
-        private LogoSet(String filename) {
+        LogoSet(String filename) {
             image = new Image(BASIC_ICON_DIR_PATH + filename);
         }
 
-        private LogoSet(String filename, double requestedWidth, double requestedHeight) {
+        LogoSet(String filename, double requestedWidth, double requestedHeight) {
             image = new Image(BASIC_ICON_DIR_PATH + filename, requestedWidth, requestedHeight, true, true);
         }
 
@@ -430,7 +430,7 @@ public final class EnvironmentHandler {
         public static final int SMALL_SIZE = 15;
         private final Image image;
 
-        private ImageSet(String filename, boolean big) {
+        ImageSet(String filename, boolean big) {
             int size = big ? BIG_SIZE : SMALL_SIZE;
             image = new Image(BASIC_ICON_DIR_PATH + filename, size, size, true, true);
         }
