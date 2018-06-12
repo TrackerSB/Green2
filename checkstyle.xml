@@ -96,7 +96,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <!-- </module> -->
     
     <!-- Allow suppression of specific violations -->
-    <module name="FileContentsHolder"/>
     <module name="SuppressionCommentFilter">
         <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
         <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
@@ -104,6 +103,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </module>
 
     <module name="TreeWalker">
+        <!-- needed for the SuppressionCommentFilter -->
+        <module name="FileContentsHolder"/>
 
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->

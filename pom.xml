@@ -25,11 +25,6 @@
 
     <repositories>
         <repository>
-            <id>Maven.org</id>
-            <name>Maven.org</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        <repository>
             <id>android</id>
             <name>Android</name>
             <url>https://dl.google.com/dl/android/maven2</url>
@@ -107,6 +102,24 @@
                             <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
                         </manifest>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>verify-style</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnViolation>false</failOnViolation>
+                    <configLocation>checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
         </plugins>
