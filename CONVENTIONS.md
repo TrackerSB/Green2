@@ -36,7 +36,7 @@
 * It has to define a `private` constructor like:
     ```
     private SomeUtility(){
-        throw new UnsupportedOperationException("Construction of an object is not allowed.");
+        throw new UnsupportedOperationException("Construction of an object is prohibited.");
     }
     ```
 ### Packages
@@ -84,3 +84,5 @@ Do not use `default` methods.
 
 ## JavaDoc
 * Document every non-`private` class, method, field,...
+* When referencing any method, interface, class, etc. use `{@link ...}`.
+* When a class or interface is solely referenced within JavaDocs use full qualified name instead of an import to avoid "unused" imports.
