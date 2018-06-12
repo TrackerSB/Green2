@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -69,7 +69,7 @@ public enum SupportedDatabases {
 
     private final String displayName;
     private final int defaultPort;
-    private final Map<Keywords, String> keywords;
+    private final Map<Keywords, String> keywordRepresentations;
     private final BiMap<Class<?>, SQLTypeKeyword> types;
     private final Map<Queries, String> queryTemplates;
     private final char identifierQuoteSymbol;
@@ -79,23 +79,23 @@ public enum SupportedDatabases {
      *
      * @param displayName The name to display when shown to the user.
      * @param defaultPort The default port to use when no other specified.
-     * @param keywords The mapping of the keywords to the database specific keywords.
+     * @param keywordRepresentations The mapping of the keywords to the database specific keywords.
      * @param types The mapping of the types to the database specific types.
      * @param queryTemplates The templates for all queries in {@link Queries#values()}. NOTE: This parameter may be
      * removed in future versions since {@code information_schema} is standardized.
      * @param identifierQuoteSymbol The symbol to use for quoting columns, tables,...
      */
-    private SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywords,
+    SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywordRepresentations,
             BiMap<Class<?>, SQLTypeKeyword> types, Map<Queries, String> queryTemplates, char identifierQuoteSymbol) {
         this.displayName = displayName;
         this.defaultPort = defaultPort;
-        this.keywords = keywords;
+        this.keywordRepresentations = keywordRepresentations;
         this.types = types;
         this.queryTemplates = queryTemplates;
         this.identifierQuoteSymbol = identifierQuoteSymbol;
 
-        String missingKeywords = keywords.keySet().stream()
-                .filter(keyword -> !keywords.containsKey(keyword))
+        String missingKeywords = keywordRepresentations.keySet().stream()
+                .filter(keyword -> !keywordRepresentations.containsKey(keyword))
                 .map(Keywords::toString)
                 .collect(Collectors.joining(", "));
         if (!missingKeywords.isEmpty()) {
@@ -127,8 +127,8 @@ public enum SupportedDatabases {
     public Collection<String> getKeywords(Set<Keywords> keywords, Columns<?> column) {
         return keywords.stream()
                 .map(keyword -> {
-                    if (this.keywords.containsKey(keyword)) {
-                        String keywordString = this.keywords.get(keyword);
+                    if (this.keywordRepresentations.containsKey(keyword)) {
+                        String keywordString = this.keywordRepresentations.get(keyword);
                         if (keyword == Keywords.DEFAULT) {
                             assert !keywords.contains(Keywords.NOT_NULL) || column.getDefaultValue() != null :
                                     "The keyword NOT NULL is specified but the value for DEFAULT is null";
@@ -248,7 +248,7 @@ public enum SupportedDatabases {
          * @param parameter Additional parameters related to the keyword. These are ignored concerning
          * {@link Object#equals(java.lang.Object)}, {@link Comparable#compareTo(java.lang.Object)}, etc.
          */
-        public SQLTypeKeyword(String sqlTypeKeyword, Object... parameter) {
+        SQLTypeKeyword(String sqlTypeKeyword, Object... parameter) {
             this.sqlTypeKeyword = sqlTypeKeyword.toUpperCase(Locale.ROOT);
             this.parameter = parameter.length > 0
                     ? Arrays.stream(parameter)

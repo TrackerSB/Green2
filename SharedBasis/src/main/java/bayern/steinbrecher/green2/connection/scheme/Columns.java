@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -210,11 +210,11 @@ public abstract class /*enum*/ Columns<T> {
 
     private static class StringColumn extends Columns<String> {
 
-        public StringColumn(String realColumnName) {
+        StringColumn(String realColumnName) {
             super(realColumnName);
         }
 
-        public StringColumn(String realColumnName, String defaultValue) {
+        StringColumn(String realColumnName, String defaultValue) {
             super(realColumnName, defaultValue);
         }
 
@@ -240,11 +240,11 @@ public abstract class /*enum*/ Columns<T> {
 
     private static class IntegerColumn extends Columns<Integer> {
 
-        public IntegerColumn(String realColumnName) {
+        IntegerColumn(String realColumnName) {
             super(realColumnName);
         }
 
-        public IntegerColumn(String realColumnName, Integer defaultValue) {
+        IntegerColumn(String realColumnName, Integer defaultValue) {
             super(realColumnName, defaultValue);
         }
 
@@ -268,11 +268,11 @@ public abstract class /*enum*/ Columns<T> {
 
     private static class BooleanColumn extends Columns<Boolean> {
 
-        public BooleanColumn(String realColumnName) {
+        BooleanColumn(String realColumnName) {
             super(realColumnName);
         }
 
-        public BooleanColumn(String realColumnName, Boolean defaultValue) {
+        BooleanColumn(String realColumnName, Boolean defaultValue) {
             super(realColumnName, defaultValue);
         }
 
@@ -294,11 +294,11 @@ public abstract class /*enum*/ Columns<T> {
 
     private static class LocalDateColumn extends Columns<LocalDate> {
 
-        public LocalDateColumn(String realColumnName) {
+        LocalDateColumn(String realColumnName) {
             this(realColumnName, null);
         }
 
-        public LocalDateColumn(String realColumnName, LocalDate defaultValue) {
+        LocalDateColumn(String realColumnName, LocalDate defaultValue) {
             super(realColumnName, defaultValue);
         }
 
@@ -331,11 +331,11 @@ public abstract class /*enum*/ Columns<T> {
 
     private static class DoubleColumn extends Columns<Double> {
 
-        public DoubleColumn(String realColumnName) {
+        DoubleColumn(String realColumnName) {
             this(realColumnName, null);
         }
 
-        public DoubleColumn(String realColumnName, Double defaultValue) {
+        DoubleColumn(String realColumnName, Double defaultValue) {
             super(realColumnName, defaultValue);
         }
 

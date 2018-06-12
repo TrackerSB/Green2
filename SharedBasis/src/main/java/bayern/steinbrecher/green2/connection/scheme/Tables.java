@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -70,9 +70,8 @@ public enum Tables {
      * @param realTableName The name of the table in a database.
      * @param columns A map containing the columns of this table, whether they are required ({@code true} means
      * required; {@code false} means optional.) and their attributes.
-     * @param createTemplate The template of the CREATE statement of a table.
      */
-    private Tables(String realTableName, Map<Columns<?>, Pair<Boolean, Set<Keywords>>> columns) {
+    Tables(String realTableName, Map<Columns<?>, Pair<Boolean, Set<Keywords>>> columns) {
         if (columns.values().stream().anyMatch(Objects::isNull)) {
             throw new Error(
                     "Found a column which is neither marked as required nor as optional in table " + realTableName);

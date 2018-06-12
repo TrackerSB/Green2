@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -188,12 +188,16 @@ public final class SshConnection extends DBConnection {
         nonAscii.chars()
                 .forEach(codePoint -> {
                     Character character = (char) codePoint;
-                    if (codePoint > 31 && codePoint < 127) { //32-126 is the printable ascii range
+                    //CHECKSTYLE.OFF: MagicNumber - 32-126 is the printable ascii range
+                    if (codePoint > 31 && codePoint < 127) {
+                        //CHECKSTYLE.ON: MagicNumber
                         ascii.append(character);
                     } else {
                         byte[] bytes = String.valueOf(character).getBytes(StandardCharsets.UTF_8);
                         for (byte utf8byte : bytes) {
+                            //CHECKSTYLE.OFF: MagicNumber - May add 256 to make sure the byte has a positive value.
                             int toConvert = utf8byte < 0 ? utf8byte + 256 : utf8byte;
+                            //CHECKSTYLE.ON: MagicNumber
                             ascii.append("\\x")
                                     .append(Integer.toHexString(toConvert));
                         }

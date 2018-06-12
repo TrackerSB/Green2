@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -246,26 +246,30 @@ public abstract class DBConnection implements AutoCloseable {
                     .log(Level.WARNING, "Generating search query without selecting any existing column.");
             return Optional.empty();
         } else {
-            String conditionString;
-            if (conditions.isEmpty()) {
-                conditionString = "";
-            } else {
+            SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
+            String sqlString = "SELECT " + existingColumns.stream()
+                    .map(dbms::quoteIdentifier)
+                    .collect(Collectors.joining(", "))
+                    + " FROM " + dbms.quoteIdentifier(table.getRealTableName());
+            /*
+             * NOTE condtions.stream() would work on empty condtions list too, but this if spares the computation of
+             * nonExistingColumnsPattern.
+             */
+            if (!conditions.isEmpty()) {
                 List<Pattern> notExistingColumnsPattern = notExistingColumns.stream()
                         //Used regex: (?:^|.*\W)columnName(?:\W.*|$)
                         //Tested at: http://www.regexplanet.com/advanced/java/index.html
                         //TODO Should it be case sensitive?
                         .map(cn -> Pattern.compile("(?:^|.*\\\\W)" + cn + "(?:\\\\W.*|$)", Pattern.CASE_INSENSITIVE))
                         .collect(Collectors.toList());
-                conditionString = conditions.stream()
+                String conditionString = conditions.stream()
                         .filter(c -> notExistingColumnsPattern.stream().noneMatch(p -> p.matcher(c).matches()))
                         .collect(Collectors.joining(" AND "));
+                if (!conditionString.isEmpty()) {
+                    sqlString += " WHERE " + conditionString;
+                }
             }
-            SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
-            return Optional.of("SELECT " + existingColumns.stream()
-                    .map(dbms::quoteIdentifier)
-                    .collect(Collectors.joining(", "))
-                    + " FROM " + dbms.quoteIdentifier(table.getRealTableName())
-                    + (conditionString.isEmpty() ? "" : " WHERE " + conditionString));
+            return Optional.of(sqlString);
         }
     }
 
