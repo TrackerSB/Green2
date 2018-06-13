@@ -357,8 +357,6 @@ public class MenuController extends Controller {
                         Set<Member> selectedMember;
                         //TODO Is there any way to avoid explicit casts?
                         if (askForContribution) {
-                            BiMap<Double, Color> contribution
-                                    = ((Optional<BiMap<Double, Color>>) results.get("contribution")).get();
                             Map<Member, Double> groupedMember
                                     = ((Optional<Map<Member, Double>>) results.get("selectionGroup")).get();
                             selectedMember = groupedMember.entrySet().stream()
@@ -470,6 +468,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void openQueryDialog(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
             try {
@@ -505,6 +504,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void generateContributionSepa(ActionEvent aevt) {
         callOnDisabled(aevt, () -> generateSepa(memberNonContributionfree.get(), true, SequenceType.RCUR));
     }
@@ -512,6 +512,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void generateUniversalSepa(ActionEvent aevt) {
         callOnDisabled(aevt, () -> generateSepa(member.get(), false, SequenceType.RCUR));
     }
@@ -552,7 +553,7 @@ public class MenuController extends Controller {
                     .filter(m -> {
                         Optional<Double> contribution = m.getContribution();
                         return !contribution.isPresent() || contribution.get() < 0
-                                || (contribution.get() == 0 && !m.isContributionfree());
+                                || contribution.get() == 0 && !m.isContributionfree();
                     })
                     .map(m -> m.toString() + ": " + m.getContribution())
                     .collect(Collectors.toList());
@@ -564,6 +565,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void checkData(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
             Map<String, List<String>> reports = new HashMap<>();
@@ -589,6 +591,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void generateAddressesAll(ActionEvent aevt) {
         callOnDisabled(aevt, () -> generateAddressesAll());
     }
@@ -596,6 +599,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void generateAddressesBirthday(ActionEvent aevt) {
         if (yearSpinner.isValid()) {
             callOnDisabled(aevt, () -> generateAddressesBirthday(yearSpinner.getValue()));
@@ -605,6 +609,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void generateBirthdayInfos(ActionEvent aevt) {
         if (yearSpinner.isValid()) {
             callOnDisabled(aevt, () -> {
@@ -631,6 +636,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void showCredits() {
         String credits = EnvironmentHandler.getResourceValue("credits");
         Alert alert = DialogUtility.createMessageAlert(
@@ -641,6 +647,7 @@ public class MenuController extends Controller {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void showVersion() {
         String version = EnvironmentHandler.getResourceValue("version");
         Alert alert = DialogUtility.createInfoAlert(getStage(), EnvironmentHandler.VERSION, version, version, version);
@@ -733,12 +740,12 @@ public class MenuController extends Controller {
             available.set(false);
             CompletableFuture.runAsync(
                     () -> {
-                try {
-                    newValue.get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            })
+                        try {
+                            newValue.get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    })
                     .thenRunAsync(() -> available.set(true));
         }
 
