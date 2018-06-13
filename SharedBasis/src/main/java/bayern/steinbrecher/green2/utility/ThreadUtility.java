@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 package bayern.steinbrecher.green2.utility;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.BooleanExpression;
@@ -38,8 +37,9 @@ public final class ThreadUtility {
 
     /**
      * Calls {@code wait()} and when it´s notified it checks {@code exp}. If {@code exp} returns {@code true} it calls
-     * {@code wait()} again. In contrast to {@link CompletableFuture} this method &bdquo;collects&ldquo; all threads and
-     * makes them wait instead of creating multiple {@link CompletableFuture} objects.
+     * {@code wait()} again. In contrast to {@link java.util.concurrent.CompletableFuture} this method
+     * &bdquo;collects&ldquo; all threads and makes them wait instead of creating multiple
+     * {@link java.util.concurrent.CompletableFuture} objects.
      *
      * @param monitor The monitor whose {@code wait()} to call.
      * @param exp The expression to check whether to wait again or not.

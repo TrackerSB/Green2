@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,16 +21,14 @@ import bayern.steinbrecher.green2.utility.DialogUtility;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBase;
 
 /**
  * Represents a button which shows a help message on click. This button uses
- * {@link ButtonBase#setOnAction(EventHandler)}. NOTE: Because this method is final it cannot be overridden. That means:
- * Don't call it on this button otherwise it may not work as expected.
+ * {@link javafx.scene.control.ButtonBase#setOnAction(javafx.event.EventHandler)}. NOTE: Because this method is final it
+ * cannot be overridden. That means: Don't call it on this button otherwise it may not work as expected.
  *
  * @author Stefan Huber
  */

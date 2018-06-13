@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -53,27 +53,27 @@ public abstract class View<T extends Controller> extends Application {
      * Contains the body usually inserted in {@link Application#start(javafx.stage.Stage)}. This method shall not call
      * {@link Stage#show()}.
      *
-     * @param stage The {@link Stage} to be used by this application.
+     * @param primaryStage The {@link Stage} to be used by this application.
      * @throws ViewStartException Thrown if something goes wrong. Since it is not known which {@link Exception} (if any)
      * is thrown by an implementing class one could throw a plain {@link Exception}. But if this is the case any call to
      * this method (or to {@link #start(javafx.stage.Stage)}) has either to throw also {@link Exception} itself or catch
      * this unspecific {@link Exception}. Hence a wrapping exception is introduced.
      * @see ViewStartException
      */
-    protected abstract void startImpl(Stage stage);
+    protected abstract void startImpl(Stage primaryStage);
 
     /**
      * Sets the stage of this view, calls {@link #startImpl(javafx.stage.Stage)} where the actual content of
      * {@link Application#start(javafx.stage.Stage)} has to be placed and sets the application logo.
      *
-     * @param stage The stage to be used by this view.
+     * @param primaryStage The stage to be used by this view.
      * @see #startImpl(javafx.stage.Stage)
      */
     @Override
-    public final void start(Stage stage) {
-        this.stage = stage;
-        startImpl(stage);
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+    public final void start(Stage primaryStage) {
+        this.stage = primaryStage;
+        startImpl(primaryStage);
+        primaryStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 
     @SuppressFBWarnings(value = "NN_NAKED_NOTIFY", justification = "The wait is called by other methods like "

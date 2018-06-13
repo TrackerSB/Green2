@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
 package bayern.steinbrecher.green2.generator;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Person;
 import java.time.LocalDate;
@@ -31,7 +30,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public class BirthdayGenerator {
+public final class BirthdayGenerator {
 
     /**
      * Sorts according to a members birthday (year descending, month ascending, day ascending) and then according to
@@ -158,7 +157,7 @@ public class BirthdayGenerator {
      * @param m The member to check.
      * @param year The year to calculate his age at.
      * @return {@code true} only if {@code m} fits the configured criteria.
-     * @see Profile#getAgeFunction()
+     * @see bayern.steinbrecher.green2.data.Profile#getAgeFunction()
      */
     public static boolean getsNotified(Member m, int year) {
         LocalDate birthday = m.getPerson().getBirthday();

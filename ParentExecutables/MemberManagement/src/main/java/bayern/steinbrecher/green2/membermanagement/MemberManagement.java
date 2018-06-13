@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,6 @@ import bayern.steinbrecher.green2.login.standard.DefaultLogin;
 import bayern.steinbrecher.green2.menu.Menu;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.Programs;
-import bayern.steinbrecher.green2.utility.ServiceFactory;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -46,7 +45,6 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
@@ -242,8 +240,7 @@ public class MemberManagement extends Application {
 
     /**
      * Asks the user for the needed logindata as long as the inserted data is not correct or the user aborts. This
-     * method should NOT be called by JavaFX Application Thread. E.g. use
-     * {@link ServiceFactory#createService(Callable)}.
+     * method should NOT be called by JavaFX Application Thread..
      *
      * @param login The loginframe used to ask the user.
      * @param waitScreen The waitscreen to show when trying to connect to the server.

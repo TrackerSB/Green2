@@ -127,9 +127,11 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                     Label columnLabel = new Label(column.getKey());
                     queryInput.addRow(rowCounter, columnLabel);
                     Node[] conditionFieldChildren = conditionField.get().getChildren().toArray(new Node[0]);
+                    //CHECKSTYLE.OFF: MagicNumber - Having exactly 3 elements is only important for the visual layout.
                     if (conditionFieldChildren.length != 3) {
+                        //CHECKSTYLE.ON: MagicNumber
                         Logger.getLogger(QueryController.class.getName())
-                                .log(Level.WARNING, "An input field of the query dialog has not exactly 3 elements. "
+                                .log(Level.WARNING, "An input field of the query dialog has not exactly 3 children. "
                                         + "It may cause displacement of elements.");
                     }
                     queryInput.addRow(rowCounter, conditionFieldChildren);
@@ -152,9 +154,12 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             conditionFields.stream().forEach(ccf -> ccf.addListener(invalidObs -> {
                 isLastQueryUptodate = false;
             }));
-            valid.bind(BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty))
-                    .and(BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::emptyProperty))
-                            .not()));
+            bindValidProperty(
+                    BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty))
+                            .and(BindingUtility.reduceAnd(
+                                    conditionFields.stream().map(CheckedConditionField::emptyProperty)).not()
+                            )
+            );
         });
     }
 
@@ -226,7 +231,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         return dbConnectionProperty().get();
     }
 
-    private static abstract class CheckedConditionField<T> extends HBox
+    private abstract static class CheckedConditionField<T> extends HBox
             implements ReadOnlyCheckedControl, Initializable, Observable {
 
         private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
@@ -243,7 +248,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          *
          * @param column The column to create an input field for.
          */
-        public CheckedConditionField(Pair<String, Class<T>> column) {
+        CheckedConditionField(Pair<String, Class<T>> column) {
             realColumnName = column.getKey();
             loadFXML();
         }
@@ -410,7 +415,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         @FXML
         private CheckBox checkbox;
 
-        public BooleanConditionField(Pair<String, Class<Boolean>> column) {
+        BooleanConditionField(Pair<String, Class<Boolean>> column) {
             super(column);
         }
 
@@ -477,7 +482,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         @FXML
         private ComboBox<Pair<String, String>> compareMode;
 
-        public StringConditionField(Pair<String, Class<String>> column) {
+        StringConditionField(Pair<String, Class<String>> column) {
             super(column);
         }
 
@@ -520,14 +525,14 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
     }
 
-    private static abstract class SpinnerConditionField<T extends Number> extends CheckedConditionField<T> {
+    private abstract static class SpinnerConditionField<T extends Number> extends CheckedConditionField<T> {
 
         @FXML
         private CheckedSpinner<T> spinner;
         @FXML
         private ComboBox<String> compareSymbol;
 
-        public SpinnerConditionField(Pair<String, Class<T>> column) {
+        SpinnerConditionField(Pair<String, Class<T>> column) {
             super(column);
         }
 
@@ -565,7 +570,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
     private static class IntegerConditionField extends SpinnerConditionField<Integer> {
 
-        public IntegerConditionField(Pair<String, Class<Integer>> column) {
+        IntegerConditionField(Pair<String, Class<Integer>> column) {
             super(column);
         }
 
@@ -582,7 +587,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
     private static class DoubleConditionField extends SpinnerConditionField<Double> {
 
-        public DoubleConditionField(Pair<String, Class<Double>> column) {
+        DoubleConditionField(Pair<String, Class<Double>> column) {
             super(column);
         }
 
@@ -604,7 +609,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         @FXML
         private CheckedDatePicker datePicker;
 
-        public LocalDateConditionField(Pair<String, Class<LocalDate>> column) {
+        LocalDateConditionField(Pair<String, Class<LocalDate>> column) {
             super(column);
         }
 

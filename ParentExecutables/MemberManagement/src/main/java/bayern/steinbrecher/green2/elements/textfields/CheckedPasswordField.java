@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -105,7 +105,7 @@ public class CheckedPasswordField extends CheckedTextField {
          *
          * @param checkedPasswordField The passwordfield to mask.
          */
-        public PasswordFieldSkin(CheckedPasswordField checkedPasswordField) {
+        PasswordFieldSkin(CheckedPasswordField checkedPasswordField) {
             super(checkedPasswordField);
         }
 

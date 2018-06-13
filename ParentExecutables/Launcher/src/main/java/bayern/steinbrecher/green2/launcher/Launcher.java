@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -71,17 +71,19 @@ public final class Launcher extends Application {
      */
     private static final String CHARSET_PATH_ONLINE = PathUtility.PROGRAMFOLDER_PATH_ONLINE + "/charset.txt";
     /**
-     * Zipfile is currently delivered ISO-8859-1 (Latin-1) encoded.
+     * The charset the zip file containing the application is encoded. Contains {@link Optional#empty()} only if the
+     * charset could not be determined.
      */
-    private static Charset ZIP_CHARSET = StandardCharsets.UTF_8;
+    private static final Optional<Charset> ZIP_CHARSET = retrieveZipCharset();
     private static final int DOWNLOAD_STEPS = 1000;
     private Stage stage;
 
-    static {
+    private static Optional<Charset> retrieveZipCharset() {
         try (Scanner sc = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream(), StandardCharsets.UTF_8.name())) {
-            ZIP_CHARSET = Charset.forName(sc.nextLine());
+            return Optional.of(Charset.forName(sc.nextLine()));
         } catch (IOException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+            return Optional.empty();
         }
     }
 
@@ -269,7 +271,7 @@ public final class Launcher extends Application {
                 .thenApply(downloadedFile -> {
                     try {
                         File extractDir = Files.createTempDirectory(null).toFile();
-                        ZipUtility.unzip(downloadedFile, extractDir, ZIP_CHARSET);
+                        ZipUtility.unzip(downloadedFile, extractDir, ZIP_CHARSET.orElseThrow());
                         extractDir.deleteOnExit();
                         return extractDir;
                     } catch (IOException ex) {

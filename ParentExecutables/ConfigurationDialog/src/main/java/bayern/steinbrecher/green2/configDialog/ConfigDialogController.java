@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -96,7 +96,7 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
                             .concat(profileNameTextField.textProperty()));
         });
 
-        valid.bind(BindingUtility.reduceAnd(checkedTextFields.stream().map(CheckedTextField::validProperty))
+        bindValidProperty(BindingUtility.reduceAnd(checkedTextFields.stream().map(CheckedTextField::validProperty))
                 .and(dbmsComboBox.nothingSelectedProperty().not())
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
@@ -113,7 +113,9 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
         profile = EnvironmentHandler.getProfile();
         useSSHCheckBox.setSelected(profile.getOrDefault(ProfileSettings.USE_SSH, true));
         sshHostTextField.setText(profile.getOrDefault(ProfileSettings.SSH_HOST, ""));
+        //CHECKSTYLE.OFF: MagicNumber - 22 is the default port of SSH
         sshPort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.SSH_PORT, 22));
+        //CHECKSTYLE.ON: MagicNumber
         databaseHostTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_HOST, ""));
         databasePort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.DATABASE_PORT,
                 profile.getOrDefault(ProfileSettings.DBMS, SupportedDatabases.MY_SQL).getDefaultPort()));

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -85,8 +85,7 @@ public class CheckedRegexTextField extends SpecificRegexTextField {
      */
     @Override
     public StringProperty regexProperty() {
-        //TODO Any way to avoid protected modifier?
-        return regex;
+        return super.regexPropertyModifiable();
     }
 
     /**

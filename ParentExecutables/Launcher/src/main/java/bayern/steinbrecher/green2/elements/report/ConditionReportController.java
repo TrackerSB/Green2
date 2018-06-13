@@ -140,7 +140,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
      * @param conditions The conditions to replace the current ones with. Values of type {@link Optional#empty()}
      * represent skipped conditions.
      */
-    public void setCondtions(Map<String, Optional<Callable<Boolean>>> conditions) {
+    public void setConditions(Map<String, Optional<Callable<Boolean>>> conditions) {
         this.conditions.getValue().clear();
         conditions.entrySet()
                 .stream()
@@ -155,7 +155,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
          */
         private final ObjectProperty<Optional<Boolean>> value = new SimpleObjectProperty(this, "value");
 
-        public Condition(String name, Optional<Callable<Boolean>> value) {
+        Condition(String name, Optional<Callable<Boolean>> value) {
             this.name.set(name);
             this.value.set(value.map(callable -> {
                 try {

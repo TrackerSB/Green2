@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
-import javafx.beans.binding.ListExpression;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
@@ -62,6 +61,9 @@ public class ReportSummary extends TitledPane {
     @FXML
     private VBox reportsBox;
 
+    /**
+     * Creates a {@link ReportSummary} without any entry.
+     */
     public ReportSummary() {
         loadFXML();
 
@@ -199,7 +201,7 @@ public class ReportSummary extends TitledPane {
      *
      * @param message The message of the report to remove.
      * @return {@code true} only if the report entry was removed.
-     * @see ListExpression#remove(java.lang.Object)
+     * @see javafx.beans.binding.ListExpression#remove(java.lang.Object)
      */
     public boolean removeReportEntry(String message) {
         ReportEntry entry = findReportEntry(message).orElseThrow();
@@ -213,7 +215,7 @@ public class ReportSummary extends TitledPane {
      * @param message The message of the report to remove from.
      * @param validation The validation to remove.
      * @return {@code true} only if the validation was removed.
-     * @see ListExpression#remove(java.lang.Object)
+     * @see javafx.beans.binding.ListExpression#remove(java.lang.Object)
      */
     public boolean removeReportValidation(String message, BooleanExpression validation) {
         ReportEntry entry = findReportEntry(message).orElseThrow();

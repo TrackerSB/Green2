@@ -46,10 +46,20 @@ public enum ReportType {
 
     private final ImageSet graphic;
 
-    private ReportType(ImageSet graphic) {
+    /**
+     * Creates a report type where {@code graphic} is a symbolic representation for it.
+     *
+     * @param graphic The symbol to associate with this type of entry.
+     */
+    ReportType(ImageSet graphic) {
         this.graphic = graphic;
     }
 
+    /**
+     * Returns the graphical symbol used for representing the type.
+     *
+     * @return The graphical symbol used for representing the type.
+     */
     public ImageView getGraphic() {
         ImageView view;
         if (graphic == null) {
@@ -60,6 +70,11 @@ public enum ReportType {
         return view;
     }
 
+    /**
+     * Returns the CSS class name associated with this type of entry.
+     *
+     * @return The CSS class name associated with this type of entry.
+     */
     public String getCSSClass() {
         return "report-type-" + name().toLowerCase(Locale.ROOT);
     }

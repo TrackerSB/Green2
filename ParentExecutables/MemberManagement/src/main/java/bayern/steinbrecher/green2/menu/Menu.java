@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ public class Menu extends View<MenuController> {
      */
     @Override
     protected void callWhenLoadFXML() {
-        getController().setConnection(dbConnection);
+        getController().setDbConnection(dbConnection);
     }
 
     /**

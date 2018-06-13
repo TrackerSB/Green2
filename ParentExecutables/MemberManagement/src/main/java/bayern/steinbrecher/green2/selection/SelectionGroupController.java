@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -105,7 +105,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        valid.bind(nothingSelected.not());
+        bindValidProperty(nothingSelected.not());
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
         currentGroup.addListener((obs, oldVal, newVal) -> currentGroupSelected.set(newVal.isPresent()));
@@ -150,19 +150,21 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                                 .collect(Collectors.toList());
                         boxes.forEach(region -> region.setBackground(
                                 new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY))));
-                        groupGraphic.getChildrenUnmodifiable().addListener((ListChangeListener.Change<? extends Node> change) -> {
-                            while (change.next()) {
-                                change.getAddedSubList()
-                                        .stream()
-                                        .filter(node -> node.getStyleClass().contains("box"))
-                                        .filter(node -> node instanceof Region)
-                                        .map(node -> (Region) node)
-                                        .forEach(
-                                                region -> region.setStyle("-fx-background-color: rgba("
-                                                        + (255 * fill.getRed()) + ", " + (255 * fill.getGreen()) + ", "
-                                                        + (255 * fill.getBlue()) + ", " + fill.getOpacity() + ")"));
-                            }
-                        });
+                        groupGraphic.getChildrenUnmodifiable()
+                                .addListener((ListChangeListener.Change<? extends Node> change) -> {
+                                    while (change.next()) {
+                                        change.getAddedSubList()
+                                                .stream()
+                                                .filter(node -> node.getStyleClass().contains("box"))
+                                                .filter(node -> node instanceof Region)
+                                                .map(node -> (Region) node)
+                                                //CHECKSTYLE.OFF: MagicNumber - The range of RGB goes from 0 to 255
+                                                .forEach(region -> region.setStyle("-fx-background-color: rgba("
+                                                + (255 * fill.getRed()) + ", " + (255 * fill.getGreen()) + ", "
+                                                + (255 * fill.getBlue()) + ", " + fill.getOpacity() + ")"));
+                                        //CHECKSTYLE.ON: MagicNumber
+                                    }
+                                });
                     }
                     setGraphic(groupGraphic);
                 }
@@ -201,11 +203,11 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                         .findAny()
                         .ifPresentOrElse(
                                 radiobutton -> {
-                                    if (radiobutton.isSelected()) {
-                                        unselectGroup.setSelected(true);
-                                    }
-                                    groupsToggleGroup.getToggles().remove(radiobutton);
-                                },
+                            if (radiobutton.isSelected()) {
+                                unselectGroup.setSelected(true);
+                            }
+                            groupsToggleGroup.getToggles().remove(radiobutton);
+                        },
                                 () -> Logger.getLogger(SelectionGroupController.class.getName())
                                         .log(Level.WARNING, "Could not find the group radiobutton to remove."));
 
@@ -262,7 +264,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
     private void select() {
-        if (valid.get()) {
+        if (isValid()) {
             getStage().close();
         }
     }
@@ -440,7 +442,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
         private final ObjectProperty<T> item = new SimpleObjectProperty<>();
         private final ObjectProperty<Optional<G>> group = new SimpleObjectProperty<>(Optional.empty());
 
-        public AssociatedItem(T item) {
+        AssociatedItem(T item) {
             this.item.set(item);
         }
 

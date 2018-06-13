@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -106,8 +106,10 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                                             .map(ContributionField::getColor)
                                             .noneMatch(c -> c.equals(predefColor)))
                             .findFirst()
+                            //CHECKSTYLE.OFF: MagicNumber - The range of rgb is defined from 0 to 255.
                             .orElse(Color.rgb(COLOR_RANDOM.nextInt(256),
                                     COLOR_RANDOM.nextInt(256), COLOR_RANDOM.nextInt(256))));
+                    //CHECKSTYLE.OFF: MagicNumber
                     contributionFieldsBox.getChildren().add(createContributionRow(addedCf));
                     addedCf.colorProperty().addListener(calculateUniqueColors);
                     addedCf.contributionProperty().addListener(calculateUniqueContributions);
@@ -141,7 +143,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                 });
             }
         });
-        valid.bind(allContributionFieldsValid.and(uniqueColors).and(uniqueContributions));
+        bindValidProperty(allContributionFieldsValid.and(uniqueColors).and(uniqueContributions));
         addContributionField();
     }
 
@@ -212,7 +214,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
         private final BooleanProperty duplicateColor = new SimpleBooleanProperty(false);
         private final BooleanProperty duplicateContribution = new SimpleBooleanProperty(false);
 
-        public DuplicateContributionField() {
+        DuplicateContributionField() {
             initProperties();
         }
 

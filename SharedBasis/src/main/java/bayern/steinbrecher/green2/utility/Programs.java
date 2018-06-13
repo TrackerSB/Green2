@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,13 @@ public enum Programs {
     private final String jarname;
     private final String[] options;
 
-    private Programs(String jarname, String... options) {
+    /**
+     * Creates an abstract representation of a subprogram of the application.
+     *
+     * @param jarname The name of the jar file of the subprogram. The ending &bdquo;jar&ldquo; has to be included.
+     * @param options Additional arguments to pass to a call to the jar file.
+     */
+    Programs(String jarname, String... options) {
         this.jarname = jarname;
         this.options = options;
     }
@@ -64,12 +70,14 @@ public enum Programs {
      * Calls this program and closes the program calling this method.
      */
     public void call() {
+        //CHECKSTYLE.OFF: MagicNumber - Besides the additional options there are passed 3 arguments per construction.
         String[] args = new String[options.length + 3];
         args[0] = "java";
         args[1] = "-jar";
         args[2] = Paths.get((EnvironmentHandler.IS_USED_AS_LIBRARY
                 ? EnvironmentHandler.APPLICATION_ROOT : PROGRAMFOLDER_PATH_LOCAL).toString(), jarname).toString();
         System.arraycopy(options, 0, args, 3, options.length);
+        //CHECKSTYLE.ON: MagicNumber
         Platform.setImplicitExit(false);
         CompletableFuture.supplyAsync(
                 () -> {

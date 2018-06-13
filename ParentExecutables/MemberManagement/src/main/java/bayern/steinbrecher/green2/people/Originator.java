@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -165,7 +165,8 @@ public class Originator {
                         Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
                     }
                 });
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(originatorFile), "UTF-8"))) {
+        try (Writer writer
+                = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(originatorFile), "UTF-8"))) {
             originatorProps.store(writer, null);
         } catch (UnsupportedEncodingException | FileNotFoundException ex) {
             Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
@@ -314,7 +315,7 @@ public class Originator {
      *
      * @return The execution date.
      */
-    public LocalDate getExecutiondate() {
+    public LocalDate getExecutionDate() {
         return executionDate;
     }
 
@@ -323,7 +324,7 @@ public class Originator {
      *
      * @param executionDate The new execution date.
      */
-    public void setExecutiondate(LocalDate executionDate) {
+    public void setExecutionDate(LocalDate executionDate) {
         this.executionDate = executionDate;
     }
 

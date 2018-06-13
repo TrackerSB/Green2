@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ import java.util.Optional;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 
 /**
  * Represents a controller of a {@link WizardableView}.
@@ -32,7 +33,7 @@ public abstract class WizardableController<T extends Optional<?>> extends Result
     /**
      * A property indicating whether all input handled by this controller is valid.
      */
-    protected BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
+    private BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
 
     /**
      * {@inheritDoc}
@@ -62,5 +63,14 @@ public abstract class WizardableController<T extends Optional<?>> extends Result
      */
     public boolean isValid() {
         return valid.get();
+    }
+
+    /**
+     * Binds the {@link #validProperty()} to the given observable value.
+     *
+     * @param binding The value to bind {@link #validProperty()} to.
+     */
+    protected void bindValidProperty(ObservableValue<? extends Boolean> binding) {
+        valid.bind(binding);
     }
 }

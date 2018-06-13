@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -127,8 +127,9 @@ public final class SepaPain00800302XMLGenerator {
         double controlSum = member.parallelStream()
                 .mapToDouble(m -> m.getContribution().get())
                 .sum();
-        //Eliminate double precision inaccuracy arose from IntStream
+        //CHECKSTYLE.OFF: MagicNumber - Eliminate double precision inaccuracy arose from IntStream
         controlSum = Math.rint(controlSum * 100) / 100;
+        //CHECKSTYLE.ON: MagicNumber
         StringBuilder output = new StringBuilder();
 
         //The beginning containing originators data.
@@ -161,7 +162,7 @@ public final class SepaPain00800302XMLGenerator {
                 .append("                </LclInstrm>\n")
                 .append("                <SeqTp>").append(sequenceType).append("</SeqTp>\n")
                 .append("            </PmtTpInf>\n")
-                .append("            <ReqdColltnDt>").append(originator.getExecutiondate()).append("</ReqdColltnDt>\n")
+                .append("            <ReqdColltnDt>").append(originator.getExecutionDate()).append("</ReqdColltnDt>\n")
                 .append("            <Cdtr>\n")
                 .append("                <Nm>").append(originator.getCreditor()).append("</Nm>\n")
                 .append("            </Cdtr>\n")
@@ -205,7 +206,8 @@ public final class SepaPain00800302XMLGenerator {
                     .append("                    <MndtRltdInf>\n")
                     .append("                        <MndtId>").append(m.getMembershipnumber()).append("</MndtId>\n")
                     .append("                        <DtOfSgntr>").append(mandatSigned).append("</DtOfSgntr>\n")
-                    .append("                        <AmdmntInd>").append(ah.hasMandateChanged()).append("</AmdmntInd>\n")
+                    .append("                        <AmdmntInd>").append(ah.hasMandateChanged())
+                    .append("</AmdmntInd>\n")
                     .append("                    </MndtRltdInf>\n")
                     .append("                </DrctDbtTx>\n")
                     .append("                <DbtrAgt>\n")

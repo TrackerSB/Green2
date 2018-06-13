@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -110,7 +110,9 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
             LocalDate newDate = null;
 
             String[] dateParts = dateToParse.split("\\.");
+            //CHECKSTYLE.OFF: MagicNumber - Every date consists of 3 elements (year, month, day)
             if (dateParts.length == 3) {
+                //CHECKSTYLE.ON: MagicNumber
                 dateParts[0] = (dateParts[0].length() < 2 ? "0" : "") + dateParts[0];
                 dateParts[1] = (dateParts[1].length() < 2 ? "0" : "") + dateParts[1];
                 dateToParse = Arrays.stream(dateParts).collect(Collectors.joining("."));

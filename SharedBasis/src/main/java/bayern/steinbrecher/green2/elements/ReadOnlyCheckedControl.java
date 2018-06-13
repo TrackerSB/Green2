@@ -16,7 +16,6 @@
  */
 package bayern.steinbrecher.green2.elements;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
@@ -31,10 +30,10 @@ public interface ReadOnlyCheckedControl {
     //TODO If so it may directly implement Reportable
     //TODO How to force to return a ReadOnlyBooleanProperty instead of a BooleanProperty?
     /**
-     * Returns the {@link BooleanProperty} representing whether the current input is valid or not. NOTE: When the input
-     * is not checked it is always valid.
+     * Returns the {@link javafx.beans.property.BooleanProperty} representing whether the current input is valid or not.
+     * NOTE: When the input is not checked it is always valid.
      *
-     * @return The {@link BooleanProperty} representing whether the current input is valid or not.
+     * @return The {@link javafx.beans.property.BooleanProperty} representing whether the current input is valid or not.
      * @see #isValid()
      * @see #checkedProperty()
      */

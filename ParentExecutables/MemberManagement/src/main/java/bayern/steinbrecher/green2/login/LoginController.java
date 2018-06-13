@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ public abstract class LoginController extends WizardableController<Optional<Map<
     /**
      * An useful list of all textfields which the login contains.
      */
-    protected List<CheckedTextField> textInputFields;
+    private List<CheckedTextField> textInputFields;
 
     /**
      * Adds all given textfields into {@code textInputFields} and sets up the properties {@code anyInputMissing},
@@ -50,7 +50,7 @@ public abstract class LoginController extends WizardableController<Optional<Map<
         textInputFields = Arrays.asList(fields);
         textInputFields.stream().forEach(reportSummary::addReportEntry);
 
-        valid.bind(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));
+        bindValidProperty(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));
     }
 
     /**

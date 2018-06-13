@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -84,8 +84,10 @@ public class WaitScreen extends View<Controller> {
 
         IntStream.range(0, VERTICAL_COUNT).parallel().forEach(row -> {
             int shorten = (row + 1) % 2;
+            //CHECKSTYLE.OFF: MagicNumber - The factor 1.5 is needed for correct the alignment of the displayed objects.
             double yCoo = row * DIAMETER + RADIUS
                     - 1.5 * row * RADIUS / CORNERCOUNT;
+            //CHECKSTYLE.ON: MagicNumber
             IntStream.range(0, HORIZONTAL_COUNT - shorten)
                     .parallel()
                     .forEach(column -> {

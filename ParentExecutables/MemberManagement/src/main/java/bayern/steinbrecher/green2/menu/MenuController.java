@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -242,7 +242,7 @@ public class MenuController extends Controller {
      *
      * @param dbConnection The connection to use for querying data.
      */
-    public void setConnection(DBConnection dbConnection) {
+    public void setDbConnection(DBConnection dbConnection) {
         if (dbConnection == null) {
             throw new IllegalArgumentException("The connection must not be null.");
         }
@@ -262,13 +262,13 @@ public class MenuController extends Controller {
         DialogUtility.showAndWait(DialogUtility.createInfoAlert(getStage(), noMemberForOutput, noMemberForOutput));
     }
 
-    private void generateAddresses(Collection<Member> member, File outputFile)
+    private void generateAddresses(Collection<Member> requestedMember, File outputFile)
             throws IOException, InterruptedException, ExecutionException {
-        if (member.isEmpty()) {
+        if (requestedMember.isEmpty()) {
             throw new IllegalArgumentException("Passed empty list to generateAddresses(...)");
         }
         IOStreamUtility.printContent(
-                AddressGenerator.generateAddressData(member, nicknames.get().get()), outputFile, true);
+                AddressGenerator.generateAddressData(requestedMember, nicknames.get().get()), outputFile, true);
     }
 
     /**
@@ -429,7 +429,8 @@ public class MenuController extends Controller {
                     run.run();
                     setDisableMethod.invoke(sourceObj, false);
                 }
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException ex) {
                 Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
@@ -494,7 +495,8 @@ public class MenuController extends Controller {
                 wizardStage.showAndWait();
             } catch (IOException ex) {
                 Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                DialogUtility.createStacktraceAlert(getStage(), ex, EnvironmentHandler.getResourceValue("noQueryDialog"))
+                DialogUtility.createStacktraceAlert(
+                        getStage(), ex, EnvironmentHandler.getResourceValue("noQueryDialog"))
                         .showAndWait();
             }
         });
@@ -714,7 +716,7 @@ public class MenuController extends Controller {
         /**
          * Creates a {@link CompletableFutureProperty} containing {@code null}.
          */
-        public CompletableFutureProperty() {
+        CompletableFutureProperty() {
             this(null);
         }
 
@@ -723,7 +725,7 @@ public class MenuController extends Controller {
          *
          * @param initialValue The initial value.
          */
-        public CompletableFutureProperty(CompletableFuture<T> initialValue) {
+        CompletableFutureProperty(CompletableFuture<T> initialValue) {
             super(initialValue);
         }
 
@@ -731,12 +733,12 @@ public class MenuController extends Controller {
             available.set(false);
             CompletableFuture.runAsync(
                     () -> {
-                        try {
-                            newValue.get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    })
+                try {
+                    newValue.get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            })
                     .thenRunAsync(() -> available.set(true));
         }
 

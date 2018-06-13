@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -94,7 +94,7 @@ public class SepaFormController extends WizardableController<Optional<Originator
         messageIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
                 "helpMessageId", SepaUtility.UNIQUE_DAYS_MESSAGEID, SepaUtility.MAX_CHAR_MESSAGE_ID));
 
-        valid.bind(executionDatePicker.validProperty()
+        bindValidProperty(executionDatePicker.validProperty()
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));
 
@@ -111,7 +111,7 @@ public class SepaFormController extends WizardableController<Optional<Originator
         purposeTextField.setText(originator.getPurpose());
         messageIdTextField.setText(originator.getMsgId());
         pmtInfIdTextField.setText(originator.getPmtInfId());
-        executionDatePicker.setValue(originator.getExecutiondate());
+        executionDatePicker.setValue(originator.getExecutionDate());
 
         Platform.runLater(() -> creatorTextField.requestFocus());
     }
@@ -139,7 +139,7 @@ public class SepaFormController extends WizardableController<Optional<Originator
             originator.setPurpose(purposeTextField.getText());
             originator.setMsgId(messageIdTextField.getText());
             originator.setPmtInfId(pmtInfIdTextField.getText());
-            originator.setExecutiondate(executionDatePicker.getValue());
+            originator.setExecutionDate(executionDatePicker.getValue());
             originator.saveOriginator();
         }
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -76,7 +76,9 @@ public final class IOStreamUtility {
         File initialFile = new File(initialDirectory, dateFilePrefix + "." + fileEnding);
         Random random = new Random();
         while (initialFile.exists()) {
+            //CHECKSTYLE.OFF: MagicNumber - Choosing 1000 is quite random and has no special matter.
             initialFile = new File(initialDirectory, dateFilePrefix + "_" + random.nextInt(1000) + "." + fileEnding);
+            //CHECKSTYLE.ON: MagicNumber
         }
 
         FileChooser saveDialog = new FileChooser();

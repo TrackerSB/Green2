@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ public class SpecificRegexTextField extends CheckedTextField {
     /**
      * The property holding the regex used for validation.
      */
-    protected final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
+    private final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
     private final BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
     private final ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
     private final BooleanProperty eliminateSpaces = new SimpleBooleanProperty(this, "eliminateSpaces", false);
@@ -137,6 +137,17 @@ public class SpecificRegexTextField extends CheckedTextField {
      * @return The property representing the regex used for validation.
      */
     public ReadOnlyStringProperty regexProperty() {
+        return regex;
+    }
+
+    /**
+     * Returns a modifiable version of {@link #regexProperty()}. NOTE The only use of this method is provide subclasses
+     * a way to implement write access to the regex.
+     *
+     * @return The modifiable property holding the regex used for validation.
+     */
+    protected StringProperty regexPropertyModifiable() {
+        //FIXME Avoid this method.
         return regex;
     }
 

@@ -46,7 +46,9 @@ public class ProgressDialogController extends Controller {
     public void initialize(URL url, ResourceBundle rb) {
         super.initialize(url, rb);
         percentage.addListener((obs, oldVal, newVal) -> {
+            //CHECKSTYLE.OFF: MagicNumber - Multiplication with 100 is needed for having output as percentage.
             percentageString.set(FORMAT.format(Math.min(newVal.doubleValue(), 1) * 100) + "% ");
+            //CHECKSTYLE.ON: MagicNumber
         });
     }
 

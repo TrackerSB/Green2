@@ -52,7 +52,7 @@ public class ConditionReport extends ResultView<Optional<Boolean>, ConditionRepo
      */
     @Override
     protected void callWhenLoadFXML() {
-        getController().setCondtions(conditions);
+        getController().setConditions(conditions);
     }
 
     /**

@@ -16,8 +16,7 @@
  */
 package bayern.steinbrecher.green2.contribution;
 
-import bayern.steinbrecher.green2.elements.spinner.ContributionField;
-import javafx.collections.ListChangeListener;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javafx.fxml.FXML;
 
 /**
@@ -27,17 +26,11 @@ import javafx.fxml.FXML;
  */
 final class ContributionControllerParent extends ContributionController {
 
-    public ContributionControllerParent() {
-        addListenerToContributionFields((ListChangeListener.Change<? extends ContributionField> change) -> {
-            while(change.next()){
-                
-            }
-        });
-    }
-
     @FXML
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
+            justification = "It is called by an appropriate fxml file")
     private void submitContributions() {
-        if (valid.get()) {
+        if (isValid()) {
             getStage().close();
         }
     }

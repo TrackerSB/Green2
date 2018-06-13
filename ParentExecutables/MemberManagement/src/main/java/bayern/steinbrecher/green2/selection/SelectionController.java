@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -67,7 +67,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     public void initialize(URL location, ResourceBundle resources) {
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
-        valid.bind(nothingSelected.not());
+        bindValidProperty(nothingSelected.not());
         optionsListView.itemsProperty().bind(Bindings.createObjectBinding(() -> {
             optionsProperty.entrySet().stream()
                     .filter(entry -> !entry.getValue().isPresent())

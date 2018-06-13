@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ import bayern.steinbrecher.green2.utility.ServiceFactory;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
@@ -49,8 +48,13 @@ public class Splashscreen extends View<Controller> {
         root.setStyle("-fx-background-color: rgba(0,0,0,0)");
 
         ImageView imageView = new ImageView();
-        imageView.setImage((Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage())
-                ? EnvironmentHandler.LogoSet.SPLASHSCREEN_DE : EnvironmentHandler.LogoSet.SPLASHSCREEN_EN).get());
+        EnvironmentHandler.LogoSet splashscreenImage;
+        if (Locale.getDefault().equals(Locale.GERMAN.getLanguage())) {
+            splashscreenImage = EnvironmentHandler.LogoSet.SPLASHSCREEN_DE;
+        } else {
+            splashscreenImage = EnvironmentHandler.LogoSet.SPLASHSCREEN_EN;
+        }
+        imageView.setImage(splashscreenImage.get());
         root.getChildren().add(imageView);
 
         Scene scene = new Scene(root);
@@ -83,7 +87,8 @@ public class Splashscreen extends View<Controller> {
      * Creates, shows a splashscreen for {@code millis} milliseconds and blocks until the splashscreen closes.
      *
      * @param millis The time in milliseconds the screen has to be shown.
-     * @param stage The stage to use for the window. (Used as param for {@link Application#start(Stage)}).
+     * @param stage The stage to use for the window. (Used as param for
+     * {@link javafx.application.Application#start(Stage)}).
      */
     public static void showSplashscreen(long millis, Stage stage) {
         try {

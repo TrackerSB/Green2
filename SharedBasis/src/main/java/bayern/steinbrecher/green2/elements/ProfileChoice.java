@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -58,8 +58,8 @@ public class ProfileChoice extends Application {
      * {@inheritDoc}
      */
     @Override
-    public void start(Stage stage) {
-        this.stage = stage;
+    public void start(Stage primaryStage) {
+        this.stage = primaryStage;
 
         Label choiceLabel = new Label(EnvironmentHandler.getResourceValue("chooseProfile"));
 
@@ -82,17 +82,17 @@ public class ProfileChoice extends Application {
                 EnvironmentHandler.getResourceValue("create"), EnvironmentHandler.ImageSet.ADD.getAsImageView());
         create.setOnAction(evt -> {
             created = true;
-            stage.close();
+            primaryStage.close();
         });
 
         Scene scene = new Scene(new VBox(choiceLabel, profilePane, create));
         scene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
-        stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
+        primaryStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
 
-        stage.showAndWait();
+        primaryStage.showAndWait();
 
         if (created) {
             String newConfigBaseName = EnvironmentHandler.getResourceValue("newConfigname");
@@ -100,7 +100,9 @@ public class ProfileChoice extends Application {
             Random random = new Random();
             String newConfigName = newConfigBaseName;
             while (availableProfiles.contains(newConfigName)) {
+                //CHECKSTYLE.OFF: MagicNumber - Choosing 1000 is quite random and has no special matter.
                 newConfigName = newConfigBaseName + " (" + random.nextInt(1000) + ")";
+                //CHECKSTYLE.ON: MagicNumber
             }
             profile = new Profile(newConfigName, true);
         }

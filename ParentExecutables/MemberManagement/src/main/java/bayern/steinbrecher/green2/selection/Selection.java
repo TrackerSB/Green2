@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,17 +19,11 @@ package bayern.steinbrecher.green2.selection;
 import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.wizard.WizardPage;
-import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -43,8 +37,8 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
     private final Set<T> options;
 
     /**
-     * Creates a new Frame representing the given options as selectable {@link CheckBox} es and representing a
-     * {@link TextField} for entering a number.
+     * Creates a new Frame representing the given options as selectable {@link javafx.scene.control.CheckBox} es and
+     * representing a {@link javafx.scene.control.TextField} for entering a number.
      *
      * @param options The options the user is allowed to select.
      */

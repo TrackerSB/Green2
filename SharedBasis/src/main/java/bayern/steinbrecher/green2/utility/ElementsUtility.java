@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package bayern.steinbrecher.green2.utility;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ObservableList;
@@ -39,7 +38,7 @@ public final class ElementsUtility {
     /**
      * Adds {@code cssClass} to the style classes of {@code parent} if {@code observable} holds {@code true}. Otherwise
      * it removes the style class. NOTE: When passing bindings directly make sure they are not garbage collected. It is
-     * recommended to pass a {@link BooleanProperty} which may be bound.
+     * recommended to pass a {@link javafx.beans.property.BooleanProperty} which may be bound.
      *
      * @param parent The parent to add/remove the given style class.
      * @param observable The value to observe.

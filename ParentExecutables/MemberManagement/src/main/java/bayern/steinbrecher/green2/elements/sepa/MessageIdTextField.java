@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,14 +17,14 @@
 package bayern.steinbrecher.green2.elements.sepa;
 
 import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
-import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@link CheckedRegexTextField} for entering a message id. {@link #CSS_CLASS_MESSAGE_ID} is added.
+ * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField} for entering a message id.
+ * {@link #CSS_CLASS_MESSAGE_ID} is added.
  *
  * @author Stefan Huber
  */

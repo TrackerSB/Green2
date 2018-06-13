@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,11 +20,10 @@ import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.TextField;
 
 /**
- * Represents a {@link TextField} for inserting a creditor id. Css class {@link #CSS_CLASS_CREDITORID_TEXTFIELD} is
- * added.
+ * Represents a {@link javafx.scene.control.TextField} for inserting a creditor id. Css class
+ * {@link #CSS_CLASS_CREDITORID_TEXTFIELD} is added.
  *
  * @author Stefan Huber
  */
