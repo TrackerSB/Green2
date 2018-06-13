@@ -263,6 +263,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void select() {
         if (isValid()) {
             getStage().close();
@@ -272,6 +273,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void selectAllOptions() {
         options.getValue().stream()
                 .forEach(option -> {
@@ -284,6 +286,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void selectNoOption() {
         options.getValue().stream().forEach(option -> {
             /*

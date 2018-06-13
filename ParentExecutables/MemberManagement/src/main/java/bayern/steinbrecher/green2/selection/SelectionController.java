@@ -99,6 +99,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void selectAllOptions() {
         optionsListView.getItems().stream().forEach(cb -> cb.setSelected(true)); //TODO May be parallel?
     }
@@ -106,6 +107,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void selectNoOption() {
         optionsListView.getItems().stream().forEach(cb -> cb.setSelected(false)); //TODO May be parallel?
     }

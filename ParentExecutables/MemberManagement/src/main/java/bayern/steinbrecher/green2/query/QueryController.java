@@ -188,6 +188,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void query() {
         if (isValid()) {
             updateLastQueryResult();

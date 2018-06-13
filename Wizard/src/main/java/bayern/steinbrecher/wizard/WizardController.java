@@ -102,6 +102,7 @@ public class WizardController implements Initializable {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void showPrevious() {
         if (!atBeginning.get() && !changingPage.get()) {
             history.pop(); //Pop current index
@@ -114,6 +115,7 @@ public class WizardController implements Initializable {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void showNext() {
         if (currentPage.getValue().isValid() && !changingPage.get()) {
             WizardPage<?> page = currentPage.getValue();
@@ -143,6 +145,7 @@ public class WizardController implements Initializable {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void finish() {
         if (currentPage.getValue().isValid() && atFinish.get()) {
             finished.set(true);

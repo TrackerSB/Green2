@@ -59,6 +59,7 @@ public abstract class LoginController extends WizardableController<Optional<Map<
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void login() {
         if (isValid()) {
             getStage().close();

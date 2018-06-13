@@ -29,6 +29,7 @@ final class ContributionControllerParent extends ContributionController {
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void submitContributions() {
         if (isValid()) {
             getStage().close();

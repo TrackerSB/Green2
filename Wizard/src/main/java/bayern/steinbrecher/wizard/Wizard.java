@@ -44,7 +44,6 @@ public class Wizard extends Application {
 
     private WizardController controller;
     private final Map<String, WizardPage<?>> pages;
-    private Stage stage;
 
     /**
      * Constructs a wizard with showing {@code pages} and using default stylesheet.
@@ -73,8 +72,6 @@ public class Wizard extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
-        this.stage = stage;
-
         FXMLLoader fxmlLoader = new FXMLLoader(Wizard.class.getResource("Wizard.fxml"));
         fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
         Parent root = fxmlLoader.load();

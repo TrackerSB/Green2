@@ -119,6 +119,7 @@ public class SepaFormController extends WizardableController<Optional<Originator
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void generateMessageId() {
         messageIdTextField.setText(DateTimeFormatter.ISO_DATE.format(LocalDate.now()) + " "
                 + EnvironmentHandler.getResourceValue("contributions_sepaChars") + " "

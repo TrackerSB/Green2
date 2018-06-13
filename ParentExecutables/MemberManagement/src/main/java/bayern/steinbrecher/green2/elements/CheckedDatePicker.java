@@ -134,7 +134,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
             return executionDate != null && executionDate.isAfter(LocalDate.now());
         }, executionDateBinding);
 
-        valid.bind((executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not())).or(checked.not()));
+        valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()).or(checked.not()));
         invalid.bind(valid.not());
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 

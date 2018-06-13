@@ -76,7 +76,6 @@ public final class Launcher extends Application {
      */
     private static final Optional<Charset> ZIP_CHARSET = retrieveZipCharset();
     private static final int DOWNLOAD_STEPS = 1000;
-    private Stage stage;
 
     private static Optional<Charset> retrieveZipCharset() {
         try (Scanner sc = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream(), StandardCharsets.UTF_8.name())) {
@@ -92,7 +91,6 @@ public final class Launcher extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.stage = primaryStage;
         Platform.setImplicitExit(false);
 
         Optional<String> optOnlineVersion = readOnlineVersion();
@@ -186,10 +184,10 @@ public final class Launcher extends Application {
 
         IOStreamUtility.transfer(downloadConnection.getInputStream(),
                 new FileOutputStream(tempFile), fileSize, bytesPerLoop, () -> {
-                    if (progress != null) {
-                        Platform.runLater(() -> progress.incPercentage(DOWNLOAD_STEPS));
-                    }
-                });
+            if (progress != null) {
+                Platform.runLater(() -> progress.incPercentage(DOWNLOAD_STEPS));
+            }
+        });
         return tempFile;
     }
 

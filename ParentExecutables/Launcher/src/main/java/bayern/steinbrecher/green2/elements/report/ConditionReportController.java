@@ -129,6 +129,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
 
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     @FXML
     private void close() {
         getStage().close();

@@ -43,7 +43,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Window;
 
 /**
  * Allows to display a summary of given errors and warnings. For handling a {@link ReportSummary} a
@@ -74,9 +73,6 @@ public class ReportSummary extends TitledPane {
         textProperty().bind(title);
 
         heightProperty().addListener((obs, oldVal, newVal) -> {
-            double sceneHeight = getScene().getHeight();
-            Window window = getScene().getWindow();
-            double windowHeight = window.getHeight();
             Parent parent = getParent();
             while (parent != null && !(parent instanceof ScrollPane)) {
                 parent = parent.getParent();
@@ -87,7 +83,7 @@ public class ReportSummary extends TitledPane {
                     scrollPane.setVvalue(scrollPane.getVmax());
                 }
             } else {
-                window.sizeToScene();
+                getScene().getWindow().sizeToScene();
             }
         });
 

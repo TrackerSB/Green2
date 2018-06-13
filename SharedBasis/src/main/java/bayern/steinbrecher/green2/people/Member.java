@@ -206,7 +206,7 @@ public class Member implements Comparable<Member> {
      */
     @Override
     public boolean equals(Object comp) {
-        return comp == this || (comp instanceof Member && this.membershipnumber == ((Member) comp).membershipnumber);
+        return comp == this || comp instanceof Member && this.membershipnumber == ((Member) comp).membershipnumber;
     }
 
     /**

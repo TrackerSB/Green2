@@ -60,26 +60,6 @@ public final class SshConnection extends DBConnection {
     };
     private final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
     /**
-     * The name of the database.
-     */
-    private final String databaseName;
-    /**
-     * The address of the host of the database (without protocol).
-     */
-    private final String databaseHost;
-    /**
-     * The port of the database.
-     */
-    private final int databasePort;
-    /**
-     * The username used to login into the database.
-     */
-    private final String databaseUsername;
-    /**
-     * The password used to login into the database.
-     */
-    private final String databasePasswd;
-    /**
      * The ssh session used to connect to the database over a secure channel.
      */
     private final Session sshSession;
@@ -126,11 +106,6 @@ public final class SshConnection extends DBConnection {
     public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost, int databasePort,
             String databaseUsername, String databasePasswd, String databaseName, Charset charset)
             throws AuthException, UnknownHostException, UnsupportedDatabaseException {
-        this.databaseHost = databaseHost;
-        this.databasePort = databasePort;
-        this.databaseUsername = databaseUsername;
-        this.databasePasswd = databasePasswd;
-        this.databaseName = databaseName;
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.charset = charset;
 

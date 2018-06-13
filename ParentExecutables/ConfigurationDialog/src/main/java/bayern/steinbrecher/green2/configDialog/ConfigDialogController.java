@@ -154,6 +154,7 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void saveSettingsAndReturn() {
         if (saveSettings()) {
             Programs.CONFIGURATION_DIALOG.call();
@@ -163,6 +164,7 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void saveSettingsAndContinue() {
         if (saveSettings()) {
             Programs.MEMBER_MANAGEMENT.call();

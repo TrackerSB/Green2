@@ -30,6 +30,7 @@ final class SelectionControllerParent<T extends Comparable<T>> extends Selection
     @FXML
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
             justification = "It is called by an appropriate fxml file")
+    @SuppressWarnings("unused")
     private void select() {
         if (isValid()) {
             getStage().close();
