@@ -70,7 +70,7 @@ public abstract class Controller implements Initializable {
     /**
      * Returns the currently set {@link Stage}.
      *
-     * @return The currently set {@link Stgae}.
+     * @return The currently set {@link Stage}.
      */
     public Stage getStage() {
         return stageProperty().get();

@@ -45,8 +45,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 /**
- * Allows to display a summary of given errors and warnings. For handling a {@link ReportSummary} a
- * {@link ReportSummaryBuilder} may be used.
+ * Allows to display a summary of given errors and warnings.
  *
  * @author Stefan Huber
  */

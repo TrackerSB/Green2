@@ -53,19 +53,20 @@ public class ProgressDialog extends View<ProgressDialogController> {
     }
 
     /**
-     * Returns the value hold by {@code percentageProperty}.
+     * Returns the progress in %.
      *
-     * @return The value hold by {@code percentageProperty}.
-     * @see #percentageProperty()
+     * @return The progress in %..
+     * @see ProgressDialogController#percentageProperty()
      */
     public double getPercentage() {
         return getController().getPercentage();
     }
 
     /**
-     * Increases the value of {@link ProgressDialogController#percentageProperty()} by 1.0/{@code steps}.
+     * Increases the value of the progress by 1.0/{@code steps}.
      *
      * @param steps The count of steps 100% is split.
+     * @see ProgressDialogController#percentageProperty()
      */
     public void incPercentage(int steps) {
         getController().incPercentage(steps);

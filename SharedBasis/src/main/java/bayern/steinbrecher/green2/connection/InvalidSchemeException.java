@@ -48,7 +48,7 @@ public class InvalidSchemeException extends Exception {
      * exception's detail message.
      *
      * @param message The detail message.
-     * @param cause The cause. (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent or
+     * @param cause The cause. (A {@code null} value is permitted, and indicates that the cause is nonexistent or
      * unknown.)
      */
     public InvalidSchemeException(String message, Throwable cause) {

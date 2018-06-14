@@ -58,7 +58,8 @@ public final class IOStreamUtility {
     /**
      * Opens a dialog asking the user to choose a directory. It does not change any user specific registry keys relating
      * to any profile. If the profile settings should be updated
-     * {@link EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String)} should be used.
+     * {@link EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String, java.lang.Object...)}
+     * should be used.
      *
      * @param owner The owner of the dialog.
      * @param filePrefix The name of the file which is prefixed with the current date and may be extended by a number if
@@ -66,7 +67,8 @@ public final class IOStreamUtility {
      * @param fileEnding The format of the file. NOTE: Without leading point.
      * @param initialDirectoryPath The path of the directory to show initially.
      * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.
-     * @see EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String)
+     * @see EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String,
+     * java.lang.Object...)
      */
     public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding,
             String initialDirectoryPath) {
