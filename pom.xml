@@ -104,20 +104,17 @@
                     </archive>
                 </configuration>
             </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>verify-style</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
+                    <consoleOutput>false</consoleOutput>
                     <failOnViolation>false</failOnViolation>
                     <configLocation>checkstyle.xml</configLocation>
                 </configuration>
@@ -129,19 +126,12 @@
                 <configuration>
                     <aggregate>true</aggregate>
                     <failOnViolation>false</failOnViolation>
-                    <sourceEncoding>UTF-8</sourceEncoding>
+                    <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <targetJdk>${maven.compiler.target}</targetJdk>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
-    </build>
+    </reporting>
 
     <dependencies>
         <dependency>
