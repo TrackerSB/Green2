@@ -1,4 +1,4 @@
 /**
- * Contains the hole application.
+ * Contains the whole application.
  */
 package bayern.steinbrecher.green2;
