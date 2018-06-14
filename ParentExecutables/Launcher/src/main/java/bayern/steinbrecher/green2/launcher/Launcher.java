@@ -199,12 +199,13 @@ public final class Launcher extends Application {
                 command = new String[]{"powershell", "Start-Process",
                     "\"wscript '" + dirPath + "/install.vbs'\"", "-Verb runAs", "-Wait"};
                 break;
-            case LINUX:
+            case LINUX: //Linux serves as the default behaviour
             default:
                 command = new String[]{"chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh"};
                 new ProcessBuilder(command).start().waitFor();
 
                 command = new String[]{"sh", dirPath + "/install.sh"};
+                break;
         }
 
         Process installProcess = new ProcessBuilder(command).start();

@@ -35,11 +35,6 @@ import javafx.fxml.FXML;
 public abstract class LoginController extends WizardableController<Optional<Map<LoginKey, String>>> {
 
     /**
-     * An useful list of all textfields which the login contains.
-     */
-    private List<CheckedTextField> textInputFields;
-
-    /**
      * Adds all given textfields into {@code textInputFields} and sets up the properties {@code anyInputMissing},
      * {@code anyInputToLong} and {@code valid}.
      *
@@ -47,7 +42,7 @@ public abstract class LoginController extends WizardableController<Optional<Map<
      * @param fields The textfields to use for setup.
      */
     protected void initProperties(ReportSummary reportSummary, CheckedTextField... fields) {
-        textInputFields = Arrays.asList(fields);
+        List<CheckedTextField> textInputFields = Arrays.asList(fields);
         textInputFields.stream().forEach(reportSummary::addReportEntry);
 
         bindValidProperty(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));

@@ -35,13 +35,6 @@ import javafx.stage.Stage;
 public class Contribution extends WizardableView<Optional<BiMap<Double, Color>>, ContributionController> {
 
     /**
-     * Default constructor. Represents a view for entering multiple values (in €) which are connected to a certain
-     * color.
-     */
-    public Contribution() {
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

@@ -73,7 +73,7 @@ public enum Tables {
      */
     Tables(String realTableName, Map<Columns<?>, Pair<Boolean, Set<Keywords>>> columns) {
         if (columns.values().stream().anyMatch(Objects::isNull)) {
-            throw new Error(
+            throw new AssertionError(
                     "Found a column which is neither marked as required nor as optional in table " + realTableName);
         }
         this.realTableName = realTableName;

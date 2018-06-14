@@ -53,11 +53,7 @@ public final class SshConnection extends DBConnection {
      * The default port for ssh.
      */
     public static final int DEFAULT_SSH_PORT = 22;
-    private static final Map<SupportedDatabases, String> COMMANDS = new HashMap<SupportedDatabases, String>() {
-        {
-            put(SupportedDatabases.MY_SQL, "mysql");
-        }
-    };
+    private static final Map<SupportedDatabases, String> COMMANDS = Map.of(SupportedDatabases.MY_SQL, "mysql");
     private final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
     /**
      * The ssh session used to connect to the database over a secure channel.
@@ -140,7 +136,10 @@ public final class SshConnection extends DBConnection {
             execQuery("SELECT 1");
         } catch (SQLException | JSchException ex) {
             close();
-            if (ex instanceof JSchException && !ex.getMessage().contains("Auth")) {
+            /*
+             * A simple instanceof check is not sufficient => It can not be replaced by an additional catch clause.
+             */
+            if (ex instanceof JSchException && !ex.getMessage().contains("Auth")) { //NOPMD
                 throw new UnknownHostException(ex.getMessage());
             } else {
                 throw new AuthException("Auth fail", ex);
@@ -249,7 +248,7 @@ public final class SshConnection extends DBConnection {
         List<List<String>> resultTable = Arrays.stream(rows)
                 .map(row -> splitUp(row, '\t'))
                 .map(rowFields -> rowFields.stream()
-                .map(f -> f.equals("0000-00-00") ? null : f) //TODO Remove legacy check 0000-00-00
+                .map(f -> "0000-00-00".equals(f) ? null : f) //TODO Remove legacy check 0000-00-00
                 .collect(Collectors.toList()))
                 .collect(Collectors.toList());
 

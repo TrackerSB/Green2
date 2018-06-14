@@ -53,20 +53,18 @@ public class Originator {
             pmtInfId,
             purpose;
     private final File originatorFile;
-    private static final Properties DEFAULT_PROPERTIES = new Properties() {
-        private static final long serialVersionUID = 1L;
+    private static final Properties DEFAULT_PROPERTIES = new Properties();
 
-        {
-            put("creator", "");
-            put("creditor", "");
-            put("iban", "");
-            put("bic", "");
-            put("trusterId", "");
-            put("pmtInfId", "");
-            put("purpose", "");
-            put("executionDate", "");
-        }
-    };
+    static {
+        DEFAULT_PROPERTIES.put("creator", "");
+        DEFAULT_PROPERTIES.put("creditor", "");
+        DEFAULT_PROPERTIES.put("iban", "");
+        DEFAULT_PROPERTIES.put("bic", "");
+        DEFAULT_PROPERTIES.put("trusterId", "");
+        DEFAULT_PROPERTIES.put("pmtInfId", "");
+        DEFAULT_PROPERTIES.put("purpose", "");
+        DEFAULT_PROPERTIES.put("executionDate", "");
+    }
     private LocalDate executionDate;
 
     /**

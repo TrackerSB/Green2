@@ -64,9 +64,6 @@ public final class XMLUtility {
      * @throws IOException If any I/O error occurs.
      */
     public static Optional<String> isValidXML(String xml, URL schema) throws SAXException, IOException {
-        Validator validator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-                .newSchema(schema)
-                .newValidator();
         DocumentBuilderFactory xmlBuilderFactory = DocumentBuilderFactory.newInstance();
         xmlBuilderFactory.setIgnoringComments(true);
         xmlBuilderFactory.setNamespaceAware(true);
@@ -75,7 +72,7 @@ public final class XMLUtility {
         try {
             xmlBuilder = xmlBuilderFactory.newDocumentBuilder();
         } catch (ParserConfigurationException ex) {
-            throw new Error("The DocumentBuilder used for the XML validation is invalid.", ex);
+            throw new AssertionError("The DocumentBuilder used for the XML validation is invalid.", ex);
         }
         Map<String, List<String>> validationProblemsMap = new HashMap<String, List<String>>() {
             @Override
@@ -113,6 +110,10 @@ public final class XMLUtility {
             }
         });
         Document xmlDocument = xmlBuilder.parse(new InputSource(new StringReader(xml)));
+        //NOTE The validator is created outside the following try-catch to distinguish sources of SAXExceptions
+        Validator validator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+                .newSchema(schema)
+                .newValidator();
         try {
             validator.validate(new DOMSource(xmlDocument.getFirstChild()));
         } catch (SAXException ex) {

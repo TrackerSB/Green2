@@ -96,6 +96,7 @@ public final class DialogUtility {
                 break;
             default:
                 graphic = null;
+                break;
         }
         alert.setGraphic(graphic);
 
@@ -138,8 +139,8 @@ public final class DialogUtility {
      * {@link Alert}. If you specify more elements they will be ignored.
      * @return The created {@link Alert}.
      */
-    @SuppressWarnings("fallthrough")
     @SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH")
+    @SuppressWarnings("fallthrough")
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
         Alert alert = addStyleAndIcon(initOwner(getAlert(() -> new Alert(alertType)), owner));
         int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;

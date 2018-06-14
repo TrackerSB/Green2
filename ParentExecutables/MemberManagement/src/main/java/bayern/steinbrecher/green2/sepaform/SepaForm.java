@@ -34,12 +34,6 @@ import javafx.stage.Stage;
 public class SepaForm extends WizardableView<Optional<Originator>, SepaFormController> {
 
     /**
-     * Default constructor. Represents a view for entering data needed by SEPA Direct Debits.
-     */
-    public SepaForm() {
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

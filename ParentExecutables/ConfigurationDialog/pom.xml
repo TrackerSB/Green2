@@ -16,7 +16,7 @@
     <name>ConfigurationDialog</name>
 
     <properties>
-        <mainClass>bayern.steinbrecher.green2.configDialog.ConfigDialog</mainClass>
+        <mainClass>bayern.steinbrecher.green2.configdialog.ConfigDialog</mainClass>
     </properties>
 
     <dependencies>

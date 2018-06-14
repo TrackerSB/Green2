@@ -45,31 +45,32 @@ public final class URLUtility {
      * reachable or an unrecognized status code is thrown like 401 or 500.
      */
     public static Optional<String> resolveURL(String url) {
+        String resolvedUrl = url;
         try {
             boolean redirected;
             do {
                 redirected = false;
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URL(resolvedUrl).openConnection();
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
                             || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
                             || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
                         redirected = true;
-                        url = connection.getHeaderField("Location");
+                        resolvedUrl = connection.getHeaderField("Location");
                     } else {
                         Logger.getLogger(URLUtility.class.getName())
                                 .log(Level.WARNING, "\"{0}\" returned code {1}.No action defined for handling.",
-                                        new Object[]{url, responseCode});
-                        url = null;
+                                        new Object[]{resolvedUrl, responseCode});
+                        resolvedUrl = null;
                     }
                 }
             } while (redirected);
         } catch (IOException ex) {
             Logger.getLogger(URLUtility.class.getName())
                     .log(Level.SEVERE, null, ex);
-            url = null;
+            resolvedUrl = null;
         }
-        return Optional.ofNullable(url);
+        return Optional.ofNullable(resolvedUrl);
     }
 }

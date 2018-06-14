@@ -44,11 +44,8 @@ public final class DefaultConnection extends DBConnection {
      * The protocols of the supported databases.
      */
     private static final Map<SupportedDatabases, String> DRIVER_PROTOCOLS
-            = new HashMap<SupportedDatabases, String>(SupportedDatabases.values().length) {
-        {
-            put(SupportedDatabases.MY_SQL, "jdbc:mysql://");
-        }
-    };
+            = Map.of(SupportedDatabases.MY_SQL, "jdbc:mysql://");
+
     /**
      * The created connection used to execute queries.
      */
@@ -68,10 +65,11 @@ public final class DefaultConnection extends DBConnection {
     public DefaultConnection(String databaseHost, int databasePort, String databaseUsername, String databasePasswd,
             String databaseName)
             throws AuthException, UnknownHostException {
-        if (databaseHost.endsWith("/")) {
-            databaseHost = databaseHost.substring(0, databaseHost.length() - 1);
+        String databaseHostPrefix = databaseHost;
+        if (databaseHostPrefix.endsWith("/")) {
+            databaseHostPrefix = databaseHostPrefix.substring(0, databaseHostPrefix.length() - 1);
         }
-        String databaseAddress = databaseHost + ":" + databasePort + "/";
+        String databaseAddress = databaseHostPrefix + ":" + databasePort + "/";
         SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
         try {
             connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(dbms) + databaseAddress

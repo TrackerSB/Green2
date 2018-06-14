@@ -64,7 +64,6 @@ public class SepaFormController extends WizardableController<Optional<Originator
     private MessageIdTextField messageIdTextField;
     @FXML
     private CheckedTextField pmtInfIdTextField;
-    private List<CheckedTextField> checkedTextFields;
     @FXML
     private CheckedDatePicker executionDatePicker;
     @FXML
@@ -81,8 +80,8 @@ public class SepaFormController extends WizardableController<Optional<Originator
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        checkedTextFields = Arrays.asList(creatorTextField, creditorTextField, ibanTextField, bicTextField,
-                creditorIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
+        List<CheckedTextField> checkedTextFields = Arrays.asList(creatorTextField, creditorTextField, ibanTextField,
+                bicTextField, creditorIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
 
         pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
         pmtInfIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(

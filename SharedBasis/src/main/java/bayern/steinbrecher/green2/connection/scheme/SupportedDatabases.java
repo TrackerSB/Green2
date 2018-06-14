@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -157,7 +158,8 @@ public enum SupportedDatabases {
         if (types.containsKey(type)) {
             return types.get(type).getSqlTypeKeyword();
         } else {
-            throw new Error("For the database " + displayName + " no SQL type for type " + type + " is defined.");
+            throw new NoSuchElementException(
+                    "For the database " + displayName + " no SQL type for type " + type + " is defined.");
         }
     }
 
@@ -204,7 +206,7 @@ public enum SupportedDatabases {
      * @return The quoted identifier.
      */
     public String quoteIdentifier(String identifier) {
-        return Arrays.stream(identifier.split("."))
+        return Arrays.stream(identifier.split("\\."))
                 .map(
                         i -> identifierQuoteSymbol
                         + i.replaceAll(String.valueOf(identifierQuoteSymbol), "\\" + identifierQuoteSymbol)

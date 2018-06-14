@@ -243,10 +243,10 @@ public final class SepaPain00800302XMLGenerator {
         try {
             errorMessage = SepaUtility.validateSepaXML(xmlOutput);
         } catch (SAXException | IOException ex) {
-            throw new Error("The validation of the generated SEPA xml output failed.", ex);
+            throw new AssertionError("The validation of the generated SEPA xml output failed.", ex);
         }
         if (errorMessage.isPresent()) {
-            throw new Error("Erroneous SEPA xml output was generated:\n" + errorMessage.get());
+            throw new AssertionError("Erroneous SEPA xml output was generated:\n" + errorMessage.get());
         } else {
             return xmlOutput;
         }

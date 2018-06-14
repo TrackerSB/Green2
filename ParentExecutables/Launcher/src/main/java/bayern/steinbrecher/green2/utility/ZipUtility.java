@@ -44,15 +44,12 @@ public final class ZipUtility {
      * The {@link Charset}s which are fixed for certain file formats in order to guarantee that these are
      * extracted/compressed correctly.
      */
-    public static final Map<String, Charset> SPECIAL_CHARSETS = new HashMap<>();
-
-    static {
-        SPECIAL_CHARSETS.put("jar", BINARY_CHARSET);
-        SPECIAL_CHARSETS.put("ico", BINARY_CHARSET);
-        SPECIAL_CHARSETS.put("png", BINARY_CHARSET);
-        SPECIAL_CHARSETS.put("vbs", Charset.forName("Windows-1252"));
-        SPECIAL_CHARSETS.put("pdf", BINARY_CHARSET);
-    }
+    public static final Map<String, Charset> SPECIAL_CHARSETS
+            = Map.of("jar", BINARY_CHARSET,
+                    "ico", BINARY_CHARSET,
+                    "png", BINARY_CHARSET,
+                    "vbs", Charset.forName("Windows-1252"),
+                    "pdf", BINARY_CHARSET);
 
     private ZipUtility() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");

@@ -69,12 +69,6 @@ public class WaitScreen extends View<Controller> {
     }
 
     /**
-     * Default constructor.
-     */
-    public WaitScreen() {
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
