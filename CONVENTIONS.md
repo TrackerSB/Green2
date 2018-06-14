@@ -88,3 +88,4 @@ Do not use `default` methods.
 * Document every non-`private` class, method, field,...
 * When referencing any method, interface, class, etc. use `{@link ...}`.
 * When a class or interface is solely referenced within JavaDocs use full qualified name instead of an import to avoid "unused" imports.
+* Document packages using a `package-info.java`. When multiple modules contain the same package add only one package description. If they depend on each other prefer the module they depend on.
