@@ -204,6 +204,7 @@ public class Profile {
                             default:
                                 Logger.getLogger(EnvironmentHandler.class.getName())
                                         .log(Level.WARNING, "{0} gets skipped", part);
+                                break;
                         }
                     } catch (NumberFormatException ex) {
                         Logger.getLogger(Profile.class.getName()).log(Level.WARNING, "{0} gets skipped", part);

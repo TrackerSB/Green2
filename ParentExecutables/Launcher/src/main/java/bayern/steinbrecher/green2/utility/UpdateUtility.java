@@ -160,6 +160,7 @@ public final class UpdateUtility {
                                     Logger.getLogger(UpdateUtility.class.getName())
                                             .log(Level.WARNING, "Element {0} of update conditions ignored.",
                                                     attribute.getNodeName());
+                                    break;
                             }
                         }
                         retrievedUpdateConditions.add(new Pair<>(testName, test));

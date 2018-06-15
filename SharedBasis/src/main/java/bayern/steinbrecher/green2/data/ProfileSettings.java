@@ -157,7 +157,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
         try {
             return (ProfileSettings<?>) possibleEnum.orElseThrow(IllegalArgumentException::new).get(null);
         } catch (IllegalAccessException ex) {
-            throw new Error("The reimplementation based on Enum#valueOf(...) failed.", ex);
+            throw new AssertionError("The reimplementation based on Enum#valueOf(...) failed.", ex);
         }
     }
 

@@ -192,7 +192,8 @@ public enum SupportedDatabases {
         if (queryTemplates.containsKey(query)) {
             return MessageFormat.format(queryTemplates.get(query), params);
         } else {
-            throw new Error("For the database " + displayName + " the query " + query + " is not defined.");
+            throw new NoSuchElementException(
+                    "For the database " + displayName + " the query " + query + " is not defined.");
         }
     }
 

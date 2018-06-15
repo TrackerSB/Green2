@@ -27,7 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -76,12 +75,10 @@ public final class DefaultConnection extends DBConnection {
                     + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
                     + "&serverTimezone=UTC",
                     databaseUsername, databasePasswd);
+        } catch (CommunicationsException ex) {
+            throw new UnknownHostException(ex.getMessage());
         } catch (SQLException ex) {
-            if (ex instanceof CommunicationsException) {
-                throw new UnknownHostException(ex.getMessage());
-            } else {
-                throw new AuthException();
-            }
+            throw new AuthException("The authentication to the database failed.", ex);
         }
     }
 

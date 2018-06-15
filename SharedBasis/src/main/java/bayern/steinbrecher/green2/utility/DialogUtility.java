@@ -155,15 +155,17 @@ public final class DialogUtility {
                 if (args[2] != null) {
                     alert.setHeaderText(args[2]);
                 }
+            //fall-through
             case 2:
                 if (args[1] != null) {
                     alert.setTitle(args[1]);
                 }
+            //fall-through
             case 1:
                 if (args[0] != null) {
                     alert.setContentText(args[0]);
                 }
-                break;
+            //fall-through
             case 0:
                 //No op
                 break;
