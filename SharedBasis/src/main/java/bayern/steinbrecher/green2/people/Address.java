@@ -23,7 +23,7 @@ package bayern.steinbrecher.green2.people;
  */
 public class Address {
 
-    private final String street, houseNumber, postcode, place;
+    private String street, houseNumber, postcode, place;
 
     /**
      * Constructs a new Address.
@@ -50,12 +50,30 @@ public class Address {
     }
 
     /**
+     * Sets a new street name.
+     *
+     * @param street The new street name.
+     */
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    /**
      * Returns the houseNumber.
      *
      * @return The houseNumber.
      */
     public String getHouseNumber() {
         return houseNumber;
+    }
+
+    /**
+     * Sets a new house number.
+     *
+     * @param houseNumber The new house number.
+     */
+    public void setHouseNumber(String houseNumber) {
+        this.houseNumber = houseNumber;
     }
 
     /**
@@ -68,11 +86,29 @@ public class Address {
     }
 
     /**
+     * Changes the postcode.
+     *
+     * @param postcode The new postcode.
+     */
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
+    }
+
+    /**
      * Returns the village/town.
      *
      * @return The village/town.
      */
     public String getPlace() {
         return place;
+    }
+
+    /**
+     * Changes the place of the postcode.
+     *
+     * @param place The new place of the postcode.
+     */
+    public void setPlace(String place) {
+        this.place = place;
     }
 }

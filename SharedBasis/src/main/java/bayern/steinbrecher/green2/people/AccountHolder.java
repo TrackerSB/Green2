@@ -25,9 +25,9 @@ import java.time.LocalDate;
  */
 public class AccountHolder extends Person {
 
-    private final String iban, bic;
-    private final LocalDate mandateSigned;
-    private final boolean hasMandateChanged;
+    private String iban, bic;
+    private LocalDate mandateSigned;
+    private boolean hasMandateChanged;
 
     /**
      * Constructs a account holder.
@@ -61,6 +61,15 @@ public class AccountHolder extends Person {
     }
 
     /**
+     * Changes the IBAN.
+     *
+     * @param iban The new IBAN.
+     */
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    /**
      * Checks whether the account holder has a IBAN.
      *
      * @return {@code true} only if this account holder has a IBAN.
@@ -76,6 +85,15 @@ public class AccountHolder extends Person {
      */
     public String getBic() {
         return bic;
+    }
+
+    /**
+     * Changes the BIC.
+     *
+     * @param bic The new BIC.
+     */
+    public void setBic(String bic) {
+        this.bic = bic;
     }
 
     /**
@@ -97,11 +115,29 @@ public class AccountHolder extends Person {
     }
 
     /**
+     * Changes the date when the mandat was signed.
+     *
+     * @param mandateSigned The date when the mandat was signed.
+     */
+    public void setMandateSigned(LocalDate mandateSigned) {
+        this.mandateSigned = mandateSigned;
+    }
+
+    /**
      * Returns whether the mandate changed since the last transfer.
      *
      * @return {@code true} only if the mandate changed since the last transfer.
      */
     public boolean hasMandateChanged() {
         return hasMandateChanged;
+    }
+
+    /**
+     * Changes whether the mandat has changed.
+     *
+     * @param hasMandateChanged {@code true} if the mandat has changed.
+     */
+    public void setHasMandateChanged(boolean hasMandateChanged) {
+        this.hasMandateChanged = hasMandateChanged;
     }
 }

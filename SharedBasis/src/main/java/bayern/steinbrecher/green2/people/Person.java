@@ -25,9 +25,9 @@ import java.time.LocalDate;
  */
 public class Person {
 
-    private final String prename, lastname, title;
-    private final LocalDate birthday;
-    private final boolean male;
+    private String prename, lastname, title;
+    private LocalDate birthday;
+    private boolean male;
 
     /**
      * Constructs a new person.
@@ -56,12 +56,30 @@ public class Person {
     }
 
     /**
+     * Sets a new first name.
+     *
+     * @param prename The new first name.
+     */
+    public void setPrename(String prename) {
+        this.prename = prename;
+    }
+
+    /**
      * Returns the last name.
      *
      * @return The last name.
      */
     public String getLastname() {
         return lastname;
+    }
+
+    /**
+     * Sets a new last name.
+     *
+     * @param lastname The new last name.
+     */
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     /**
@@ -83,6 +101,15 @@ public class Person {
     }
 
     /**
+     * Sets a new title.
+     *
+     * @param title The new title.
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
      * Returns the birthday.
      *
      * @return The birthday.
@@ -92,11 +119,29 @@ public class Person {
     }
 
     /**
+     * Sets a new birthday.
+     *
+     * @param birthday the new birthday.
+     */
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    /**
      * Checks whether this person is male.
      *
      * @return {@code true} only if this person is male.
      */
     public boolean isMale() {
         return male;
+    }
+
+    /**
+     * Sets a new sex for this person.
+     *
+     * @param male {@code true} if this person is male.
+     */
+    public void setMale(boolean male) {
+        this.male = male;
     }
 }
