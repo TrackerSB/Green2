@@ -106,11 +106,13 @@ public class MenuController extends Controller {
      * Maps resource keys ({@link EnvironmentHandler#getResourceValue(java.lang.String, java.lang.Object...)} to
      * functions generating checks.
      */
-    private final Map<String, Callable<List<String>>> checkFunctions = Map.of("iban", () -> checkIbans(),
+    private final Map<String, Callable<List<String>>> checkFunctions = Map.of(
+            "iban", () -> checkIbans(),
             "bic", () -> checkBics(),
             "birthdays", () -> checkDates(m -> m.getPerson().getBirthday()),
             "columnMandatSigned", () -> checkDates(m -> m.getAccountHolder().getMandateSigned()),
-            "contributions", () -> checkContributions());
+            "contributions", () -> checkContributions()
+    );
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
     private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new HashMap<>(3) {
