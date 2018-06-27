@@ -18,8 +18,6 @@ package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.connection.DBConnection;
-import bayern.steinbrecher.green2.connection.scheme.Columns;
-import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.contribution.Contribution;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -315,6 +313,14 @@ public class MenuController extends Controller {
         }
     }
 
+    //TODO Where to place this method? How to generlize it for all optional columns?
+    private boolean isContributionColumnEnabled() throws ExecutionException, InterruptedException {
+        return member.get()
+                .get()
+                .stream()
+                .anyMatch(m -> m.getContribution().isPresent());
+    }
+
     @SuppressWarnings("unchecked")
     private void generateSepa(Future<Set<Member>> memberToSelectFuture, boolean useMemberContributions,
             SequenceType sequenceType) {
@@ -324,8 +330,7 @@ public class MenuController extends Controller {
             if (memberToSelect.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
-                boolean askForContribution = !(useMemberContributions
-                        && dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION));
+                boolean askForContribution = !(useMemberContributions && isContributionColumnEnabled());
 
                 WizardPage<Optional<Originator>> sepaFormPage = new SepaForm().getWizardPage();
                 sepaFormPage.setNextFunction(() -> askForContribution ? "contribution" : "selection");
@@ -550,7 +555,7 @@ public class MenuController extends Controller {
     }
 
     private List<String> checkContributions() throws InterruptedException, ExecutionException {
-        if (dbConnection.columnExists(Tables.MEMBER, Columns.CONTRIBUTION)) {
+        if (isContributionColumnEnabled()) {
             return member.get().get().parallelStream()
                     .filter(m -> {
                         Optional<Double> contribution = m.getContribution();
@@ -742,12 +747,12 @@ public class MenuController extends Controller {
             available.set(false);
             CompletableFuture.runAsync(
                     () -> {
-                        try {
-                            newValue.get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    })
+                try {
+                    newValue.get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            })
                     .thenRunAsync(() -> available.set(true));
         }
 

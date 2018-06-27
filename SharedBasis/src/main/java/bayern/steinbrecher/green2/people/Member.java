@@ -16,12 +16,18 @@
  */
 package bayern.steinbrecher.green2.people;
 
+import android.support.annotation.NonNull;
 import java.text.Collator;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Represents member of a Trachtenverein.
+ * Represents member of an association. Since it has a variety of fields it is designed to be constructed by chaining
+ * calls to setter instead of a constructor.
  *
  * @author Stefan Huber
  */
@@ -35,33 +41,11 @@ public class Member implements Comparable<Member> {
     private Optional<Boolean> active;
     private boolean contributionfree;
     private Optional<Double> contribution;
+    private LocalDate memberSince;
+    private Map<Integer, Boolean> honorings;
 
     static {
         COLLATOR.setStrength(Collator.SECONDARY);
-    }
-
-    /**
-     * Constructs a new member.
-     *
-     * @param membershipnumber The mandate number.
-     * @param person The person itself.
-     * @param home The homelocation.
-     * @param accountHolder The owner of the account to book off the contribution.
-     * @param isActive {@code true} only if this member is an active one or {@code null} if the database does not
-     * provide such information.
-     * @param isContributionfree {@code true} only if this member does not have to pay contribution.
-     * @param contribution The contribution this member has to pay. {@code null} indicates that the database has no
-     * information about that.
-     */
-    public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder, Boolean isActive,
-            boolean isContributionfree, Double contribution) {
-        this.membershipnumber = membershipnumber;
-        this.person = person;
-        this.home = home;
-        this.accountHolder = accountHolder;
-        this.active = Optional.ofNullable(isActive);
-        this.contributionfree = isContributionfree;
-        this.contribution = Optional.ofNullable(contribution);
     }
 
     /**
@@ -77,9 +61,11 @@ public class Member implements Comparable<Member> {
      * Sets the membershipnumer of this member.
      *
      * @param membershipnumber The membershipnumber of this member.
+     * @return This member which can be used for chaining calls to setter.
      */
-    public void setMembershipnumber(int membershipnumber) {
+    public Member setMembershipnumber(int membershipnumber) {
         this.membershipnumber = membershipnumber;
+        return this;
     }
 
     /**
@@ -87,7 +73,11 @@ public class Member implements Comparable<Member> {
      *
      * @return The person representing this member.
      */
+    @NonNull
     public Person getPerson() {
+        if (person == null) {
+            person = new Person();
+        }
         return person;
     }
 
@@ -95,9 +85,11 @@ public class Member implements Comparable<Member> {
      * Sets the person associated with this member.
      *
      * @param person The person holding some of the information about this member.
+     * @return This member which can be used for chaining calls to setter.
      */
-    public void setPerson(Person person) {
+    public Member setPerson(Person person) {
         this.person = person;
+        return this;
     }
 
     /**
@@ -105,7 +97,11 @@ public class Member implements Comparable<Member> {
      *
      * @return The homelocation.
      */
+    @NonNull
     public Address getHome() {
+        if (home == null) {
+            home = new Address();
+        }
         return home;
     }
 
@@ -113,17 +109,25 @@ public class Member implements Comparable<Member> {
      * Sets the address of this member.
      *
      * @param home The address of this member.
+     * @return This member which can be used for chaining calls to setter.
      */
-    public void setHome(Address home) {
+    public Member setHome(Address home) {
         this.home = home;
+        return this;
     }
 
     /**
      * Returns the holder of the account where to book off contribution.
      *
-     * @return The account holder.
+     * @return The account holder as represented in the database.
+     * @see #getAccountHolderPrename()
+     * @see #getAccountHolderLastname()
      */
+    @NonNull
     public AccountHolder getAccountHolder() {
+        if (accountHolder == null) {
+            accountHolder = new AccountHolder();
+        }
         return accountHolder;
     }
 
@@ -131,9 +135,54 @@ public class Member implements Comparable<Member> {
      * The account holder who pays the contributions of this member.
      *
      * @param accountHolder The account holder who pays the contributions of this member.
+     * @return This member which can be used for chaining calls to setter.
      */
-    public void setAccountHolder(AccountHolder accountHolder) {
+    public Member setAccountHolder(AccountHolder accountHolder) {
         this.accountHolder = accountHolder;
+        return this;
+    }
+
+    /**
+     * Returns the prename of the account holder associated with this member. In contrast to
+     * {@link AccountHolder#getPrename()} this method returns {@link Person#getPrename()} if the account holder has no
+     * prename, which may the case if the associated account holder is this member himself.
+     *
+     * @return The prename of the account holder associated with this member.
+     * @see #getPerson()
+     */
+    public String getAccountHolderPrename() {
+        String accountHolderPrename = getAccountHolder().getPrename();
+        if (accountHolderPrename.isEmpty()) {
+            accountHolderPrename = getPerson().getPrename();
+        }
+        return accountHolderPrename;
+    }
+
+    /**
+     * Returns the lastname of the account holder associated with this member. In contrast to
+     * {@link AccountHolder#getLastname()} this method returns {@link Person#getLastname()} if the account holder has no
+     * lastname, which may the case if the associated account holder is this member himself.
+     *
+     * @return The lastname of the account holder associated with this member.
+     * @see #getPerson()
+     */
+    public String getAccountHolderLastname() {
+        String accountHolderLastname = getAccountHolder().getLastname();
+        if (accountHolderLastname.isEmpty()) {
+            accountHolderLastname = getPerson().getLastname();
+        }
+        return accountHolderLastname;
+    }
+
+    /**
+     * Returns lastname and prename of the associated account holder separated with a comma, e.g. "Doe, John".
+     *
+     * @return Lastname and prename of the associated account holder separated with a comma, e.g. "Doe, John".
+     * @see #getAccountHolderLastname()
+     * @see #getAccountHolderPrename()
+     */
+    public String getAccountHolderName() {
+        return getAccountHolderLastname() + ", " + getAccountHolderPrename();
     }
 
     /**
@@ -142,17 +191,24 @@ public class Member implements Comparable<Member> {
      * @return {@code true} only if this member is active. Returns {@link Optional#empty()} if the database does not
      * provide such information.
      */
+    @NonNull
     public Optional<Boolean> isActive() {
+        if (active == null) {
+            active = Optional.empty();
+        }
         return active;
     }
 
     /**
      * Sets whether this member is an active or a passive member.
      *
-     * @param active {@code true} only if this member is an active member.
+     * @param active {@code true} only if this member is an active member. Pass {@code null} if the database stores no
+     * information about this.
+     * @return This member which can be used for chaining calls to setter.
      */
-    public void setActive(Boolean active) {
+    public Member setActive(Boolean active) {
         this.active = Optional.ofNullable(active);
+        return this;
     }
 
     /**
@@ -168,9 +224,11 @@ public class Member implements Comparable<Member> {
      * Sets whether this member has to pay contributions.
      *
      * @param contributionfree {@code false} only if this member has to pay contributions.
+     * @return This member which can be used for chaining calls to setter.
      */
-    public void setContributionfree(boolean contributionfree) {
+    public Member setContributionfree(boolean contributionfree) {
         this.contributionfree = contributionfree;
+        return this;
     }
 
     /**
@@ -179,7 +237,11 @@ public class Member implements Comparable<Member> {
      * @return The contribution of this member or {@link Optional#empty()} if the contribution is unknown. (A reason may
      * be it is not saved by the database.)
      */
+    @NonNull
     public Optional<Double> getContribution() {
+        if (contribution == null) {
+            contribution = Optional.empty();
+        }
         return contribution;
     }
 
@@ -188,9 +250,72 @@ public class Member implements Comparable<Member> {
      *
      * @param contribution The contribution this member has to pay or {@code null} if the database does not provide
      * information about this.
+     * @return This member which can be used for chaining calls to setter.
      */
-    public void setContribution(Double contribution) {
+    public Member setContribution(Double contribution) {
         this.contribution = Optional.ofNullable(contribution);
+        return this;
+    }
+
+    /**
+     * Returns the date since when this member is member of the association.
+     *
+     * @return The date since when this member is member of the association.
+     */
+    public LocalDate getMemberSince() {
+        return memberSince;
+    }
+
+    /**
+     * Changes the date since when this member is member of the association.
+     *
+     * @param memberSince The date since when this member is member of the association.
+     * @return This member which can be used for chaining calls to setter.
+     */
+    public Member setMemberSince(LocalDate memberSince) {
+        this.memberSince = memberSince;
+        return this;
+    }
+
+    /**
+     * Returns the associated honorings of this member.
+     *
+     * @return The associated honorings of this member.
+     */
+    //TODO How to make sure that no value is ever null?
+    @NonNull
+    public Map<Integer, Boolean> getHonorings() {
+        if (honorings == null) {
+            honorings = new HashMap<>();
+        }
+        return honorings;
+    }
+
+    /**
+     * Replaces the current honorings with the given ones.
+     *
+     * @param honorings The honorings this member to associate with.
+     * @return This member which can be used for chaining calls to setter.
+     */
+    public Member setHonorings(Map<Integer, Boolean> honorings) {
+        if (honorings.values()
+                .stream()
+                .anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("null is not permitted for values in honorings.");
+        }
+        this.honorings = honorings;
+        return this;
+    }
+
+    /**
+     * Determines whether this member was honored for a specific number of years membership.
+     *
+     * @param years The number of years of membership to check a honoring for.
+     * @return {@code true} only if this member was honored for being for {@code years} a member. Returns
+     * {@link Optional#empty()} only if this member is not associated whether it was honored or not.
+     */
+    public Optional<Boolean> wasHonored(int years) {
+        return Optional.ofNullable(honorings.getOrDefault(years, null));
     }
 
     /**

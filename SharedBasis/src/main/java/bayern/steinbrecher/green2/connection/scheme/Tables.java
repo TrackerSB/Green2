@@ -16,102 +16,250 @@
  */
 package bayern.steinbrecher.green2.connection.scheme;
 
+import bayern.steinbrecher.green2.people.Member;
+import bayern.steinbrecher.green2.utility.IOStreamUtility;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.util.Pair;
 
 /**
  * This enum lists all tables and their schemes needed.
  *
  * @author Stefan Huber
+ * @param <T> The type representing the whole table.
+ * @param <U> The type of an entry of the table.
+ * @since 2u14
  */
-public enum Tables {
+//TODO Wait for generic enums
+public class /* enum */ Tables<T, U> {
+
     /**
      * Represents the table of members.
      */
-    MEMBER("Mitglieder", Map.ofEntries(
-            Map.entry(Columns.MEMBERSHIPNUMBER, new Pair<>(true, Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY))),
-            Map.entry(Columns.PRENAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.LASTNAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.TITLE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.IS_MALE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.BIRTHDAY, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.MEMBER_SINCE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.STREET, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.HOUSENUMBER, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.CITY_CODE, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.CITY, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.IS_CONTRIBUTIONFREE, new Pair<>(true, Set.of(Keywords.DEFAULT, Keywords.NOT_NULL))),
-            Map.entry(Columns.IBAN, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.BIC, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.ACCOUNTHOLDER_PRENAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.ACCOUNTHOLDER_LASTNAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.MANDAT_SIGNED, new Pair<>(true, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.CONTRIBUTION, new Pair<>(false, Set.of(Keywords.NOT_NULL))),
-            Map.entry(Columns.IS_ACTIVE, new Pair<>(false, Set.of(Keywords.NOT_NULL)))
-    )),
+    public static final Tables<Set<Member>, Member> MEMBER = new Tables<>(
+            "Mitglieder",
+            List.of(
+                    //TODO Is there any way to avoid passing the parser explicitely?
+                    //TODO Check whether patterns with the same name are rejected
+                    new SimpleColumnPattern<Integer, Member>("Mitgliedsnummer",
+                            Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY), ColumnParser.INTEGER_COLUMN_PARSER,
+                            (m, value) -> m.setMembershipnumber(value)),
+                    new SimpleColumnPattern<String, Member>("Vorname",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getPerson().setPrename(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("Nachname",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getPerson().setLastname(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("Titel",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getPerson().setTitle(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<Boolean, Member>("IstMaennlich",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.BOOLEAN_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getPerson().setMale(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<LocalDate, Member>("Geburtstag",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getPerson().setBirthday(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<LocalDate, Member>("MitgliedSeit",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
+                            (m, value) -> m.setMemberSince(value)),
+                    new SimpleColumnPattern<String, Member>("Strasse",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getHome().setStreet(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("Hausnummer",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getHome().setHouseNumber(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("PLZ",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getHome().setPostcode(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("Ort",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getHome().setPlace(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<Boolean, Member>("IstBeitragsfrei",
+                            Set.of(Keywords.NOT_NULL, Keywords.DEFAULT), ColumnParser.BOOLEAN_COLUMN_PARSER,
+                            (m, value) -> m.setContributionfree(value),
+                            Optional.of(Optional.of(false))),
+                    new SimpleColumnPattern<String, Member>("Iban",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getAccountHolder().setIban(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("Bic",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getAccountHolder().setBic(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("KontoinhaberVorname",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getAccountHolder().setPrename(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<String, Member>("KontoinhaberNachname",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getAccountHolder().setLastname(value);
+                        return m;
+                    }),
+                    new SimpleColumnPattern<LocalDate, Member>("MandatErstellt",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
+                            (m, value) -> {
+                        m.getAccountHolder().setMandateSigned(value);
+                        return m;
+                    })
+            ),
+            List.of(
+                    new SimpleColumnPattern<Double, Member>("Beitrag",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.DOUBLE_COLUMN_PARSER,
+                            (m, value) -> m.setContribution(value)),
+                    new SimpleColumnPattern<Boolean, Member>("IstAktiv",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.BOOLEAN_COLUMN_PARSER,
+                            (m, value) -> m.setActive(value)),
+                    new RegexColumnPattern<Boolean, Member, Integer>("^\\d+MitgliedGeehrt$",
+                            ColumnParser.BOOLEAN_COLUMN_PARSER,
+                            (m, key, value) -> {
+                        m.getHonorings().put(key, value);
+                        return m;
+                    },
+                            cn -> Integer.parseInt(cn.substring(0, cn.length() - "MitgliedGeehrt".length())))
+            ),
+            Member::new,
+            ms -> ms.collect(Collectors.toSet())
+    );
     /**
      * Represents a table mapping names to nicknames.
      */
-    NICKNAMES("Spitznamen", Map.of(
-            Columns.NAME, new Pair<>(true, Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY)),
-            Columns.NICKNAME, new Pair<>(true, Set.of(Keywords.NOT_NULL))
-    ));
+    public static final Tables<Map<String, String>, Pair<String, String>> NICKNAMES = new Tables<>(
+            "Spitznamen",
+            List.of(
+                    new SimpleColumnPattern<String, Pair<String, String>>("Name",
+                            Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY), ColumnParser.STRING_COLUMN_PARSER,
+                            (pair, name) -> new Pair<>(name, pair.getValue())),
+                    new SimpleColumnPattern<String, Pair<String, String>>("Spitzname",
+                            Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
+                            (pair, nickname) -> new Pair<>(pair.getKey(), nickname))
+            ),
+            List.of(),
+            () -> new Pair<>(null, null),
+            ns -> ns.collect(Collectors.toMap(Pair::getKey, Pair::getValue))
+    );
 
-    private final Map<Columns<?>, Pair<Boolean, Set<Keywords>>> columns;
+    private final List<SimpleColumnPattern<?, U>> requiredColumns;
+    private final List<ColumnPattern<?, U>> optionalColumns;
     private final String realTableName;
+    private final Supplier<U> baseEntrySupplier;
+    private final Function<Stream<U>, T> reducer;
 
     /**
-     * Creates a representation of a scheme of a table.
+     * Creates a representation of a scheme of a table. {@code requiredColumns} and {@code optionalColumns} are checked
+     * to be free of patterns intersecting each other.
      *
      * @param realTableName The name of the table in a database.
-     * @param columns A map containing the columns of this table, whether they are required ({@code true} means
-     * required; {@code false} means optional.) and their attributes.
+     * @param requiredColumns The required simple column patterns.
+     * @param optionalColumns The optional column patterns.
+     * @param baseEntrySupplier Returns an empty entry to be populated by the content of a row.
+     * @param reducer Combines multiple row representations to a representation for the whole table.
+     * @see ColumnPattern#equals(java.lang.Object)
      */
-    Tables(String realTableName, Map<Columns<?>, Pair<Boolean, Set<Keywords>>> columns) {
-        if (columns.values().stream().anyMatch(Objects::isNull)) {
+    //TODO Is there any way to force duplication and intersection freedom at compile time?
+    private Tables(String realTableName, List<SimpleColumnPattern<?, U>> requiredColumns,
+            List<ColumnPattern<?, U>> optionalColumns, Supplier<U> baseEntrySupplier, Function<Stream<U>, T> reducer) {
+        Set<ColumnPattern<?, U>> intersection = new HashSet<>(optionalColumns);
+        intersection.retainAll(requiredColumns);
+        if (!intersection.isEmpty()) {
             throw new AssertionError(
-                    "Found a column which is neither marked as required nor as optional in table " + realTableName);
+                    "Found a column which is marked as required as well as optional in table " + realTableName);
         }
         this.realTableName = realTableName;
-        this.columns = columns;
+        this.requiredColumns = requiredColumns;
+        this.optionalColumns = optionalColumns;
+        this.baseEntrySupplier = baseEntrySupplier;
+        this.reducer = reducer;
+    }
+
+    /**
+     * Returns all columns as a {@link Stream}. When streaming the columns anyway this method should be preffered over
+     * {@link #getAllColumns()} to spare some computations.
+     *
+     * @return A concatted {@link Stream} of all associated required and optional columns.
+     */
+    public Stream<ColumnPattern<?, U>> streamAllColumns() {
+        return Stream.concat(getRequiredColumns().stream(), getOptionalColumns().stream());
     }
 
     /**
      * Checks whether the scheme of this table contains the given column. NOTE: This does not confirm that the this
-     * column exists in the real table. It only states that the scheme can have such a column.
+     * column exists in the real table. It only states that the scheme considers a column of this name.
      *
-     * @param column The column to check.
+     * @param columnName The column to check.
      * @return {@code true} only if this table contains {@code column}.
      */
-    public boolean contains(Columns<?> column) {
-        return columns.containsKey(column);
+    public boolean contains(String columnName) {
+        return streamAllColumns().anyMatch(cp -> cp.matches(columnName));
     }
 
     /**
      * Checks whether the given column is an optional column of this table.
      *
-     * @param column The column to check.
+     * @param columnName The column to check.
      * @return {@code true} only if this column is an optional column of this table.
      */
-    public boolean isOptional(Columns column) {
-        if (contains(column)) {
-            return !columns.get(column).getKey();
+    public boolean isOptional(String columnName) {
+        if (contains(columnName)) {
+            return getOptionalColumns()
+                    .stream()
+                    .anyMatch(cp -> cp.matches(columnName));
         } else {
-            throw new IllegalArgumentException(column + " is no column of " + realTableName);
+            throw new IllegalArgumentException(columnName + " is no column of " + realTableName);
         }
     }
 
     private String generateCreateStatement(SupportedDatabases dbms) {
-        String columnList = getAllColumns().stream()
-                .map(column -> new StringJoiner(" ")
-                .add(column.getRealColumnName())
-                .add(dbms.getType(column))
-                .add(dbms.getKeywords(columns.get(column).getValue(), column).stream().collect(Collectors.joining(" ")))
-                .toString())
+        String columnList = streamAllColumns()
+                .filter(column -> column instanceof SimpleColumnPattern)
+                .map(column -> (SimpleColumnPattern) column)
+                .map(column -> dbms.generateCreateLine(column))
                 .collect(Collectors.joining(", "));
         return dbms.getTemplate(Queries.CREATE_TABLE, getRealTableName(), columnList);
     }
@@ -144,20 +292,123 @@ public enum Tables {
     }
 
     /**
+     * Generates a list of objects of {@link T} out of {@code queryResult}.
+     *
+     * @param queryResult The query result table that hold the member informations. First dimension has to be row;
+     * second column. Each row is treated as one object of type {@link T}. The first row must contain the headings of
+     * the columns.
+     * @return The resulting object of type {@link T} represented.
+     */
+    public final T generateRepresentations(List<List<String>> queryResult) {
+        List<String> headings = queryResult.get(0);
+        Map<ColumnPattern<?, U>, List<Integer>> patternToColumnMapping = streamAllColumns()
+                //TODO Why is Function::identity not acccepted?
+                .map(pattern -> {
+                    List<Integer> targetIndices = new ArrayList<>();
+                    for (int i = 0; i < headings.size(); i++) {
+                        if (pattern.matches(headings.get(i))) {
+                            targetIndices.add(i);
+                        }
+                    }
+                    return new Pair<>(pattern, targetIndices);
+                })
+                .filter(pair -> !pair.getValue().isEmpty())
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+        //Check duplicate target column indices
+        //TODO Can this be replaced by an "assert" which can be disabled at compile time?
+        Set<Integer> mappedTargetIndices = new HashSet<>();
+        boolean isDuplicateFree = patternToColumnMapping.values()
+                .stream()
+                .flatMap(List::stream)
+                .allMatch(mappedTargetIndices::add);
+        if (!isDuplicateFree) {
+            throw new AssertionError("Table " + getRealTableName() + " contains intersecting column patterns.");
+        }
+
+        return reducer.apply(queryResult.stream()
+                .skip(1) //Skip headings
+                .map(row -> {
+                    U rowRepresentation = baseEntrySupplier.get();
+                    for (Map.Entry<ColumnPattern<?, U>, List<Integer>> columnMapping : patternToColumnMapping.entrySet()) {
+                        ColumnPattern<?, U> pattern = columnMapping.getKey();
+                        List<Integer> targetIndices = columnMapping.getValue();
+                        if (targetIndices.size() <= 0) {
+                            Logger.getLogger(Tables.class.getName())
+                                    .log(Level.WARNING, "Pattern {0} is registered but not associated to any "
+                                            + "target index.", pattern.getColumnNamePattern().pattern());
+                        } else if (pattern instanceof SimpleColumnPattern<?, ?>) {
+                            if (targetIndices.size() > 1) {
+                                Logger.getLogger(Tables.class.getName())
+                                        .log(Level.WARNING, "The simple column {0} is associated to more than "
+                                                + "1 target index. Only the first index is recognized.",
+                                                pattern.getColumnNamePattern().pattern());
+                            }
+                            SimpleColumnPattern<T, U> simplePattern = (SimpleColumnPattern<T, U>) pattern;
+                            rowRepresentation = simplePattern.combine(rowRepresentation, row.get(targetIndices.get(0)));
+                        } else if (pattern instanceof RegexColumnPattern<?, ?, ?>) {
+                            RegexColumnPattern<T, U, ?> regexPattern = (RegexColumnPattern<T, U, ?>) pattern;
+                            for (Integer index : targetIndices) {
+                                rowRepresentation = regexPattern.combine(rowRepresentation, headings.get(index), row.get(index));
+                            }
+                        } else {
+                            Logger.getLogger(Tables.class.getName())
+                                    .log(Level.WARNING, "Can't handle patterns of type {0}.",
+                                            pattern == null ? null : pattern.getClass());
+                        }
+                    }
+                    return rowRepresentation;
+                }));
+    }
+
+    /**
      * Returns the name of the table in the database scheme.
      *
      * @return The name of the table in the database scheme.
      */
+
     public String getRealTableName() {
         return realTableName;
     }
 
     /**
-     * Returns the {@link Set} containing all columns this table can have according to its scheme.
+     * Returns the patterns of all required columns.
+     *
+     * @return The patterns of all required columns.
+     */
+    public List<SimpleColumnPattern<?, U>> getRequiredColumns() {
+        return requiredColumns;
+    }
+
+    /**
+     * Returns the patterns of all optional columns.
+     *
+     * @return The patterns of all optional columns.
+     */
+    public List<ColumnPattern<?, U>> getOptionalColumns() {
+        return optionalColumns;
+    }
+
+    /**
+     * Returns the {@link Set} containing all columns this table can have according to its scheme. When streaming all
+     * columns afterwards {@link #streamAllColumns()} should be preffered for efficiency reasons.
      *
      * @return The {@link Set} containing all columns this table can have according to its scheme.
+     * @see #streamAllColumns()
      */
-    public Set<Columns<?>> getAllColumns() {
-        return columns.keySet();
+    public Set<ColumnPattern<?, U>> getAllColumns() {
+        Set<ColumnPattern<?, U>> allColumns = new HashSet<>(getRequiredColumns());
+        allColumns.addAll(getOptionalColumns());
+        return allColumns;
+    }
+
+    /**
+     * Returns all declared tables. NOTE This method is only needed explicitely until generic enums are introduced. At
+     * that point enums {@code values()} method is going to take this functionality.
+     *
+     * @return All declared tables.
+     */
+    public static Tables<?, ?>[] values() {
+        return new Tables<?, ?>[]{MEMBER, NICKNAMES};
     }
 }

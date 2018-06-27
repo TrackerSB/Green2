@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.query;
 
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.connection.DBConnection;
-import bayern.steinbrecher.green2.connection.scheme.Columns;
+import bayern.steinbrecher.green2.connection.scheme.ColumnParser;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -436,7 +436,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             if (checkbox.isIndeterminate()) {
                 condition = null;
             } else {
-                condition = " = " + Columns.IS_MALE.toString(checkbox.isSelected());
+                condition = " = " + ColumnParser.BOOLEAN_COLUMN_PARSER.toString(checkbox.isSelected());
             }
             return Optional.ofNullable(condition);
         }
@@ -510,7 +510,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         @Override
         protected Optional<String> getConditionImpl() {
             Pair<String, String> mode = compareMode.getValue();
-            return Optional.of("LIKE " + Columns.BIC.toString(mode.getKey() + inputField.getText() + mode.getValue()));
+            return Optional.of("LIKE " + ColumnParser.STRING_COLUMN_PARSER.toString(mode.getKey()
+                    + inputField.getText() + mode.getValue()));
         }
 
         @Override
@@ -577,7 +578,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         @Override
         protected String convert(Integer value) {
-            return Columns.MEMBERSHIPNUMBER.toString(value);
+            return ColumnParser.INTEGER_COLUMN_PARSER.toString(value);
         }
 
         @Override
@@ -594,7 +595,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         @Override
         protected String convert(Double value) {
-            return Columns.CONTRIBUTION.toString(value);
+            return ColumnParser.DOUBLE_COLUMN_PARSER.toString(value);
         }
 
         @Override
@@ -636,7 +637,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         @Override
         protected Optional<String> getConditionImpl() {
-            return Optional.of(compareMode.getValue() + " " + Columns.BIRTHDAY.toString(datePicker.getValue()));
+            return Optional.of(compareMode.getValue() + " "
+                    + ColumnParser.LOCALDATE_COLUMN_PARSER.toString(datePicker.getValue()));
         }
 
         @Override

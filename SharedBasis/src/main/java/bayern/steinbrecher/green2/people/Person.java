@@ -19,7 +19,8 @@ package bayern.steinbrecher.green2.people;
 import java.time.LocalDate;
 
 /**
- * Represents a simple person.
+ * Represents a simple person. Since it has a variety of fields it is designed to be constructed by chaining calls to
+ * setter instead of a constructor.
  *
  * @author Stefan Huber
  */
@@ -28,23 +29,6 @@ public class Person {
     private String prename, lastname, title;
     private LocalDate birthday;
     private boolean male;
-
-    /**
-     * Constructs a new person.
-     *
-     * @param prename The first name of the person.
-     * @param lastName The last name of the person.
-     * @param title The title of the person if any.
-     * @param birthday The birthday date of the person.
-     * @param male {@code true} only if the person is male.
-     */
-    public Person(String prename, String lastName, String title, LocalDate birthday, boolean male) {
-        this.prename = prename;
-        this.lastname = lastName;
-        this.title = title;
-        this.birthday = birthday;
-        this.male = male;
-    }
 
     /**
      * Returns the first name.
@@ -59,9 +43,11 @@ public class Person {
      * Sets a new first name.
      *
      * @param prename The new first name.
+     * @return This person which can be used for chaining calls to setter.
      */
-    public void setPrename(String prename) {
+    public Person setPrename(String prename) {
         this.prename = prename;
+        return this;
     }
 
     /**
@@ -77,9 +63,11 @@ public class Person {
      * Sets a new last name.
      *
      * @param lastname The new last name.
+     * @return This {@link Person} which can be used for chaining calls to setter.
      */
-    public void setLastname(String lastname) {
+    public Person setLastname(String lastname) {
         this.lastname = lastname;
+        return this;
     }
 
     /**
@@ -104,9 +92,11 @@ public class Person {
      * Sets a new title.
      *
      * @param title The new title.
+     * @return This {@link Person} which can be used for chaining calls to setter.
      */
-    public void setTitle(String title) {
+    public Person setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     /**
@@ -122,9 +112,11 @@ public class Person {
      * Sets a new birthday.
      *
      * @param birthday the new birthday.
+     * @return This {@link Person} which can be used for chaining calls to setter.
      */
-    public void setBirthday(LocalDate birthday) {
+    public Person setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+        return this;
     }
 
     /**
@@ -140,8 +132,10 @@ public class Person {
      * Sets a new sex for this person.
      *
      * @param male {@code true} if this person is male.
+     * @return This {@link Person} which can be used for chaining calls to setter.
      */
-    public void setMale(boolean male) {
+    public Person setMale(boolean male) {
         this.male = male;
+        return this;
     }
 }

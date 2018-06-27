@@ -195,7 +195,6 @@ public final class SepaPain00800302XMLGenerator {
             AccountHolder ah = m.getAccountHolder();
             Double contribution = m.getContribution().get();
             String mandatSigned = SepaUtility.getSepaDate(ah.getMandateSigned());
-            String accoundHolderName = ah.getLastname() + ", " + ah.getPrename();
             StringBuilder suboutput = new StringBuilder()
                     .append("            <DrctDbtTxInf>\n")
                     .append("                <PmtId>\n")
@@ -216,7 +215,7 @@ public final class SepaPain00800302XMLGenerator {
                     .append("                    </FinInstnId>\n")
                     .append("                </DbtrAgt>\n")
                     .append("                <Dbtr>\n")
-                    .append("                    <Nm>").append(accoundHolderName).append("</Nm>\n")
+                    .append("                    <Nm>").append(m.getAccountHolderName()).append("</Nm>\n")
                     .append("                </Dbtr>\n")
                     .append("                <DbtrAcct>\n")
                     .append("                    <Id>\n")

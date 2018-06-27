@@ -16,15 +16,15 @@
  */
 package bayern.steinbrecher.green2.connection;
 
-import bayern.steinbrecher.green2.connection.scheme.Columns;
+import bayern.steinbrecher.green2.connection.scheme.ColumnPattern;
 import bayern.steinbrecher.green2.connection.scheme.Queries;
+import bayern.steinbrecher.green2.connection.scheme.RegexColumnPattern;
+import bayern.steinbrecher.green2.connection.scheme.SimpleColumnPattern;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.data.ProfileSettings;
-import bayern.steinbrecher.green2.generator.MemberGenerator;
-import bayern.steinbrecher.green2.generator.NicknameGenerator;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import java.sql.SQLException;
@@ -56,10 +56,10 @@ import javafx.util.Pair;
 public abstract class DBConnection implements AutoCloseable {
 
     /**
-     * Caches the names of all columns (not only the ones defined in {@link Columns}). The cache is refreshed whenever
-     * the currently loaded profile changes.
+     * Caches the names of all really existing columns on every supported table in {@link Tables}. The cache is
+     * refreshed whenever the currently loaded profile changes.
      */
-    private static final Map<Tables, List<Pair<String, Class<?>>>> EXISTING_COLUMNS_CACHE = new HashMap<>();
+    private static final Map<Tables<?, ?>, List<Pair<String, Class<?>>>> EXISTING_COLUMNS_CACHE = new HashMap<>();
     private static final List<String> TABLES_CACHE = new ArrayList<>();
     //TODO Any solution to decouple Profile from DBConnection?
     private static final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> NAME_AND_TYPE_OF_DATABASE
@@ -96,30 +96,6 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public abstract void execUpdate(String sqlCode) throws SQLException;
 
-    /**
-     * Returns a {@link Map} containing entries assigning the entries of {@code headings} which contain the headings of
-     * a query the number of the column. It stores no entry if this entry of {@code headings} contains a column which is
-     * not part of the scheme. It also stores no entry if an entry of the scheme is not found in {@code headings}.
-     *
-     * @param table The table containing the scheme to use.
-     * @param headings The headings of the query to map column numbers to.
-     * @return The {@link Map} containing entries assigning the entries of {@code headings} which contain the headings
-     * of a query the number of the column.
-     */
-    public static Map<Columns<?>, Integer> generateColumnMapping(Tables table, List<String> headings) {
-        Map<Columns<?>, Integer> columnsMapping = new HashMap<>();
-        table.getAllColumns().forEach(column -> {
-            for (int i = 0; i < headings.size(); i++) {
-                if (column.getRealColumnName().equalsIgnoreCase(headings.get(i))) {
-                    columnsMapping.put(column, i);
-                    break;
-                }
-            }
-        });
-
-        return columnsMapping;
-    }
-
     private Pair<String, SupportedDatabases> getNameAndTypeOfDatabase() {
         synchronized (NAME_AND_TYPE_OF_DATABASE) {
             if (!NAME_AND_TYPE_OF_DATABASE.get().isPresent()) {
@@ -138,7 +114,7 @@ public abstract class DBConnection implements AutoCloseable {
      * @param table The table to search for.
      * @return {@code true} only if the given table exist.
      */
-    public boolean tableExists(Tables table) {
+    public boolean tableExists(Tables<?, ?> table) {
         synchronized (TABLES_CACHE) {
             if (TABLES_CACHE.isEmpty()) {
                 Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
@@ -169,7 +145,7 @@ public abstract class DBConnection implements AutoCloseable {
      * creation and they could not be created.
      */
     public boolean createTablesIfNeeded() throws SchemeCreationException {
-        List<Tables> missingTables = Arrays.stream(Tables.values())
+        List<Tables<?, ?>> missingTables = Arrays.stream(Tables.values())
                 .filter(table -> !tableExists(table))
                 .collect(Collectors.toList());
         boolean tablesAreMissing = !missingTables.isEmpty();
@@ -181,7 +157,7 @@ public abstract class DBConnection implements AutoCloseable {
             Optional<ButtonType> resultButton = DialogUtility.showAndWait(DialogUtility.createAlert(
                     Alert.AlertType.CONFIRMATION, message.toString(), ButtonType.YES, ButtonType.NO));
             if (resultButton.isPresent() && resultButton.get() == ButtonType.YES) {
-                for (Tables table : missingTables) {
+                for (Tables<?, ?> table : missingTables) {
                     try {
                         Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
                         execUpdate(table.generateQuery(
@@ -221,7 +197,7 @@ public abstract class DBConnection implements AutoCloseable {
      * java.util.Collection)
      */
     //FIXME The method does not tell which columns and condtions were excluded.
-    public Optional<String> generateSearchQuery(Tables table, Collection<String> columnsToSelect,
+    public Optional<String> generateSearchQuery(Tables<?, ?> table, Collection<String> columnsToSelect,
             Collection<String> conditions) {
         throwIfInvalid();
         List<String> existingColumns;
@@ -275,18 +251,37 @@ public abstract class DBConnection implements AutoCloseable {
 
     /**
      * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
-     * trailing space at the end. The select statement contains only columns existing and associated with {@code table}.
+     * trailing space at the end.The select statement contains only columns existing and associated with {@code table}.
      *
+     * @param <U> The type of an entry of the table.
      * @param table The table to select from.
-     * @param columnsToSelect The columns to select when they exist. If it is empty all available columns are queried.
-     * @return The statement selecting all existing columns of {@code columnsToSelect}. Returns {@link Optional#empty()}
-     * if {@code columnsToSelect} contains no column which exists in the scheme accessible through {@code connection}.
+     * @param patternsToSelect The columns to select when they exist. If it is empty all available columns are queried.
+     * @return The statement selecting all existing columns of {@code patternsToSelect}. Returns
+     * {@link Optional#empty()} if {@code patternsToSelect} contains no column which exists in the scheme accessible
+     * through {@code connection}.
      * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.scheme.Tables, java.util.Collection,
      * java.util.Collection)
      */
-    public Optional<String> generateSearchQuery(Tables table, Collection<Columns<?>> columnsToSelect) {
-        List<String> columnNamesToSelect = columnsToSelect.stream()
-                .map(Columns::getRealColumnName)
+    public <U> Optional<String> generateSearchQuery(Tables<?, U> table,
+            Collection<ColumnPattern<?, U>> patternsToSelect) {
+        List<String> columnNamesToSelect = patternsToSelect.stream()
+                .flatMap(pattern -> {
+                    Set<String> columnNames;
+                    if (pattern instanceof SimpleColumnPattern) {
+                        columnNames = Set.of(((SimpleColumnPattern<?, U>) pattern).getRealColumnName());
+                    } else if (pattern instanceof RegexColumnPattern) {
+                        columnNames = getAllColumns(table)
+                                .stream()
+                                .map(Pair::getKey)
+                                .filter(existingColumn -> pattern.matches(existingColumn))
+                                .collect(Collectors.toSet());
+                    } else {
+                        Logger.getLogger(DBConnection.class.getName())
+                                .log(Level.WARNING, "Can''t handle column patterns of type {0}.", pattern.getClass());
+                        columnNames = Set.of();
+                    }
+                    return columnNames.stream();
+                })
                 .collect(Collectors.toList());
         return generateSearchQuery(table, columnNamesToSelect, new ArrayList<>());
     }
@@ -308,12 +303,12 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@link Optional#empty()} if all tables have all required columns. Otherwise returns an {@link Optional}
      * mapping invalid tables to the required columns missing.
      */
-    public Optional<Map<Tables, List<Columns<?>>>> getMissingColumns() {
-        Map<Tables, List<Columns<?>>> missingColumns = new HashMap<>();
-        for (Tables table : Tables.values()) {
-            List<Columns<?>> currentMissingColumns = table.getAllColumns().stream()
-                    .filter(c -> !table.isOptional(c))
-                    .filter(c -> !columnExists(table, c))
+    public Optional<Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>>> getMissingColumns() {
+        Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>> missingColumns = new HashMap<>();
+        for (Tables<?, ?> table : Tables.values()) {
+            List<SimpleColumnPattern<?, ?>> currentMissingColumns = table.getRequiredColumns()
+                    .stream()
+                    .filter(scp -> !columnExists(table, scp))
                     .collect(Collectors.toList());
             if (!currentMissingColumns.isEmpty()) {
                 missingColumns.put(table, currentMissingColumns);
@@ -332,12 +327,13 @@ public abstract class DBConnection implements AutoCloseable {
      * @param missingColumns The required columns missing.
      * @return
      */
-    private static String generateMissingColumnsString(Optional<Map<Tables, List<Columns<?>>>> missingColumns) {
+    private static String generateMissingColumnsString(
+            Optional<Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>>> missingColumns) {
         if (missingColumns.isPresent()) {
             return missingColumns.get().entrySet().parallelStream()
                     .map(entry -> entry.getKey().getRealTableName() + ":\n"
                     + entry.getValue().stream()
-                            .map(Columns::getRealColumnName)
+                            .map(SimpleColumnPattern::getRealColumnName)
                             .sorted()
                             .collect(Collectors.joining(", ")))
                     .collect(Collectors.joining("\n"));
@@ -364,7 +360,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public Set<Member> getAllMember() {
         try {
-            return MemberGenerator.generateMemberList(
+            return Tables.MEMBER.generateRepresentations(
                     execQuery(generateSearchQuery(Tables.MEMBER, Tables.MEMBER.getAllColumns()).get()));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
@@ -378,7 +374,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public Map<String, String> getAllNicknames() {
         try {
-            return NicknameGenerator.generateNicknames(
+            return Tables.NICKNAMES.generateRepresentations(
                     execQuery(generateSearchQuery(Tables.NICKNAMES, Tables.NICKNAMES.getAllColumns()).get()));
         } catch (SQLException ex) {
             throw new Error("Hardcoded SQL-Code invalid", ex);
@@ -386,7 +382,7 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     //FIXME How to make sure it is called every time HashMap<>#get(...) is called?
-    private void checkExistingColumnsCache(Tables table) {
+    private void checkExistingColumnsCache(Tables<?, ?> table) {
         synchronized (EXISTING_COLUMNS_CACHE) {
             if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
                 Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
@@ -423,7 +419,7 @@ public abstract class DBConnection implements AutoCloseable {
      * @param columnName The column name to search for.
      * @return {@code true} only if the given table contains the given column and it is accessible.
      */
-    public boolean columnExists(Tables table, String columnName) {
+    public boolean columnExists(Tables<?, ?> table, String columnName) {
         checkExistingColumnsCache(table);
         //TODO Think about ignoring small/capital letters in column names
         return EXISTING_COLUMNS_CACHE.get(table).stream()
@@ -438,10 +434,10 @@ public abstract class DBConnection implements AutoCloseable {
      * associated with {@code table} and has to be accessible.
      *
      * @param table The table to search the column for.
-     * @param column The column for whose {@link Columns#getRealColumnName()} to search for.
+     * @param column The column for whose {@link SimpleColumnPattern#getRealColumnName()} to search for.
      * @return {@code true} only if the given table contains the given column.
      */
-    public boolean columnExists(Tables table, Columns<?> column) {
+    public boolean columnExists(Tables<?, ?> table, SimpleColumnPattern<?, ?> column) {
         return columnExists(table, column.getRealColumnName());
     }
 
@@ -453,7 +449,7 @@ public abstract class DBConnection implements AutoCloseable {
      * @return A {@link List} of all existing columns (not only that ones declared in the scheme).
      * @see Tables#getAllColumns()
      */
-    public List<Pair<String, Class<?>>> getAllColumns(Tables table) {
+    public List<Pair<String, Class<?>>> getAllColumns(Tables<?, ?> table) {
         checkExistingColumnsCache(table);
         return EXISTING_COLUMNS_CACHE.get(table);
     }

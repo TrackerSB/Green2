@@ -17,28 +17,14 @@
 package bayern.steinbrecher.green2.people;
 
 /**
- * Represents a postal address.
+ * Represents a postal address. Since it has a variety of fields it is designed to be constructed by chaining calls to
+ * setter instead of a constructor.
  *
  * @author Stefan Huber
  */
 public class Address {
 
     private String street, houseNumber, postcode, place;
-
-    /**
-     * Constructs a new Address.
-     *
-     * @param street The street name.
-     * @param houseNumber The houseNumber
-     * @param postcode The postal code.
-     * @param place The village/town.
-     */
-    public Address(String street, String houseNumber, String postcode, String place) {
-        this.street = street;
-        this.houseNumber = houseNumber;
-        this.postcode = postcode;
-        this.place = place;
-    }
 
     /**
      * Returns the street name.
@@ -53,9 +39,11 @@ public class Address {
      * Sets a new street name.
      *
      * @param street The new street name.
+     * @return This {@link Address} which can be used for chaining calls to setter.
      */
-    public void setStreet(String street) {
+    public Address setStreet(String street) {
         this.street = street;
+        return this;
     }
 
     /**
@@ -71,9 +59,11 @@ public class Address {
      * Sets a new house number.
      *
      * @param houseNumber The new house number.
+     * @return This {@link Address} which can be used for chaining calls to setter.
      */
-    public void setHouseNumber(String houseNumber) {
+    public Address setHouseNumber(String houseNumber) {
         this.houseNumber = houseNumber;
+        return this;
     }
 
     /**
@@ -89,9 +79,11 @@ public class Address {
      * Changes the postcode.
      *
      * @param postcode The new postcode.
+     * @return This {@link Address} which can be used for chaining calls to setter.
      */
-    public void setPostcode(String postcode) {
+    public Address setPostcode(String postcode) {
         this.postcode = postcode;
+        return this;
     }
 
     /**
@@ -107,8 +99,10 @@ public class Address {
      * Changes the place of the postcode.
      *
      * @param place The new place of the postcode.
+     * @return This {@link Address} which can be used for chaining calls to setter.
      */
-    public void setPlace(String place) {
+    public Address setPlace(String place) {
         this.place = place;
+        return this;
     }
 }

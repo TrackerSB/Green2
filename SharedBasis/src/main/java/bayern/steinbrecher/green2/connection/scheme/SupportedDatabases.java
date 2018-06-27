@@ -21,13 +21,11 @@ import com.google.common.collect.HashBiMap;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -42,11 +40,11 @@ public enum SupportedDatabases {
      * Represents a MySQL database.
      */
     MY_SQL("My SQL", 3306,
-            Map.of(
+            HashBiMap.create(Map.of(
                     Keywords.DEFAULT, "DEFAULT",
                     Keywords.NOT_NULL, "NOT NULL",
                     Keywords.PRIMARY_KEY, "PRIMARY KEY"
-            ),
+            )),
             HashBiMap.create(Map.of(
                     Boolean.class, new SQLTypeKeyword("TINYINT", 1), //BOOLEAN is an alias for TINYINT(1)
                     Double.class, new SQLTypeKeyword("FLOAT"),
@@ -70,7 +68,7 @@ public enum SupportedDatabases {
 
     private final String displayName;
     private final int defaultPort;
-    private final Map<Keywords, String> keywordRepresentations;
+    private final BiMap<Keywords, String> keywordRepresentations;
     private final BiMap<Class<?>, SQLTypeKeyword> types;
     private final Map<Queries, String> queryTemplates;
     private final char identifierQuoteSymbol;
@@ -80,13 +78,15 @@ public enum SupportedDatabases {
      *
      * @param displayName The name to display when shown to the user.
      * @param defaultPort The default port to use when no other specified.
-     * @param keywordRepresentations The mapping of the keywords to the database specific keywords.
+     * @param keywordRepresentations The mapping of the keywords to the database specific keywords. NOTE Only use
+     * resolved alias otherwise the mapping from a SQL type keyword to a class may not work since
+     * {@code information_schema} stores only resolved alias.
      * @param types The mapping of the types to the database specific types.
      * @param queryTemplates The templates for all queries in {@link Queries#values()}. NOTE: This parameter may be
      * removed in future versions since {@code information_schema} is standardized.
      * @param identifierQuoteSymbol The symbol to use for quoting columns, tables,...
      */
-    SupportedDatabases(String displayName, int defaultPort, Map<Keywords, String> keywordRepresentations,
+    SupportedDatabases(String displayName, int defaultPort, BiMap<Keywords, String> keywordRepresentations,
             BiMap<Class<?>, SQLTypeKeyword> types, Map<Queries, String> queryTemplates, char identifierQuoteSymbol) {
         this.displayName = displayName;
         this.defaultPort = defaultPort;
@@ -117,22 +117,18 @@ public enum SupportedDatabases {
     }
 
     /**
-     * Returns a list of the appropriate SQL keywords for the given ones.Keywords which are not defined by this enum are
-     * skipped.
+     * Returns a line which can be used in a CREATE statement appropriate for this type of database.
      *
-     * @param keywords The keywords to lookup the appropriate SQL keyword for.
-     * @param column The column for which the keywords have to be retrieved. NOTE: This parameter is currently only used
-     * in the case {@code keywords} contains {@link Keywords#DEFAULT}.
+     * @param column The column for which a line should be created which can be used in CREATE statements.
      * @return A list of the appropriate SQL keywords for the given ones.
      */
-    public Collection<String> getKeywords(Set<Keywords> keywords, Columns<?> column) {
-        return keywords.stream()
+    public String generateCreateLine(SimpleColumnPattern<?, ?> column) {
+        String realColumnName = column.getRealColumnName();
+        return column.getKeywords().stream()
                 .map(keyword -> {
                     if (this.keywordRepresentations.containsKey(keyword)) {
                         String keywordString = this.keywordRepresentations.get(keyword);
                         if (keyword == Keywords.DEFAULT) {
-                            assert !keywords.contains(Keywords.NOT_NULL) || column.getDefaultValue() != null :
-                                    "The keyword NOT NULL is specified but the value for DEFAULT is null";
                             keywordString += " " + column.getDefaultValueSql();
                         }
                         return keywordString;
@@ -143,18 +139,50 @@ public enum SupportedDatabases {
                     }
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(Collectors.joining(" ", realColumnName + " " + getType(realColumnName), ""));
     }
 
     /**
-     * Returns the appropriate SQL type for the given column.
+     * Returns the appropriate SQL keyword for the given keyword representation.
      *
-     * @param <T> The type of the value hold by {@code column}.
-     * @param column The column to get the type for
+     * @param keyword The keyword to get a database specific keyword for.
+     * @return The database specific keyword.
+     */
+    public String getKeyword(Keywords keyword) {
+        if (keywordRepresentations.containsKey(keyword)) {
+            return keywordRepresentations.get(keyword);
+        } else {
+            throw new NoSuchElementException(
+                    "For the database " + displayName + " no SQL keyword for keyword " + keyword + " is defined.");
+        }
+    }
+
+    /**
+     * Returns the keyword representing the given database specific keyword.
+     *
+     * @param sqlKeyword The SQL keyword to get a {@link Keywords} from.
+     * @return The representing keyword. {@link Optional#empty()} only if this database does not associate a keyword for
+     * the given SQL keyword.
+     */
+    public Optional<Keywords> getKeyword(String sqlKeyword) {
+        Optional<Keywords> keyword = Optional.ofNullable(keywordRepresentations.inverse().get(sqlKeyword));
+        if (!keyword.isPresent()) {
+            Logger.getLogger(SupportedDatabases.class.getName())
+                    .log(Level.WARNING, "The database {0} does not define a keyword for {1}.",
+                            new Object[]{displayName, sqlKeyword});
+        }
+        return keyword;
+    }
+
+    /**
+     * Returns the appropriate SQL type keyword for the given column.
+     *
+     * @param <T> The type of the values hold by {@code column}.
+     * @param column The column to get the type for.
      * @return The SQL type representing the type of {@code column}.
      */
-    public <T> String getType(Columns<T> column) {
-        Class<T> type = column.getType();
+    public <T> String getType(ColumnPattern<T, ?> column) {
+        Class<T> type = column.getParser().getType();
         if (types.containsKey(type)) {
             return types.get(type).getSqlTypeKeyword();
         } else {
@@ -164,7 +192,7 @@ public enum SupportedDatabases {
     }
 
     /**
-     * Returns the appropriate SQL type for the given class.
+     * Returns the class used for representing values of the given SQL type.
      *
      * @param sqlType The type to get a class for.
      * @return An {@link Optional} containing the {@link Class} representing the appropriate SQL type. Returns

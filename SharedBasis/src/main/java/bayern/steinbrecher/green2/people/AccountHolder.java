@@ -19,7 +19,8 @@ package bayern.steinbrecher.green2.people;
 import java.time.LocalDate;
 
 /**
- * Represents an account holder.
+ * Represents an account holder. Since it has a variety of fields it is designed to be constructed by chaining calls to
+ * setter instead of a constructor.
  *
  * @author Stefan Huber
  */
@@ -30,25 +31,48 @@ public class AccountHolder extends Person {
     private boolean hasMandateChanged;
 
     /**
-     * Constructs a account holder.
-     *
-     * @param iban The IBAN of the account holder.
-     * @param bic The BIC of the account holder.
-     * @param mandateSigned The date when he signed his mandate.
-     * @param hasMandateChanged {@code true}, only if his mandate changed since last transfer.
-     * @param prename The firstName of the account holder.
-     * @param lastname The last name of the account holder.
-     * @param title The title of the account holder if any.
-     * @param birthday The birthday date of the account holder.
-     * @param male {@code true} only if the account holder is male.
+     * {@inheritDoc}
      */
-    public AccountHolder(String iban, String bic, LocalDate mandateSigned, boolean hasMandateChanged, String prename,
-            String lastname, String title, LocalDate birthday, boolean male) {
-        super(prename, lastname, title, birthday, male);
-        this.iban = iban;
-        this.bic = bic;
-        this.mandateSigned = mandateSigned;
-        this.hasMandateChanged = hasMandateChanged;
+    @Override
+    public AccountHolder setBirthday(LocalDate birthday) {
+        super.setBirthday(birthday);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AccountHolder setLastname(String lastname) {
+        super.setLastname(lastname);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AccountHolder setMale(boolean male) {
+        super.setMale(male);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AccountHolder setPrename(String prename) {
+        super.setPrename(prename);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AccountHolder setTitle(String title) {
+        super.setTitle(title);
+        return this;
     }
 
     /**
@@ -64,9 +88,11 @@ public class AccountHolder extends Person {
      * Changes the IBAN.
      *
      * @param iban The new IBAN.
+     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
      */
-    public void setIban(String iban) {
+    public AccountHolder setIban(String iban) {
         this.iban = iban;
+        return this;
     }
 
     /**
@@ -91,9 +117,11 @@ public class AccountHolder extends Person {
      * Changes the BIC.
      *
      * @param bic The new BIC.
+     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
      */
-    public void setBic(String bic) {
+    public AccountHolder setBic(String bic) {
         this.bic = bic;
+        return this;
     }
 
     /**
@@ -118,9 +146,11 @@ public class AccountHolder extends Person {
      * Changes the date when the mandat was signed.
      *
      * @param mandateSigned The date when the mandat was signed.
+     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
      */
-    public void setMandateSigned(LocalDate mandateSigned) {
+    public AccountHolder setMandateSigned(LocalDate mandateSigned) {
         this.mandateSigned = mandateSigned;
+        return this;
     }
 
     /**
@@ -136,8 +166,10 @@ public class AccountHolder extends Person {
      * Changes whether the mandat has changed.
      *
      * @param hasMandateChanged {@code true} if the mandat has changed.
+     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
      */
-    public void setHasMandateChanged(boolean hasMandateChanged) {
+    public AccountHolder setHasMandateChanged(boolean hasMandateChanged) {
         this.hasMandateChanged = hasMandateChanged;
+        return this;
     }
 }
