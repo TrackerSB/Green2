@@ -401,7 +401,7 @@ public class MenuController extends Controller {
         } catch (InterruptedException | ExecutionException | IOException ex) {
             Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
             String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
-            DialogUtility.showAndWait(DialogUtility.createErrorAlert(getStage(), noSepaDebit, noSepaDebit));
+            DialogUtility.showAndWait(DialogUtility.createStacktraceAlert(getStage(), ex, noSepaDebit, noSepaDebit));
         }
     }
 
