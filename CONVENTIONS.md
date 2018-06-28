@@ -56,6 +56,8 @@ As far as possible these conventions are checked by the checkstyle plugin.
     2. Package private class `SomeClassControllerParent` extending `SomeClassController` and adding the functions needed for the controls of `SomeClassParent.fxml`.
 * There has to be at most one view which references `SomeClassController` for requesting results and loads either `SomeClassParent.fxml` or `SomeClassWizard.fxml`.
 * It may be neccessary for `SomeClassControllerParent` to add a listener to some property of `SomeClassController` e.g. to add submit-on-enter functionality. Realize by defining a protected method called `addListenerToSomeProperty(ChangeListener<...>)`. Call this method the default constructor of the subclass.
+#### Bind properties of elements in FXML files
+* Prefer to bind properties of elements defined in FXML files using FXML instead of binding them within its controller.
 #### CSS includes
 * If a CSS file to include is in the same package include it within FXML.
 
