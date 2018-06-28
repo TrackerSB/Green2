@@ -82,6 +82,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           disable="${!yearSpinner.valid}"
                           accelerator="Alt+G"/>
             </Menu>
+            <Menu fx:id="honorings"
+                  text="%honorings"
+                  visible="${controller.honoringsAvailable}">
+                <CustomMenuItem hideOnClick="false"
+                                visible="${controller.honoringsAvailable}">
+                    <content>
+                        <CheckedIntegerSpinner fx:id="yearSpinner3"
+                                               min="0"
+                                               max="5000"
+                                               amountToStepBy="1"
+                                               editable="true"/>
+                    </content>
+                </CustomMenuItem>
+            </Menu>
             <Menu text="%data">
                 <MenuItem fx:id="queryDialogMenuItem"
                           onAction="#openQueryDialog"

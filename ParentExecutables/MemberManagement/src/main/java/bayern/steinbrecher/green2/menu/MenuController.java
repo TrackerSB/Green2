@@ -113,6 +113,7 @@ public class MenuController extends Controller {
     );
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
+    private BooleanProperty honoringsAvailable = new SimpleBooleanProperty(this, "honoringsAvailable");
     private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new HashMap<>(3) {
         /**
          * Returns the value hold at key {@code key}. In contrast to {@link HashMap#get(java.lang.Object)} this method
@@ -161,6 +162,10 @@ public class MenuController extends Controller {
     @FXML
     private CheckedIntegerSpinner yearSpinner2;
     @FXML
+    private CheckedIntegerSpinner yearSpinner3;
+    @FXML
+    private javafx.scene.control.Menu honorings;
+    @FXML
     private javafx.scene.control.Menu licensesMenu;
     @FXML
     private Label dataLastUpdatedLabel;
@@ -208,6 +213,98 @@ public class MenuController extends Controller {
         }, dataLastUpdatedProperty()));
     }
 
+    private void bindHonoringsAvailable() {
+        /*
+         * TODO This binding is only updated if the future representing the member changes. When a member changes it is
+         * currently not updated.
+         */
+        member.availableProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (newVal) {
+                        Platform.runLater(() -> {
+                            try {
+                                honoringsAvailable.set(!member.get()
+                                        .get()
+                                        .stream()
+                                        .map(Member::getHonorings)
+                                        .allMatch(Map::isEmpty));
+                            } catch (InterruptedException | ExecutionException ex) {
+                                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                                honoringsAvailable.set(false);
+                            }
+                        });
+                    }
+                });
+    }
+
+    private void showHonorings(int yearsOfMembership) {
+        if (yearSpinner.isValid()) {
+            List<List<String>> result = new ArrayList<>();
+            result.add(List.of(
+                    EnvironmentHandler.getResourceValue("membershipNumber"),
+                    EnvironmentHandler.getResourceValue("prename"),
+                    EnvironmentHandler.getResourceValue("lastname"),
+                    EnvironmentHandler.getResourceValue("memberSince"),
+                    EnvironmentHandler.getResourceValue("isActive")
+            ));
+            try {
+                result.addAll(member.get()
+                        .get()
+                        .stream()
+                        .filter(m -> !m.getHonorings().getOrDefault(yearsOfMembership, Boolean.FALSE))
+                        .filter(m -> yearSpinner.getValue() - m.getMemberSince().getYear() >= yearsOfMembership)
+                        .map(
+                                m -> List.of(Integer.toString(m.getMembershipnumber()),
+                                        m.getPerson().getPrename(),
+                                        m.getPerson().getLastname(),
+                                        m.getMemberSince().toString(),
+                                        m.isActive().map(b -> b.toString()).orElse("")))
+                        .collect(Collectors.toList())
+                );
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Stage resultStage = new Stage();
+            new QueryResult(result)
+                    .start(resultStage);
+            resultStage.show();
+        }
+    }
+
+    private void generateHonoringsMenu() {
+        /*
+         * TODO This binding is only updated if the future representing the member changes. When a member changes it is
+         * currently not updated.
+         */
+        member.availableProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (newVal) {
+                        try {
+                            member.get()
+                                    .get()
+                                    .stream()
+                                    .map(Member::getHonorings)
+                                    .flatMap(h -> h.keySet().stream())
+                                    .distinct()
+                                    .sorted()
+                                    .forEach(year -> {
+                                        String membershipTitle
+                                                = EnvironmentHandler.getResourceValue("yearsMembership", year);
+                                        MenuItem membershipItem = new MenuItem(membershipTitle);
+                                        membershipItem.setOnAction(aevt -> showHonorings(year));
+                                        membershipItem.disableProperty()
+                                                .bind(yearSpinner.validProperty().not());
+                                        Platform.runLater(() -> {
+                                            honorings.getItems()
+                                                    .add(membershipItem);
+                                        });
+                                    });
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+    }
 
     private void generateLicensesMenu() {
         EnvironmentHandler.getLicenses().stream().forEach(license -> {
@@ -230,10 +327,12 @@ public class MenuController extends Controller {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         yearSpinner2.valueFactoryProperty().bind(yearSpinner.valueFactoryProperty());
+        yearSpinner3.valueFactoryProperty().bind(yearSpinner.valueFactoryProperty());
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
         StringBinding yearBinding = bindYearSpinnerTo();
         bindAvailabilityInformations();
+        bindHonoringsAvailable();
 
         //Bind activateBirthdayFeatures
         activateBirthdayFeatures.bind(Bindings.createBooleanBinding(
@@ -241,6 +340,7 @@ public class MenuController extends Controller {
                 EnvironmentHandler.loadedProfileProperty(),
                 EnvironmentHandler.getProfile().getProperty(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES)));
 
+        generateHonoringsMenu();
         generateLicensesMenu();
     }
 
@@ -738,6 +838,30 @@ public class MenuController extends Controller {
     @Deprecated(forRemoval = false, since = "2u13")
     public boolean isActivateBirthdayFeatures() {
         return activateBirthdayFeaturesProperty().getValue();
+    }
+
+    /**
+     * Returns the property holding whether any member has associated honorings.
+     *
+     * @return The property holding whether any member has associated honorings.
+     * @deprecated The visibility of the method may be changed to package private or even to private when FXML is able
+     * to access these.
+     */
+    @Deprecated
+    public ReadOnlyBooleanProperty honoringsAvailableProperty() {
+        return honoringsAvailable;
+    }
+
+    /**
+     * Checks whether any member has associated honorings.
+     *
+     * @return {@code true} only if there is at least one member which has associated honorings.
+     * @deprecated The visibility of the method may be changed to package private or even to private when FXML is able
+     * to access these.
+     */
+    @Deprecated(forRemoval = false, since = "2u14")
+    public boolean isHonoringsAvailable() {
+        return honoringsAvailableProperty().get();
     }
 
     private static class CompletableFutureProperty<T> extends SimpleObjectProperty<CompletableFuture<T>> {
