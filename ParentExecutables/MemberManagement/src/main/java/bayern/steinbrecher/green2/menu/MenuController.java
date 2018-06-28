@@ -168,24 +168,25 @@ public class MenuController extends Controller {
     private Rectangle overlayBackground;
 
     /**
-     * {@inheritDoc}
+     * Binds the textual representation of the year spinners to text properties of elements in the menu.
+     *
+     * @return The textual representation of the year spinners.
      */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        //Bind year spinner
+    private StringBinding bindYearSpinnerTo() {
         StringBinding yearBinding = Bindings.createStringBinding(
                 () -> yearSpinner.isValid() ? yearSpinner.getValue().toString() : "?",
                 yearSpinner.validProperty(), yearSpinner.valueProperty());
+
         generateBirthdayInfos.textProperty().bind(
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("groupedBirthdayMember") + " ")
                         .concat(yearBinding));
         generateAddressesBirthday.textProperty().bind(
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("birthdayExpression") + " ")
                         .concat(yearBinding));
-        yearSpinner2.valueFactoryProperty().bind(yearSpinner.valueFactoryProperty());
-        yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
+        return yearBinding;
+    }
 
-        //Bind availability informations
+    private void bindAvailabilityInformations() {
         allDataAvailable.bind(member.availableProperty()
                 .and(memberNonContributionfree.availableProperty())
                 .and(nicknames.availableProperty()));
@@ -205,14 +206,10 @@ public class MenuController extends Controller {
             }
             return text;
         }, dataLastUpdatedProperty()));
+    }
 
-        //Bind activateBirthdayFeatures
-        activateBirthdayFeatures.bind(Bindings.createBooleanBinding(
-                () -> EnvironmentHandler.getProfile().get(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES),
-                EnvironmentHandler.loadedProfileProperty(),
-                EnvironmentHandler.getProfile().getProperty(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES)));
 
-        //Load licenses
+    private void generateLicensesMenu() {
         EnvironmentHandler.getLicenses().stream().forEach(license -> {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
@@ -225,6 +222,26 @@ public class MenuController extends Controller {
             });
             licensesMenu.getItems().add(item);
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        yearSpinner2.valueFactoryProperty().bind(yearSpinner.valueFactoryProperty());
+        yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
+
+        StringBinding yearBinding = bindYearSpinnerTo();
+        bindAvailabilityInformations();
+
+        //Bind activateBirthdayFeatures
+        activateBirthdayFeatures.bind(Bindings.createBooleanBinding(
+                () -> EnvironmentHandler.getProfile().get(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES),
+                EnvironmentHandler.loadedProfileProperty(),
+                EnvironmentHandler.getProfile().getProperty(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES)));
+
+        generateLicensesMenu();
     }
 
     /**
