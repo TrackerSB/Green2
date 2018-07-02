@@ -543,7 +543,8 @@ public class MenuController extends Controller {
                 if ((boolean) isBoundMethod.invoke(disablePropertyMethod.invoke(sourceObj))) {
                     //When getting here: sourceObj.disableProperty().isBound() == true
                     Logger.getLogger(MenuController.class.getName())
-                            .log(Level.WARNING, "Cannot disable control. DisableProperty is bound.");
+                            .log(Level.WARNING,
+                                    "Cannot disable control {0} since its DisableProperty is bound.", sourceObj);
                     run.run();
                 } else {
                     Method setDisableMethod = sourceClass.getMethod("setDisable", Boolean.TYPE);
