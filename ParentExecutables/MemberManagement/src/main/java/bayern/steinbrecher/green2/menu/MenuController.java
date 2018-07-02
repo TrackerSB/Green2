@@ -33,6 +33,7 @@ import bayern.steinbrecher.green2.query.QueryResult;
 import bayern.steinbrecher.green2.selection.Selection;
 import bayern.steinbrecher.green2.selection.SelectionGroup;
 import bayern.steinbrecher.green2.sepaform.SepaForm;
+import bayern.steinbrecher.green2.utility.DefaultMap;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
@@ -114,38 +115,16 @@ public class MenuController extends Controller {
     private DBConnection dbConnection = null;
     private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
     private BooleanProperty honoringsAvailable = new SimpleBooleanProperty(this, "honoringsAvailable");
-    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new HashMap<>(3) {
-        /**
-         * Returns the value hold at key {@code key}. In contrast to {@link HashMap#get(java.lang.Object)} this method
-         * never returns {@code null}. When the searched element is not found the appropriate data is generated, put and
-         * returned.
-         *
-         * @param key The key to search for.
-         * @return The {@link CompletableFuture} put for the given key.
-         * @see HashMap#get(java.lang.Object)
-         */
-        @Override
-        @SuppressWarnings("element-type-mismatch")
-        public CompletableFuture<List<Member>> get(Object key) {
-            if (super.containsKey(key)) {
-                return super.get(key);
-            } else if (key instanceof Integer) {
-                int year = (Integer) key;
-                putIfAbsent(year, CompletableFuture.supplyAsync(() -> {
-                    try {
-                        return getBirthdayMember(year);
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                        return null;
-                    }
-                }));
-                return super.get(key);
-            } else {
-                throw new IllegalStateException("There is no entry for the given key " + key
-                        + " and no entry can be generated due it is no Integer.");
+    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new DefaultMap<>(year -> {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getBirthdayMember(year);
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
             }
-        }
-    };
+        });
+    });
     private final CompletableFutureProperty<Set<Member>> member = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Set<Member>> memberNonContributionfree = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Map<String, String>> nicknames = new CompletableFutureProperty<>();

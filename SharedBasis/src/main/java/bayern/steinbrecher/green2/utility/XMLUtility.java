@@ -74,18 +74,7 @@ public final class XMLUtility {
         } catch (ParserConfigurationException ex) {
             throw new AssertionError("The DocumentBuilder used for the XML validation is invalid.", ex);
         }
-        Map<String, List<String>> validationProblemsMap = new HashMap<String, List<String>>() {
-            @Override
-            public List<String> get(Object key) {
-                if (key instanceof String) {
-                    String keyString = (String) key;
-                    if (!containsKey(keyString)) {
-                        super.put(keyString, new ArrayList<>());
-                    }
-                }
-                return super.get(key);
-            }
-        };
+        Map<String, List<String>> validationProblemsMap = new DefaultMap<>(key -> new ArrayList<>());
         BooleanProperty isValidXML = new SimpleBooleanProperty(true);
         xmlBuilder.setErrorHandler(new ErrorHandler() {
             private String createLine(SAXParseException ex) {
