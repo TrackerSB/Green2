@@ -293,7 +293,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
              * NOTE When only deselecting once it may be reselected since the user can change the group association
              * directly without explicitely deselecting an item.
              */
-            //TODO Check it this is really true
+            //TODO Check if this is really true
             option.setGroup(Optional.empty());
             option.setGroup(Optional.empty());
         });
