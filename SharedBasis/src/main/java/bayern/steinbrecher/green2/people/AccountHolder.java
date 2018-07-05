@@ -24,55 +24,73 @@ import java.time.LocalDate;
  *
  * @author Stefan Huber
  */
-public class AccountHolder extends Person {
+public final class AccountHolder {
 
+    private String prename, lastname, title;
     private String iban, bic;
     private LocalDate mandateSigned;
     private boolean hasMandateChanged;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AccountHolder setBirthday(LocalDate birthday) {
-        super.setBirthday(birthday);
-        return this;
+    private AccountHolder() {
+        //A completely uninitialized person (Only to be used by the builder.
     }
 
     /**
-     * {@inheritDoc}
+     * Creates a fully initialized {@link AccountHolder}. For the description of the parameter see their getter.
+     *
+     * @param iban
+     * @param bic
+     * @param mandateSigned
+     * @param hasMandateChanged
+     * @param prename
+     * @param lastname
+     * @param title
      */
-    @Override
-    public AccountHolder setLastname(String lastname) {
-        super.setLastname(lastname);
-        return this;
+    public AccountHolder(String iban, String bic, LocalDate mandateSigned, boolean hasMandateChanged, String prename,
+            String lastname, String title) {
+        this.prename = prename;
+        this.lastname = lastname;
+        this.title = title;
+        this.iban = iban;
+        this.bic = bic;
+        this.mandateSigned = mandateSigned;
+        this.hasMandateChanged = hasMandateChanged;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the first name.
+     *
+     * @return The first name.
      */
-    @Override
-    public AccountHolder setMale(boolean male) {
-        super.setMale(male);
-        return this;
+    public String getPrename() {
+        return prename;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the last name.
+     *
+     * @return The last name.
      */
-    @Override
-    public AccountHolder setPrename(String prename) {
-        super.setPrename(prename);
-        return this;
+    public String getLastname() {
+        return lastname;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns last name and first name space separated.
+     *
+     * @return last name and first name space separated.
      */
-    @Override
-    public AccountHolder setTitle(String title) {
-        super.setTitle(title);
-        return this;
+    public String getName() {
+        return getLastname() + " " + getPrename();
+    }
+
+    /**
+     * Returns the title if any.
+     *
+     * @return The title if any.
+     */
+    public String getTitle() {
+        return title;
     }
 
     /**
@@ -82,17 +100,6 @@ public class AccountHolder extends Person {
      */
     public String getIban() {
         return iban;
-    }
-
-    /**
-     * Changes the IBAN.
-     *
-     * @param iban The new IBAN.
-     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
-     */
-    public AccountHolder setIban(String iban) {
-        this.iban = iban;
-        return this;
     }
 
     /**
@@ -114,17 +121,6 @@ public class AccountHolder extends Person {
     }
 
     /**
-     * Changes the BIC.
-     *
-     * @param bic The new BIC.
-     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
-     */
-    public AccountHolder setBic(String bic) {
-        this.bic = bic;
-        return this;
-    }
-
-    /**
      * Checks whether this account holder a a BIC.
      *
      * @return {@code true} only if this account holder has a BIC.
@@ -143,17 +139,6 @@ public class AccountHolder extends Person {
     }
 
     /**
-     * Changes the date when the mandat was signed.
-     *
-     * @param mandateSigned The date when the mandat was signed.
-     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
-     */
-    public AccountHolder setMandateSigned(LocalDate mandateSigned) {
-        this.mandateSigned = mandateSigned;
-        return this;
-    }
-
-    /**
      * Returns whether the mandate changed since the last transfer.
      *
      * @return {@code true} only if the mandate changed since the last transfer.
@@ -163,13 +148,101 @@ public class AccountHolder extends Person {
     }
 
     /**
-     * Changes whether the mandat has changed.
-     *
-     * @param hasMandateChanged {@code true} if the mandat has changed.
-     * @return This {@link AccountHolder} which can be used for chaining calls to setter.
+     * Allows to build an {@link AccountHolder} stepwise.
      */
-    public AccountHolder setHasMandateChanged(boolean hasMandateChanged) {
-        this.hasMandateChanged = hasMandateChanged;
-        return this;
+    public static final class Builder extends PeopleBuilder<AccountHolder> {
+
+        /**
+         * Creates a {@link AccountHolderBuilder} with no values of {@link AccountHolder} are set.
+         */
+        public Builder() {
+            this(new AccountHolder());
+        }
+
+        /**
+         * Creates a {@link AccountHolderBuilder} whose initial values are taken from the given {@link AccountHolder}.
+         *
+         * @param accountHolder The {@link AccountHolder} to take the initial values from.
+         */
+        public Builder(AccountHolder accountHolder) {
+            super(accountHolder);
+        }
+
+        /**
+         * Sets a new first name.
+         *
+         * @param prename The new first name.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setPrename(String prename) {
+            getToBuild().prename = prename;
+            return this;
+        }
+
+        /**
+         * Sets a new last name.
+         *
+         * @param lastname The new last name.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setLastname(String lastname) {
+            getToBuild().lastname = lastname;
+            return this;
+        }
+
+        /**
+         * Sets a new title.
+         *
+         * @param title The new title.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setTitle(String title) {
+            getToBuild().title = title;
+            return this;
+        }
+
+        /**
+         * Sets the IBAN to assocate with a {@link AccountHolder}.
+         *
+         * @param iban The IBAN to assocate with a {@link AccountHolder}.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setIban(String iban) {
+            getToBuild().iban = iban;
+            return this;
+        }
+
+        /**
+         * Sets the BIC to assocate with a {@link AccountHolder}.
+         *
+         * @param bic The BIC to assocate with a {@link AccountHolder}.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setBic(String bic) {
+            getToBuild().bic = bic;
+            return this;
+        }
+
+        /**
+         * Sets the date when a {@link AccountHolder} signed his/her mandat.
+         *
+         * @param mandateSigned The date when a {@link AccountHolder} signed his/her mandat.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setMandateSigned(LocalDate mandateSigned) {
+            getToBuild().mandateSigned = mandateSigned;
+            return this;
+        }
+
+        /**
+         * Sets whether the mandat changed since its last use.
+         *
+         * @param hasMandateChanged {@code true} only if the mandat changed since its last use.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setHasMandateChanged(Boolean hasMandateChanged) {
+            getToBuild().hasMandateChanged = hasMandateChanged;
+            return this;
+        }
     }
 }

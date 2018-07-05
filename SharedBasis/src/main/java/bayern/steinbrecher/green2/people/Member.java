@@ -16,10 +16,9 @@
  */
 package bayern.steinbrecher.green2.people;
 
-import android.support.annotation.NonNull;
 import java.text.Collator;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -31,7 +30,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public class Member implements Comparable<Member> {
+public final class Member implements Comparable<Member> {
 
     private static final Collator COLLATOR = Collator.getInstance(Locale.GERMAN);
     private int membershipnumber;
@@ -48,6 +47,37 @@ public class Member implements Comparable<Member> {
         COLLATOR.setStrength(Collator.SECONDARY);
     }
 
+    private Member() {
+        //A completely uninitialized person (Only to be used by the builder.
+    }
+
+    /**
+     * Creates a full initialized {@link Member}. For description of the parameters see their getter.
+     *
+     * @param membershipnumber
+     * @param person
+     * @param home
+     * @param accountHolder
+     * @param active
+     * @param contributionfree
+     * @param contribution
+     * @param memberSince
+     * @param honorings
+     */
+    public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder,
+            Optional<Boolean> active, boolean contributionfree, Optional<Double> contribution, LocalDate memberSince,
+            Map<Integer, Boolean> honorings) {
+        this.membershipnumber = membershipnumber;
+        this.person = person;
+        this.home = home;
+        this.accountHolder = accountHolder;
+        this.active = active;
+        this.contributionfree = contributionfree;
+        this.contribution = contribution;
+        this.memberSince = memberSince;
+        this.honorings = honorings;
+    }
+
     /**
      * Returns the mandate number.
      *
@@ -58,38 +88,12 @@ public class Member implements Comparable<Member> {
     }
 
     /**
-     * Sets the membershipnumer of this member.
-     *
-     * @param membershipnumber The membershipnumber of this member.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setMembershipnumber(int membershipnumber) {
-        this.membershipnumber = membershipnumber;
-        return this;
-    }
-
-    /**
      * Returns the person itself.
      *
      * @return The person representing this member.
      */
-    @NonNull
     public Person getPerson() {
-        if (person == null) {
-            person = new Person();
-        }
         return person;
-    }
-
-    /**
-     * Sets the person associated with this member.
-     *
-     * @param person The person holding some of the information about this member.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setPerson(Person person) {
-        this.person = person;
-        return this;
     }
 
     /**
@@ -97,23 +101,8 @@ public class Member implements Comparable<Member> {
      *
      * @return The homelocation.
      */
-    @NonNull
     public Address getHome() {
-        if (home == null) {
-            home = new Address();
-        }
         return home;
-    }
-
-    /**
-     * Sets the address of this member.
-     *
-     * @param home The address of this member.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setHome(Address home) {
-        this.home = home;
-        return this;
     }
 
     /**
@@ -123,23 +112,8 @@ public class Member implements Comparable<Member> {
      * @see #getAccountHolderPrename()
      * @see #getAccountHolderLastname()
      */
-    @NonNull
     public AccountHolder getAccountHolder() {
-        if (accountHolder == null) {
-            accountHolder = new AccountHolder();
-        }
         return accountHolder;
-    }
-
-    /**
-     * The account holder who pays the contributions of this member.
-     *
-     * @param accountHolder The account holder who pays the contributions of this member.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setAccountHolder(AccountHolder accountHolder) {
-        this.accountHolder = accountHolder;
-        return this;
     }
 
     /**
@@ -191,24 +165,8 @@ public class Member implements Comparable<Member> {
      * @return {@code true} only if this member is active. Returns {@link Optional#empty()} if the database does not
      * provide such information.
      */
-    @NonNull
     public Optional<Boolean> isActive() {
-        if (active == null) {
-            active = Optional.empty();
-        }
         return active;
-    }
-
-    /**
-     * Sets whether this member is an active or a passive member.
-     *
-     * @param active {@code true} only if this member is an active member. Pass {@code null} if the database stores no
-     * information about this.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setActive(Boolean active) {
-        this.active = Optional.ofNullable(active);
-        return this;
     }
 
     /**
@@ -221,40 +179,13 @@ public class Member implements Comparable<Member> {
     }
 
     /**
-     * Sets whether this member has to pay contributions.
-     *
-     * @param contributionfree {@code false} only if this member has to pay contributions.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setContributionfree(boolean contributionfree) {
-        this.contributionfree = contributionfree;
-        return this;
-    }
-
-    /**
      * Returns the contribution of this member.
      *
      * @return The contribution of this member or {@link Optional#empty()} if the contribution is unknown. (A reason may
      * be it is not saved by the database.)
      */
-    @NonNull
     public Optional<Double> getContribution() {
-        if (contribution == null) {
-            contribution = Optional.empty();
-        }
         return contribution;
-    }
-
-    /**
-     * Sets the contribution this member has to pay.
-     *
-     * @param contribution The contribution this member has to pay or {@code null} if the database does not provide
-     * information about this.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setContribution(Double contribution) {
-        this.contribution = Optional.ofNullable(contribution);
-        return this;
     }
 
     /**
@@ -267,44 +198,12 @@ public class Member implements Comparable<Member> {
     }
 
     /**
-     * Changes the date since when this member is member of the association.
-     *
-     * @param memberSince The date since when this member is member of the association.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setMemberSince(LocalDate memberSince) {
-        this.memberSince = memberSince;
-        return this;
-    }
-
-    /**
      * Returns the associated honorings of this member.
      *
-     * @return The associated honorings of this member.
+     * @return The associated honorings of this member. This {@link Map} is read-only.
      */
-    //TODO How to make sure that no value is ever null?
-    @NonNull
     public Map<Integer, Boolean> getHonorings() {
-        if (honorings == null) {
-            honorings = new HashMap<>();
-        }
-        return honorings;
-    }
-
-    /**
-     * Replaces the current honorings with the given ones.
-     *
-     * @param honorings The honorings this member to associate with.
-     * @return This member which can be used for chaining calls to setter.
-     */
-    public Member setHonorings(Map<Integer, Boolean> honorings) {
-        if (honorings.values()
-                .stream()
-                .anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException("null is not permitted for values in honorings.");
-        }
-        this.honorings = honorings;
-        return this;
+        return Collections.unmodifiableMap(honorings);
     }
 
     /**
@@ -348,5 +247,149 @@ public class Member implements Comparable<Member> {
     @Override
     public String toString() {
         return membershipnumber + ":\t" + person.getName();
+    }
+
+    /**
+     * Allows to build a {@link Member} stepwise.
+     */
+    public static final class Builder extends PeopleBuilder<Member> {
+
+        private final Person.Builder person;
+        private final Address.Builder home;
+        private final AccountHolder.Builder accountHolder;
+
+        /**
+         * Creates a builder with no value of {@link Member} set.
+         */
+        public Builder() {
+            this(new Member());
+        }
+
+        /**
+         * Creates a builder storing all current values of the given {@link Member}. This may be used to create modified
+         * copies.
+         *
+         * @param member The {@link Member} holding the initial values for this builder.
+         */
+        public Builder(Member member) {
+            super(member);
+            person = new Person.Builder(member.getPerson());
+            home = new Address.Builder(member.getHome());
+            accountHolder = new AccountHolder.Builder(member.getAccountHolder());
+        }
+
+        /**
+         * Sets the membershipnumer of this member.
+         *
+         * @param membershipnumber The membershipnumber of this member.
+         * @return This member which can be used for chaining calls to setter.
+         */
+        public Builder setMembershipnumber(int membershipnumber) {
+            getToBuild().membershipnumber = membershipnumber;
+            return this;
+        }
+
+        /**
+         * Returns the {@link Person} to set.
+         *
+         * @return The {@link Person} to set.
+         */
+        public Person.Builder getPerson() {
+            return person;
+        }
+
+        /**
+         * Returns the builder for the home address.
+         *
+         * @return The builder for the home address.
+         */
+        public Address.Builder getHome() {
+            return home;
+        }
+
+        /**
+         * Returns the builder for the {@link AccountHolder} to associate a {@link Member} with.
+         *
+         * @return The builder for the {@link AccountHolder} to associate a {@link Member} with.
+         */
+        public AccountHolder.Builder getAccountHolder() {
+            return accountHolder;
+        }
+
+        /**
+         * Sets whether this member is an active or a passive member.
+         *
+         * @param active {@code true} only if this member is an active member. Pass {@code null} if the database stores
+         * no information about this.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setActive(Boolean active) {
+            getToBuild().active = Optional.ofNullable(active);
+            return this;
+        }
+
+        /**
+         * Sets whether this member has to pay contributions.
+         *
+         * @param contributionfree {@code false} only if this member has to pay contributions.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setContributionfree(boolean contributionfree) {
+            getToBuild().contributionfree = contributionfree;
+            return this;
+        }
+
+        /**
+         * Sets the contribution this member has to pay.
+         *
+         * @param contribution The contribution this member has to pay or {@code null} if the database does not provide
+         * information about this.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setContribution(Double contribution) {
+            getToBuild().contribution = Optional.ofNullable(contribution);
+            return this;
+        }
+
+        /**
+         * Changes the date since when this member is member of the association.
+         *
+         * @param memberSince The date since when this member is member of the association.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setMemberSince(LocalDate memberSince) {
+            getToBuild().memberSince = memberSince;
+            return this;
+        }
+
+        /**
+         * Replaces the current honorings with the given ones.
+         *
+         * @param honorings The honorings this member to associate with.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setHonorings(Map<Integer, Boolean> honorings) {
+            if (honorings.values()
+                    .stream()
+                    .anyMatch(Objects::isNull)) {
+                throw new IllegalArgumentException("null is not permitted for values in honorings.");
+            }
+            getToBuild().honorings = honorings;
+            return this;
+        }
+
+        /**
+         * Sets the given entry to the map of honorings. It replaces a value if the key already exists.
+         *
+         * @param yearsOfMembership The number of years of membership (key).
+         * @param honored {@code true} only if the member was honored for the given number of years of membership
+         * (value).
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder putHonoring(int yearsOfMembership, boolean honored) {
+            getToBuild().honorings
+                    .put(yearsOfMembership, honored);
+            return this;
+        }
     }
 }

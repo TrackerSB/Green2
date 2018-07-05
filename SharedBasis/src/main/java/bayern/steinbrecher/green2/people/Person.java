@@ -24,11 +24,32 @@ import java.time.LocalDate;
  *
  * @author Stefan Huber
  */
-public class Person {
+public final class Person {
 
     private String prename, lastname, title;
     private LocalDate birthday;
     private boolean male;
+
+    private Person() {
+        //A completely uninitialized person (Only to be used by the builder.
+    }
+
+    /**
+     * Creates a fully initialized {@link Person}. For a description for the parameters see ther getter.
+     *
+     * @param prename
+     * @param lastname
+     * @param title
+     * @param birthday
+     * @param male
+     */
+    public Person(String prename, String lastname, String title, LocalDate birthday, boolean male) {
+        this.prename = prename;
+        this.lastname = lastname;
+        this.title = title;
+        this.birthday = birthday;
+        this.male = male;
+    }
 
     /**
      * Returns the first name.
@@ -40,34 +61,12 @@ public class Person {
     }
 
     /**
-     * Sets a new first name.
-     *
-     * @param prename The new first name.
-     * @return This person which can be used for chaining calls to setter.
-     */
-    public Person setPrename(String prename) {
-        this.prename = prename;
-        return this;
-    }
-
-    /**
      * Returns the last name.
      *
      * @return The last name.
      */
     public String getLastname() {
         return lastname;
-    }
-
-    /**
-     * Sets a new last name.
-     *
-     * @param lastname The new last name.
-     * @return This {@link Person} which can be used for chaining calls to setter.
-     */
-    public Person setLastname(String lastname) {
-        this.lastname = lastname;
-        return this;
     }
 
     /**
@@ -89,34 +88,12 @@ public class Person {
     }
 
     /**
-     * Sets a new title.
-     *
-     * @param title The new title.
-     * @return This {@link Person} which can be used for chaining calls to setter.
-     */
-    public Person setTitle(String title) {
-        this.title = title;
-        return this;
-    }
-
-    /**
      * Returns the birthday.
      *
      * @return The birthday.
      */
     public LocalDate getBirthday() {
         return birthday;
-    }
-
-    /**
-     * Sets a new birthday.
-     *
-     * @param birthday the new birthday.
-     * @return This {@link Person} which can be used for chaining calls to setter.
-     */
-    public Person setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-        return this;
     }
 
     /**
@@ -129,13 +106,79 @@ public class Person {
     }
 
     /**
-     * Sets a new sex for this person.
-     *
-     * @param male {@code true} if this person is male.
-     * @return This {@link Person} which can be used for chaining calls to setter.
+     * Allows to build a {@link Person} stepwise.
      */
-    public Person setMale(boolean male) {
-        this.male = male;
-        return this;
+    public static final class Builder extends PeopleBuilder<Person> {
+
+        /**
+         * Creates a {@link PersonBuilder} whith no value of {@link Person} set.
+         */
+        public Builder() {
+            this(new Person());
+        }
+
+        /**
+         * Creates a {@link PersonBuilder} whose initial values are taken from the given {@link Person}.
+         *
+         * @param person The {@link Person} to take the initial values from.
+         */
+        public Builder(Person person) {
+            super(person);
+        }
+
+        /**
+         * Sets a new first name.
+         *
+         * @param prename The new first name.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setPrename(String prename) {
+            getToBuild().prename = prename;
+            return this;
+        }
+
+        /**
+         * Sets a new last name.
+         *
+         * @param lastname The new last name.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setLastname(String lastname) {
+            getToBuild().lastname = lastname;
+            return this;
+        }
+
+        /**
+         * Sets a new title.
+         *
+         * @param title The new title.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setTitle(String title) {
+            getToBuild().title = title;
+            return this;
+        }
+
+        /**
+         * Sets a new birthday.
+         *
+         * @param birthday the new birthday.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setBirthday(LocalDate birthday) {
+            getToBuild().birthday = birthday;
+            return this;
+        }
+
+        /**
+         * Sets a new sex for this person.
+         *
+         * @param male {@code true} if this person is male.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setMale(boolean male) {
+            getToBuild().male = male;
+            return this;
+        }
     }
 }

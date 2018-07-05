@@ -22,9 +22,28 @@ package bayern.steinbrecher.green2.people;
  *
  * @author Stefan Huber
  */
-public class Address {
+public final class Address {
 
     private String street, houseNumber, postcode, place;
+
+    private Address() {
+        //A completely uninitialized person (Only to be used by the builder.
+    }
+
+    /**
+     * Creates a fully initialized {@link Address}. For the description of the parameter see their getter.
+     *
+     * @param street
+     * @param houseNumber
+     * @param postcode
+     * @param place
+     */
+    public Address(String street, String houseNumber, String postcode, String place) {
+        this.street = street;
+        this.houseNumber = houseNumber;
+        this.postcode = postcode;
+        this.place = place;
+    }
 
     /**
      * Returns the street name.
@@ -33,17 +52,6 @@ public class Address {
      */
     public String getStreet() {
         return street;
-    }
-
-    /**
-     * Sets a new street name.
-     *
-     * @param street The new street name.
-     * @return This {@link Address} which can be used for chaining calls to setter.
-     */
-    public Address setStreet(String street) {
-        this.street = street;
-        return this;
     }
 
     /**
@@ -56,34 +64,12 @@ public class Address {
     }
 
     /**
-     * Sets a new house number.
-     *
-     * @param houseNumber The new house number.
-     * @return This {@link Address} which can be used for chaining calls to setter.
-     */
-    public Address setHouseNumber(String houseNumber) {
-        this.houseNumber = houseNumber;
-        return this;
-    }
-
-    /**
      * Returns the postal code.
      *
      * @return The postal code.
      */
     public String getPostcode() {
         return postcode;
-    }
-
-    /**
-     * Changes the postcode.
-     *
-     * @param postcode The new postcode.
-     * @return This {@link Address} which can be used for chaining calls to setter.
-     */
-    public Address setPostcode(String postcode) {
-        this.postcode = postcode;
-        return this;
     }
 
     /**
@@ -96,13 +82,68 @@ public class Address {
     }
 
     /**
-     * Changes the place of the postcode.
-     *
-     * @param place The new place of the postcode.
-     * @return This {@link Address} which can be used for chaining calls to setter.
+     * Allows to build an {@link Address} stepwise.
      */
-    public Address setPlace(String place) {
-        this.place = place;
-        return this;
+    public static final class Builder extends PeopleBuilder<Address> {
+
+        /**
+         * Creates an {@link AddressBuilder} where no initial value for {@link Address} is set.
+         */
+        public Builder() {
+            this(new Address());
+        }
+
+        /**
+         * Creates a {@link AddressBuilder} whose initial values are taken from the given {@link Address}.
+         *
+         * @param address The {@link Address} to take initial values from.
+         */
+        public Builder(Address address) {
+            super(address);
+        }
+
+        /**
+         * Associates a street name of the {@link Address}.
+         *
+         * @param street A street name to assicate the {@link Address} with.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setStreet(String street) {
+            getToBuild().street = street;
+            return this;
+        }
+
+        /**
+         * Associates a housenumber of the {@link Address}.
+         *
+         * @param houseNumber A housenumber to assicate the {@link Address} with.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setHouseNumber(String houseNumber) {
+            getToBuild().houseNumber = houseNumber;
+            return this;
+        }
+
+        /**
+         * Associates a post code of the {@link Address}.
+         *
+         * @param postcode A post code to assicate the {@link Address} with.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setPostcode(String postcode) {
+            getToBuild().postcode = postcode;
+            return this;
+        }
+
+        /**
+         * Associates a city of the {@link Address}.
+         *
+         * @param place A city to assicate the {@link Address} with.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setPlace(String place) {
+            getToBuild().place = place;
+            return this;
+        }
     }
 }

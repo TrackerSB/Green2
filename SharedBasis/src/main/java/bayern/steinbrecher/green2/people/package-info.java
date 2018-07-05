@@ -1,5 +1,5 @@
 /**
- * Contains the classes for representing different people. All classes which are not immutable follow the pattern to
- * construct objects by chaining calls to setter instead of passing all values to a single constructor call.
+ * Contains the classes for representing different people. Most classes are immutable. Some of these are associated with
+ * a builder for being able to construct objects stepwise instead of per single constructor call.
  */
 package bayern.steinbrecher.green2.people;

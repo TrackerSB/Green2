@@ -193,10 +193,6 @@ public class MenuController extends Controller {
     }
 
     private void bindHonoringsAvailable() {
-        /*
-         * TODO This binding is only updated if the future representing the member changes. When a member changes it is
-         * currently not updated.
-         */
         member.availableProperty()
                 .addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
@@ -251,10 +247,6 @@ public class MenuController extends Controller {
     }
 
     private void generateHonoringsMenu() {
-        /*
-         * TODO This binding is only updated if the future representing the member changes. When a member changes it is
-         * currently not updated.
-         */
         member.availableProperty()
                 .addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
@@ -464,9 +456,9 @@ public class MenuController extends Controller {
                                     = ((Optional<Map<Member, Double>>) results.get("selectionGroup")).get();
                             selectedMember = groupedMember.entrySet().stream()
                                     .map(entry -> {
-                                        Member m = entry.getKey();
-                                        m.setContribution(entry.getValue());
-                                        return m;
+                                        return new Member.Builder(entry.getKey())
+                                                .setContribution(entry.getValue())
+                                                .generate();
                                     })
                                     .collect(Collectors.toSet());
                         } else {
