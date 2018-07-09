@@ -56,7 +56,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
      * @see HashMap#containsKey(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("element-type-mismatch")
+    @SuppressWarnings({"element-type-mismatch", "unchecked"})
     public V get(Object key) {
         if (!containsKey(key)) {
             K keyK = (K) key;

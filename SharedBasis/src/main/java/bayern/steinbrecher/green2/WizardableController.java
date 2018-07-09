@@ -33,12 +33,13 @@ public abstract class WizardableController<T extends Optional<?>> extends Result
     /**
      * A property indicating whether all input handled by this controller is valid.
      */
-    private BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
+    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public T getResult() {
         if (userAbborted() || !isValid()) {
             return (T) Optional.empty();

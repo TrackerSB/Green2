@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.connection.scheme;
 
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -95,6 +96,17 @@ public abstract class ColumnPattern<T, U> {
                     .equals(columnNamePattern.pattern());
         }
         return isEqual;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        //FIXME This is only the NetBeans default template for hash functions.
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.columnNamePattern);
+        return hash;
     }
 
     /**

@@ -32,12 +32,21 @@ import java.util.logging.Logger;
 //TODO Wait for generic enums
 public abstract class ColumnParser<T> {
 
+    /**
+     * Parses {@link String} values from and to its SQL representation.
+     */
     public static final ColumnParser<String> STRING_COLUMN_PARSER = new ColumnParser<String>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Optional<String> parse(String value) {
             return Optional.of(value);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected String toStringImpl(String value) {
             /*
@@ -48,12 +57,21 @@ public abstract class ColumnParser<T> {
             return "'" + value + "'";
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Class<String> getType() {
             return String.class;
         }
     };
+    /**
+     * Parses {@link Integer} values from and to its SQL representation.
+     */
     public static final ColumnParser<Integer> INTEGER_COLUMN_PARSER = new ColumnParser<Integer>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Optional<Integer> parse(String value) {
             Optional<Integer> parsedValue;
@@ -66,28 +84,49 @@ public abstract class ColumnParser<T> {
             return parsedValue;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Class<Integer> getType() {
             return Integer.class;
         }
     };
+    /**
+     * Parses {@link Boolean} values from and to its SQL representation.
+     */
     public static final ColumnParser<Boolean> BOOLEAN_COLUMN_PARSER = new ColumnParser<Boolean>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Optional<Boolean> parse(String value) {
             return Optional.of(value.equalsIgnoreCase("1"));
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected String toStringImpl(Boolean value) {
             return value ? "TRUE" : "FALSE";
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Class<Boolean> getType() {
             return Boolean.class;
         }
     };
+    /**
+     * Parses {@link LocalDate} values from and to its SQL representation.
+     */
     public static final ColumnParser<LocalDate> LOCALDATE_COLUMN_PARSER = new ColumnParser<LocalDate>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Optional<LocalDate> parse(String value) {
             LocalDate date = null;
@@ -104,17 +143,29 @@ public abstract class ColumnParser<T> {
             return Optional.ofNullable(date);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected String toStringImpl(LocalDate value) {
             return "'" + String.valueOf(value) + "'";
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Class<LocalDate> getType() {
             return LocalDate.class;
         }
     };
+    /**
+     * Parses {@link Double} values from and to its SQL representation.
+     */
     public static final ColumnParser<Double> DOUBLE_COLUMN_PARSER = new ColumnParser<Double>() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Optional<Double> parse(String value) {
             Optional<Double> parsedValue;
@@ -127,6 +178,9 @@ public abstract class ColumnParser<T> {
             return parsedValue;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Class<Double> getType() {
             return Double.class;

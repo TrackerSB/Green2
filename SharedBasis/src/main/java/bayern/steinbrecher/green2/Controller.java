@@ -34,7 +34,7 @@ public abstract class Controller implements Initializable {
     /**
      * The stage the controller has to interact with.
      */
-    private ObjectProperty<Stage> stage = new SimpleObjectProperty<>();
+    private final ObjectProperty<Stage> stage = new SimpleObjectProperty<>();
     /**
      * Only {@code true} when the user explicitly aborted his input. (E.g. pressing the X of the window.)
      */

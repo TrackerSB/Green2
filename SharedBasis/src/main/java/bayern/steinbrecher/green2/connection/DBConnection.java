@@ -277,7 +277,8 @@ public abstract class DBConnection implements AutoCloseable {
                                 .collect(Collectors.toSet());
                     } else {
                         Logger.getLogger(DBConnection.class.getName())
-                                .log(Level.WARNING, "Can''t handle column patterns of type {0}.", pattern.getClass());
+                                .log(Level.WARNING, "Can''t handle column patterns of type {0}.",
+                                        pattern == null ? "null" : pattern.getClass());
                         columnNames = Set.of();
                     }
                     return columnNames.stream();

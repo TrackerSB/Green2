@@ -34,6 +34,7 @@ public abstract class ResultController<T extends Optional<?>> extends Controller
      * input, the input is invalid, etc.
      * @see #calculateResult()
      */
+    @SuppressWarnings("unchecked")
     public T getResult() {
         if (userAbborted()) {
             return (T) Optional.empty();

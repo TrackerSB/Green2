@@ -24,6 +24,9 @@ package bayern.steinbrecher.green2.elements.sepa;
  */
 public class SepaNameField extends CheckedSepaTextField {
 
+    /**
+     * The CSS class name of {@link SepaNameField}.
+     */
     public static final String CSS_CLASS_SEPA_NAME_FIELD = "sepa-name-field";
 
     /**

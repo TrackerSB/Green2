@@ -336,10 +336,10 @@ public class /* enum */ Tables<T, U> {
                                                 + "1 target index. Only the first index is recognized.",
                                                 pattern.getColumnNamePattern().pattern());
                             }
-                            SimpleColumnPattern<T, U> simplePattern = (SimpleColumnPattern<T, U>) pattern;
+                            SimpleColumnPattern<?, U> simplePattern = (SimpleColumnPattern<?, U>) pattern;
                             rowRepresentation = simplePattern.combine(rowRepresentation, row.get(targetIndices.get(0)));
                         } else if (pattern instanceof RegexColumnPattern<?, ?, ?>) {
-                            RegexColumnPattern<T, U, ?> regexPattern = (RegexColumnPattern<T, U, ?>) pattern;
+                            RegexColumnPattern<?, U, ?> regexPattern = (RegexColumnPattern<?, U, ?>) pattern;
                             for (Integer index : targetIndices) {
                                 rowRepresentation = regexPattern.combine(rowRepresentation, headings.get(index), row.get(index));
                             }

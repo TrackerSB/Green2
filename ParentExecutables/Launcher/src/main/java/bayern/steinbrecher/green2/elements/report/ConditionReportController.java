@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.ResultController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -98,7 +99,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
             }
         });
         conditionsReport.getColumns()
-                .setAll(conditionNameColumn, conditionValueColumn);
+                .setAll(List.of(conditionNameColumn, conditionValueColumn));
 
         conditions.getValue().addListener((ListChangeListener.Change<? extends Condition> change) -> {
             while (change.next()) {
@@ -154,7 +155,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
         /**
          * Currently the hold value is not updated automatically.
          */
-        private final ObjectProperty<Optional<Boolean>> value = new SimpleObjectProperty(this, "value");
+        private final ObjectProperty<Optional<Boolean>> value = new SimpleObjectProperty<>(this, "value");
 
         Condition(String name, Optional<Callable<Boolean>> value) {
             this.name.set(name);
