@@ -8,43 +8,43 @@
         Green2 customized ruleset.
     </description>
 
-    <rule ref="pmdRulesets/basic.xml" />
-    <rule ref="pmdRulesets/braces.xml" />
-    <rule ref="pmdRulesets/codesize.xml" />
-    <rule ref="pmdRulesets/comments.xml" />
-    <rule ref="pmdRulesets/clone.xml" />
-    <rule ref="pmdRulesets/controversial.xml">
+    <rule ref="../pmdRulesets/basic.xml" />
+    <rule ref="../pmdRulesets/braces.xml" />
+    <rule ref="../pmdRulesets/codesize.xml" />
+    <rule ref="../pmdRulesets/comments.xml" />
+    <rule ref="../pmdRulesets/clone.xml" />
+    <rule ref="../pmdRulesets/controversial.xml">
         <exclude name="AtLeastOneConstructor" />
         <!-- <exclude name="BooleanInversion" /> --> <!-- TODO: Include or exclude? -->
         <exclude name="DataflowAnomalyAnalysis" />
         <!-- <exclude name="AvoidLiteralsInIfCondition" /> --> <!-- TODO: Include or exclude? -->
         <!-- <exclude name="UseConcurrentHashMap" /> --> <!-- TODO: Include or exclude? -->
     </rule>
-    <rule ref="pmdRulesets/coupling.xml" />
-    <rule ref="pmdRulesets/design.xml" />
-    <rule ref="pmdRulesets/empty.xml" />
-    <rule ref="pmdRulesets/finalizers.xml/AvoidCallingFinalize" />
-    <rule ref="pmdRulesets/imports.xml" />
-    <rule ref="pmdRulesets/imports.xml/TooManyStaticImports">
+    <rule ref="../pmdRulesets/coupling.xml" />
+    <rule ref="../pmdRulesets/design.xml" />
+    <rule ref="../pmdRulesets/empty.xml" />
+    <rule ref="../pmdRulesets/finalizers.xml/AvoidCallingFinalize" />
+    <rule ref="../pmdRulesets/imports.xml" />
+    <rule ref="../pmdRulesets/imports.xml/TooManyStaticImports">
         <properties>
             <property name="maximumStaticImports"
                       value="0" />
         </properties>
     </rule>
-    <rule ref="pmdRulesets/javabeans.xml/MissingSerialVersionUID" />
-    <rule ref="pmdRulesets/logging-java.xml" />
-    <rule ref="pmdRulesets/migrating.xml" />
-    <rule ref="pmdRulesets/naming.xml">
+    <rule ref="../pmdRulesets/javabeans.xml/MissingSerialVersionUID" />
+    <rule ref="../pmdRulesets/logging-java.xml" />
+    <rule ref="../pmdRulesets/migrating.xml" />
+    <rule ref="../pmdRulesets/naming.xml">
         <exclude name="AbstractNaming" />
     </rule>
-    <rule ref="pmdRulesets/optimizations.xml">
+    <rule ref="../pmdRulesets/optimizations.xml">
         <exclude name="LocalVariableCouldBeFinal" />
         <exclude name="MethodArgumentCouldBeFinal" />
     </rule>
-    <rule ref="pmdRulesets/strictexception.xml" />
-    <rule ref="pmdRulesets/strings.xml" />
-    <rule ref="pmdRulesets/sunsecure.xml" />
-    <rule ref="pmdRulesets/typeresolution.xml" />
-    <rule ref="pmdRulesets/unnecessary.xml" />
-    <rule ref="pmdRulesets/unusedcode.xml" />
+    <rule ref="../pmdRulesets/strictexception.xml" />
+    <rule ref="../pmdRulesets/strings.xml" />
+    <rule ref="../pmdRulesets/sunsecure.xml" />
+    <rule ref="../pmdRulesets/typeresolution.xml" />
+    <rule ref="../pmdRulesets/unnecessary.xml" />
+    <rule ref="../pmdRulesets/unusedcode.xml" />
 </ruleset>

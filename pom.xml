@@ -159,7 +159,7 @@
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <targetJdk>${maven.compiler.target}</targetJdk>
                     <rulesets>
-                        <ruleset>ruleset.xml</ruleset>
+                        <ruleset>${basedir}/../ruleset.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
