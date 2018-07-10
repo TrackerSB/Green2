@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.query;
+package bayern.steinbrecher.green2.result;
 
 import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.WizardableView;
@@ -30,18 +30,18 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class QueryResult extends WizardableView<Optional<Void>, QueryResultController> {
+public class Result extends WizardableView<Optional<Void>, ResultController> {
 
-    private final List<List<String>> queryResult;
+    private final List<List<String>> results;
 
     /**
      * Creates a new {@link QueryResult} initially showing the content of {@code queryResult}. It is assumed that the
      * first line contains the headings for the columns.
      *
-     * @param queryResult The content to show initially.
+     * @param results The content to show initially.
      */
-    public QueryResult(List<List<String>> queryResult) {
-        this.queryResult = queryResult;
+    public Result(List<List<String>> results) {
+        this.results = results;
     }
 
     /**
@@ -49,7 +49,7 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
      */
     @Override
     protected void callWhenLoadFXML() {
-        setQueryResult(queryResult);
+        setResults(results);
     }
 
     /**
@@ -59,7 +59,7 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
     protected void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("QueryResult.fxml");
+            root = loadFXML("Result.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
@@ -68,12 +68,12 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
     }
 
     /**
-     * Sets the query result to show.
+     * Sets the results to show.
      *
-     * @param queryResult The query result to show.
+     * @param results The results to show.
      */
-    public void setQueryResult(List<List<String>> queryResult) {
-        getController().setQueryResult(queryResult);
+    public void setResults(List<List<String>> results) {
+        getController().setResults(results);
     }
 
     /**
@@ -81,6 +81,6 @@ public class QueryResult extends WizardableView<Optional<Void>, QueryResultContr
      */
     @Override
     protected String getWizardFxmlPath() {
-        return "QueryResult.fxml";
+        return "Result.fxml";
     }
 }

@@ -29,7 +29,7 @@ import bayern.steinbrecher.green2.generator.sepa.SequenceType;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.people.Originator;
 import bayern.steinbrecher.green2.query.Query;
-import bayern.steinbrecher.green2.query.QueryResult;
+import bayern.steinbrecher.green2.result.Result;
 import bayern.steinbrecher.green2.selection.Selection;
 import bayern.steinbrecher.green2.selection.SelectionGroup;
 import bayern.steinbrecher.green2.sepaform.SepaForm;
@@ -240,7 +240,7 @@ public class MenuController extends Controller {
                 Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
             }
             Stage resultStage = new Stage();
-            new QueryResult(result)
+            new Result(result)
                     .start(resultStage);
             resultStage.show();
         }
@@ -574,7 +574,7 @@ public class MenuController extends Controller {
                 Wizard queryWizard = new Wizard(pages);
                 queryDialogPage.setNextFunction(() -> {
                     WizardPage<Optional<Void>> queryResultPage
-                            = new QueryResult(queryDialogPage.getResultFunction().call().orElse(new ArrayList<>()))
+                            = new Result(queryDialogPage.getResultFunction().call().orElse(new ArrayList<>()))
                                     .getWizardPage();
                     queryResultPage.setFinish(true);
                     queryWizard.put("queryResult", queryResultPage);

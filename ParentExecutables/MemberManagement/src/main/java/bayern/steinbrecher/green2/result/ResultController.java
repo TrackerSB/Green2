@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.query;
+package bayern.steinbrecher.green2.result;
 
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -53,11 +53,11 @@ import javafx.scene.layout.VBox;
  *
  * @author Stefan Huber
  */
-public class QueryResultController extends WizardableController<Optional<Void>> {
+public class ResultController extends WizardableController<Optional<Void>> {
 
     @FXML
-    private TableView<List<ReadOnlyStringProperty>> queryResultView;
-    private final ObjectProperty<List<List<String>>> queryResult = new SimpleObjectProperty<>();
+    private TableView<List<ReadOnlyStringProperty>> resultView;
+    private final ObjectProperty<List<List<String>>> results = new SimpleObjectProperty<>();
     private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
 
     /**
@@ -66,12 +66,12 @@ public class QueryResultController extends WizardableController<Optional<Void>> 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         empty.bind(Bindings.createBooleanBinding(() -> {
-            return queryResult.get() == null || queryResult.get().size() < 2
-                    || queryResult.get().stream().flatMap(List::stream).count() <= 0;
-        }, queryResult));
-        queryResult.addListener((obs, oldVal, newVal) -> {
-            queryResultView.getItems().clear();
-            queryResultView.getColumns().clear();
+            return results.get() == null || results.get().size() < 2
+                    || results.get().stream().flatMap(List::stream).count() <= 0;
+        }, results));
+        results.addListener((obs, oldVal, newVal) -> {
+            resultView.getItems().clear();
+            resultView.getColumns().clear();
 
             if (newVal.size() > 0) {
                 int numColumns = newVal.stream()
@@ -84,7 +84,7 @@ public class QueryResultController extends WizardableController<Optional<Void>> 
                     TableColumn<List<ReadOnlyStringProperty>, String> column = new TableColumn<>(heading);
                     final int fixedI = i;
                     column.setCellValueFactory(param -> param.getValue().get(fixedI));
-                    queryResultView.getColumns().add(column);
+                    resultView.getColumns().add(column);
                 }
 
                 if (newVal.size() > 1) {
@@ -100,12 +100,12 @@ public class QueryResultController extends WizardableController<Optional<Void>> 
                                 return itemsRow;
                             })
                             .forEach(itemsRow -> items.add(itemsRow));
-                    queryResultView.setItems(items);
+                    resultView.setItems(items);
                 }
             }
         });
-        HBox.setHgrow(queryResultView, Priority.ALWAYS);
-        VBox.setVgrow(queryResultView, Priority.ALWAYS);
+        HBox.setHgrow(resultView, Priority.ALWAYS);
+        VBox.setVgrow(resultView, Priority.ALWAYS);
     }
 
     @FXML
@@ -117,13 +117,13 @@ public class QueryResultController extends WizardableController<Optional<Void>> 
             Optional<File> path
                     = EnvironmentHandler.askForSavePath(getStage(), "query", "csv");
             if (path.isPresent()) {
-                String content = queryResult.get().stream()
+                String content = results.get().stream()
                         .map(row -> row.stream().collect(Collectors.joining(";")))
                         .collect(Collectors.joining("\n"));
                 try {
                     IOStreamUtility.printContent(content, path.get(), true);
                 } catch (IOException ex) {
-                    Logger.getLogger(QueryResultController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ResultController.class.getName()).log(Level.SEVERE, null, ex);
                     DialogUtility.createStacktraceAlert(
                             getStage(), ex, EnvironmentHandler.getResourceValue("exportFailed"));
                 }
@@ -140,30 +140,30 @@ public class QueryResultController extends WizardableController<Optional<Void>> 
     }
 
     /**
-     * Returns the property holding the currently shown query results.
+     * Returns the property holding the currently shown results.
      *
-     * @return The property holding the currently shown query results.
+     * @return The property holding the currently shown results.
      */
-    public ObjectProperty<List<List<String>>> queryResultProperty() {
-        return queryResult;
+    public ObjectProperty<List<List<String>>> resultsProperty() {
+        return results;
     }
 
     /**
-     * Returns the currently shown query results.
+     * Returns the currently shown results.
      *
-     * @return The currently shown query results.
+     * @return The currently shown results.
      */
-    public List<List<String>> getQueryResult() {
-        return queryResultProperty().get();
+    public List<List<String>> getResults() {
+        return resultsProperty().get();
     }
 
     /**
-     * Replaces the currently shown query results with the given one.
+     * Replaces the currently shown results with the given one.
      *
-     * @param queryResult The results to replace the currently shown once with.
+     * @param results The results to replace the currently shown once with.
      */
-    public void setQueryResult(List<List<String>> queryResult) {
-        queryResultProperty().set(queryResult);
+    public void setResults(List<List<String>> results) {
+        resultsProperty().set(results);
     }
 
     /**
