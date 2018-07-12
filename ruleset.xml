@@ -8,43 +8,51 @@
         Green2 customized ruleset.
     </description>
 
-    <rule ref="../pmdRulesets/basic.xml" />
-    <rule ref="../pmdRulesets/braces.xml" />
-    <rule ref="../pmdRulesets/codesize.xml" />
-    <rule ref="../pmdRulesets/comments.xml" />
-    <rule ref="../pmdRulesets/clone.xml" />
-    <rule ref="../pmdRulesets/controversial.xml">
-        <exclude name="AtLeastOneConstructor" />
-        <!-- <exclude name="BooleanInversion" /> --> <!-- TODO: Include or exclude? -->
-        <exclude name="DataflowAnomalyAnalysis" />
-        <!-- <exclude name="AvoidLiteralsInIfCondition" /> --> <!-- TODO: Include or exclude? -->
-        <!-- <exclude name="UseConcurrentHashMap" /> --> <!-- TODO: Include or exclude? -->
+    <!-- Java Best practices -->
+    <rule ref="category/java/bestpractices.xml" />
+
+    <!-- Java Codestyle -->
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="AbstractNaming" />
+        <!-- <exclude name="CommentDefaultAccessModifier" /> --> <!-- TODO include or exclude? -->
+        <exclude name="ForLoopsMustUseBraces" />
+        <exclude name="IfElseStmtsMustUseBraces" />
+        <exclude name="IfStmtsMustUseBraces" />
+        <!-- <exclude name="MethodArgumentCouldBeFinal" /> --> <!-- TODO include or exclude? -->
+        <exclude name="WhileLoopsMustUseBraces" />
     </rule>
-    <rule ref="../pmdRulesets/coupling.xml" />
-    <rule ref="../pmdRulesets/design.xml" />
-    <rule ref="../pmdRulesets/empty.xml" />
-    <rule ref="../pmdRulesets/finalizers.xml/AvoidCallingFinalize" />
-    <rule ref="../pmdRulesets/imports.xml" />
-    <rule ref="../pmdRulesets/imports.xml/TooManyStaticImports">
+    <rule ref="category/java/codestyle.xml">
         <properties>
-            <property name="maximumStaticImports"
-                      value="0" />
+            <property name="maximumStaticImports">0</property>
         </properties>
     </rule>
-    <rule ref="../pmdRulesets/javabeans.xml/MissingSerialVersionUID" />
-    <rule ref="../pmdRulesets/logging-java.xml" />
-    <rule ref="../pmdRulesets/migrating.xml" />
-    <rule ref="../pmdRulesets/naming.xml">
-        <exclude name="AbstractNaming" />
+
+    <!-- Java Design -->
+    <rule ref="category/java/design.xml">
+        <exclude name="ModifiedCyclomaticComplexity" />
+        <exclude name="NcssConstructorCount" />
+        <exclude name="NcssMethodCount" />
+        <exclude name="NcssTypeCount" />
+        <exclude name="StdCyclomaticComplexity" />
     </rule>
-    <rule ref="../pmdRulesets/optimizations.xml">
-        <exclude name="LocalVariableCouldBeFinal" />
-        <exclude name="MethodArgumentCouldBeFinal" />
+
+    <!-- Java Documentation -->
+    <rule ref="category/java/documentation.xml" />
+
+    <!-- Java Error Prone -->
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="CallSuperLast" />
     </rule>
-    <rule ref="../pmdRulesets/strictexception.xml" />
-    <rule ref="../pmdRulesets/strings.xml" />
-    <rule ref="../pmdRulesets/sunsecure.xml" />
-    <rule ref="../pmdRulesets/typeresolution.xml" />
-    <rule ref="../pmdRulesets/unnecessary.xml" />
-    <rule ref="../pmdRulesets/unusedcode.xml" />
+
+    <!-- Java Multithreading -->
+    <rule ref="category/java/multithreading.xml" />
+
+    <!-- Java Performance -->
+    <rule ref="category/java/performance.xml" />
+
+    <!-- Java Security -->
+    <rule ref="category/java/security.xml" />
+
+    <!-- POM Error Prone -->
+    <!-- <rule ref="category/pom/errorprone.xml" /> -->
 </ruleset>
