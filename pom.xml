@@ -21,6 +21,7 @@
         <maven.compiler.source>10</maven.compiler.source>
         <maven.compiler.target>10</maven.compiler.target>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
+        <project.relativeTo.rootDir>..</project.relativeTo.rootDir>
     </properties>
 
     <repositories>
@@ -104,41 +105,11 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
-            </plugin>
         </plugins>
     </build>
 
     <reporting>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <charset>${project.build.sourceEncoding}</charset>
-                    <docencoding>${project.build.sourceEncoding}</docencoding>
-                    <failOnError>false</failOnError>
-                    <additionalJOption>-html5</additionalJOption>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <id>aggregate</id>
-                        <inherited>false</inherited>
-                        <reports>
-                            <report>aggregate</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -158,19 +129,14 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.10.0</version>
                 <configuration>
-                    <aggregate>true</aggregate>
                     <failOnViolation>false</failOnViolation>
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <targetJdk>${maven.compiler.target}</targetJdk>
                     <rulesets>
-                        <ruleset>${basedir}/../ruleset.xml</ruleset>
+                        <ruleset>${project.relativeTo.rootDir}/ruleset.xml</ruleset>
                     </rulesets>
+                    <skipEmptyReport>false</skipEmptyReport>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>3.1.5</version>
             </plugin>
         </plugins>
     </reporting>

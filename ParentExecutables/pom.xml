@@ -21,6 +21,10 @@
     </modules>
     <name>ParentExecutables</name>
 
+    <properties>
+        <project.relativeTo.rootDir>../..</project.relativeTo.rootDir>
+    </properties>
+
     <build>
         <pluginManagement>
             <plugins>
