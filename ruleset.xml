@@ -29,6 +29,12 @@
                       value="[A-Z][a-zA-Z0-9]+(Utils?|Helper|Utility)" />
         </properties>
     </rule>
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum"
+                      value="25" />
+        </properties>
+    </rule>
     <rule ref="category/java/codestyle.xml/TooManyStaticImports">
         <properties>
             <property name="maximumStaticImports"
