@@ -36,20 +36,6 @@ public class RegexColumnPattern<T, U, K> extends ColumnPattern<T, U> {
     private final Function<String, K> keyExtractor;
 
     /**
-     * Creates a column pattern possibly matching multiple column names.
-     *
-     * @param columnNamePattern The pattern of column names to match.
-     * @param keywords The keywords to specify when creating a column matching this pattern.
-     * @param parser The parser to convert values from and to a SQL representation.
-     * @param setter The function used to set a parsed value to a given object. The setter should only return a new
-     * object of type {@link U} if the handed in one is immutable.
-     */
-    //TODO How to introduce the consumer version (to spare some "return this") without ambigousity?
-//    public RegexColumnPattern(String columnNamePattern, Set<Keywords> keywords, ColumnParser<T> parser,
-//            TriConsumer<U, K, T> setter) {
-//        this(columnNamePattern, keywords, parser, setter, null);
-//    }
-    /**
      * Creates a column pattern possibly matching multiple column names. This constructor may be used if {@link U} is an
      * immutable type.
      *

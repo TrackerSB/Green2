@@ -38,38 +38,6 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
     private final BiFunction<U, T, U> setter;
 
     /**
-     * Creates a new simple column pattern, i.e. a pattern which specifies a specific column name.
-     *
-     * @param realColumnName The exact name of the column to match.
-     * @param keywords The keywords to specify when creating a column matching this pattern.
-     * @param parser The parser to convert values from and to a SQL representation.
-     * @param setter The function used to set a parsed value to a given object. The setter should only return a new
-     * object of type {@link U} if the handed in one is immutable.
-     */
-    //TODO How to introduce the consumer version (to spare some "return this") without ambiousity?
-//    public SimpleColumnPattern(String realColumnName, Set<Keywords> keywords, ColumnParser<T> parser,
-//            BiConsumer<U, T> setter) {
-//        this(realColumnName, keywords, parser, setter, null);
-//    }
-    /**
-     * Creates a new simple column pattern, i.e. a pattern which specifies a specific column name.
-     *
-     * @param realColumnName The exact name of the column to match.
-     * @param keywords The keywords to specify when creating a column matching this pattern.
-     * @param parser The parser to convert values from and to a SQL representation.
-     * @param setter The function used to set a parsed value to a given object. The setter should only return a new
-     * object of type {@link U} if the handed in one is immutable.
-     * @param defaultValue The default value of this column.
-     */
-    //TODO How to introduce the consumer version (to spare some "return this") without ambiousity?
-//    public SimpleColumnPattern(String realColumnName, Set<Keywords> keywords, ColumnParser<T> parser,
-//            BiConsumer<U, T> setter, T defaultValue) {
-//        this(realColumnName, keywords, parser, (u, t) -> {
-//            setter.accept(u, t);
-//            return u;
-//        }, defaultValue);
-//    }
-    /**
      * Creates a new simple column pattern, i.e. a pattern which specifies a specific column name. This constructor may
      * be used if {@link U} is an immutable type.
      *
