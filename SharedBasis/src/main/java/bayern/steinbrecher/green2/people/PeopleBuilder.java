@@ -19,15 +19,14 @@ package bayern.steinbrecher.green2.people;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Represents a class meant for building immutable objects like {@link Member}, {@link Address} or {@link Person}.
  * <ul>
- * <li>NOTE The current implementation does not forbid to reuse this class for other non-people classes. Subclass should
- * have only getter methods for nested builder. These getter methods have to return a non-null builder and no
- * {@link Optional}.</li>
+ * <li>NOTE The current implementation does not forbid to reuse this class for other non-people classes. Subclasses
+ * should have only getter methods for nested builder. These getter methods have to return a non-null builder and no
+ * {@link java.util.Optional}.</li>
  * <li>NOTE Subclasses should have two constructors:
  * <ol>
  * <li>A default constructor</li>

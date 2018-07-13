@@ -104,8 +104,10 @@ public abstract class ColumnPattern<T, U> {
     @Override
     public int hashCode() {
         //FIXME This is only the NetBeans default template for hash functions.
+        //CHECKSTYLE.OFF: MagicNumber - This is the default implementation of NetBeans.
         int hash = 5;
         hash = 97 * hash + Objects.hashCode(this.columnNamePattern);
+        //CHECKSTYLE.ON: MagicNumber
         return hash;
     }
 

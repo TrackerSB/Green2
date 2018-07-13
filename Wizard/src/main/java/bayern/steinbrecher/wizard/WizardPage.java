@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,13 +43,6 @@ public final class WizardPage<T> {
     private final Property<Callable<String>> nextFunction = new SimpleObjectProperty<>(this, "nextFunction");
     private boolean finish;
     private Callable<T> resultFunction;
-
-    WizardPage() {
-        /*
-         * Dummy constructor needed for Wizard in order making currentPage
-         * non-null when FXMLLoader#load() is called.
-         */
-    }
 
     /**
      * Creates a new page with given params.
@@ -174,12 +167,12 @@ public final class WizardPage<T> {
     }
 
     /**
-     * Sets a new binding to bind this pages {@code valid} property to.
+     * Sets a new binding to bind this pages {@link #valid} property to.
      *
-     * @param valid A new binding to bind this pages {@code valid} property to.
+     * @param validBinding A new binding to bind this pages {@link #valid} property to.
      */
-    public void setValidBinding(ObservableValue<? extends Boolean> valid) {
-        this.valid.bind(valid);
+    public void setValidBinding(ObservableValue<? extends Boolean> validBinding) {
+        this.valid.bind(validBinding);
     }
 
     /**

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,16 +26,14 @@ public class IllegalCallableException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructs an {@code IllegalCallableException} without detail message
-     * and no cause.
+     * Constructs an {@code IllegalCallableException} without detail message and no cause.
      */
     public IllegalCallableException() {
         super();
     }
 
     /**
-     * Constructs an {@code IllegalCallableException} with detail message but
-     * no cause.
+     * Constructs an {@code IllegalCallableException} with detail message but no cause.
      *
      * @param message The detail message to show.
      */
@@ -44,8 +42,7 @@ public class IllegalCallableException extends RuntimeException {
     }
 
     /**
-     * Constructs an {@code IllegalCallableException} with given detail message
-     * and cause.
+     * Constructs an {@code IllegalCallableException} with given detail message and cause.
      *
      * @param message The detail message to show.
      * @param cause The cause of this exception.
@@ -55,8 +52,7 @@ public class IllegalCallableException extends RuntimeException {
     }
 
     /**
-     * Constructs an {@code IllegalCallableException} without detail message
-     * but with given cause.
+     * Constructs an {@code IllegalCallableException} without detail message but with given cause.
      *
      * @param cause The cause of this exception.
      */

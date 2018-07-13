@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -56,6 +56,12 @@ public class Wizard extends Application {
         this.pages = pages;
     }
 
+    /**
+     * Checks whether the given {@link Map} of pages is valid. (E.g. it checks whether {@link WizardPage#FIRST_PAGE_KEY}
+     * is mapped to any {@link WizardPage}.
+     *
+     * @param pages The {@link WizardPage}s to check.
+     */
     static void checkPages(Map<String, WizardPage<?>> pages) {
         if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
             throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");

@@ -58,8 +58,7 @@ public final class IOStreamUtility {
     /**
      * Opens a dialog asking the user to choose a directory. It does not change any user specific registry keys relating
      * to any profile. If the profile settings should be updated
-     * {@link EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String, java.lang.Object...)}
-     * should be used.
+     * {@link EnvironmentHandler#askForSavePath(javafx.stage.Stage, String, String, Object...)} should be used.
      *
      * @param owner The owner of the dialog.
      * @param filePrefix The name of the file which is prefixed with the current date and may be extended by a number if

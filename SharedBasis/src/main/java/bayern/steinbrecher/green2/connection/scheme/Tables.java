@@ -41,7 +41,7 @@ import javafx.util.Pair;
  * @since 2u14
  */
 //TODO Wait for generic enums
-public class /* enum */ Tables<T, U> {
+public final class /* enum */ Tables<T, U> {
 
     /**
      * Represents the table of members.
@@ -291,7 +291,7 @@ public class /* enum */ Tables<T, U> {
      * the columns.
      * @return The resulting object of type {@link T} represented.
      */
-    public final T generateRepresentations(List<List<String>> queryResult) {
+    public T generateRepresentations(List<List<String>> queryResult) {
         List<String> headings = queryResult.get(0);
         Map<ColumnPattern<?, U>, List<Integer>> patternToColumnMapping = streamAllColumns()
                 //TODO Why is Function::identity not acccepted?
@@ -322,7 +322,8 @@ public class /* enum */ Tables<T, U> {
                 .skip(1) //Skip headings
                 .map(row -> {
                     U rowRepresentation = baseEntrySupplier.get();
-                    for (Map.Entry<ColumnPattern<?, U>, List<Integer>> columnMapping : patternToColumnMapping.entrySet()) {
+                    for (Map.Entry<ColumnPattern<?, U>, List<Integer>> columnMapping
+                            : patternToColumnMapping.entrySet()) {
                         ColumnPattern<?, U> pattern = columnMapping.getKey();
                         List<Integer> targetIndices = columnMapping.getValue();
                         if (targetIndices.size() <= 0) {
@@ -341,7 +342,8 @@ public class /* enum */ Tables<T, U> {
                         } else if (pattern instanceof RegexColumnPattern<?, ?, ?>) {
                             RegexColumnPattern<?, U, ?> regexPattern = (RegexColumnPattern<?, U, ?>) pattern;
                             for (Integer index : targetIndices) {
-                                rowRepresentation = regexPattern.combine(rowRepresentation, headings.get(index), row.get(index));
+                                rowRepresentation
+                                        = regexPattern.combine(rowRepresentation, headings.get(index), row.get(index));
                             }
                         } else {
                             Logger.getLogger(Tables.class.getName())

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2018 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ import javafx.util.Duration;
 public class WizardController implements Initializable {
 
     private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
-    private final Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<>());
+    private final Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage");
     private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
     private final BooleanProperty atBeginning = new SimpleBooleanProperty(this, "atBeginning", true);
     private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
@@ -153,6 +153,11 @@ public class WizardController implements Initializable {
         }
     }
 
+    /**
+     * Sets the {@link Stage} this controller has to use.
+     *
+     * @param stage The {@link Stage} to use.
+     */
     void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -202,7 +207,9 @@ public class WizardController implements Initializable {
             double halfParentWidth = nextPane.getParent().getLayoutBounds().getWidth() / 2;
             double halfParentHeight = nextPane.getParent().getLayoutBounds().getHeight() / 2;
             double marginInScene = nextPane.getScene().getWidth() / 2 - halfParentWidth;
+            //CHECKSTYLE.OFF: MagicNumber - The factor 3 is needed to make the initial x position outside the view.
             double xRightOuter = 3 * halfParentWidth + marginInScene;
+            //CHECKSTYLE.ON: MagicNumber
             double xLeftOuter = -halfParentWidth - marginInScene;
 
             ParallelTransition overallTrans = new ParallelTransition();
