@@ -66,7 +66,8 @@ public final class BirthdayGenerator {
 
         boolean distinguishActivePassive = member.parallelStream().anyMatch(m -> m.isActive().isPresent());
 
-        StringBuilder output = new StringBuilder("Geburtstage " + year);
+        StringBuilder output = new StringBuilder("Geburtstage ")
+                .append(year);
         List<Member> currentActive = new ArrayList<>();
         List<Member> currentPassive = new ArrayList<>();
         List<Member> currentNeither = new ArrayList<>();
@@ -99,8 +100,8 @@ public final class BirthdayGenerator {
     private static StringBuilder getMemberLines(List<Member> member) {
         return member.stream()
                 .map(m -> {
-                    Person p = m.getPerson();
-                    return p.getPrename() + ';' + p.getLastname() + ';' + p.getBirthday() + '\n';
+                    Person person = m.getPerson();
+                    return person.getPrename() + ';' + person.getLastname() + ';' + person.getBirthday() + '\n';
                 })
                 .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append);
     }
@@ -128,18 +129,15 @@ public final class BirthdayGenerator {
 
             if (distinguishActivePassive) {
                 if (!currentAgeActive.isEmpty()) {
-                    output.append("Aktiv:\n")
-                            .append("Vorname;Nachname;Geburtstag\n")
+                    output.append("Aktiv:\nVorname;Nachname;Geburtstag\n")
                             .append(getMemberLines(currentAgeActive));
                 }
                 if (!currentAgePassive.isEmpty()) {
-                    output.append("Passiv:\n")
-                            .append("Vorname;Nachname;Geburtstag\n")
+                    output.append("Passiv:\nVorname;Nachname;Geburtstag\n")
                             .append(getMemberLines(currentAgePassive));
                 }
                 if (!currentAgeNeither.isEmpty()) {
-                    output.append("Unbekannt:\n")
-                            .append("Vorname;Nachname;Geburtstag\n")
+                    output.append("Unbekannt:\nVorname;Nachname;Geburtstag\n")
                             .append(getMemberLines(currentAgeNeither));
                 }
             } else {
@@ -154,18 +152,16 @@ public final class BirthdayGenerator {
     /**
      * Checks whether the given member fits the configured birthday criteria.
      *
-     * @param m The member to check.
+     * @param member The member to check.
      * @param year The year to calculate his age at.
      * @return {@code true} only if {@code m} fits the configured criteria.
      * @see bayern.steinbrecher.green2.data.Profile#getAgeFunction()
      */
-    public static boolean getsNotified(Member m, int year) {
-        LocalDate birthday = m.getPerson().getBirthday();
-        if (birthday == null) {
-            return false;
-        } else {
-            int age = year - birthday.getYear();
-            return EnvironmentHandler.getProfile().getAgeFunction().apply(age);
-        }
+    public static boolean getsNotified(Member member, int year) {
+        LocalDate birthday = member.getPerson().getBirthday();
+        return birthday != null
+                && EnvironmentHandler.getProfile()
+                        .getAgeFunction()
+                        .apply(year - birthday.getYear());
     }
 }

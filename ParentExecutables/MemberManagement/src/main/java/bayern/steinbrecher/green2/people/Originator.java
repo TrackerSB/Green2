@@ -21,7 +21,6 @@ import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,6 +29,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
@@ -52,7 +52,7 @@ public class Originator {
             creditorId,
             pmtInfId,
             purpose;
-    private final File originatorFile;
+    private transient final File originatorFile;
     private static final Properties DEFAULT_PROPERTIES = new Properties();
 
     static {
@@ -105,7 +105,13 @@ public class Originator {
      */
     public static Optional<Originator> readOriginatorInfo(Profile profile) {
         Originator originator = new Originator(profile);
-        return Optional.ofNullable(originator.readOriginatorInfo() ? originator : null);
+        Optional<Originator> originatorInfo;
+        if (originator.readOriginatorInfo()) {
+            originatorInfo = Optional.of(originator);
+        } else {
+            originatorInfo = Optional.empty();
+        }
+        return originatorInfo;
     }
 
     /**
@@ -115,8 +121,9 @@ public class Originator {
      * @see Profile#getOriginatorInfoFile()
      */
     public boolean readOriginatorInfo() {
+        boolean readSuccessfull;
         if (originatorFile.exists()) {
-            try (Reader reader = new InputStreamReader(new FileInputStream(originatorFile), "UTF-8")) {
+            try (Reader reader = new InputStreamReader(Files.newInputStream(originatorFile.toPath()), "UTF-8")) {
                 Properties originatorProps = new Properties(DEFAULT_PROPERTIES);
                 originatorProps.load(reader);
                 Arrays.stream(getClass().getDeclaredFields())
@@ -139,12 +146,15 @@ public class Originator {
                                 Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
                             }
                         });
-                return true;
+                readSuccessfull = true;
             } catch (IOException ex) {
                 Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
+                readSuccessfull = false;
             }
+        } else {
+            readSuccessfull = false;
         }
-        return false;
+        return readSuccessfull;
     }
 
     /**
@@ -164,10 +174,8 @@ public class Originator {
                     }
                 });
         try (Writer writer
-                = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(originatorFile), "UTF-8"))) {
+                = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(originatorFile.toPath()), "UTF-8"))) {
             originatorProps.store(writer, null);
-        } catch (UnsupportedEncodingException | FileNotFoundException ex) {
-            Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -189,7 +189,7 @@ public abstract class View<T extends Controller> extends Application {
      * @return {@code true} only if the user aborted the currently inserted data.
      */
     public boolean userAborted() {
-        return getController().userAbborted();
+        return getController().hasUserAbborted();
     }
 
     /**

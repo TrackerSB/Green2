@@ -86,16 +86,16 @@ public class WaitScreen extends View<Controller> {
                     .parallel()
                     .forEach(column -> {
                         double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
-                        Polygon p = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
-                        p.setOpacity(START_OPACITY);
-                        p.setFill(Color.FORESTGREEN);
+                        Polygon hexagon = createHexagon(new Point2D(xCoo, yCoo), RADIUS);
+                        hexagon.setOpacity(START_OPACITY);
+                        hexagon.setFill(Color.FORESTGREEN);
 
-                        RotateTransition rt1 = new RotateTransition(DURATION_ANIMATION, p);
+                        RotateTransition rt1 = new RotateTransition(DURATION_ANIMATION, hexagon);
                         rt1.setByAngle(ANGLE / 2);
-                        FadeTransition ft11 = new FadeTransition(DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft11 = new FadeTransition(DURATION_ANIMATION_HALF, hexagon);
                         ft11.setFromValue(START_OPACITY);
                         ft11.setToValue(CENTER_OPACITY);
-                        FadeTransition ft12 = new FadeTransition(DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft12 = new FadeTransition(DURATION_ANIMATION_HALF, hexagon);
                         ft12.setFromValue(CENTER_OPACITY);
                         ft12.setToValue(START_OPACITY);
                         SequentialTransition st1 = new SequentialTransition(ft11, ft12);
@@ -103,12 +103,12 @@ public class WaitScreen extends View<Controller> {
 
                         PauseTransition pt1 = new PauseTransition(DURATION_PAUSE);
 
-                        RotateTransition rt2 = new RotateTransition(DURATION_ANIMATION, p);
+                        RotateTransition rt2 = new RotateTransition(DURATION_ANIMATION, hexagon);
                         rt2.setByAngle(ANGLE / 2);
-                        FadeTransition ft21 = new FadeTransition(DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft21 = new FadeTransition(DURATION_ANIMATION_HALF, hexagon);
                         ft21.setFromValue(START_OPACITY);
                         ft21.setToValue(CENTER_OPACITY);
-                        FadeTransition ft22 = new FadeTransition(DURATION_ANIMATION_HALF, p);
+                        FadeTransition ft22 = new FadeTransition(DURATION_ANIMATION_HALF, hexagon);
                         ft22.setFromValue(START_OPACITY);
                         ft22.setToValue(CENTER_OPACITY);
                         SequentialTransition st2 = new SequentialTransition(ft11, ft12);
@@ -121,7 +121,7 @@ public class WaitScreen extends View<Controller> {
                         sequence.setCycleCount(Animation.INDEFINITE);
 
                         synchronized (root) {
-                            root.getChildren().add(p);
+                            root.getChildren().add(hexagon);
                         }
                         synchronized (overallTransition) {
                             overallTransition.getChildren().add(sequence);

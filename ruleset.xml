@@ -26,7 +26,7 @@
     <rule ref="category/java/codestyle.xml/ClassNamingConventions">
         <properties>
             <property name="utilityClassPattern"
-                      value="[A-Z][a-zA-Z0-9]+(Utils?|Helper|Utility)" />
+                      value="[A-Z][a-zA-Z0-9]+(Utils?|Helper|Utility|Generator)" />
         </properties>
     </rule>
     <rule ref="category/java/codestyle.xml/LongVariable">
@@ -79,7 +79,7 @@
     <rule ref="category/java/errorprone.xml/BeanMembersShouldSerialize">
         <properties>
             <property name="violationSuppressXPath"
-                      value="//FieldDeclaration[not(../Annotation//Name[@Image = 'FXML'])]" />
+                      value="//FieldDeclaration[../Annotation//Name[@Image = 'FXML']]" />
         </properties>
     </rule>
 

@@ -42,6 +42,7 @@ import javafx.util.Pair;
  *
  * @author Stefan Huber
  */
+@SuppressWarnings("PMD.DataClass")
 public class CheckedDatePicker extends DatePicker implements CheckedControl, Reportable {
 
     /**
@@ -111,7 +112,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
 
             String[] dateParts = dateToParse.split("\\.");
             //CHECKSTYLE.OFF: MagicNumber - Every date consists of 3 elements (year, month, day)
-            if (dateParts.length == 3) {
+            if (dateParts.length == 3) { //NOPMD - A date consists of exactly three point separated parts.
                 //CHECKSTYLE.ON: MagicNumber
                 dateParts[0] = (dateParts[0].length() < 2 ? "0" : "") + dateParts[0];
                 dateParts[1] = (dateParts[1].length() < 2 ? "0" : "") + dateParts[1];

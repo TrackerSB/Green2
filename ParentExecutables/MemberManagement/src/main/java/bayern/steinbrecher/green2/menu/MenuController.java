@@ -113,8 +113,9 @@ public class MenuController extends Controller {
             "contributions", () -> checkContributions()
     );
     private DBConnection dbConnection = null;
-    private ObjectProperty<Optional<LocalDateTime>> dataLastUpdated = new SimpleObjectProperty<>(Optional.empty());
-    private BooleanProperty honoringsAvailable = new SimpleBooleanProperty(this, "honoringsAvailable");
+    private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
+            = new SimpleObjectProperty<>(Optional.empty());
+    private final BooleanProperty honoringsAvailable = new SimpleBooleanProperty(this, "honoringsAvailable");
     private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new DefaultMap<>(year -> {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -128,7 +129,7 @@ public class MenuController extends Controller {
     private final CompletableFutureProperty<Set<Member>> member = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Set<Member>> memberNonContributionfree = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Map<String, String>> nicknames = new CompletableFutureProperty<>();
-    private BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
+    private final BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
     private final BooleanProperty activateBirthdayFeatures
             = new SimpleBooleanProperty(this, "activateBirthdayFeatures", true);
 
@@ -153,10 +154,8 @@ public class MenuController extends Controller {
 
     /**
      * Binds the textual representation of the year spinners to text properties of elements in the menu.
-     *
-     * @return The textual representation of the year spinners.
      */
-    private StringBinding bindYearSpinnerTo() {
+    private void bindYearSpinnerTo() {
         StringBinding yearBinding = Bindings.createStringBinding(
                 () -> yearSpinner.isValid() ? yearSpinner.getValue().toString() : "?",
                 yearSpinner.validProperty(), yearSpinner.valueProperty());
@@ -167,7 +166,6 @@ public class MenuController extends Controller {
         generateAddressesBirthday.textProperty().bind(
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("birthdayExpression") + " ")
                         .concat(yearBinding));
-        return yearBinding;
     }
 
     private void bindAvailabilityInformations() {
@@ -296,12 +294,12 @@ public class MenuController extends Controller {
      * {@inheritDoc}
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL location, ResourceBundle resources) {
         yearSpinner2.valueFactoryProperty().bind(yearSpinner.valueFactoryProperty());
         yearSpinner3.valueFactoryProperty().bind(yearSpinner.valueFactoryProperty());
         yearSpinner.getValueFactory().setValue(CURRENT_YEAR + 1);
 
-        StringBinding yearBinding = bindYearSpinnerTo();
+        bindYearSpinnerTo();
         bindAvailabilityInformations();
         bindHonoringsAvailable();
 
@@ -546,7 +544,7 @@ public class MenuController extends Controller {
                     } else {
                         Logger.getLogger(MenuController.class.getName())
                                 .log(Level.SEVERE, "Retrieving the data failed.", throwable);
-                        datetime = null;
+                        datetime = null; //NOPMD - Make sure datetime is initialized.
                     }
                     Platform.runLater(() -> dataLastUpdated.set(Optional.ofNullable(datetime)));
                 });
@@ -644,8 +642,9 @@ public class MenuController extends Controller {
     }
 
     private List<String> checkContributions() throws InterruptedException, ExecutionException {
+        List<String> invalidContributions;
         if (isContributionColumnEnabled()) {
-            return member.get().get().parallelStream()
+            invalidContributions = member.get().get().parallelStream()
                     .filter(m -> {
                         Optional<Double> contribution = m.getContribution();
                         return !contribution.isPresent() || contribution.get() < 0
@@ -654,8 +653,9 @@ public class MenuController extends Controller {
                     .map(m -> m.toString() + ": " + m.getContribution())
                     .collect(Collectors.toList());
         } else {
-            return new ArrayList<>();
+            invalidContributions = new ArrayList<>();
         }
+        return invalidContributions;
     }
 
     @FXML
@@ -670,7 +670,7 @@ public class MenuController extends Controller {
                         List<String> messages;
                         try {
                             messages = entry.getValue().call();
-                        } catch (Exception ex) {
+                        } catch (Exception ex) { //NOPMD - Make sure the checks are not abborted.
                             Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
                             messages = Arrays.asList(ex.getLocalizedMessage().split("\n"));
                         }
@@ -836,6 +836,12 @@ public class MenuController extends Controller {
         return honoringsAvailableProperty().get();
     }
 
+    /**
+     * Represents a property holding a {@link CompletableFuture}. It extends {@link SimpleObjectProperty} with the
+     * property of availability of the wrapped {@link CompletableFuture}.
+     *
+     * @param <T> The type of the result of the wrapped {@link CompletableFuture}.
+     */
     private static class CompletableFutureProperty<T> extends SimpleObjectProperty<CompletableFuture<T>> {
 
         private final BooleanProperty available = new SimpleBooleanProperty();
@@ -860,12 +866,12 @@ public class MenuController extends Controller {
             available.set(false);
             CompletableFuture.runAsync(
                     () -> {
-                try {
-                    newValue.get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            })
+                        try {
+                            newValue.get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    })
                     .thenRunAsync(() -> available.set(true));
         }
 
@@ -882,9 +888,9 @@ public class MenuController extends Controller {
          * {@inheritDoc}
          */
         @Override
-        public void setValue(CompletableFuture<T> v) {
-            updateAvailableProperty(v);
-            super.setValue(v);
+        public void setValue(CompletableFuture<T> value) {
+            updateAvailableProperty(value);
+            super.setValue(value);
         }
 
         /**

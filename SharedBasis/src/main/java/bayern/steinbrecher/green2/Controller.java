@@ -42,10 +42,8 @@ public abstract class Controller implements Initializable {
 
     @Override
     @CallSuper
-    public void initialize(URL location, ResourceBundle resources) {
-        //no-op.
-        //TODO Force call of super.initialize(...)
-    }
+    //TODO Force call of super.initialize(...)
+    public abstract void initialize(URL location, ResourceBundle resources);
 
     /**
      * Returns the property holding the currently set {@link Stage}.
@@ -81,7 +79,7 @@ public abstract class Controller implements Initializable {
      *
      * @return {@code true} only if the user aborted his input explicitly.
      */
-    public boolean userAbborted() {
+    public boolean hasUserAbborted() {
         return userAborted;
     }
 }

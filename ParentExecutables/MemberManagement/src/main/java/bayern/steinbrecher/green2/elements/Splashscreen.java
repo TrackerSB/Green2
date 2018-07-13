@@ -91,12 +91,8 @@ public class Splashscreen extends View<Controller> {
      * {@link javafx.application.Application#start(Stage)}).
      */
     public static void showSplashscreen(long millis, Stage stage) {
-        try {
-            Splashscreen s = new Splashscreen();
-            s.start(stage);
-            s.showSplashscreen(millis);
-        } catch (Exception ex) {
-            Logger.getLogger(Splashscreen.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Splashscreen splashscreen = new Splashscreen();
+        splashscreen.start(stage);
+        splashscreen.showSplashscreen(millis);
     }
 }

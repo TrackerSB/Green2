@@ -42,6 +42,7 @@ public class ProfileNameField extends NameField {
      * Creates a new {@link ProfileNameField}.
      */
     public ProfileNameField() {
+        super();
         textProperty().addListener((obs, oldVal, newVal) -> {
             profileAlreadyExists.set(!EnvironmentHandler.getProfile().getProfileName().equals(newVal)
                     && Profile.getAvailableProfiles().contains(newVal));

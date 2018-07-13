@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -140,8 +141,8 @@ public final class IOStreamUtility {
     }
 
     /**
-     * Transfers all chars from {@link InputStream} to {@code outputStream} of a file. It loops over {@link InputStream}
-     * transferring {@code bytesPerLoop} bytes per loop.
+     * Transfers all chars from {@link InputStream} to {@link OutputStream} (e.g. of a file). It loops over
+     * {@link InputStream} transferring {@code bytesPerLoop} bytes per loop.
      *
      * @param inputStream The stream to read from.
      * @param outputStream The stream of the file to write to.
@@ -149,12 +150,13 @@ public final class IOStreamUtility {
      * @param bytesPerLoop The amount of bytes to transfer per loop.
      * @param callback A method to call on every loop. {@code null} for no callback.
      */
-    public static void transfer(InputStream inputStream, FileOutputStream outputStream, long size, long bytesPerLoop,
+    public static void transfer(InputStream inputStream, OutputStream outputStream, long size, int bytesPerLoop,
             Runnable callback) {
-        try (ReadableByteChannel inChannel = Channels.newChannel(inputStream);
-                FileChannel outChannel = outputStream.getChannel()) {
-            for (long offset = 0; offset < size; offset += bytesPerLoop) {
-                outChannel.transferFrom(inChannel, offset, bytesPerLoop);
+        try (ReadableByteChannel inChannel = Channels.newChannel(inputStream)) {
+            ByteBuffer buffer = ByteBuffer.allocate(bytesPerLoop);
+            for (int offset = 0; offset < size; offset += bytesPerLoop) {
+                inChannel.read(buffer);
+                outputStream.write(buffer.array());
                 if (callback != null) {
                     callback.run();
                 }

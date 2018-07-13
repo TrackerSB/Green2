@@ -17,13 +17,12 @@
 package bayern.steinbrecher.green2.utility;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -67,10 +66,10 @@ public final class ZipUtility {
      */
     public static void unzip(File zippedFile, File outputDir, Charset charset) throws IOException {
         String outDirPath = outputDir.getAbsolutePath();
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zippedFile), charset);
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(zippedFile.toPath()), charset);
                 InputStreamReader isr = new InputStreamReader(zis, charset);) {
-            ZipEntry zipEntry;
-            while ((zipEntry = zis.getNextEntry()) != null) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
                 String zipEntryName = zipEntry.getName();
                 String[] zipEntryNameParts = zipEntryName.split("\\.");
                 String zipEntryNameFormat = zipEntryNameParts[zipEntryNameParts.length - 1];
@@ -90,13 +89,14 @@ public final class ZipUtility {
                 File unzippedFileParent = unzippedFile.getParentFile();
                 if (unzippedFileParent.exists() || unzippedFileParent.mkdirs()) {
                     try (OutputStreamWriter osw
-                            = new OutputStreamWriter(new FileOutputStream(unzippedFile), currentCharset)) {
+                            = new OutputStreamWriter(Files.newOutputStream(unzippedFile.toPath()), currentCharset)) {
                         IOStreamUtility.transfer(currentIsr, osw);
                     }
                 } else {
                     throw new IOException("The directory where to place the extracted files ("
                             + outputDir.getAbsolutePath() + ") could not be created or at least one of its ancestors.");
                 }
+                zipEntry = zis.getNextEntry();
             }
         }
     }

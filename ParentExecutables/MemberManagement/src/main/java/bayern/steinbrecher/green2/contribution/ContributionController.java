@@ -73,11 +73,11 @@ public class ContributionController extends WizardableController<Optional<BiMap<
     private VBox contributionFieldsBox;
     @FXML
     private ReportSummary reportSummary;
-    private ListProperty<DuplicateContributionField> contributionFields
+    private final ListProperty<DuplicateContributionField> contributionFields
             = new SimpleListProperty<>(this, "contributionSpinner", FXCollections.observableArrayList());
     private final BooleanProperty uniqueColors = new SimpleBooleanProperty(this, "uniqueColors", true);
     private final BooleanProperty uniqueContributions = new SimpleBooleanProperty(this, "uniqueContributions", true);
-    private BooleanProperty allContributionFieldsValid
+    private final BooleanProperty allContributionFieldsValid
             = new SimpleBooleanProperty(this, "allContributionFieldsValid", true);
     private final ChangeListener<Object> calculateAllContributionFieldsValid = (obs, oldVal, newVal) -> {
         allContributionFieldsValid.set(contributionFields.stream().allMatch(ContributionField::isValid));
@@ -133,7 +133,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                         Logger.getLogger(ContributionController.class.getName())
                                 .log(Level.WARNING, "Could not remove row containing the removed ContributionField.");
                     } else {
-                        if (hboxes.size() > 1) {
+                        if (hboxes.size() > 1) { //NOPMD - Check for ambiguous choices.
                             Logger.getLogger(ContributionController.class.getName()).log(Level.WARNING,
                                     "Found multiple rows containing the removed ContributionField.\n"
                                     + "Only first one got removed.");
@@ -214,10 +214,17 @@ public class ContributionController extends WizardableController<Optional<BiMap<
         private final BooleanProperty duplicateColor = new SimpleBooleanProperty(false);
         private final BooleanProperty duplicateContribution = new SimpleBooleanProperty(false);
 
-        DuplicateContributionField() {
+        private DuplicateContributionField() {
+            super();
             initProperties();
         }
 
+        /**
+         * Returns the {@link ColorPicker} associated with this control.
+         *
+         * @return The {@link ColorPicker} associated with this control. Returns {@link Optional#empty()} only if it
+         * could not be found.
+         */
         public Optional<ColorPicker> findColorPicker() {
             return getChildren().stream()
                     .filter(child -> child instanceof ColorPicker)
@@ -225,6 +232,12 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                     .findAny();
         }
 
+        /**
+         * Returns the {@link CheckedDoubleSpinner} associated with this control.
+         *
+         * @return The {@link CheckedDoubleSpinner} associated with this control. Returns {@link Optional#empty()} only
+         * if it could not be found.
+         */
         public Optional<CheckedDoubleSpinner> findContributionSpinner() {
             return getChildren().stream()
                     .filter(child -> child instanceof CheckedDoubleSpinner)
@@ -250,26 +263,62 @@ public class ContributionController extends WizardableController<Optional<BiMap<
             reportSummary.addReportEntry(DUPLICATE_CONTRIBUTION_MESSAGE, ReportType.ERROR, duplicateContribution);
         }
 
+        /**
+         * Returns the property holding the duplicated color flag. The duplicated color flag can be set to specify that
+         * this control represents a color which another control also represents.
+         *
+         * @return The property holding the duplicated color flag.
+         */
         public BooleanProperty duplicateColorProperty() {
             return duplicateColor;
         }
 
+        /**
+         * Checks whether the duplicated color flag is set.
+         *
+         * @return {@code true} only if the duplicated color flag is set.
+         * @see #duplicateColorProperty()
+         */
         public boolean getDuplicateColor() {
             return duplicateColorProperty().get();
         }
 
+        /**
+         * Changes the duplicate color flag.
+         *
+         * @param isDuplicate {@code true} if the duplicate color flag has to be set.
+         * @see #duplicateColorProperty()
+         */
         public void setDuplicateColor(boolean isDuplicate) {
             duplicateColorProperty().set(isDuplicate);
         }
 
+        /**
+         * Returns the property holding the duplicated contribution flag. The duplicated contribution flag can be set to
+         * specify that this control contains a contribution another control also contains.
+         *
+         * @return
+         */
         public BooleanProperty duplicateContributionProperty() {
             return duplicateContribution;
         }
 
+        /**
+         * Checks whether the duplicated contribution flag is set.
+         *
+         * @return {@code true} only if the duplicated contribution flag is set.
+         * @see #duplicateContributionProperty()
+         */
         public boolean getDuplicateContribution() {
             return duplicateContributionProperty().get();
         }
 
+        /**
+         * Changes the duplicated contribition flag.
+         *
+         * @param isDuplicate {@code true} only if the duplicated contribution flag has to be set.
+         * @see #duplicateContributionProperty()
+         */
         public void setDuplicateContribution(boolean isDuplicate) {
             duplicateContributionProperty().set(isDuplicate);
         }

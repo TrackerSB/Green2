@@ -19,7 +19,6 @@ package bayern.steinbrecher.green2.utility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +30,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,8 +71,6 @@ public final class UpdateUtility {
         try {
             updateConditions
                     = IOStreamUtility.readAll(new URL(UPDATE_CONDITIONS_PATH).openStream(), StandardCharsets.UTF_8);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -95,6 +93,7 @@ public final class UpdateUtility {
     }
 
     private static Callable<Boolean> createTest(String source) {
+        Callable<Boolean> test;
         try {
             Path tempDir = Files.createTempDirectory("green2UpdateCondition_", ALL_PERMISSIONS);
             tempDir.toFile().deleteOnExit();
@@ -109,11 +108,12 @@ public final class UpdateUtility {
             URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{tempDir.toUri().toURL()});
             Method testMethod = Class.forName("test.Test", true, classLoader)
                     .getMethod("test");
-            return () -> (Boolean) testMethod.invoke(null);
+            test = () -> (Boolean) testMethod.invoke(null);
         } catch (IOException | ClassNotFoundException | NoSuchMethodException ex) {
             Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, "Could not parse test.", ex);
-            return null;
+            test = null;
         }
+        return test;
     }
 
     /**
@@ -124,59 +124,57 @@ public final class UpdateUtility {
      * {@link Callable} performing the actual test.
      */
     public static Optional<Map<String, Callable<Boolean>>> getUpdateConditions() {
-        Optional<String> xml = readOnlineUpdateConditions();
-        if (xml.isPresent()) {
-            try {
-                Optional<String> validation
-                        = XMLUtility.isValidXML(xml.get(), UpdateUtility.class.getResource("updateConditions.xsd"));
-                if (validation.isPresent()) {
-                    Logger.getLogger(UpdateUtility.class.getName())
-                            .log(Level.WARNING, "The given XML is not valid:\n{0}", validation);
-                } else {
-                    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder = builderFactory.newDocumentBuilder();
-                    Document document
-                            = builder.parse(new ByteArrayInputStream(xml.get().getBytes(StandardCharsets.UTF_8)));
-                    NodeList conditions = document.getElementsByTagName("condition");
-                    List<Pair<String, Callable<Boolean>>> retrievedUpdateConditions = new ArrayList<>();
-                    for (int i = 0; i < conditions.getLength(); i++) {
-                        Node condition = conditions.item(i);
-                        NodeList conditionChildren = condition.getChildNodes();
-                        Callable<Boolean> test = null;
-                        String testName = null;
-                        for (int j = 0; j < conditionChildren.getLength(); j++) {
-                            Node attribute = conditionChildren.item(j);
-                            switch (attribute.getNodeName()) {
-                                case "name":
-                                    testName = attribute.getTextContent();
-                                    break;
-                                case "function":
-                                    test = createTest(attribute.getTextContent());
-                                    break;
-                                case "#text":
-                                    //These are contents of the direct children of a "condition" node
-                                    break;
-                                default:
+        return readOnlineUpdateConditions()
+                .map(xml -> {
+                    Map<String, Callable<Boolean>> updateConditions = new HashMap<>();
+                    try {
+                        Optional<String> validation
+                                = XMLUtility.isValidXML(xml, UpdateUtility.class.getResource("updateConditions.xsd"));
+                        if (validation.isPresent()) {
+                            Logger.getLogger(UpdateUtility.class.getName())
+                                    .log(Level.WARNING, "The given XML is not valid:\n{0}", validation);
+                        } else {
+                            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+                            Document document
+                                    = builder.parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+                            NodeList conditions = document.getElementsByTagName("condition");
+                            List<Pair<String, Callable<Boolean>>> retrievedUpdateConditions = new ArrayList<>();
+                            for (int i = 0; i < conditions.getLength(); i++) {
+                                Node condition = conditions.item(i);
+                                NodeList conditionChildren = condition.getChildNodes();
+                                Callable<Boolean> test = null;
+                                String testName = null;
+                                for (int j = 0; j < conditionChildren.getLength(); j++) {
+                                    Node attribute = conditionChildren.item(j);
+                                    switch (attribute.getNodeName()) {
+                                        case "name":
+                                            testName = attribute.getTextContent();
+                                            break;
+                                        case "function":
+                                            test = createTest(attribute.getTextContent());
+                                            break;
+                                        case "#text":
+                                            //These are contents of the direct children of a "condition" node
+                                            break;
+                                        default:
+                                            //An unknown node is just ignored
+                                            break;
+                                    }
+                                }
+                                if (testName == null || test == null) {
                                     Logger.getLogger(UpdateUtility.class.getName())
-                                            .log(Level.WARNING, "Element {0} of update conditions ignored.",
-                                                    attribute.getNodeName());
-                                    break;
+                                            .log(Level.SEVERE, "Found conditions with missing conditions or names.");
+                                } else {
+                                    updateConditions.put(testName, test);
+                                }
                             }
                         }
-                        retrievedUpdateConditions.add(new Pair<>(testName, test));
+                    } catch (SAXException | IOException | ParserConfigurationException ex) {
+                        Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, null, ex);
+                        updateConditions = null;
                     }
-                    if (retrievedUpdateConditions
-                            .removeIf(condition -> condition.getKey() == null || condition.getValue() == null)) {
-                        Logger.getLogger(UpdateUtility.class.getName())
-                                .log(Level.SEVERE, "Found conditions with missing conditions or names.");
-                    }
-                    return Optional.of(retrievedUpdateConditions.stream()
-                            .collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
-                }
-            } catch (SAXException | IOException | ParserConfigurationException ex) {
-                Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return Optional.empty();
+                    return updateConditions;
+                });
     }
 }

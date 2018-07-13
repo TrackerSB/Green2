@@ -51,7 +51,7 @@ public class SshLoginController extends LoginController {
      * {@inheritDoc}
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL location, ResourceBundle resources) {
         initProperties(reportSummary, sshUsernameField, sshPasswordField, databaseUsernameField, databasePasswordField);
         Platform.runLater(() -> sshUsernameField.requestFocus());
     }

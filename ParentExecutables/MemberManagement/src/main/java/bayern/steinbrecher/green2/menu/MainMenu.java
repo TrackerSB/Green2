@@ -30,16 +30,17 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Menu extends View<MenuController> {
+public class MainMenu extends View<MenuController> {
 
-    private DBConnection dbConnection = null;
+    private final DBConnection dbConnection;
 
     /**
      * Creates a Menu which contains controls for all the functionality to be used by the user.
      *
      * @param dbConnection The connection to use for querying data.
      */
-    public Menu(DBConnection dbConnection) {
+    public MainMenu(DBConnection dbConnection) {
+        super();
         this.dbConnection = dbConnection;
     }
 

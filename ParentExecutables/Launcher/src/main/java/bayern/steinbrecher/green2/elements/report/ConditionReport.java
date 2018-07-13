@@ -35,15 +35,15 @@ import javafx.stage.Stage;
  */
 public class ConditionReport extends ResultView<Optional<Boolean>, ConditionReportController> {
 
-    private final Map<String, Optional<Callable<Boolean>>> conditions;
+    private final Map<String, Callable<Boolean>> conditions;
 
     /**
      * Creates a new report showing and evaluating the given conditions.
      *
-     * @param conditions The conditions to evaluate and show. Values of type {@link Optional#empty()} represent skipped
-     * conditions.
+     * @param conditions The conditions to evaluate and show.
      */
-    public ConditionReport(Map<String, Optional<Callable<Boolean>>> conditions) {
+    public ConditionReport(Map<String, Callable<Boolean>> conditions) {
+        super();
         this.conditions = conditions;
     }
 

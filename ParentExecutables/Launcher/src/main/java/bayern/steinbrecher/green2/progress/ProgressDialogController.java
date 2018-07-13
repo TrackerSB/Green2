@@ -43,8 +43,7 @@ public class ProgressDialogController extends Controller {
      * {@inheritDoc}
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        super.initialize(url, rb);
+    public void initialize(URL location, ResourceBundle resources) {
         percentage.addListener((obs, oldVal, newVal) -> {
             //CHECKSTYLE.OFF: MagicNumber - Multiplication with 100 is needed for having output as percentage.
             percentageString.set(FORMAT.format(Math.min(newVal.doubleValue(), 1) * 100) + "% ");
@@ -77,7 +76,7 @@ public class ProgressDialogController extends Controller {
      * @param steps The count of steps 100% is split.
      */
     public void incPercentage(int steps) {
-        if (percentage.get() < 1) {
+        if (percentage.get() < 1) { //NOPMD - 1 represents 100%.
             percentage.set(percentage.get() + 1.0 / steps);
         }
     }

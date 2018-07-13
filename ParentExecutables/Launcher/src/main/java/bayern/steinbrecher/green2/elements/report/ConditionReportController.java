@@ -142,13 +142,16 @@ public class ConditionReportController extends ResultController<Optional<Boolean
      * @param conditions The conditions to replace the current ones with. Values of type {@link Optional#empty()}
      * represent skipped conditions.
      */
-    public void setConditions(Map<String, Optional<Callable<Boolean>>> conditions) {
+    public void setConditions(Map<String, Callable<Boolean>> conditions) {
         this.conditions.getValue().clear();
         conditions.entrySet()
                 .stream()
                 .forEach(entry -> this.conditions.getValue().add(new Condition(entry.getKey(), entry.getValue())));
     }
 
+    /**
+     * Represents a condition and whether it is currently fullfilled ({@code true}/{@code false}).
+     */
     private static class Condition implements Reportable {
 
         private final StringProperty name = new SimpleStringProperty(this, "name");
@@ -157,41 +160,69 @@ public class ConditionReportController extends ResultController<Optional<Boolean
          */
         private final ObjectProperty<Optional<Boolean>> value = new SimpleObjectProperty<>(this, "value");
 
-        Condition(String name, Optional<Callable<Boolean>> value) {
+        Condition(String name, Callable<Boolean> value) {
             this.name.set(name);
-            this.value.set(value.map(callable -> {
-                try {
-                    return callable.call();
-                } catch (Exception ex) {
-                    Logger.getLogger(ConditionReportController.class.getName())
-                            .log(Level.WARNING, "An evaluation of a condition failed. It is skipped.", ex);
-                    return null;
-                }
-            }));
+            try {
+                this.value.set(Optional.of(value.call()));
+            } catch (Exception ex) { //NOPMD - Make sure (re-)evaluation of all conditions continues at any point.
+                Logger.getLogger(ConditionReportController.class.getName())
+                        .log(Level.WARNING, "An evaluation of a condition failed. It is skipped.", ex);
+                this.value.set(Optional.empty());
+            }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
             return Map.of(EnvironmentHandler.getResourceValue("skippedConditions"),
                     new Pair<>(ReportType.WARNING, value.isEqualTo(Optional.empty())));
         }
 
+        /**
+         * Returns the property holding the name of this {@link Condition}. This property is used for displaying a
+         * speaking description to the user.
+         *
+         * @return The property holding the name of this {@link Condition}.
+         */
         public StringProperty nameProperty() {
             return name;
         }
 
+        /**
+         * Returns the name of this {@link Condition}. This name is used for displaying a speaking description to the
+         * user.
+         *
+         * @return
+         */
         public String getName() {
             return nameProperty().get();
         }
 
+        /**
+         * Changes the name of this {@link Condition}.
+         *
+         * @param name The new name of this {@link Condition}.
+         */
         public void setName(String name) {
             nameProperty().set(name);
         }
 
+        /**
+         *
+         * @return
+         */
         public ReadOnlyObjectProperty<Optional<Boolean>> valueProperty() {
             return value;
         }
 
+        /**
+         * Checks whether this {@link Condition} is currently fullfilled.
+         *
+         * @return Returns {@code true} or {@code false} describing whether this {@link Condition} is fullfilled.
+         * Returns {@link Optional#empty()} only if it could not be determined.
+         */
         public Optional<Boolean> getValue() {
             return valueProperty().get();
         }

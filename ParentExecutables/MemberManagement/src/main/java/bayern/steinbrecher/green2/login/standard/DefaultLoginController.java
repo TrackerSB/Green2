@@ -47,7 +47,7 @@ public class DefaultLoginController extends LoginController {
      * {@inheritDoc}
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL location, ResourceBundle resources) {
         initProperties(reportSummary, databaseUsernameField, databasePasswordField);
         Platform.runLater(() -> databaseUsernameField.requestFocus());
     }

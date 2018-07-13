@@ -68,6 +68,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      * @see CheckedDoubleSpinner#CheckedDoubleSpinner(double, double, double, double)
      */
     public ContributionField() {
+        super();
         loadFXML();
     }
 

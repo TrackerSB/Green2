@@ -79,16 +79,16 @@ public final class AddressGenerator {
         return new StringBuilder("Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Geburtstag;Anrede\n")
                 .append(memberSalutationsMapping.entrySet().stream()
                         .map(entry -> {
-                            Person p = entry.getKey().getPerson();
-                            Address a = entry.getKey().getHome();
+                            Person person = entry.getKey().getPerson();
+                            Address address = entry.getKey().getHome();
                             return new StringJoiner(";")
-                                    .add(p.getPrename())
-                                    .add(p.getLastname())
-                                    .add(a.getStreet())
-                                    .add(a.getHouseNumber())
-                                    .add(a.getPostcode())
-                                    .add(a.getPlace())
-                                    .add(String.valueOf(p.getBirthday()))
+                                    .add(person.getPrename())
+                                    .add(person.getLastname())
+                                    .add(address.getStreet())
+                                    .add(address.getHouseNumber())
+                                    .add(address.getPostcode())
+                                    .add(address.getPlace())
+                                    .add(String.valueOf(person.getBirthday()))
                                     .add(entry.getValue())
                                     .toString();
                         })

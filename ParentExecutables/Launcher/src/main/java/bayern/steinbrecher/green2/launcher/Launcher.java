@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.launcher;
 
-import bayern.steinbrecher.green2.data.Collector;
+import bayern.steinbrecher.green2.data.CollectorUtility;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
 import bayern.steinbrecher.green2.elements.report.ConditionReport;
@@ -28,7 +28,6 @@ import bayern.steinbrecher.green2.utility.Programs;
 import bayern.steinbrecher.green2.utility.UpdateUtility;
 import bayern.steinbrecher.green2.utility.ZipUtility;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -36,20 +35,16 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 /**
  * Installs Green2 and checks for updates.
@@ -78,12 +73,14 @@ public final class Launcher extends Application {
     private static final int DOWNLOAD_STEPS = 1000;
 
     private static Optional<Charset> retrieveZipCharset() {
-        try (Scanner sc = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream(), StandardCharsets.UTF_8.name())) {
-            return Optional.of(Charset.forName(sc.nextLine()));
+        Charset zipCharset;
+        try (Scanner scanner = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream(), StandardCharsets.UTF_8.name())) {
+            zipCharset = Charset.forName(scanner.nextLine());
         } catch (IOException ex) {
             Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
-            return Optional.empty();
+            zipCharset = null;
         }
+        return Optional.ofNullable(zipCharset);
     }
 
     /**
@@ -100,7 +97,9 @@ public final class Launcher extends Application {
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
             if (isInstalled) {
-                if (!EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion)) {
+                if (EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion)) {
+                    Programs.MEMBER_MANAGEMENT.call();
+                } else {
                     Optional<Boolean> installUpdates = ChoiceDialog.askForUpdate();
                     if (installUpdates.isPresent()) {
                         if (installUpdates.get()) {
@@ -110,8 +109,6 @@ public final class Launcher extends Application {
                             Programs.MEMBER_MANAGEMENT.call();
                         }
                     }
-                } else {
-                    Programs.MEMBER_MANAGEMENT.call();
                 }
             } else {
                 installUpdateProcess = createInstallTask()
@@ -146,44 +143,29 @@ public final class Launcher extends Application {
      * version could not be read.
      */
     public static Optional<String> readOnlineVersion() {
+        Optional<String> onlineVersion;
         try {
             URL onlineVersionUrl = new URL(VERSIONFILE_PATH_ONLINE);
-            Scanner sc = new Scanner(onlineVersionUrl.openStream(), StandardCharsets.UTF_8.name());
-            return Optional.of(sc.nextLine());
+            try (Scanner scanner = new Scanner(onlineVersionUrl.openStream(), StandardCharsets.UTF_8.name())) {
+                onlineVersion = Optional.of(scanner.nextLine());
+            }
         } catch (IOException ex) {
             Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            onlineVersion = Optional.empty();
         }
-        return Optional.empty();
-    }
-
-    private Map<String, Optional<Callable<Boolean>>> checkUpdateConditions() {
-        return UpdateUtility.getUpdateConditions()
-                .orElseThrow(() -> new IllegalStateException("Update conditions could not be checked"))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    Optional<Callable<Boolean>> result;
-                    try {
-                        result = Optional.of(entry.getValue());
-                    } catch (Exception ex) {
-                        Logger.getLogger(Launcher.class.getName())
-                                .log(Level.SEVERE, "Checking update condition " + entry.getKey() + " failed.", ex);
-                        result = Optional.empty();
-                    }
-                    return new Pair<>(entry.getKey(), result);
-                })
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+        return onlineVersion;
     }
 
     private File download(ProgressDialog progress) throws IOException {
-        File tempFile = Files.createTempFile(null, ".zip").toFile();
+        File tempFile = Files.createTempFile(null, ".zip")
+                .toFile();
         tempFile.deleteOnExit();
         URLConnection downloadConnection = new URL(GREEN2_ZIP_URL).openConnection();
-        long fileSize = Long.parseLong(downloadConnection.getHeaderField("Content-Length"));
-        long bytesPerLoop = fileSize / DOWNLOAD_STEPS;
+        int fileSize = Integer.parseInt(downloadConnection.getHeaderField("Content-Length"));
+        int bytesPerLoop = fileSize / DOWNLOAD_STEPS;
 
         IOStreamUtility.transfer(downloadConnection.getInputStream(),
-                new FileOutputStream(tempFile), fileSize, bytesPerLoop, () -> {
+                Files.newOutputStream(tempFile.toPath()), fileSize, bytesPerLoop, () -> {
             if (progress != null) {
                 Platform.runLater(() -> progress.incPercentage(DOWNLOAD_STEPS));
             }
@@ -221,16 +203,16 @@ public final class Launcher extends Application {
     }
 
     private CompletableFuture<Void> createInstallTask() {
-        return CompletableFuture.supplyAsync(() -> checkUpdateConditions())
+        return CompletableFuture.supplyAsync(UpdateUtility::getUpdateConditions)
+                .thenApply(Optional::orElseThrow)
                 .thenApply(conditions -> {
                     boolean allConditionsSuccessful = conditions.entrySet()
                             .stream()
                             .allMatch(entry -> {
                                 try {
                                     return entry.getValue()
-                                            .orElse(() -> false)
                                             .call();
-                                } catch (Exception ignored) {
+                                } catch (Exception ignored) { //NOPMD - Make sure evaluation of conditions continues.
                                     return false;
                                 }
                             });
@@ -284,7 +266,7 @@ public final class Launcher extends Application {
                         throw new CompletionException("The installation failed.", ex);
                     }
                 })
-                .thenRun(() -> Collector.sendData());
+                .thenRun(() -> CollectorUtility.sendData());
     }
 
     /**

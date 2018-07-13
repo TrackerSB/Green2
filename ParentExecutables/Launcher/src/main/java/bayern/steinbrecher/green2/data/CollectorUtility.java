@@ -47,13 +47,13 @@ import javax.net.ssl.HttpsURLConnection;
  *
  * @author Stefan Huber
  */
-public final class Collector {
+public final class CollectorUtility {
 
-    private static boolean preparedToSend = false;
+    private static boolean preparedToSend;
     private static final URL POST_URL = resolvePostURL();
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
-    private Collector() {
+    private CollectorUtility() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
     }
 
@@ -65,7 +65,7 @@ public final class Collector {
                 url = new URL(resolvedURL.get());
                 preparedToSend = true;
             } catch (MalformedURLException ex) {
-                Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CollectorUtility.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return url;
@@ -75,10 +75,9 @@ public final class Collector {
         List<String> parameters = new ArrayList<>(DataParams.values().length);
         for (DataParams dp : DataParams.values()) {
             dp.getValue()
-                    .ifPresentOrElse(
-                            value -> parameters.add(URLEncoder.encode(dp.toString(), StandardCharsets.UTF_8)
-                                    + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)),
-                            () -> Logger.getLogger(Collector.class.getName())
+                    .ifPresentOrElse(value -> parameters.add(URLEncoder.encode(dp.toString(), StandardCharsets.UTF_8)
+                    + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)),
+                            () -> Logger.getLogger(CollectorUtility.class.getName())
                                     .log(Level.WARNING, "{0} not transmitted since it could not be computed.",
                                             dp.toString()));
         }
@@ -117,18 +116,21 @@ public final class Collector {
                     response = IOStreamUtility.readAll(inputStream, CHARSET);
                 }
                 if (!response.isEmpty()) {
-                    Logger.getLogger(Collector.class.getName()).log(Level.INFO, response);
+                    Logger.getLogger(CollectorUtility.class.getName()).log(Level.INFO, response);
                 }
 
                 connection.disconnect();
             } catch (IOException ex) {
-                Logger.getLogger(Collector.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CollectorUtility.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return wasSent;
     }
 
     private enum DataParams {
+        /**
+         * The MAC address of the computer to register.
+         */
         MAC_ADDRESS {
             /**
              * {@inheritDoc}
@@ -145,8 +147,8 @@ public final class Collector {
                     } else {
                         byte[] mac = localhostInetAddress.getHardwareAddress();
                         StringJoiner macJoiner = new StringJoiner("-");
-                        for (int i = 0; i < mac.length; i++) {
-                            macJoiner.add(String.format("%02X", mac[i]));
+                        for (byte b : mac) {
+                            macJoiner.add(String.format("%02X", b));
                         }
                         macAddress = macJoiner.toString();
                     }
@@ -156,6 +158,9 @@ public final class Collector {
                 return Optional.ofNullable(macAddress);
             }
         },
+        /**
+         * The date when the installation of this application took place.
+         */
         MESSAGE_CREATION_DATE {
             /**
              * {@inheritDoc}
@@ -167,6 +172,9 @@ public final class Collector {
                         + today.get(Calendar.DAY_OF_MONTH));
             }
         },
+        /**
+         * The version of this application which got installed.
+         */
         VERSION {
             /**
              * {@inheritDoc}

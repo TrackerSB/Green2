@@ -87,12 +87,13 @@ public class CheckedPasswordField extends CheckedTextField {
      */
     @Override
     public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
-        switch (attribute) {
-            case TEXT:
-                return null;
-            default:
-                return super.queryAccessibleAttribute(attribute, parameters);
+        Object accessibleAttribute;
+        if (attribute == AccessibleAttribute.TEXT) {
+            accessibleAttribute = null; //NOPMD
+        } else {
+            accessibleAttribute = super.queryAccessibleAttribute(attribute, parameters);
         }
+        return accessibleAttribute;
     }
 
     /**

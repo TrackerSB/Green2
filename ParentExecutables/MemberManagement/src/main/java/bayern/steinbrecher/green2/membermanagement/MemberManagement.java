@@ -33,7 +33,7 @@ import bayern.steinbrecher.green2.login.Login;
 import bayern.steinbrecher.green2.login.LoginKey;
 import bayern.steinbrecher.green2.login.ssh.SshLogin;
 import bayern.steinbrecher.green2.login.standard.DefaultLogin;
-import bayern.steinbrecher.green2.menu.Menu;
+import bayern.steinbrecher.green2.menu.MainMenu;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.Programs;
 import bayern.steinbrecher.green2.utility.ThreadUtility;
@@ -63,18 +63,19 @@ import javafx.stage.Stage;
 public class MemberManagement extends Application {
 
     private static final long SPLASHSCREEN_MILLIS = 2500;
-    private Profile profile;
-    private Stage menuStage;
-    private DBConnection dbConnection = null;
+    private transient Profile profile;
+    private transient Stage menuStage;
+    private transient DBConnection dbConnection;
 
     /**
      * Default constructor.
      */
     public MemberManagement() {
+        super();
         List<String> availableProfiles = Profile.getAvailableProfiles();
-        if (availableProfiles.size() < 1) {
+        if (availableProfiles.isEmpty()) {
             Programs.CONFIGURATION_DIALOG.call();
-        } else if (availableProfiles.size() == 1) {
+        } else if (availableProfiles.size() == 1) { //NOPMD - Do not ask user when there is no choice for selection.
             profile = EnvironmentHandler.loadProfile(availableProfiles.get(0), false);
         } else {
             Optional<Profile> requestedProfile = ProfileChoice.askForProfile(false);
@@ -107,10 +108,10 @@ public class MemberManagement extends Application {
             loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
                     waitScreen.close();
-                } else if (!login.userAborted()) {
-                    waitScreen.show();
-                } else {
+                } else if (login.userAborted()) {
                     Platform.exit();
+                } else {
+                    waitScreen.show();
                 }
             });
             login.start(loginStage);
@@ -159,13 +160,8 @@ public class MemberManagement extends Application {
                             });
 
                             Platform.runLater(() -> {
-                                try {
-                                    //Show main menu
-                                    new Menu(dbConnection).start(menuStage);
-                                    menuStage.show();
-                                } catch (Exception ex) {
-                                    Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
-                                }
+                                new MainMenu(dbConnection).start(menuStage);
+                                menuStage.show();
                             });
                         } else {
                             Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, throwable);
@@ -248,7 +244,7 @@ public class MemberManagement extends Application {
      * or the configured connection is not reachable.
      */
     private Optional<DBConnection> getConnection(Login login, WaitScreen waitScreen) {
-        DBConnection con = null;
+        Optional<DBConnection> con;
 
         Optional<Map<LoginKey, String>> loginInfos = login.getResult();
         if (loginInfos.isPresent()) {
@@ -265,26 +261,29 @@ public class MemberManagement extends Application {
                     String sshUsername = loginValues.get(LoginKey.SSH_USERNAME);
                     String sshPassword = loginValues.get(LoginKey.SSH_PASSWORD);
                     Charset sshCharset = profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
-                    con = new SshConnection(sshHost, sshUsername, sshPassword, databaseHost, databasePort,
-                            databaseUsername, databasePassword, databaseName, sshCharset);
+                    con = Optional.of(new SshConnection(sshHost, sshUsername, sshPassword, databaseHost, databasePort,
+                            databaseUsername, databasePassword, databaseName, sshCharset));
                 } else {
-                    con = new DefaultConnection(
-                            databaseHost, databasePort, databaseUsername, databasePassword, databaseName);
+                    con = Optional.of(new DefaultConnection(
+                            databaseHost, databasePort, databaseUsername, databasePassword, databaseName));
                 }
             } catch (UnknownHostException | AuthException ex) {
                 handleAuthException(login, waitScreen, ex);
 
                 ThreadUtility.waitWhile(this, login.wouldShowBinding().not());
 
-                return getConnection(login, waitScreen);
+                con = getConnection(login, waitScreen);
             } catch (UnsupportedDatabaseException ex) {
                 Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
                 DialogUtility.showAndWait(DialogUtility.createErrorAlert(
                         null, EnvironmentHandler.getResourceValue("noSupportedDatabase")));
+                con = Optional.empty();
             }
+        } else {
+            con = Optional.empty();
         }
 
-        return Optional.ofNullable(con);
+        return con;
     }
 
     /**

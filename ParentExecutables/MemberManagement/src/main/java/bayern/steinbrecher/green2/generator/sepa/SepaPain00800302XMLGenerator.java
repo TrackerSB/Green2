@@ -82,29 +82,31 @@ public final class SepaPain00800302XMLGenerator {
         List<Member> invalidMember = new LinkedList<>();
         member.parallelStream().forEach(m -> {
             boolean valid = true;
-            AccountHolder ah = m.getAccountHolder();
-            if (!(ah.hasIban() && SepaUtility.isValidIban(ah.getIban()))) {
+            AccountHolder accountHolder = m.getAccountHolder();
+            if (!(accountHolder.hasIban() && SepaUtility.isValidIban(accountHolder.getIban()))) {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
                         .log(Level.WARNING, "{0} has an invalid IBAN", m);
             }
-            if (!ah.hasBic()) {
+            if (!accountHolder.hasBic()) {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName()).log(Level.WARNING, "{0} has no BIC", m);
             }
-            if (ah.getMandateSigned() == null) {
+            if (accountHolder.getMandateSigned() == null) {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
                         .log(Level.WARNING, "{0} has a bad \"MandatErstellt\"", m);
             }
-            if (!m.getContribution().isPresent()) {
+            if (m.getContribution().isPresent()) {
+                if (m.getContribution().get() <= 0) {
+                    valid = false;
+                    Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
+                            .log(Level.WARNING, "{0} has a contribution <= 0.", m);
+                }
+            } else {
                 valid = false;
                 Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
                         .log(Level.WARNING, "{0} has no assinged contribution.", m);
-            } else if (m.getContribution().get() <= 0) {
-                valid = false;
-                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                        .log(Level.WARNING, "{0} has a contribution <= 0.", m);
             }
             if (!valid) {
                 invalidMember.add(m);
@@ -122,6 +124,7 @@ public final class SepaPain00800302XMLGenerator {
      * @param contributions The mapping of membershipnumbers to contributions.
      * @return The {@link String} representing the xml file content.
      */
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.ConsecutiveLiteralAppends"})
     private static String createXML(Collection<Member> member, Originator originator, SequenceType sequenceType) {
         int numberOfTransactions = member.size();
         double controlSum = member.parallelStream()
@@ -130,7 +133,7 @@ public final class SepaPain00800302XMLGenerator {
         //CHECKSTYLE.OFF: MagicNumber - Eliminate double precision inaccuracy arose from IntStream
         controlSum = Math.rint(controlSum * 100) / 100;
         //CHECKSTYLE.ON: MagicNumber
-        StringBuilder output = new StringBuilder();
+        StringBuilder output = new StringBuilder(2048);
 
         //The beginning containing originators data.
         String sepaDateToday = SepaUtility.getSepaDate(LocalDateTime.now());
@@ -192,9 +195,9 @@ public final class SepaPain00800302XMLGenerator {
 
         //The member.
         member.parallelStream().forEach(m -> {
-            AccountHolder ah = m.getAccountHolder();
+            AccountHolder accountHolder = m.getAccountHolder();
             Double contribution = m.getContribution().get();
-            String mandatSigned = SepaUtility.getSepaDate(ah.getMandateSigned());
+            String mandatSigned = SepaUtility.getSepaDate(accountHolder.getMandateSigned());
             StringBuilder suboutput = new StringBuilder()
                     .append("            <DrctDbtTxInf>\n")
                     .append("                <PmtId>\n")
@@ -205,13 +208,13 @@ public final class SepaPain00800302XMLGenerator {
                     .append("                    <MndtRltdInf>\n")
                     .append("                        <MndtId>").append(m.getMembershipnumber()).append("</MndtId>\n")
                     .append("                        <DtOfSgntr>").append(mandatSigned).append("</DtOfSgntr>\n")
-                    .append("                        <AmdmntInd>").append(ah.hasMandateChanged())
+                    .append("                        <AmdmntInd>").append(accountHolder.hasMandateChanged())
                     .append("</AmdmntInd>\n")
                     .append("                    </MndtRltdInf>\n")
                     .append("                </DrctDbtTx>\n")
                     .append("                <DbtrAgt>\n")
                     .append("                    <FinInstnId>\n")
-                    .append("                        <BIC>").append(ah.getBic()).append("</BIC>\n")
+                    .append("                        <BIC>").append(accountHolder.getBic()).append("</BIC>\n")
                     .append("                    </FinInstnId>\n")
                     .append("                </DbtrAgt>\n")
                     .append("                <Dbtr>\n")
@@ -219,7 +222,7 @@ public final class SepaPain00800302XMLGenerator {
                     .append("                </Dbtr>\n")
                     .append("                <DbtrAcct>\n")
                     .append("                    <Id>\n")
-                    .append("                        <IBAN>").append(ah.getIban()).append("</IBAN>\n")
+                    .append("                        <IBAN>").append(accountHolder.getIban()).append("</IBAN>\n")
                     .append("                    </Id>\n")
                     .append("                </DbtrAcct>\n")
                     .append("                <RmtInf>\n")
