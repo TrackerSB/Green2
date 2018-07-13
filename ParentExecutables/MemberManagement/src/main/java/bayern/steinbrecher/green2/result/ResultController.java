@@ -49,7 +49,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- * The controller of {@link QueryResult}.
+ * The controller of {@link Result}.
  *
  * @author Stefan Huber
  */

@@ -201,13 +201,13 @@ public abstract class ColumnParser<T> {
     public abstract Optional<T> parse(String value);
 
     /**
-     * Returns the {@link String} representation of the default value suitable for SQL.NOTE: For implementation it can
-     * be assumed that the value is not {@code null} since this is handled by {@link #toString(java.lang.Object)}. The
+     * Returns the {@link String} representation of the given value suitable for SQL. NOTE: For implementation it can be
+     * assumed that the value is not {@code null} since this is handled by {@link #toString(java.lang.Object)}. The
      * default implementation just calls {@link String#valueOf(java.lang.Object)}.
      *
      * @param value The value to convert.
      * @return The {@link String} representation of the given value suitable for SQL.
-     * @see #getDefaultValue()
+     * @see #toString(java.lang.Object)
      */
     protected String toStringImpl(T value) {
         return String.valueOf(value);

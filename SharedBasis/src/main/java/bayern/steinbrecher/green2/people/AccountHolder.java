@@ -36,15 +36,16 @@ public final class AccountHolder {
     }
 
     /**
-     * Creates a fully initialized {@link AccountHolder}. For the description of the parameter see their getter.
+     * Creates a fully initialized {@link AccountHolder}.
      *
-     * @param iban
-     * @param bic
-     * @param mandateSigned
-     * @param hasMandateChanged
-     * @param prename
-     * @param lastname
-     * @param title
+     * @param iban The IBAN of the bank account.
+     * @param bic The BIC of the bank account.
+     * @param mandateSigned The date when the SEPA mandate was signed.
+     * @param hasMandateChanged {@code true} only if the SEPA mandate changed since last usage.
+     * @param prename The prename of the {@link AccountHolder}.
+     * @param lastname The lastname of the {@link AccountHolder}.
+     * @param title The title of the {@link AccountHolder} like "Dr." or "Ph.D." if any. It may be a good idea to use
+     * empty {@link String} for no title.
      */
     public AccountHolder(String iban, String bic, LocalDate mandateSigned, boolean hasMandateChanged, String prename,
             String lastname, String title) {
@@ -153,14 +154,14 @@ public final class AccountHolder {
     public static final class Builder extends PeopleBuilder<AccountHolder> {
 
         /**
-         * Creates a {@link AccountHolderBuilder} with no values of {@link AccountHolder} are set.
+         * Creates a {@link Builder} with no values of {@link AccountHolder} are set.
          */
         public Builder() {
             this(new AccountHolder());
         }
 
         /**
-         * Creates a {@link AccountHolderBuilder} whose initial values are taken from the given {@link AccountHolder}.
+         * Creates a {@link Builder} whose initial values are taken from the given {@link AccountHolder}.
          *
          * @param accountHolder The {@link AccountHolder} to take the initial values from.
          */

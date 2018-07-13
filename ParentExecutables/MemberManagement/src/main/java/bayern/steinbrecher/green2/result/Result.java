@@ -35,8 +35,8 @@ public class Result extends WizardableView<Optional<Void>, ResultController> {
     private final List<List<String>> results;
 
     /**
-     * Creates a new {@link QueryResult} initially showing the content of {@code queryResult}. It is assumed that the
-     * first line contains the headings for the columns.
+     * Creates a new {@link Result} initially showing the content of {@code results}. It is assumed that the first line
+     * contains the headings for the columns.
      *
      * @param results The content to show initially.
      */

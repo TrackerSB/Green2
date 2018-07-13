@@ -96,8 +96,7 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
      * @param defaultValue The default value of this column. {@link Optional#empty()} represents explicitely no default
      * value. An {@link Optional} of an {@link Optional#empty()} represents {@code null} as default value. Otherwise the
      * value of the inner {@link Optional} represents the default value.
-     * @see ColumnPattern#ColumnPattern(java.lang.String, java.util.Set,
-     * bayern.steinbrecher.green2.connection.scheme.ColumnParser, java.util.Optional)
+     * @see ColumnPattern#ColumnPattern(java.lang.String, bayern.steinbrecher.green2.connection.scheme.ColumnParser)
      */
     public SimpleColumnPattern(String realColumnName, Set<Keywords> keywords, ColumnParser<T> parser,
             BiFunction<U, T, U> setter, Optional<Optional<T>> defaultValue) {
@@ -166,8 +165,7 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
     /**
      * Returns the real column name of this column.
      *
-     * @return The real column name of this column. Returns {@link Optional#empty()} if this column is no simple column.
-     * @see #isSimpleColumn()
+     * @return The real column name of this column.
      */
     public String getRealColumnName() {
         return realColumnName;

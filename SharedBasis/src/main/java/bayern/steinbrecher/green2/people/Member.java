@@ -52,17 +52,17 @@ public final class Member implements Comparable<Member> {
     }
 
     /**
-     * Creates a full initialized {@link Member}. For description of the parameters see their getter.
+     * Creates a full initialized {@link Member}.
      *
-     * @param membershipnumber
-     * @param person
-     * @param home
-     * @param accountHolder
-     * @param active
-     * @param contributionfree
-     * @param contribution
-     * @param memberSince
-     * @param honorings
+     * @param membershipnumber The unique membership number.
+     * @param person The {@link Person} representing this {@link Member}.
+     * @param home The home address.
+     * @param accountHolder The person to book off contributions, costs etc.
+     * @param active {@code true} only if this is a active {@link Member}.
+     * @param contributionfree {@code true} only if this {@link Member} does not have to pay any contributions.
+     * @param contribution The contribution associated.
+     * @param memberSince The date when its membership was accepted.
+     * @param honorings The honorings for years of membership gotten.
      */
     public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder,
             Optional<Boolean> active, boolean contributionfree, Optional<Double> contribution, LocalDate memberSince,

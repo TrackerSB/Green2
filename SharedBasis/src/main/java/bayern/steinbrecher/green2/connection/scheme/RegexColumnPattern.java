@@ -58,8 +58,7 @@ public class RegexColumnPattern<T, U, K> extends ColumnPattern<T, U> {
      * @param setter The function used to set a parsed value to a given object. The setter should only return a new
      * object of type {@link U} if the handed in one is immutable.
      * @param keyExtractor Extracts the key for a given column name matching this pattern.
-     * @see ColumnPattern#ColumnPattern(java.lang.String, java.util.Set,
-     * bayern.steinbrecher.green2.connection.scheme.ColumnParser, java.util.Optional)
+     * @see ColumnPattern#ColumnPattern(java.lang.String, bayern.steinbrecher.green2.connection.scheme.ColumnParser)
      */
     public RegexColumnPattern(String columnNamePattern, ColumnParser<T> parser, TriFunction<U, K, T, U> setter,
             Function<String, K> keyExtractor) {

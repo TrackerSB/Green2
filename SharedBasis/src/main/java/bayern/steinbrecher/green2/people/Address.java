@@ -31,12 +31,12 @@ public final class Address {
     }
 
     /**
-     * Creates a fully initialized {@link Address}. For the description of the parameter see their getter.
+     * Creates a fully initialized {@link Address}.
      *
-     * @param street
-     * @param houseNumber
-     * @param postcode
-     * @param place
+     * @param street The street name.
+     * @param houseNumber The housenumber (which may also contain letters or symbols).
+     * @param postcode The postcode of the city.
+     * @param place The city the {@link Address} belongs to.
      */
     public Address(String street, String houseNumber, String postcode, String place) {
         this.street = street;
@@ -87,14 +87,14 @@ public final class Address {
     public static final class Builder extends PeopleBuilder<Address> {
 
         /**
-         * Creates an {@link AddressBuilder} where no initial value for {@link Address} is set.
+         * Creates an {@link Builder} where no initial value for {@link Address} is set.
          */
         public Builder() {
             this(new Address());
         }
 
         /**
-         * Creates a {@link AddressBuilder} whose initial values are taken from the given {@link Address}.
+         * Creates a {@link Builder} whose initial values are taken from the given {@link Address}.
          *
          * @param address The {@link Address} to take initial values from.
          */

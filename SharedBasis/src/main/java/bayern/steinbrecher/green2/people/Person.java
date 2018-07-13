@@ -35,13 +35,13 @@ public final class Person {
     }
 
     /**
-     * Creates a fully initialized {@link Person}. For a description for the parameters see ther getter.
+     * Creates a fully initialized {@link Person}.
      *
-     * @param prename
-     * @param lastname
-     * @param title
-     * @param birthday
-     * @param male
+     * @param prename The prename.
+     * @param lastname The lastname.
+     * @param title The title like "Dr." or "Ph.D.". For no title empty {@link String}s should be used.
+     * @param birthday The birthday.
+     * @param male {@code true} only if this {@link Person} is male.
      */
     public Person(String prename, String lastname, String title, LocalDate birthday, boolean male) {
         this.prename = prename;
@@ -111,14 +111,14 @@ public final class Person {
     public static final class Builder extends PeopleBuilder<Person> {
 
         /**
-         * Creates a {@link PersonBuilder} whith no value of {@link Person} set.
+         * Creates a {@link Builder} whith no value of {@link Person} set.
          */
         public Builder() {
             this(new Person());
         }
 
         /**
-         * Creates a {@link PersonBuilder} whose initial values are taken from the given {@link Person}.
+         * Creates a {@link Builder} whose initial values are taken from the given {@link Person}.
          *
          * @param person The {@link Person} to take the initial values from.
          */
