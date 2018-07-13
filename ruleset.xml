@@ -38,6 +38,7 @@
 
     <!-- Java Design -->
     <rule ref="category/java/design.xml">
+        <exclude name="LawOfDemeter" />
         <exclude name="LoosePackageCoupling" /> <!-- FIXME: How to use this rule correctly? -->
         <exclude name="ModifiedCyclomaticComplexity" />
         <exclude name="NcssConstructorCount" />
