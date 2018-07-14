@@ -214,7 +214,11 @@ public class ContributionController extends WizardableController<Optional<BiMap<
         private final BooleanProperty duplicateColor = new SimpleBooleanProperty(false);
         private final BooleanProperty duplicateContribution = new SimpleBooleanProperty(false);
 
-        private DuplicateContributionField() {
+        /**
+         * Creates a {@link DuplicateContributionField} where neither the duplicated color nor the duplicated
+         * contribution flag is set.
+         */
+        DuplicateContributionField() {
             super();
             initProperties();
         }

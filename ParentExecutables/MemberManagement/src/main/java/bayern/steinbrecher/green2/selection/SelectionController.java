@@ -51,7 +51,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
 
     private final MapProperty<T, Optional<CheckBox>> optionsProperty
             = new SimpleMapProperty<>(FXCollections.observableHashMap());
-    private IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount");
+    private final IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount");
     private final ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
     private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
     private final BooleanProperty allSelected = new SimpleBooleanProperty(this, "allSelected");

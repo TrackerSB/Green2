@@ -35,15 +35,16 @@ import javafx.stage.Stage;
  * @param <T> The class used as controller for this view.
  * @author Stefan Huber
  */
+@SuppressWarnings("PMD.ShortClassName")
 public abstract class View<T extends Controller> extends Application {
 
     /**
      * The stage which has to be set in every start-Method of implementing classes.
      */
-    private Stage stage;
-    private final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
-    private final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
-    private final BooleanBinding wouldShowProperty = gotShownProperty.not();
+    private transient Stage stage;
+    private transient final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
+    private transient final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
+    private transient final BooleanBinding wouldShowProperty = gotShownProperty.not();
     /**
      * The controller handling the actions of this view.
      */
@@ -89,6 +90,7 @@ public abstract class View<T extends Controller> extends Application {
      * This method is called right before {@link #loadFXML(java.lang.String)} returns. It may be overriden to make sure
      * certain methods are called whenever {@link #loadFXML(java.lang.String)} is called.
      */
+    @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
     protected void callWhenLoadFXML() {
         //no-op
     }

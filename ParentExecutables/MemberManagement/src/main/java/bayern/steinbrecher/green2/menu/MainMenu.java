@@ -30,9 +30,9 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class MainMenu extends View<MenuController> {
+public class MainMenu extends View<MainMenuController> {
 
-    private final DBConnection dbConnection;
+    private transient final DBConnection dbConnection;
 
     /**
      * Creates a Menu which contains controls for all the functionality to be used by the user.
@@ -59,7 +59,7 @@ public class MainMenu extends View<MenuController> {
     public void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("Menu.fxml");
+            root = loadFXML("MainMenu.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }

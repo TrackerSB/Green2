@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  */
 public class Selection<T extends Comparable<T>> extends WizardableView<Optional<Set<T>>, SelectionController<T>> {
 
-    private final Set<T> options;
+    private transient final Set<T> options;
 
     /**
      * Creates a new Frame representing the given options as selectable {@link javafx.scene.control.CheckBox} es and
@@ -43,6 +43,7 @@ public class Selection<T extends Comparable<T>> extends WizardableView<Optional<
      * @param options The options the user is allowed to select.
      */
     public Selection(Set<T> options) {
+        super();
         this.options = options;
     }
 

@@ -34,8 +34,8 @@ import javafx.stage.Stage;
 public final class SelectionGroup<T extends Comparable<T>, G>
         extends WizardableView<Optional<Map<T, G>>, SelectionGroupController<T, G>> {
 
-    private final Set<T> options;
-    private final BiMap<G, Color> groups;
+    private transient final Set<T> options;
+    private transient final BiMap<G, Color> groups;
 
     /**
      * Creates a new SelectionGroup for selecting and grouping the given options into the given groups.
@@ -44,6 +44,7 @@ public final class SelectionGroup<T extends Comparable<T>, G>
      * @param groups The groups to group the options into.
      */
     public SelectionGroup(Set<T> options, BiMap<G, Color> groups) {
+        super();
         this.options = options;
         this.groups = groups;
     }

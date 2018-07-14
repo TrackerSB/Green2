@@ -41,11 +41,13 @@ public abstract class WizardableController<T extends Optional<?>> extends Result
     @Override
     @SuppressWarnings("unchecked")
     public T getResult() {
+        T result;
         if (hasUserAbborted() || !isValid()) {
-            return (T) Optional.empty();
+            result = (T) Optional.empty();
         } else {
-            return calculateResult();
+            result = calculateResult();
         }
+        return result;
     }
 
     /**

@@ -112,29 +112,26 @@ public final class SepaUtility {
      * @see #IBAN_PATTERN
      */
     public static boolean isValidIban(String iban) {
-        if (iban == null || iban.isEmpty()) {
-            return false;
+        boolean isValid = false;
+        if (iban != null && !iban.isEmpty()) {
+            String trimmedIban = iban.replace(" ", "");
+            //Check whether it CAN be a valid IBAN
+            if (IBAN_PATTERN.matcher(trimmedIban).matches()) {
+                //Check the checksum
+                int posAlphabetFirstChar = ((int) trimmedIban.charAt(0)) - ((int) 'A') + SEPA_SHIFT_CC;
+                int posAlphabetSecondChar = ((int) trimmedIban.charAt(1)) - ((int) 'A') + SEPA_SHIFT_CC;
+                if (trimmedIban.length() >= SEPA_MIN_LENGTH && posAlphabetFirstChar >= SEPA_SHIFT_CC
+                        && posAlphabetSecondChar >= SEPA_SHIFT_CC) {
+                    trimmedIban = trimmedIban.substring(SEPA_CC_CHECKSUM_LENGTH) + posAlphabetFirstChar
+                            + posAlphabetSecondChar + trimmedIban.substring(SEPA_CC_LENGTH, SEPA_CC_CHECKSUM_LENGTH);
+                    isValid = new BigInteger(trimmedIban)
+                            .mod(BigInteger.valueOf(IBAN_CHECKSUM_MODULO))
+                            .equals(BigInteger.ONE);
+                }
+            }
         }
 
-        String trimmedIban = iban.replace(" ", "");
-
-        //Check whether it CAN be a valid IBAN
-        if (!IBAN_PATTERN.matcher(trimmedIban).matches()) {
-            return false;
-        }
-
-        //Check the checksum
-        int posAlphabetFirstChar = ((int) trimmedIban.charAt(0)) - ((int) 'A') + SEPA_SHIFT_CC;
-        int posAlphabetSecondChar = ((int) trimmedIban.charAt(1)) - ((int) 'A') + SEPA_SHIFT_CC;
-        if (trimmedIban.length() < SEPA_MIN_LENGTH || posAlphabetFirstChar < SEPA_SHIFT_CC
-                || posAlphabetSecondChar < SEPA_SHIFT_CC) {
-            return false;
-        }
-
-        trimmedIban = trimmedIban.substring(SEPA_CC_CHECKSUM_LENGTH) + posAlphabetFirstChar
-                + posAlphabetSecondChar + trimmedIban.substring(SEPA_CC_LENGTH, SEPA_CC_CHECKSUM_LENGTH);
-        return new BigInteger(trimmedIban).mod(BigInteger.valueOf(IBAN_CHECKSUM_MODULO))
-                .equals(BigInteger.ONE);
+        return isValid;
     }
 
     /**

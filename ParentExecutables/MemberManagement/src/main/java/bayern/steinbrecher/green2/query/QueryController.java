@@ -67,6 +67,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Priority;
 
@@ -84,7 +85,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     private final ObjectProperty<DBConnection> dbConnection = new SimpleObjectProperty<>(this, "dbConnection");
     private final ObjectProperty<Optional<List<List<String>>>> lastQueryResult
             = new SimpleObjectProperty<>(Optional.empty());
-    private boolean isLastQueryUptodate = false;
+    private boolean isLastQueryUptodate;
 
     //TODO Is there any way to connect these questionmarks?
     @SuppressWarnings("unchecked")
@@ -124,11 +125,12 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
                     conditionFields.add(conditionField.get());
-                    Label columnLabel = new Label(column.getKey());
+                    Label columnLabel = new Label(column.getKey()); //NOPMD - Each iteration defines a unique label.
                     queryInput.addRow(rowCounter, columnLabel);
-                    Node[] conditionFieldChildren = conditionField.get().getChildren().toArray(new Node[0]);
+                    ObservableList<Node> children = conditionField.get().getChildren();
+                    Node[] conditionFieldChildren = children.toArray(new Node[children.size()]); //NOPMD
                     //CHECKSTYLE.OFF: MagicNumber - Having exactly 3 elements is only important for the visual layout.
-                    if (conditionFieldChildren.length != 3) {
+                    if (conditionFieldChildren.length != 3) { //NOPMD - Only triples are currently layouted nicely.
                         //CHECKSTYLE.ON: MagicNumber
                         Logger.getLogger(QueryController.class.getName())
                                 .log(Level.WARNING, "An input field of the query dialog has not exactly 3 children. "
@@ -232,6 +234,11 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         return dbConnectionProperty().get();
     }
 
+    /**
+     * Represents specialized fields for querying certain types of columns of a database table.
+     *
+     * @param <T> The type of the column to query.
+     */
     private abstract static class CheckedConditionField<T> extends HBox
             implements ReadOnlyCheckedControl, Initializable, Observable {
 
@@ -250,6 +257,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * @param column The column to create an input field for.
          */
         CheckedConditionField(Pair<String, Class<T>> column) {
+            super();
             realColumnName = column.getKey();
             loadFXML();
         }
@@ -278,6 +286,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * This method may be overridden in order to add further calls to
          * {@link #initialize(java.net.URL, java.util.ResourceBundle)}.
          */
+        @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
         protected void initializeImpl() {
             //No-op
         }
@@ -411,6 +420,9 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         public abstract void removeListener(InvalidationListener listener);
     }
 
+    /**
+     * Represents a {@link CheckedConditionField} for querying columns of type {@code BOOLEAN}.
+     */
     private static class BooleanConditionField extends CheckedConditionField<Boolean> {
 
         @FXML
@@ -476,6 +488,9 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         };
     }
 
+    /**
+     * Represents a {@link CheckedConditionField} for querying columns of type {@code VARCHAR}.
+     */
     private static class StringConditionField extends CheckedConditionField<String> {
 
         @FXML
@@ -527,6 +542,10 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
     }
 
+    /**
+     * Represents a {@link CheckedConditionField} for querying columns which have types that may be controlled by a
+     * spinner.
+     */
     private abstract static class SpinnerConditionField<T extends Number> extends CheckedConditionField<T> {
 
         @FXML
@@ -570,6 +589,9 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
     }
 
+    /**
+     * Represents a {@link CheckedConditionField} for querying columns of type {@code INTEGER}.
+     */
     private static class IntegerConditionField extends SpinnerConditionField<Integer> {
 
         IntegerConditionField(Pair<String, Class<Integer>> column) {
@@ -587,6 +609,9 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
     }
 
+    /**
+     * Represents a {@link CheckedConditionField} for querying columns of type {@code DOUBLE}.
+     */
     private static class DoubleConditionField extends SpinnerConditionField<Double> {
 
         DoubleConditionField(Pair<String, Class<Double>> column) {
@@ -604,6 +629,9 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
     }
 
+    /**
+     * Represents a {@link CheckedConditionField} for querying columns of type {@code DATE}.
+     */
     private static class LocalDateConditionField extends CheckedConditionField<LocalDate> {
 
         @FXML

@@ -82,8 +82,8 @@ public final class Uninstaller extends Application {
         String javaUserNodePath;
         switch (EnvironmentHandler.CURRENT_OS) {
             case WINDOWS:
-                if ("32".equals(System.getProperty("sun.arch.data.model"))
-                        && "64".equals(System.getProperty("os.arch"))) {
+                if ("32".equals(System.getProperty("sun.arch.data.model")) //NOPMD
+                        && "64".equals(System.getProperty("os.arch"))) { //NOPMD
                     javaUserNodePath = "HKEY_CURRENT_USER\\Software\\Wow6432Node\\JavaSoft\\Prefs";
                 } else {
                     javaUserNodePath = "HKEY_CURRENT_USER\\Software\\JavaSoft\\Prefs";

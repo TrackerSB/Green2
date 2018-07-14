@@ -38,6 +38,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyMapProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleMapProperty;
@@ -104,6 +105,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void initialize(URL location, ResourceBundle resources) {
         bindValidProperty(nothingSelected.not());
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
@@ -182,7 +184,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                 selectedPerGroup.put(group, new SimpleIntegerProperty(0));
                 RadioButton groupRadioButton
                         = addGroupRadioButton(change.getKey().toString(), Optional.of(group), false);
-                if (groups.size() == 1) {
+                if (groups.size() == 1) { //NOPMD - Select the first added group.
                     groupRadioButton.setSelected(true);
                 }
             }
@@ -203,11 +205,11 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                         .findAny()
                         .ifPresentOrElse(
                                 radiobutton -> {
-                            if (radiobutton.isSelected()) {
-                                unselectGroup.setSelected(true);
-                            }
-                            groupsToggleGroup.getToggles().remove(radiobutton);
-                        },
+                                    if (radiobutton.isSelected()) {
+                                        unselectGroup.setSelected(true);
+                                    }
+                                    groupsToggleGroup.getToggles().remove(radiobutton);
+                                },
                                 () -> Logger.getLogger(SelectionGroupController.class.getName())
                                         .log(Level.WARNING, "Could not find the group radiobutton to remove."));
 
@@ -440,6 +442,9 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
         return allSelected.get();
     }
 
+    /**
+     * Represents a relation between an option to select and an group it is associated with.
+     */
     private class AssociatedItem {
 
         private final ObjectProperty<T> item = new SimpleObjectProperty<>();
@@ -449,32 +454,59 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
             this.item.set(item);
         }
 
-        public ObjectProperty<T> itemProperty() {
+        /**
+         * Returns the property holding the item to select.
+         *
+         * @return The property holding the item to select.
+         */
+        public ReadOnlyObjectProperty<T> itemProperty() {
             return item;
         }
 
+        /**
+         * Returns the item which can be selected.
+         *
+         * @return The item which can be selected.
+         */
         public T getItem() {
             return itemProperty().get();
         }
 
-        public void setItem(T item) {
-            this.itemProperty().set(item);
-        }
-
+        /**
+         * Returns the property which holds the group this item is currently associated with.
+         *
+         * @return The property which holds the group this item is currently associated with.
+         */
         public ObjectProperty<Optional<G>> groupProperty() {
             return group;
         }
 
+        /**
+         * Returns the group this item is currently associated with.
+         *
+         * @return The group this item is currently associated with.
+         */
         public Optional<G> getGroup() {
             return groupProperty().get();
         }
 
+        /**
+         * Changes the group this item is currently associated with.
+         *
+         * @param group The group this item is currently associated with. {@link Optional#empty()} signals that this
+         * item not associated with any group.
+         */
         public void setGroup(Optional<G> group) {
             if (!group.isPresent() || groups.containsKey(group.get())) {
                 this.group.set(group);
             }
         }
 
+        /**
+         * Checks whether this item is currently associated with a group.
+         *
+         * @return {@code true} only if this item is currently associated with a group.
+         */
         public boolean isAssociated() {
             return group.get().isPresent();
         }

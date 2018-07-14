@@ -33,7 +33,7 @@ public final class CreditorIdTextField extends CheckedSepaTextField {
      * The CSS class representing objects of this class.
      */
     public static final String CSS_CLASS_CREDITORID_TEXTFIELD = "creditorid-textfield";
-    private final BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
+    private transient final BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
 
     /**
      * Creates a new empty {@link CreditorIdTextField}.

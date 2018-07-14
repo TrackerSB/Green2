@@ -53,7 +53,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Stefan Huber
  */
-public class ResultController extends WizardableController<Optional<Void>> {
+public class ResultDialogController extends WizardableController<Optional<Void>> {
 
     @FXML
     private TableView<List<ReadOnlyStringProperty>> resultView;
@@ -81,13 +81,14 @@ public class ResultController extends WizardableController<Optional<Void>> {
                 List<String> headings = newVal.get(0);
                 for (int i = 0; i < numColumns; i++) {
                     String heading = i >= headings.size() ? "" : headings.get(i);
-                    TableColumn<List<ReadOnlyStringProperty>, String> column = new TableColumn<>(heading);
+                    TableColumn<List<ReadOnlyStringProperty>, String> column
+                            = new TableColumn<>(heading); //NOPMD - Each iteration defines an unique column.
                     final int fixedI = i;
                     column.setCellValueFactory(param -> param.getValue().get(fixedI));
                     resultView.getColumns().add(column);
                 }
 
-                if (newVal.size() > 1) {
+                if (newVal.size() > 1) { //NOPMD - Check whether there are row entries besides the headings.
                     //TODO Is there a way to "collect" to an observable list?
                     ObservableList<List<ReadOnlyStringProperty>> items = FXCollections.observableArrayList();
                     newVal.subList(1, newVal.size()).stream()
@@ -95,7 +96,8 @@ public class ResultController extends WizardableController<Optional<Void>> {
                                 List<ReadOnlyStringProperty> itemsRow = new ArrayList<>(numColumns);
                                 for (int i = 0; i < numColumns; i++) {
                                     String cellValue = i >= givenRow.size() ? "" : givenRow.get(i);
-                                    itemsRow.add(new SimpleStringProperty(cellValue));
+                                    //Each iteration defines an observable cell entry.
+                                    itemsRow.add(new SimpleStringProperty(cellValue)); //NOPMD
                                 }
                                 return itemsRow;
                             })
@@ -123,7 +125,7 @@ public class ResultController extends WizardableController<Optional<Void>> {
                 try {
                     IOStreamUtility.printContent(content, path.get(), true);
                 } catch (IOException ex) {
-                    Logger.getLogger(ResultController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ResultDialogController.class.getName()).log(Level.SEVERE, null, ex);
                     DialogUtility.createStacktraceAlert(
                             getStage(), ex, EnvironmentHandler.getResourceValue("exportFailed"));
                 }

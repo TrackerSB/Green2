@@ -36,11 +36,13 @@ public abstract class ResultController<T extends Optional<?>> extends Controller
      */
     @SuppressWarnings("unchecked")
     public T getResult() {
+        T result;
         if (hasUserAbborted()) {
-            return (T) Optional.empty();
+            result = (T) Optional.empty();
         } else {
-            return calculateResult();
+            result = calculateResult();
         }
+        return result;
     }
 
     /**

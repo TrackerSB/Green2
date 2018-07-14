@@ -127,6 +127,9 @@ public final class CollectorUtility {
         return wasSent;
     }
 
+    /**
+     * Represents information that has to be collected when this application got installed.
+     */
     private enum DataParams {
         /**
          * The MAC address of the computer to register.

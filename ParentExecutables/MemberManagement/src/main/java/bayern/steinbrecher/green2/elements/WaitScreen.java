@@ -59,7 +59,7 @@ public class WaitScreen extends View<Controller> {
     private static final int DELAY = 200;
     private static final double START_OPACITY = 0.5;
     private static final double CENTER_OPACITY = 1;
-    private final ParallelTransition overallTransition = new ParallelTransition();
+    private transient final ParallelTransition overallTransition = new ParallelTransition();
 
     static {
         DIRECTION_VECTORS[0] = new Point2D(0, 1);

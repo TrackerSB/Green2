@@ -38,7 +38,7 @@ public abstract class Controller implements Initializable {
     /**
      * Only {@code true} when the user explicitly aborted his input. (E.g. pressing the X of the window.)
      */
-    private boolean userAborted = false;
+    private transient boolean userAborted;
 
     @Override
     @CallSuper

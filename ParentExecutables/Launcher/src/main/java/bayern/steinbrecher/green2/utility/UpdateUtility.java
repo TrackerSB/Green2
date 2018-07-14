@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.util.Pair;
 import javax.tools.ToolProvider;
 import javax.xml.parsers.DocumentBuilder;
@@ -139,7 +138,6 @@ public final class UpdateUtility {
                             Document document
                                     = builder.parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
                             NodeList conditions = document.getElementsByTagName("condition");
-                            List<Pair<String, Callable<Boolean>>> retrievedUpdateConditions = new ArrayList<>();
                             for (int i = 0; i < conditions.getLength(); i++) {
                                 Node condition = conditions.item(i);
                                 NodeList conditionChildren = condition.getChildNodes();

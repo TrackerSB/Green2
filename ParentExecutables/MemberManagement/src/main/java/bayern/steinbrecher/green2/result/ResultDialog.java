@@ -30,17 +30,18 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class Result extends WizardableView<Optional<Void>, ResultController> {
+public class ResultDialog extends WizardableView<Optional<Void>, ResultDialogController> {
 
-    private final List<List<String>> results;
+    private transient final List<List<String>> results;
 
     /**
-     * Creates a new {@link Result} initially showing the content of {@code results}. It is assumed that the first line
-     * contains the headings for the columns.
+     * Creates a new {@link ResultDialog} initially showing the content of {@code results}. It is assumed that the first
+     * line contains the headings for the columns.
      *
      * @param results The content to show initially.
      */
-    public Result(List<List<String>> results) {
+    public ResultDialog(List<List<String>> results) {
+        super();
         this.results = results;
     }
 
@@ -59,7 +60,7 @@ public class Result extends WizardableView<Optional<Void>, ResultController> {
     protected void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("Result.fxml");
+            root = loadFXML("ResultDialog.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }

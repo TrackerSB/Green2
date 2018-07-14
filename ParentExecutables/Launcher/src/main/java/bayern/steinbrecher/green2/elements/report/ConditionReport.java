@@ -35,7 +35,7 @@ import javafx.stage.Stage;
  */
 public class ConditionReport extends ResultView<Optional<Boolean>, ConditionReportController> {
 
-    private final Map<String, Callable<Boolean>> conditions;
+    private transient final Map<String, Callable<Boolean>> conditions;
 
     /**
      * Creates a new report showing and evaluating the given conditions.

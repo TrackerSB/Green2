@@ -73,8 +73,8 @@ public class ChoiceDialog extends Application {
      * @return {@link Optional#empty()} only if the user closed the window without clicking yes or no.
      */
     public static Optional<Boolean> askForUpdate() {
-        ChoiceDialog cd = new ChoiceDialog();
-        cd.start(new Stage());
-        return cd.installUpdates;
+        ChoiceDialog choiceDialog = new ChoiceDialog();
+        choiceDialog.start(new Stage());
+        return choiceDialog.installUpdates;
     }
 }
