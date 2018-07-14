@@ -76,7 +76,7 @@ public class CheckedSepaTextField extends CheckedTextField {
             new Pair<>('\u20AD', '\uFFFF')
     //NOTE Disallow characters until \u10FFFF (not representable by char)
     );
-    private final BooleanProperty invalidSymbols = new SimpleBooleanProperty(this, "invalidSymbols");
+    private transient final BooleanProperty invalidSymbols = new SimpleBooleanProperty(this, "invalidSymbols");
 
     /**
      * Constructs a new {@link CheckedTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial

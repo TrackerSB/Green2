@@ -134,9 +134,9 @@ public class MainMenuController extends Controller {
             = new SimpleBooleanProperty(this, "activateBirthdayFeatures", true);
 
     @FXML
-    private MenuItem generateAddressesBirthday;
+    private MenuItem generateAddressesBirthdayItem;
     @FXML
-    private MenuItem generateBirthdayInfos;
+    private MenuItem generateBirthdayInfosItem;
     @FXML
     private CheckedIntegerSpinner yearSpinner;
     @FXML
@@ -160,10 +160,10 @@ public class MainMenuController extends Controller {
                 () -> yearSpinner.isValid() ? yearSpinner.getValue().toString() : "?",
                 yearSpinner.validProperty(), yearSpinner.valueProperty());
 
-        generateBirthdayInfos.textProperty().bind(
+        generateBirthdayInfosItem.textProperty().bind(
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("groupedBirthdayMember") + " ")
                         .concat(yearBinding));
-        generateAddressesBirthday.textProperty().bind(
+        generateAddressesBirthdayItem.textProperty().bind(
                 new SimpleStringProperty(EnvironmentHandler.getResourceValue("birthdayExpression") + " ")
                         .concat(yearBinding));
     }
@@ -865,12 +865,12 @@ public class MainMenuController extends Controller {
         private void updateAvailableProperty(CompletableFuture<T> newValue) {
             available.set(false);
             CompletableFuture.runAsync(() -> {
-                        try {
-                            newValue.get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    })
+                try {
+                    newValue.get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            })
                     .thenRunAsync(() -> available.set(true));
         }
 

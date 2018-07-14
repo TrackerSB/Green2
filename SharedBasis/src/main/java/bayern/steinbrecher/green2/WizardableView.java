@@ -48,13 +48,15 @@ public abstract class WizardableView<T extends Optional<?>, C extends Wizardable
      * created.
      */
     public WizardPage<T> getWizardPage() {
+        WizardPage<T> page;
         try {
             Pane root = loadFXML(getWizardFxmlPath());
-            return new WizardPage<>(
+            page = new WizardPage<>(
                     root, null, false, () -> getController().getResult(), getController().validProperty());
         } catch (IOException ex) {
             Logger.getLogger(WizardableView.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            page = null;
         }
+        return page;
     }
 }

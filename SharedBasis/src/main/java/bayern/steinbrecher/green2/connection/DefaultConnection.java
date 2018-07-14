@@ -48,7 +48,7 @@ public final class DefaultConnection extends DBConnection {
     /**
      * The created connection used to execute queries.
      */
-    private Connection connection;
+    private transient Connection connection;
 
     /**
      * Constructs a new database connection.
@@ -64,6 +64,7 @@ public final class DefaultConnection extends DBConnection {
     public DefaultConnection(String databaseHost, int databasePort, String databaseUsername, String databasePasswd,
             String databaseName)
             throws AuthException, UnknownHostException {
+        super();
         String databaseHostPrefix = databaseHost;
         if (databaseHostPrefix.endsWith("/")) {
             databaseHostPrefix = databaseHostPrefix.substring(0, databaseHostPrefix.length() - 1);
@@ -76,7 +77,7 @@ public final class DefaultConnection extends DBConnection {
                     + "&serverTimezone=UTC",
                     databaseUsername, databasePasswd);
         } catch (CommunicationsException ex) {
-            throw new UnknownHostException(ex.getMessage());
+            throw new UnknownHostException(ex.getMessage()); //NOPMD - UnknownHostException does not accept a cause.
         } catch (SQLException ex) {
             throw new AuthException("The authentication to the database failed.", ex);
         }

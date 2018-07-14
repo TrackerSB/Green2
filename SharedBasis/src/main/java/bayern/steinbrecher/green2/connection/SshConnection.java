@@ -54,15 +54,15 @@ public final class SshConnection extends DBConnection {
      */
     public static final int DEFAULT_SSH_PORT = 22;
     private static final Map<SupportedDatabases, String> COMMANDS = Map.of(SupportedDatabases.MY_SQL, "mysql");
-    private final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
+    private transient final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
     /**
      * The ssh session used to connect to the database over a secure channel.
      */
-    private final Session sshSession;
+    private transient final Session sshSession;
     /**
      * The charset used by ssh response.
      */
-    private final Charset charset;
+    private transient final Charset charset;
 
     static {
         //Configurations which are applied to all sessions.
@@ -102,6 +102,7 @@ public final class SshConnection extends DBConnection {
     public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost, int databasePort,
             String databaseUsername, String databasePasswd, String databaseName, Charset charset)
             throws AuthException, UnknownHostException, UnsupportedDatabaseException {
+        super();
         this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
         this.charset = charset;
 
@@ -140,7 +141,7 @@ public final class SshConnection extends DBConnection {
              * A simple instanceof check is not sufficient => It can not be replaced by an additional catch clause.
              */
             if (ex instanceof JSchException && !ex.getMessage().contains("Auth")) { //NOPMD
-                throw new UnknownHostException(ex.getMessage());
+                throw new UnknownHostException(ex.getMessage()); //NOPMD - UnknownHostException does not accept a cause.
             } else {
                 throw new AuthException("Auth fail", ex);
             }
@@ -197,22 +198,24 @@ public final class SshConnection extends DBConnection {
             session.setDaemonThread(true);
             return session;
         } catch (JSchException ex) {
-            throw new AuthException();
+            throw new AuthException("SSH-Login failed.", ex);
         }
     }
 
     private String execCommand(String command) throws JSchException, CommandException {
+        String result;
         try {
             ChannelExec channel = (ChannelExec) sshSession.openChannel("exec");
             ByteArrayOutputStream errStream = new ByteArrayOutputStream();
             channel.setErrStream(errStream);
             channel.setInputStream(null);
             channel.setCommand(command);
-            InputStream in = channel.getInputStream();
+            InputStream inStream = channel.getInputStream();
 
             channel.connect();
 
-            String result = IOStreamUtility.readAll(in, charset);
+            //FIXME Can this assignment be moved after the if-throw?
+            result = IOStreamUtility.readAll(inStream, charset);
 
             String errorMessage = errStream.toString(charset.name());
             if (errorMessage.toLowerCase(Locale.ROOT).contains("error")) {
@@ -220,12 +223,12 @@ public final class SshConnection extends DBConnection {
             }
 
             channel.disconnect();
-
-            return result;
         } catch (IOException ex) {
             Logger.getLogger(SshConnection.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            result = null;
         }
+
+        return result;
     }
 
     private String generateQueryCommand(String sqlCode) {

@@ -34,7 +34,7 @@ import javafx.stage.StageStyle;
  */
 public class ChoiceDialog extends Application {
 
-    private Optional<Boolean> installUpdates = Optional.empty();
+    private transient Optional<Boolean> installUpdates = Optional.empty();
 
     /**
      * {@inheritDoc}

@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * @param <U> The type of object to set the content of this column to.
  * @since 2u14
  */
-public abstract class ColumnPattern<T, U> {
+public class ColumnPattern<T, U> {
 
     private final Pattern columnNamePattern;
     private final ColumnParser<T> parser;
@@ -40,7 +40,7 @@ public abstract class ColumnPattern<T, U> {
      * @param columnNamePattern The pattern column names have to match.
      * @param parser The parser for converting values from and to their SQL representation.
      */
-    public ColumnPattern(String columnNamePattern, ColumnParser<T> parser) {
+    protected ColumnPattern(String columnNamePattern, ColumnParser<T> parser) {
         if (!columnNamePattern.startsWith("^") || !columnNamePattern.endsWith("$")) {
             Logger.getLogger(ColumnPattern.class.getName())
                     .log(Level.WARNING,

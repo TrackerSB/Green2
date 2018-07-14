@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <MenuItem onAction="#generateAddressesAll"
                           text="%ofAllMember"
                           accelerator="Alt+A"/>
-                <MenuItem fx:id="generateAddressesBirthday"
+                <MenuItem fx:id="generateAddressesBirthdayItem"
                           onAction="#generateAddressesBirthday"
                           disable="${!yearSpinner.valid}"
                           visible="${controller.activateBirthdayFeatures}"/>
@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                editable="true"/>
                     </content>
                 </CustomMenuItem>
-                <MenuItem fx:id="generateBirthdayInfos"
+                <MenuItem fx:id="generateBirthdayInfosItem"
                           onAction="#generateBirthdayInfos"
                           disable="${!yearSpinner.valid}"
                           accelerator="Alt+G"/>

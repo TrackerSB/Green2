@@ -84,7 +84,7 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
      * {@inheritDoc}
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL location, ResourceBundle resources) {
         checkedTextFields.addAll(Arrays.asList(sshHostTextField, databaseHostTextField, databaseNameTextField,
                 birthdayExpressionTextField, profileNameTextField));
 

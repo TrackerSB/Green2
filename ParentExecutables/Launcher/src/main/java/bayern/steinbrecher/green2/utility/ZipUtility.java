@@ -23,6 +23,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -66,37 +67,40 @@ public final class ZipUtility {
      */
     public static void unzip(File zippedFile, File outputDir, Charset charset) throws IOException {
         String outDirPath = outputDir.getAbsolutePath();
-        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(zippedFile.toPath()), charset);
-                InputStreamReader isr = new InputStreamReader(zis, charset);) {
-            ZipEntry zipEntry = zis.getNextEntry();
+        try (ZipInputStream zipEntryStream = new ZipInputStream(Files.newInputStream(zippedFile.toPath()), charset)) {
+            //Cache InputStreamReader for charsets needed for unzipping using the correct encoding.
+            Map<Charset, InputStreamReader> cachedReaders = new HashMap<>();
+
+            ZipEntry zipEntry = zipEntryStream.getNextEntry();
             while (zipEntry != null) {
                 String zipEntryName = zipEntry.getName();
                 String[] zipEntryNameParts = zipEntryName.split("\\.");
                 String zipEntryNameFormat = zipEntryNameParts[zipEntryNameParts.length - 1];
 
-                InputStreamReader currentIsr;
-                Charset currentCharset;
-                if (SPECIAL_CHARSETS.containsKey(zipEntryNameFormat)) {
-                    currentCharset = SPECIAL_CHARSETS.get(zipEntryNameFormat);
-                    currentIsr = new InputStreamReader(zis, currentCharset);
+                InputStreamReader currentReader;
+                Charset currentCharset = SPECIAL_CHARSETS.getOrDefault(zipEntryNameFormat, charset);
+                if (cachedReaders.containsKey(currentCharset)) {
+                    currentReader = cachedReaders.get(currentCharset);
                 } else {
-                    currentCharset = charset;
-                    currentIsr = isr;
+                    //At most as many inpustreams are created as differenz charsets are needed.
+                    currentReader = new InputStreamReader(zipEntryStream, currentCharset); //NOPMD
+                    cachedReaders.put(currentCharset, currentReader);
                 }
 
                 File unzippedFile = new File(outDirPath + "/" + zipEntryName);
                 //NOTE The file may be in some subdirectory
                 File unzippedFileParent = unzippedFile.getParentFile();
                 if (unzippedFileParent.exists() || unzippedFileParent.mkdirs()) {
-                    try (OutputStreamWriter osw
-                            = new OutputStreamWriter(Files.newOutputStream(unzippedFile.toPath()), currentCharset)) {
-                        IOStreamUtility.transfer(currentIsr, osw);
+                    //Each file needs to be written separately.
+                    try (OutputStreamWriter osw = new OutputStreamWriter(
+                            Files.newOutputStream(unzippedFile.toPath()), currentCharset)) { //NOPMD
+                        IOStreamUtility.transfer(currentReader, osw);
                     }
                 } else {
                     throw new IOException("The directory where to place the extracted files ("
                             + outputDir.getAbsolutePath() + ") could not be created or at least one of its ancestors.");
                 }
-                zipEntry = zis.getNextEntry();
+                zipEntry = zipEntryStream.getNextEntry();
             }
         }
     }

@@ -338,6 +338,36 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         /**
+         * Creates a {@link StringConverter} mapping 1:1 a {@link String} displayed to the user and its associated
+         * value.
+         *
+         * @param <T> The type of the value to associate with {@link String}s.
+         * @param valueDisplayMap The mapping between {@link String}s and their associated values.
+         * @return The {@link StringConverter} representing the 1:1 mapping.
+         */
+        protected static <T> StringConverter<T> createStringConverter(BiMap<T, String> valueDisplayMap) {
+            return new StringConverter<T>() {
+                @Override
+                public String toString(T value) {
+                    if (valueDisplayMap.containsKey(value)) {
+                        return valueDisplayMap.get(value);
+                    } else {
+                        throw new NoSuchElementException("There is not display name for " + value);
+                    }
+                }
+
+                @Override
+                public T fromString(String displayName) {
+                    if (valueDisplayMap.containsValue(displayName)) {
+                        return valueDisplayMap.inverse().get(displayName);
+                    } else {
+                        throw new NoSuchElementException("There is no value for display name " + displayName);
+                    }
+                }
+            };
+        }
+
+        /**
          * {@inheritDoc}
          */
         @Override
@@ -406,18 +436,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         protected void addValidCondition(ObservableBooleanValue condition) {
             validConditions.get().add(condition);
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public abstract void addListener(InvalidationListener listener);
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public abstract void removeListener(InvalidationListener listener);
     }
 
     /**
@@ -464,28 +482,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             checkbox.selectedProperty().removeListener(listener);
             checkbox.indeterminateProperty().removeListener(listener);
         }
-    }
-
-    private static <T> StringConverter<T> createStringConverter(BiMap<T, String> valueDisplayMap) {
-        return new StringConverter<T>() {
-            @Override
-            public String toString(T value) {
-                if (valueDisplayMap.containsKey(value)) {
-                    return valueDisplayMap.get(value);
-                } else {
-                    throw new NoSuchElementException("There is not display name for " + value);
-                }
-            }
-
-            @Override
-            public T fromString(String displayName) {
-                if (valueDisplayMap.containsValue(displayName)) {
-                    return valueDisplayMap.inverse().get(displayName);
-                } else {
-                    throw new NoSuchElementException("There is no value for display name " + displayName);
-                }
-            }
-        };
     }
 
     /**
@@ -569,6 +565,12 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             compareSymbol.getSelectionModel().select("=");
         }
 
+        /**
+         * Converts a value to its {@link String} representation which can be used within the condition.
+         *
+         * @param value The value to get a representation usable within the condition.
+         * @return The representation which can be used within the condition
+         */
         protected abstract String convert(T value);
 
         @Override

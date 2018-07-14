@@ -283,7 +283,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
          * @return {@code true} only if the duplicated color flag is set.
          * @see #duplicateColorProperty()
          */
-        public boolean getDuplicateColor() {
+        public boolean isDuplicateColor() {
             return duplicateColorProperty().get();
         }
 
@@ -313,7 +313,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
          * @return {@code true} only if the duplicated contribution flag is set.
          * @see #duplicateContributionProperty()
          */
-        public boolean getDuplicateContribution() {
+        public boolean isDuplicateContribution() {
             return duplicateContributionProperty().get();
         }
 

@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * @param <T> The type to convert from and to a SQL representation.
  */
 //TODO Wait for generic enums
-public abstract class ColumnParser<T> {
+public abstract /* final */ class ColumnParser<T> {
 
     /**
      * Parses {@link String} values from and to its SQL representation.
@@ -101,7 +101,7 @@ public abstract class ColumnParser<T> {
          */
         @Override
         public Optional<Boolean> parse(String value) {
-            return Optional.of(value.equalsIgnoreCase("1"));
+            return Optional.of("1".equalsIgnoreCase(value));
         }
 
         /**
@@ -148,7 +148,7 @@ public abstract class ColumnParser<T> {
          */
         @Override
         protected String toStringImpl(LocalDate value) {
-            return "'" + String.valueOf(value) + "'";
+            return "'" + value + "'";
         }
 
         /**

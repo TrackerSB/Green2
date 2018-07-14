@@ -29,16 +29,13 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.util.Pair;
 import javax.tools.ToolProvider;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -125,6 +122,7 @@ public final class UpdateUtility {
     public static Optional<Map<String, Callable<Boolean>>> getUpdateConditions() {
         return readOnlineUpdateConditions()
                 .map(xml -> {
+                    boolean parsedSucessfully = true;
                     Map<String, Callable<Boolean>> updateConditions = new HashMap<>();
                     try {
                         Optional<String> validation
@@ -170,9 +168,9 @@ public final class UpdateUtility {
                         }
                     } catch (SAXException | IOException | ParserConfigurationException ex) {
                         Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, null, ex);
-                        updateConditions = null;
+                        parsedSucessfully = false;
                     }
-                    return updateConditions;
+                    return parsedSucessfully ? updateConditions : null;
                 });
     }
 }

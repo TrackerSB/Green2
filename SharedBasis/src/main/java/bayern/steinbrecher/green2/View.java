@@ -48,7 +48,7 @@ public abstract class View<T extends Controller> extends Application {
     /**
      * The controller handling the actions of this view.
      */
-    private T controller;
+    private T controller; //NOPMD - Since it is  instantiated lazily it can not be "final", but its setter is omitted.
 
     /**
      * Contains the body usually inserted in {@link Application#start(javafx.stage.Stage)}. This method shall not call

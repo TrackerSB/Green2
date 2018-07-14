@@ -126,7 +126,7 @@ public abstract class DBConnection implements AutoCloseable {
                             //Skip column name
                             .skip(1)
                             //FIXME Ignore case?
-                            .map(list -> list.get(0).toLowerCase())
+                            .map(list -> list.get(0).toLowerCase(Locale.ROOT))
                             .collect(Collectors.toList()));
                 } catch (SQLException ex) {
                     Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -217,16 +217,19 @@ public abstract class DBConnection implements AutoCloseable {
                 }
             });
         }
+
+        Optional<String> searchQuery;
         if (existingColumns.isEmpty()) {
             Logger.getLogger(DBConnection.class.getName())
                     .log(Level.WARNING, "Generating search query without selecting any existing column.");
-            return Optional.empty();
+            searchQuery = Optional.empty();
         } else {
             SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
-            String sqlString = "SELECT " + existingColumns.stream()
-                    .map(dbms::quoteIdentifier)
-                    .collect(Collectors.joining(", "))
-                    + " FROM " + dbms.quoteIdentifier(table.getRealTableName());
+            StringBuilder sqlString = new StringBuilder("SELECT ")
+                    .append(existingColumns.stream()
+                            .map(dbms::quoteIdentifier)
+                            .collect(Collectors.joining(", "))
+                            + " FROM " + dbms.quoteIdentifier(table.getRealTableName()));
             /*
              * NOTE condtions.stream() would work on empty condtions list too, but this if spares the computation of
              * nonExistingColumnsPattern.
@@ -242,11 +245,13 @@ public abstract class DBConnection implements AutoCloseable {
                         .filter(c -> notExistingColumnsPattern.stream().noneMatch(p -> p.matcher(c).matches()))
                         .collect(Collectors.joining(" AND "));
                 if (!conditionString.isEmpty()) {
-                    sqlString += " WHERE " + conditionString;
+                    sqlString.append(" WHERE ")
+                            .append(conditionString);
                 }
             }
-            return Optional.of(sqlString);
+            searchQuery = Optional.of(sqlString.toString());
         }
+        return searchQuery;
     }
 
     /**
@@ -315,11 +320,7 @@ public abstract class DBConnection implements AutoCloseable {
                 missingColumns.put(table, currentMissingColumns);
             }
         }
-        if (missingColumns.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(missingColumns);
-        }
+        return Optional.ofNullable(missingColumns.isEmpty() ? null : missingColumns);
     }
 
     /**
@@ -330,8 +331,9 @@ public abstract class DBConnection implements AutoCloseable {
      */
     private static String generateMissingColumnsString(
             Optional<Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>>> missingColumns) {
+        String missingColumnsString;
         if (missingColumns.isPresent()) {
-            return missingColumns.get().entrySet().parallelStream()
+            missingColumnsString = missingColumns.get().entrySet().parallelStream()
                     .map(entry -> entry.getKey().getRealTableName() + ":\n"
                     + entry.getValue().stream()
                             .map(SimpleColumnPattern::getRealColumnName)
@@ -339,8 +341,9 @@ public abstract class DBConnection implements AutoCloseable {
                             .collect(Collectors.joining(", ")))
                     .collect(Collectors.joining("\n"));
         } else {
-            return "";
+            missingColumnsString = "";
         }
+        return missingColumnsString;
     }
 
     /**
@@ -364,7 +367,7 @@ public abstract class DBConnection implements AutoCloseable {
             return Tables.MEMBER.generateRepresentations(
                     execQuery(generateSearchQuery(Tables.MEMBER, Tables.MEMBER.getAllColumns()).get()));
         } catch (SQLException ex) {
-            throw new Error("Hardcoded SQL-Code invalid", ex);
+            throw new Error("Hardcoded SQL-Code invalid", ex); //NOPMD - Indicates bug in hardcoded SQL.
         }
     }
 
@@ -378,7 +381,7 @@ public abstract class DBConnection implements AutoCloseable {
             return Tables.NICKNAMES.generateRepresentations(
                     execQuery(generateSearchQuery(Tables.NICKNAMES, Tables.NICKNAMES.getAllColumns()).get()));
         } catch (SQLException ex) {
-            throw new Error("Hardcoded SQL-Code invalid", ex);
+            throw new Error("Hardcoded SQL-Code invalid", ex); //NOPMD - Indicates bug in hardcoded SQL.
         }
     }
 
