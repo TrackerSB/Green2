@@ -55,13 +55,10 @@ public final class EnvironmentHandler {
      */
     public static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle("bayern.steinbrecher.green2.data.language.language");
-    private static final int SPLASHSCREEN_PREFFERED_WIDTH = 800;
-    private static final String RESOURCE_BASE_PATH = "/bayern/steinbrecher/green2/";
     /**
      * The path of the file containing all styles.
      */
-    public static final String DEFAULT_STYLESHEET = RESOURCE_BASE_PATH + "styles/styles.css";
-    private static final String BASIC_ICON_DIR_PATH = RESOURCE_BASE_PATH + "icons/";
+    public static final String DEFAULT_STYLESHEET = LocationConstants.RESOURCE_BASE_PATH + "styles/styles.css";
     /**
      * The name of the folder containing the licenses of Green2.
      */
@@ -140,6 +137,7 @@ public final class EnvironmentHandler {
     }
 
     private static Path resolveApplicationRoot() {
+        Path applicationRoot;
         if (IS_USED_AS_LIBRARY) {
             Path root = CURRENT_JAR_PATH;
             Path rootFileName;
@@ -151,10 +149,11 @@ public final class EnvironmentHandler {
                     rootFileName = root.getFileName();
                 }
             } while (!(rootFileName == null || rootFileName.toString().equals(APPLICATION_FOLDER_NAME)));
-            return root;
+            applicationRoot = root;
         } else {
-            return CURRENT_JAR_PATH.getParent();
+            applicationRoot = CURRENT_JAR_PATH.getParent();
         }
+        return applicationRoot;
     }
 
     private static Path resolveCurrentJarPath() {
@@ -178,12 +177,14 @@ public final class EnvironmentHandler {
      * @return The value with inserted params.
      */
     public static String getResourceValue(String key, Object... params) {
+        String resourceValue;
         if (RESOURCE_BUNDLE.containsKey(key)) {
-            return MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
+            resourceValue = MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
         } else {
             Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.INFO, "No resource for \"{0}\" found.", key);
-            return key;
+            resourceValue = key;
         }
+        return resourceValue;
     }
 
     /**
@@ -250,14 +251,16 @@ public final class EnvironmentHandler {
      * @return The list of all files of the licenses directory.
      */
     public static List<File> getLicenses() {
+        List<File> licences;
         try {
-            return Files.list(LICENSES_PATH)
+            licences = Files.list(LICENSES_PATH)
                     .map(path -> new File(path.toUri()))
                     .collect(Collectors.toList());
         } catch (IOException ex) {
             Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.WARNING, null, ex);
-            return new ArrayList<>();
+            licences = new ArrayList<>();
         }
+        return licences;
     }
 
     /**
@@ -294,7 +297,7 @@ public final class EnvironmentHandler {
     /**
      * Contains supported operation systems.
      */
-    public enum OS {
+    public static enum OS {
         /**
          * Representing Windows operating system.
          */
@@ -303,6 +306,31 @@ public final class EnvironmentHandler {
          * Representing any Linux operating system.
          */
         LINUX;
+    }
+
+    /**
+     * Contains constants specific for {@link LogoSet}.
+     */
+    private static final class LogoSetConstants {
+
+        public static final int SPLASHSCREEN_PREFFERED_WIDTH = 800;
+
+        private LogoSetConstants() {
+            throw new UnsupportedOperationException("Construction of an object is prohibited.");
+        }
+    }
+
+    /**
+     * Contains constants describing paths within this jar.
+     */
+    private static final class LocationConstants {
+
+        public static final String RESOURCE_BASE_PATH = "/bayern/steinbrecher/green2/";
+        public static final String BASIC_ICON_DIR_PATH = RESOURCE_BASE_PATH + "icons/";
+
+        private LocationConstants() {
+            throw new UnsupportedOperationException("Construction of an object is prohibited.");
+        }
     }
 
     /**
@@ -316,32 +344,33 @@ public final class EnvironmentHandler {
         /**
          * The splashscreen of the english version of Green2.
          */
-        SPLASHSCREEN_EN("splashscreen_en.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE),
+        SPLASHSCREEN_EN("splashscreen_en.png", LogoSetConstants.SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE),
         /**
          * The splashscreen of the german version of Green2.
          */
-        SPLASHSCREEN_DE("splashscreen_de.png", SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE);
+        SPLASHSCREEN_DE("splashscreen_de.png", LogoSetConstants.SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE);
 
         private final Image image;
 
         /**
          * Creates an {@link Image} with no specified bound box.
          *
-         * @param filename The filename of the image relative to {@link #BASIC_ICON_DIR_PATH}.
+         * @param filename The filename of the image relative to {@link LogoSetConstants#BASIC_ICON_DIR_PATH}.
          */
         LogoSet(String filename) {
-            image = new Image(BASIC_ICON_DIR_PATH + filename);
+            image = new Image(LocationConstants.BASIC_ICON_DIR_PATH + filename);
         }
 
         /**
          * Creates an {@link Image} with a specified bound box.
          *
-         * @param filename The filename of the image relative to {@link #BASIC_ICON_DIR_PATH}.
+         * @param filename The filename of the image relative to {@link LogoSetConstants#BASIC_ICON_DIR_PATH}.
          * @param requestedHeight The requested height of the bound box.
          * @param requestedWidth The requested width of the bound box.
          */
         LogoSet(String filename, double requestedWidth, double requestedHeight) {
-            image = new Image(BASIC_ICON_DIR_PATH + filename, requestedWidth, requestedHeight, true, true);
+            image = new Image(LocationConstants.BASIC_ICON_DIR_PATH + filename,
+                    requestedWidth, requestedHeight, true, true);
         }
 
         /**
@@ -451,7 +480,7 @@ public final class EnvironmentHandler {
          */
         ImageSet(String filename, boolean big) {
             int size = big ? BIG_SIZE : SMALL_SIZE;
-            image = new Image(BASIC_ICON_DIR_PATH + filename, size, size, true, true);
+            image = new Image(LocationConstants.BASIC_ICON_DIR_PATH + filename, size, size, true, true);
         }
 
         /**

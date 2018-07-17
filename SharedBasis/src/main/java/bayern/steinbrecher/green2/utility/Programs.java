@@ -20,6 +20,7 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
@@ -63,7 +64,7 @@ public enum Programs {
      */
     Programs(String jarname, String... options) {
         this.jarname = jarname;
-        this.options = options;
+        this.options = Arrays.copyOf(options, options.length);
     }
 
     /**
@@ -103,12 +104,13 @@ public enum Programs {
                     }
                 })
                 .whenComplete((errorMessage, ex) -> {
-                    if (ex != null) {
-                        Logger.getLogger(Programs.class.getName())
-                                .log(Level.SEVERE, null, ex);
-                    } else if (!errorMessage.isEmpty()) {
-                        Logger.getLogger(Programs.class.getName())
-                                .log(Level.WARNING, "The called program reported errors:\n{0}", errorMessage);
+                    if (ex == null) {
+                        if (!errorMessage.isEmpty()) {
+                            Logger.getLogger(Programs.class.getName())
+                                    .log(Level.WARNING, "The called program reported errors:\n{0}", errorMessage);
+                        }
+                    } else {
+                        Logger.getLogger(Programs.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     Platform.exit();
                 });

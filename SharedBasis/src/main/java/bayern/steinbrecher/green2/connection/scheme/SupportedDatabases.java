@@ -127,9 +127,10 @@ public enum SupportedDatabases {
         return column.getKeywords().stream()
                 .map(keyword -> {
                     if (this.keywordRepresentations.containsKey(keyword)) {
-                        String keywordString = this.keywordRepresentations.get(keyword);
+                        StringBuilder keywordString = new StringBuilder(this.keywordRepresentations.get(keyword));
                         if (keyword == Keywords.DEFAULT) {
-                            keywordString += " " + column.getDefaultValueSql();
+                            keywordString.append(' ')
+                                    .append(column.getDefaultValueSql());
                         }
                         return keywordString;
                     } else {
@@ -268,19 +269,19 @@ public enum SupportedDatabases {
      */
     private static class SQLTypeKeyword implements Comparable<SQLTypeKeyword> {
 
-        private final String sqlTypeKeyword;
-        private final String parameter;
+        private final String keyword; //NOPMD - It is access over getSqlTypeKeyword()
+        private final String parameter; //NOPMD - It is access over getSqlTypeKeyword()
 
         /**
          * Creates a new {@link SQLTypeKeyword}.
          *
-         * @param sqlTypeKeyword The keyword is always saved and handled in uppercase. This keyword must represent the
-         * type saved in {@code information_schema.columns}. Be careful with aliases.
+         * @param keyword The keyword is always saved and handled in uppercase. This keyword must represent the type
+         * saved in {@code information_schema.columns}. Be careful with aliases.
          * @param parameter Additional parameters related to the keyword. These are ignored concerning
          * {@link Object#equals(java.lang.Object)}, {@link Comparable#compareTo(java.lang.Object)}, etc.
          */
-        SQLTypeKeyword(String sqlTypeKeyword, Object... parameter) {
-            this.sqlTypeKeyword = sqlTypeKeyword.toUpperCase(Locale.ROOT);
+        SQLTypeKeyword(String keyword, Object... parameter) {
+            this.keyword = keyword.toUpperCase(Locale.ROOT);
             this.parameter = parameter.length > 0
                     ? Arrays.stream(parameter)
                             .map(String::valueOf)
@@ -293,11 +294,13 @@ public enum SupportedDatabases {
          */
         @Override
         public boolean equals(Object other) {
+            boolean areEqual;
             if (other instanceof SQLTypeKeyword) {
-                return sqlTypeKeyword.equalsIgnoreCase(((SQLTypeKeyword) other).sqlTypeKeyword);
+                areEqual = keyword.equalsIgnoreCase(((SQLTypeKeyword) other).keyword);
             } else {
-                return false;
+                areEqual = false;
             }
+            return areEqual;
         }
 
         /**
@@ -305,7 +308,7 @@ public enum SupportedDatabases {
          */
         @Override
         public int hashCode() {
-            return sqlTypeKeyword.hashCode();
+            return keyword.hashCode();
         }
 
         /**
@@ -313,7 +316,7 @@ public enum SupportedDatabases {
          */
         @Override
         public int compareTo(SQLTypeKeyword other) {
-            return sqlTypeKeyword.compareToIgnoreCase(other.sqlTypeKeyword);
+            return keyword.compareToIgnoreCase(other.keyword);
         }
 
         /**
@@ -322,7 +325,7 @@ public enum SupportedDatabases {
          * @return The SQL type keyword in upper case and appends a comma separated list of parameters in braces.
          */
         public String getSqlTypeKeyword() {
-            return sqlTypeKeyword + parameter;
+            return keyword + parameter;
         }
     }
 }

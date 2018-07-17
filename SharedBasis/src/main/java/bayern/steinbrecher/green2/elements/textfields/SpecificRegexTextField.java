@@ -45,7 +45,7 @@ public class SpecificRegexTextField extends CheckedTextField {
      */
     private final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
     private final BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
-    private final ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
+    private transient final ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
     private final BooleanProperty eliminateSpaces = new SimpleBooleanProperty(this, "eliminateSpaces", false);
 
     /**
@@ -195,7 +195,7 @@ public class SpecificRegexTextField extends CheckedTextField {
      *
      * @return {@code true} only if spaces are removed before checking using the given regex.
      */
-    public boolean isElininateSpaces() {
+    public boolean isEliminateSpaces() {
         return eliminateSpaces.get();
     }
 

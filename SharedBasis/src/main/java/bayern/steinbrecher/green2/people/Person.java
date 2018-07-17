@@ -24,6 +24,7 @@ import java.time.LocalDate;
  *
  * @author Stefan Huber
  */
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public final class Person {
 
     private String prename, lastname, title;
@@ -31,7 +32,7 @@ public final class Person {
     private boolean male;
 
     private Person() {
-        //A completely uninitialized person (Only to be used by the builder.
+        //A completely uninitialized person (Only to be used by the builder).
     }
 
     /**

@@ -22,12 +22,13 @@ package bayern.steinbrecher.green2.people;
  *
  * @author Stefan Huber
  */
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public final class Address {
 
     private String street, houseNumber, postcode, place;
 
     private Address() {
-        //A completely uninitialized person (Only to be used by the builder.
+        //A completely uninitialized person (Only to be used by the builder).
     }
 
     /**

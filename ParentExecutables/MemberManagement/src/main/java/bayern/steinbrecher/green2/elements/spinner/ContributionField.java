@@ -54,7 +54,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
     @FXML
     private ColorPicker colorPicker;
     private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
-    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    private transient final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
     /**
      * Holds {@code true} only if the content has to be checked.
      */

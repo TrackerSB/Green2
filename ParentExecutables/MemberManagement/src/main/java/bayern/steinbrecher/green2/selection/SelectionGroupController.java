@@ -497,7 +497,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
          * item not associated with any group.
          */
         public void setGroup(Optional<G> group) {
-            if (!group.isPresent() || groups.containsKey(group.get())) {
+            if (!group.isPresent() || getGroups().contains(group.get())) {
                 this.group.set(group);
             }
         }

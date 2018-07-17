@@ -28,6 +28,7 @@ package bayern.steinbrecher.green2.utility;
  * @see java.util.function.BiConsumer
  */
 @FunctionalInterface
+@SuppressWarnings("PMD.ShortVariable")
 public interface TriConsumer<T, U, V> {
 
     /**

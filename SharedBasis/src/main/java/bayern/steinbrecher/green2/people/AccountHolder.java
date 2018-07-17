@@ -24,6 +24,7 @@ import java.time.LocalDate;
  *
  * @author Stefan Huber
  */
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public final class AccountHolder {
 
     private String prename, lastname, title;
@@ -32,7 +33,7 @@ public final class AccountHolder {
     private boolean hasMandateChanged;
 
     private AccountHolder() {
-        //A completely uninitialized person (Only to be used by the builder.
+        //A completely uninitialized person (Only to be used by the builder).
     }
 
     /**

@@ -76,8 +76,8 @@ public final class XMLUtility {
         Map<String, List<String>> validationProblemsMap = new DefaultMap<>(key -> new ArrayList<>());
         BooleanProperty isValidXML = new SimpleBooleanProperty(true);
         xmlBuilder.setErrorHandler(new ErrorHandler() {
-            private String createLine(SAXParseException ex) {
-                return "line: " + ex.getLineNumber() + ": " + ex.getMessage();
+            private String createLine(SAXParseException exception) {
+                return "line: " + exception.getLineNumber() + ": " + exception.getMessage();
             }
 
             @Override
@@ -118,13 +118,15 @@ public final class XMLUtility {
                 .sorted((entryA, entryB) -> entryA.getKey().compareTo(entryB.getKey()))
                 .flatMap(entry -> entry.getValue().stream().map(cause -> entry.getKey() + ": " + cause))
                 .collect(Collectors.joining("\n"));
+        Optional<String> validationResult;
         if (isValidXML.get()) {
             if (!validationOutput.isEmpty()) {
                 Logger.getLogger(XMLUtility.class.getName()).log(Level.WARNING, validationOutput);
             }
-            return Optional.empty();
+            validationResult = Optional.empty();
         } else {
-            return Optional.of(validationOutput);
+            validationResult = Optional.of(validationOutput);
         }
+        return validationResult;
     }
 }

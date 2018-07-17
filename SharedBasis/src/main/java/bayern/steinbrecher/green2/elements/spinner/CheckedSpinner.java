@@ -46,7 +46,7 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      * {@link BooleanProperty} indicating whether the current value is valid.
      */
     private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
-    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
+    private transient final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
     /**
      * Holds {@code true} only if the content has to be checked.
      */

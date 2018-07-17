@@ -42,8 +42,8 @@ import javafx.stage.Stage;
  */
 public class Wizard extends Application {
 
-    private WizardController controller;
-    private final Map<String, WizardPage<?>> pages;
+    private transient /* final */ WizardController controller;
+    private transient final Map<String, WizardPage<?>> pages;
 
     /**
      * Constructs a wizard with showing {@code pages} and using default stylesheet.
@@ -52,20 +52,8 @@ public class Wizard extends Application {
      *
      */
     public Wizard(Map<String, WizardPage<?>> pages) {
-        checkPages(pages);
+        super();
         this.pages = pages;
-    }
-
-    /**
-     * Checks whether the given {@link Map} of pages is valid. (E.g. it checks whether {@link WizardPage#FIRST_PAGE_KEY}
-     * is mapped to any {@link WizardPage}.
-     *
-     * @param pages The {@link WizardPage}s to check.
-     */
-    static void checkPages(Map<String, WizardPage<?>> pages) {
-        if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
-            throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
-        }
     }
 
     /**

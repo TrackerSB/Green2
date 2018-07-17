@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.wizard;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -39,10 +40,10 @@ public final class WizardPage<T> {
     public static final String FIRST_PAGE_KEY = "first";
     private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
     private final BooleanProperty hasNextFunction = new SimpleBooleanProperty(this, "hasNextFunction");
-    private Pane root;
+    private final Pane root;
     private final Property<Callable<String>> nextFunction = new SimpleObjectProperty<>(this, "nextFunction");
     private boolean finish;
-    private Callable<T> resultFunction;
+    private final Callable<T> resultFunction;
 
     /**
      * Creates a new page with given params.
@@ -76,7 +77,7 @@ public final class WizardPage<T> {
         });
         this.nextFunction.setValue(nextFunction);
         this.finish = finish;
-        setResultFunction(resultFunction);
+        this.resultFunction = Objects.requireNonNull(resultFunction, "The resultFunction must not be zero.");
         valid.unbind();
         valid.set(true);
     }
@@ -88,15 +89,6 @@ public final class WizardPage<T> {
      */
     public Pane getRoot() {
         return root;
-    }
-
-    /**
-     * Sets a new pane containing all controls.
-     *
-     * @param root The pane containing all controls.
-     */
-    public void setRoot(Pane root) {
-        this.root = root;
     }
 
     /**
@@ -151,19 +143,6 @@ public final class WizardPage<T> {
      */
     public Callable<T> getResultFunction() {
         return resultFunction;
-    }
-
-    /**
-     * Sets a new function calculating the result this page represents.
-     *
-     * @param resultFunction The function calculating the result this page represents.
-     */
-    public void setResultFunction(Callable<T> resultFunction) {
-        if (resultFunction == null) {
-            throw new IllegalArgumentException(
-                    "resultFunction must not be null");
-        }
-        this.resultFunction = resultFunction;
     }
 
     /**

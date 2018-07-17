@@ -49,10 +49,10 @@ import javafx.stage.Stage;
 public class ProfileChoice extends Application {
 
     private static final String LAST_PROFILE_KEY = "defaultProfile";
-    private Stage stage;
+    private transient Stage stage;
     private Profile profile;
-    private boolean created = false;
-    private final GridPane profilePane = new GridPane();
+    private transient boolean created;
+    private transient final GridPane profilePane = new GridPane();
 
     /**
      * {@inheritDoc}
@@ -68,11 +68,12 @@ public class ProfileChoice extends Application {
         profiles.sort(String::compareTo);
         String editLabel = EnvironmentHandler.getResourceValue("edit");
         String deleteLabel = EnvironmentHandler.getResourceValue("delete");
+        //PMD: For each profile separate elements have to be created.
         for (String profileName : profiles) {
-            Label name = new Label(profileName);
-            Button edit = new Button(editLabel, EnvironmentHandler.ImageSet.EDIT.getAsImageView());
+            Label name = new Label(profileName); //NOPMD
+            Button edit = new Button(editLabel, EnvironmentHandler.ImageSet.EDIT.getAsImageView()); //NOPMD
             edit.setOnAction(evt -> editProfile(profileName));
-            Button delete = new Button(deleteLabel, EnvironmentHandler.ImageSet.TRASH.getAsImageView());
+            Button delete = new Button(deleteLabel, EnvironmentHandler.ImageSet.TRASH.getAsImageView()); //NOPMD
             delete.setOnAction(evt -> askForDeleteProfile(profileName));
             profilePane.addRow(currentRowIndex, name, edit, delete);
             currentRowIndex++;
@@ -176,18 +177,22 @@ public class ProfileChoice extends Application {
      * @return An {@link Optional} which contains the selected profile if any.
      */
     public static Optional<Profile> askForProfile(boolean editable) {
+        Optional<Profile> profile;
         if (editable) {
             ProfileChoice choice = new ProfileChoice();
             choice.start(new Stage());
-            return Optional.ofNullable(choice.profile);
+            profile = Optional.ofNullable(choice.profile);
         } else {
             List<String> availableProfiles = Profile.getAvailableProfiles();
+            String initialProfile;
             String lastProfile = EnvironmentHandler.PREFERENCES_USER_NODE.get(LAST_PROFILE_KEY, null);
-            if (!availableProfiles.contains(lastProfile)) {
-                lastProfile = null;
+            if (availableProfiles.contains(lastProfile)) {
+                initialProfile = lastProfile;
+            } else {
+                initialProfile = null;
             }
 
-            ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(lastProfile, availableProfiles);
+            ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(initialProfile, availableProfiles);
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
             dialogPane.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
             ((Stage) dialogPane.getScene().getWindow()).getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
@@ -196,10 +201,11 @@ public class ProfileChoice extends Application {
             Optional<String> profileName = choiceDialog.showAndWait();
             if (profileName.isPresent()) {
                 EnvironmentHandler.PREFERENCES_USER_NODE.put(LAST_PROFILE_KEY, profileName.get());
-                return Optional.of(new Profile(profileName.get(), false));
+                profile = Optional.of(new Profile(profileName.get(), false));
             } else {
-                return Optional.empty();
+                profile = Optional.empty();
             }
         }
+        return profile;
     }
 }

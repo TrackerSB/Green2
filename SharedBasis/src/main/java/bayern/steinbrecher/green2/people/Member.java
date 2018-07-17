@@ -30,6 +30,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public final class Member implements Comparable<Member> {
 
     private static final Collator COLLATOR = Collator.getInstance(Locale.GERMAN);
@@ -48,7 +49,7 @@ public final class Member implements Comparable<Member> {
     }
 
     private Member() {
-        //A completely uninitialized person (Only to be used by the builder.
+        //A completely uninitialized person (Only to be used by the builder).
     }
 
     /**

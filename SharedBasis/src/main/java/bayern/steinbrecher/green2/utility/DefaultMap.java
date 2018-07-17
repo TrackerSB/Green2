@@ -39,6 +39,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
      * entry for.
      */
     public DefaultMap(Function<K, V> entrySupplier) {
+        super();
         this.entrySupplier = entrySupplier;
     }
 

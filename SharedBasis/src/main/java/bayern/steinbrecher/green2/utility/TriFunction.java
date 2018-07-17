@@ -28,6 +28,7 @@ package bayern.steinbrecher.green2.utility;
  * @see java.util.function.BiFunction
  */
 @FunctionalInterface
+@SuppressWarnings("PMD.ShortVariable")
 public interface TriFunction<T, U, V, R> {
 
     /**

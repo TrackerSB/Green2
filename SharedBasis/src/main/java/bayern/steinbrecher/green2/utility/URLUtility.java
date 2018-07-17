@@ -44,6 +44,7 @@ public final class URLUtility {
      * @return The resolved HTTP(S)-URL. Returns {@link Optional#empty()} only if the given URL is invalid, not
      * reachable or an unrecognized status code is thrown like 401 or 500.
      */
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public static Optional<String> resolveURL(String url) {
         String resolvedUrl = url;
         try {
@@ -60,15 +61,14 @@ public final class URLUtility {
                         resolvedUrl = connection.getHeaderField("Location");
                     } else {
                         Logger.getLogger(URLUtility.class.getName())
-                                .log(Level.WARNING, "\"{0}\" returned code {1}.No action defined for handling.",
+                                .log(Level.WARNING, "\"{0}\" returned code {1}. No action defined for handling.",
                                         new Object[]{resolvedUrl, responseCode});
                         resolvedUrl = null;
                     }
                 }
             } while (redirected);
         } catch (IOException ex) {
-            Logger.getLogger(URLUtility.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(URLUtility.class.getName()).log(Level.SEVERE, null, ex);
             resolvedUrl = null;
         }
         return Optional.ofNullable(resolvedUrl);

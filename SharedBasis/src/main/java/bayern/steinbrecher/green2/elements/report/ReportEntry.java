@@ -180,12 +180,14 @@ final class ReportEntry {
      */
     @Override
     public boolean equals(Object obj) {
+        boolean areEqual;
         if (obj instanceof ReportEntry) {
             ReportEntry entry = (ReportEntry) obj;
-            return getMessage().equalsIgnoreCase(entry.getMessage());
+            areEqual = getMessage().equalsIgnoreCase(entry.getMessage());
         } else {
-            return false;
+            areEqual = false;
         }
+        return areEqual;
     }
 
     /**

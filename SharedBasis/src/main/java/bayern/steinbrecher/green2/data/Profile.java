@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.StringExpression;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleMapProperty;
@@ -62,7 +63,7 @@ public class Profile {
      * The configurations found in a profile file.
      */
     //TODO Think about how to force equallity of these two question marks
-    private ConfigurationsMap configurations = new ConfigurationsMap();
+    private final ConfigurationsMap configurations = new ConfigurationsMap(); //NOPMD - It is accessed over #get(...).
     /**
      * {@code true} only if all allowed configurations are specified.
      */
@@ -70,23 +71,23 @@ public class Profile {
     /**
      * Representing a function for calculating whether a person with a specific age gets notified.
      */
-    private IntFunction<Boolean> ageFunction;
-    private StringProperty profileName = new SimpleStringProperty();
+    private final ObjectProperty<IntFunction<Boolean>> ageFunction = new SimpleObjectProperty<>();
+    private final StringProperty profileName = new SimpleStringProperty();
     private boolean newProfile;
     /**
      * The path where the file containing information about the last valid inserted data about an originator of a SEPA
      * direct debit. (There does need to be a file yet)
      */
-    private StringExpression originatorInfoPath
+    private final StringExpression originatorInfoPath
             = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
                     .concat("/")
                     .concat(profileName)
                     .concat(ORIGINATORFILE_FORMAT);
-    private Property<File> originatorInfoFile = new SimpleObjectProperty<>();
+    private final Property<File> originatorInfoFile = new SimpleObjectProperty<>();
     /**
      * The path to the configfile. (May not exist, yet)
      */
-    private StringExpression configFilePath
+    private transient final StringExpression configFilePath
             = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
                     .concat("/")
                     .concat(profileName)
@@ -94,8 +95,8 @@ public class Profile {
     /**
      * The file to the configurations for Green2.
      */
-    private Property<File> configFile = new SimpleObjectProperty<>();
-    private boolean deleted = false;
+    private transient final Property<File> configFile = new SimpleObjectProperty<>();
+    private boolean deleted;
 
     /**
      * Creates a profile representing object.
@@ -113,7 +114,7 @@ public class Profile {
         configFile.addListener((obs, oldVal, newVal) -> {
             if (!this.newProfile) {
                 configurations.putAll(readConfigs(newVal));
-                ageFunction = readAgeFunction((String) configurations.getOrDefault(
+                readAgeFunction((String) configurations.getOrDefault(
                         ProfileSettings.BIRTHDAY_EXPRESSION, new SimpleStringProperty("")).getValue());
             }
         });
@@ -143,9 +144,9 @@ public class Profile {
         Map<ProfileSettings<?>, Property<?>> configurations = new HashMap<>();
 
         String[] parts;
-        try (Scanner sc = new Scanner(configFile, StandardCharsets.UTF_8.name())) {
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine().trim();
+        try (Scanner scanner = new Scanner(configFile, StandardCharsets.UTF_8.name())) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
                 if (line.contains(VALUE_SEPARATOR)) {
                     parts = line.split(VALUE_SEPARATOR, 2);
                     //NOTE At this point using raw type is necessary
@@ -173,7 +174,8 @@ public class Profile {
         return FXCollections.observableMap(configurations);
     }
 
-    private static IntFunction<Boolean> readAgeFunction(String birthdayExpression) {
+    @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+    private void readAgeFunction(String birthdayExpression) {
         Set<IntFunction<Boolean>> ageFunctionParts = Arrays.stream(birthdayExpression.split(","))
                 .filter(s -> !s.isEmpty())
                 .map(part -> {
@@ -181,21 +183,17 @@ public class Profile {
                     try {
                         switch (part.charAt(0)) {
                             case '>':
-                                switch (part.charAt(1)) {
-                                    case '=':
-                                        functionPart = age -> age >= Integer.parseInt(part.substring(2));
-                                        break;
-                                    default:
-                                        functionPart = age -> age > Integer.parseInt(part.substring(1));
+                                if (part.charAt(1) == '=') {
+                                    functionPart = age -> age >= Integer.parseInt(part.substring(2));
+                                } else {
+                                    functionPart = age -> age > Integer.parseInt(part.substring(1));
                                 }
                                 break;
                             case '<':
-                                switch (part.charAt(1)) {
-                                    case '=':
-                                        functionPart = age -> age <= Integer.parseInt(part.substring(2));
-                                        break;
-                                    default:
-                                        functionPart = age -> age < Integer.parseInt(part.substring(1));
+                                if (part.charAt(1) == '=') {
+                                    functionPart = age -> age <= Integer.parseInt(part.substring(2));
+                                } else {
+                                    functionPart = age -> age < Integer.parseInt(part.substring(1));
                                 }
                                 break;
                             case '=':
@@ -213,12 +211,14 @@ public class Profile {
                 })
                 .collect(Collectors.toSet());
 
+        IntFunction<Boolean> ageFunction;
         if (ageFunctionParts.isEmpty()) {
-            return age -> false;
+            ageFunction = age -> false;
         } else {
-            return age -> ageFunctionParts.parallelStream()
+            ageFunction = age -> ageFunctionParts.parallelStream()
                     .anyMatch(intFunc -> intFunc.apply(age));
         }
+        this.ageFunction.set(ageFunction);
     }
 
     private synchronized void checkDeleted() {
@@ -261,7 +261,6 @@ public class Profile {
     public synchronized void renameProfile(String newName) {
         checkDeleted();
         if (!newName.equals(profileName.get())) {
-            File oldConfigFile = configFile.getValue();
             String newConfigPath = EnvironmentHandler.APP_DATA_PATH + "/" + newName + CONFIGFILE_FORMAT;
             File newConfigFile = new File(newConfigPath);
 
@@ -271,6 +270,7 @@ public class Profile {
             if (newConfigFile.exists() || newOriginatorFile.exists()) {
                 throw new ProfileRenamingException("Can't rename profile. Profile \"" + newName + "\" already exists.");
             }
+            File oldConfigFile = configFile.getValue();
             if (configFile.getValue().renameTo(newConfigFile)) {
                 File originatorInfoFileValue = originatorInfoFile.getValue();
                 if (originatorInfoFileValue.exists() && !originatorInfoFileValue.renameTo(newOriginatorFile)) {
@@ -318,13 +318,15 @@ public class Profile {
     public static List<String> getAvailableProfiles() {
         String[] configFiles = new File(EnvironmentHandler.APP_DATA_PATH)
                 .list((dir, name) -> name.endsWith(CONFIGFILE_FORMAT));
+        List<String> profiles;
         if (configFiles == null) {
-            return new ArrayList<>();
+            profiles = new ArrayList<>();
         } else {
-            return Arrays.stream(configFiles)
+            profiles = Arrays.stream(configFiles)
                     .map(s -> s.substring(0, s.length() - CONFIGFILE_FORMAT.length()))
                     .collect(Collectors.toList());
         }
+        return profiles;
     }
 
     /**
@@ -355,11 +357,13 @@ public class Profile {
      * not specified.
      */
     public <T> T getOrDefault(ProfileSettings<T> key, T defaultValue) {
+        T value;
         if (configurations.containsKey(key)) {
-            return configurations.get(key).getValue();
+            value = configurations.get(key).getValue();
         } else {
-            return defaultValue;
+            value = defaultValue;
         }
+        return value;
     }
 
     /**
@@ -400,13 +404,22 @@ public class Profile {
     }
 
     /**
+     * Returns the property holding function for calculating whether a person of a certain age has to be notified.
+     *
+     * @return The property holding function for calculating whether a person of a certain age has to be notified.
+     */
+    public ReadOnlyProperty<IntFunction<Boolean>> ageFunctionProperty() {
+        return ageFunction;
+    }
+
+    /**
      * Returns the function for calculating whether a person of a certain age has to be notified.
      *
      * @return The function for calculating whether a person of a certain age has to be notified.
      */
     public IntFunction<Boolean> getAgeFunction() {
         checkDeleted();
-        return ageFunction;
+        return ageFunctionProperty().getValue();
     }
 
     /**
@@ -450,6 +463,7 @@ public class Profile {
         return newProfile;
     }
 
+    //FIXME Is this needed?
     private static class ConfigurationsMap extends SimpleMapProperty<ProfileSettings<?>, Property<?>> {
 
         ConfigurationsMap() {

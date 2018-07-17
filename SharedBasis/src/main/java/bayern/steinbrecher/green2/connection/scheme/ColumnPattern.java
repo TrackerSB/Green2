@@ -41,7 +41,7 @@ public class ColumnPattern<T, U> {
      * @param parser The parser for converting values from and to their SQL representation.
      */
     protected ColumnPattern(String columnNamePattern, ColumnParser<T> parser) {
-        if (!columnNamePattern.startsWith("^") || !columnNamePattern.endsWith("$")) {
+        if (columnNamePattern.charAt(0) != '^' || !columnNamePattern.endsWith("$")) {
             Logger.getLogger(ColumnPattern.class.getName())
                     .log(Level.WARNING,
                             "The pattern \"{0}\" is not encapsulated in \"^\" and \"$\".", columnNamePattern);

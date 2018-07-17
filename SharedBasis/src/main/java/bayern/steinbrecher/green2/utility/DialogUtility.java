@@ -139,8 +139,8 @@ public final class DialogUtility {
      * {@link Alert}. If you specify more elements they will be ignored.
      * @return The created {@link Alert}.
      */
-    @SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH")
-    @SuppressWarnings("fallthrough")
+    @SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
+    @SuppressWarnings({"fallthrough", "PMD.MissingBreakInSwitch"})
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
         Alert alert = addStyleAndIcon(initOwner(getAlert(() -> new Alert(alertType)), owner));
         int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;
@@ -181,19 +181,19 @@ public final class DialogUtility {
      * Creates an {@link Alert} which shows a stacktrace with given settings.
      *
      * @param owner The owner of the alert or {@code null} if no owner has to be set.
-     * @param ex The exception to show.
+     * @param cause The exception to show.
      * @param args For details see {@link #createAlert(Alert.AlertType, Window, String...)}.
      * @return The created {@link Alert}.
      * @see #createAlert(Alert.AlertType, Window, String...)
      */
-    public static Alert createStacktraceAlert(Window owner, Exception ex, String... args) {
+    public static Alert createStacktraceAlert(Window owner, Exception cause, String... args) {
         Alert alert = createAlert(Alert.AlertType.ERROR, owner, args);
 
         Label stacktraceLabel = new Label(EnvironmentHandler.getResourceValue("stacktraceLabel"));
 
         StringWriter stacktrace = new StringWriter();
         PrintWriter stacktracePw = new PrintWriter(stacktrace);
-        ex.printStackTrace(stacktracePw);
+        cause.printStackTrace(stacktracePw);
         TextArea stacktraceArea = new TextArea(stacktrace.toString());
         stacktraceArea.setEditable(false);
 

@@ -27,7 +27,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public final class CharsetTextField extends CheckedTextField {
 
-    private final BooleanProperty validCharset = new SimpleBooleanProperty(this, "invalid");
+    private transient final BooleanProperty validCharset = new SimpleBooleanProperty(this, "invalid");
 
     /**
      * Creates a new {@link CharsetTextField} with a maximum column count of {@link Integer#MAX_VALUE} and no initial

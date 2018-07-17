@@ -176,7 +176,7 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      * @param maxColumnCount The new maximum column count.
      */
     public final void setMaxColumnCount(int maxColumnCount) {
-        if (maxColumnCount < 1) {
+        if (maxColumnCount < 1) { //NOPMD - Force at least one character.
             throw new IllegalArgumentException("maxColumnCount must be at least 1");
         }
         maxColumnCountProperty().set(maxColumnCount);

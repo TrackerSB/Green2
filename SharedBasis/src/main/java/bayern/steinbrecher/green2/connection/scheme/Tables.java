@@ -180,8 +180,8 @@ public final class /* enum */ Tables<T, U> {
     private final List<SimpleColumnPattern<?, U>> requiredColumns;
     private final List<ColumnPattern<?, U>> optionalColumns;
     private final String realTableName;
-    private final Supplier<U> baseEntrySupplier;
-    private final Function<Stream<U>, T> reducer;
+    private transient final Supplier<U> baseEntrySupplier;
+    private transient final Function<Stream<U>, T> reducer;
 
     /**
      * Creates a representation of a scheme of a table. {@code requiredColumns} and {@code optionalColumns} are checked
@@ -331,7 +331,7 @@ public final class /* enum */ Tables<T, U> {
                                     .log(Level.WARNING, "Pattern {0} is registered but not associated to any "
                                             + "target index.", pattern.getColumnNamePattern().pattern());
                         } else if (pattern instanceof SimpleColumnPattern<?, ?>) {
-                            if (targetIndices.size() > 1) {
+                            if (targetIndices.size() > 1) { //NOPMD - Check whether association is ambiguous.
                                 Logger.getLogger(Tables.class.getName())
                                         .log(Level.WARNING, "The simple column {0} is associated to more than "
                                                 + "1 target index. Only the first index is recognized.",

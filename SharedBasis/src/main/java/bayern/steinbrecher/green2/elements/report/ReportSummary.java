@@ -55,7 +55,7 @@ public class ReportSummary extends TitledPane {
     private final ListProperty<ReportEntry> reportEntries = new SimpleListProperty<>(this, "reportEntries",
             FXCollections.observableArrayList(
                     e -> new Observable[]{e.messageProperty(), e.occurrencesProperty(), e.reportTypeProperty()}));
-    private final IntegerProperty numEntries = new SimpleIntegerProperty(this, "numEntries", 0);
+    private transient final IntegerProperty numEntries = new SimpleIntegerProperty(this, "numEntries", 0);
     @FXML
     private VBox reportsBox;
 
@@ -63,6 +63,7 @@ public class ReportSummary extends TitledPane {
      * Creates a {@link ReportSummary} without any entry.
      */
     public ReportSummary() {
+        super();
         loadFXML();
 
         StringExpression title = new SimpleStringProperty(EnvironmentHandler.getResourceValue("errorReport"))
@@ -92,7 +93,7 @@ public class ReportSummary extends TitledPane {
             while (change.next()) {
                 change.getAddedSubList().stream()
                         .forEach(entry -> {
-                            Label reportLabel = new Label();
+                            Label reportLabel = new Label(); //NOPMD - Each report needs a separate description.
                             StringExpression reportText = entry.messageProperty()
                                     .concat(" (")
                                     .concat(entry.occurrencesProperty())

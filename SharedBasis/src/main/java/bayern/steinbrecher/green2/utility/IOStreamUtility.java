@@ -19,7 +19,6 @@ package bayern.steinbrecher.green2.utility;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,9 +27,9 @@ import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Optional;
@@ -79,7 +78,8 @@ public final class IOStreamUtility {
         Random random = new Random();
         while (initialFile.exists()) {
             //CHECKSTYLE.OFF: MagicNumber - Choosing 1000 is quite random and has no special matter.
-            initialFile = new File(initialDirectory, dateFilePrefix + "_" + random.nextInt(1000) + "." + fileEnding);
+            initialFile = new File(
+                    initialDirectory, dateFilePrefix + "_" + random.nextInt(1000) + "." + fileEnding); //NOPMD
             //CHECKSTYLE.ON: MagicNumber
         }
 
@@ -131,9 +131,10 @@ public final class IOStreamUtility {
     public static void transfer(InputStreamReader isr, OutputStreamWriter osw) {
         char[] buffer = new char[BUFFER_SIZE];
         try {
-            int bytesRead;
-            while ((bytesRead = isr.read(buffer)) > 0) {
+            int bytesRead = isr.read(buffer);
+            while (bytesRead > 0) {
                 osw.write(buffer, 0, bytesRead);
+                bytesRead = isr.read(buffer);
             }
         } catch (IOException ex) {
             Logger.getLogger(IOStreamUtility.class.getName()).log(Level.SEVERE, null, ex);
@@ -177,7 +178,7 @@ public final class IOStreamUtility {
      */
     public static void printContent(String content, File outputFile, boolean withBom) throws IOException {
         try (BufferedWriter bw
-                = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
+                = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(outputFile.toPath()), "UTF-8"))) {
             //To make no UTF-8 without BOM but with BOM (Big Endian).
             if (withBom) {
                 bw.append('\uFEFF');

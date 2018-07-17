@@ -195,11 +195,13 @@ public abstract class /*enum*/ ProfileSettings<T> {
      * @see #isValid(java.lang.Object)
      */
     public final Optional<T> parse(String value) {
+        Optional<T> parsed;
         if (value == null) {
-            return Optional.empty();
+            parsed = Optional.empty();
         } else {
-            return parseImpl(value);
+            parsed = parseImpl(value);
         }
+        return parsed;
     }
 
     /**
@@ -212,6 +214,9 @@ public abstract class /*enum*/ ProfileSettings<T> {
         return value.toString();
     }
 
+    /**
+     * A setting holding a {@link String}.
+     */
     private static class StringSetting extends ProfileSettings<String> {
 
         @Override
@@ -220,18 +225,26 @@ public abstract class /*enum*/ ProfileSettings<T> {
         }
     }
 
+    /**
+     * A setting holding an {@link Integer}.
+     */
     private static class IntegerSetting extends ProfileSettings<Integer> {
 
         @Override
         protected Optional<Integer> parseImpl(String value) {
+            Optional<Integer> parsed;
             try {
-                return Optional.of(Integer.parseInt(value));
+                parsed = Optional.of(Integer.parseInt(value));
             } catch (NumberFormatException ex) {
-                return Optional.empty();
+                parsed = Optional.empty();
             }
+            return parsed;
         }
     }
 
+    /**
+     * A setting holding a {@link Boolean}.
+     */
     private static class BooleanSetting extends ProfileSettings<Boolean> {
 
         @Override
@@ -241,6 +254,10 @@ public abstract class /*enum*/ ProfileSettings<T> {
         }
     }
 
+    /**
+     * A setting holding a {@link String} representing a birthday function. Such a function is used to determine whether
+     * a person of certain age gets congratulations.
+     */
     private static class BirthdayFunctionSetting extends ProfileSettings<String> {
 
         @Override
@@ -254,6 +271,9 @@ public abstract class /*enum*/ ProfileSettings<T> {
         }
     }
 
+    /**
+     * A setting holding a {@link Charset}.
+     */
     private static class CharsetSetting extends ProfileSettings<Charset> {
 
         @Override
@@ -271,6 +291,9 @@ public abstract class /*enum*/ ProfileSettings<T> {
         }
     }
 
+    /**
+     * A setting holding a dbms of {@link SupportedDatabases}.
+     */
     private static class SupportedDatabaseSetting extends ProfileSettings<SupportedDatabases> {
 
         @Override

@@ -246,7 +246,10 @@ public class WizardController implements Initializable {
      * @param pages The map of pages to set.
      */
     public void setPages(Map<String, WizardPage<?>> pages) {
-        Wizard.checkPages(pages);
+        if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
+            throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
+        }
+
         currentIndex.set(WizardPage.FIRST_PAGE_KEY);
         this.pages.set(FXCollections.observableMap(pages));
         currentPage.setValue(pages.get(WizardPage.FIRST_PAGE_KEY));
@@ -370,6 +373,7 @@ public class WizardController implements Initializable {
      * @throws IllegalCallableException Only thrown if thrown by one of the result functions of the visited pages.
      */
     public Optional<Map<String, ?>> getResults() {
+        Optional<Map<String, ?>> resultsResult;
         if (isFinished()) {
             Map<String, Object> results = new HashMap<>();
             history.forEach(key -> {
@@ -382,9 +386,10 @@ public class WizardController implements Initializable {
                             + "\" has thrown an exception", ex);
                 }
             });
-            return Optional.of(results);
+            resultsResult = Optional.of(results);
         } else {
-            return Optional.empty();
+            resultsResult = Optional.empty();
         }
+        return resultsResult;
     }
 }

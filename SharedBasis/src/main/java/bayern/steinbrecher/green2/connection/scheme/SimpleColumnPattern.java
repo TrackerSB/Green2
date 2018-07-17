@@ -35,7 +35,7 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
     private final String realColumnName;
     private final Optional<Optional<T>> defaultValue;
     private final Set<Keywords> keywords;
-    private final BiFunction<U, T, U> setter;
+    private transient final BiFunction<U, T, U> setter;
 
     /**
      * Creates a new simple column pattern, i.e. a pattern which specifies a specific column name. This constructor may
@@ -69,19 +69,14 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
     public SimpleColumnPattern(String realColumnName, Set<Keywords> keywords, ColumnParser<T> parser,
             BiFunction<U, T, U> setter, Optional<Optional<T>> defaultValue) {
         super("^\\Q" + realColumnName + "\\E$", parser);
+        Set<Keywords> keywordsCopy = new HashSet<>(keywords);
         //Make sure DEFAULT keyword is added when a default value is specified.
-        if (defaultValue != null || !keywords.contains(Keywords.NOT_NULL)) {
-            try {
-                keywords.add(Keywords.DEFAULT);
-            } catch (UnsupportedOperationException ex) {
-                //FIXME Do not use exceptions for control flow.
-                keywords = new HashSet<>(keywords);
-                keywords.add(Keywords.DEFAULT);
-            }
+        if (defaultValue != null || !keywordsCopy.contains(Keywords.NOT_NULL)) {
+            keywordsCopy.add(Keywords.DEFAULT);
         }
         this.realColumnName = realColumnName;
         this.defaultValue = defaultValue;
-        this.keywords = keywords;
+        this.keywords = keywordsCopy;
         this.setter = setter;
     }
 

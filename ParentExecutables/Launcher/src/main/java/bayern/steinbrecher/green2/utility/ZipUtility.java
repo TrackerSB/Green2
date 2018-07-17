@@ -93,7 +93,7 @@ public final class ZipUtility {
                 if (unzippedFileParent.exists() || unzippedFileParent.mkdirs()) {
                     //Each file needs to be written separately.
                     try (OutputStreamWriter osw = new OutputStreamWriter(
-                            Files.newOutputStream(unzippedFile.toPath()), currentCharset)) { //NOPMD
+                            Files.newOutputStream(unzippedFile.toPath()), currentCharset)) {
                         IOStreamUtility.transfer(currentReader, osw);
                     }
                 } else {
