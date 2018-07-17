@@ -81,7 +81,7 @@
     <rule ref="category/java/errorprone.xml/BeanMembersShouldSerialize">
         <properties>
             <property name="violationSuppressXPath"
-                      value=".[../Annotation//Name[@Image = 'FXML']]" />
+                      value="//FieldDeclaration[../Annotation//Name[@Image = 'FXML']]" />
         </properties>
     </rule>
 
