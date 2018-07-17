@@ -64,7 +64,7 @@ public final class WizardPage<T> {
      * Creates a new page with given params. The {@code valid} property always contains {@code true}.
      *
      * @param root The root pane containing all controls.
-     * @param nextFunction The function calculating the name of th enext page.
+     * @param nextFunction The function calculating the name of the next page.
      * @param finish {@code true} only if this page is a last one.
      * @param resultFunction The function calculating the result this page represents.
      */
