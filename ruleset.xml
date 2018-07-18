@@ -54,6 +54,11 @@
         <exclude name="NcssTypeCount" />
         <exclude name="StdCyclomaticComplexity" />
     </rule>
+    <rule ref="category/java/design.xml/NcssCount">
+        <properties>
+            <property name="methodReportLevel" value="60" /> <!-- 60 is PMD's default value -->
+        </properties>
+    </rule>
 
     <!-- Java Documentation -->
     <rule ref="category/java/documentation.xml" />
@@ -82,6 +87,11 @@
         <properties>
             <property name="violationSuppressXPath"
                       value="//FieldDeclaration[../Annotation//Name[@Image = 'FXML']]" />
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+        <properties>
+            <property name="skipAnnotations" value="true" />
         </properties>
     </rule>
 
