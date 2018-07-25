@@ -52,7 +52,6 @@ import javafx.util.Pair;
  */
 public class ConditionReportController extends ResultController<Optional<Boolean>> {
 
-    private static final Logger LOGGER = Logger.getLogger(ConditionReportController.class.getName());
     private final ObservableValue<ObservableList<Condition>> conditions
             = new SimpleObjectProperty<>(this, "conditions",
                     FXCollections.observableArrayList(i -> new Observable[]{i.nameProperty(), i.valueProperty()}));

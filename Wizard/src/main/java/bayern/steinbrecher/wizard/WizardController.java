@@ -251,7 +251,6 @@ public class WizardController implements Initializable {
      * @param pages The map of pages to set.
      */
     public void setPages(Map<String, WizardPage<?>> pages) {
-        System.out.println("Called setPages(...)");
         if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
             throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
         }

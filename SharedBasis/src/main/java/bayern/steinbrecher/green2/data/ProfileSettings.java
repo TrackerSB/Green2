@@ -251,7 +251,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
         @Override
         protected Optional<Boolean> parseImpl(String value) {
             //FIXME Remove legacy equals 1 check
-            return Optional.of(value.equalsIgnoreCase("1") || Boolean.parseBoolean(value));
+            return Optional.of("1".equalsIgnoreCase(value) || Boolean.parseBoolean(value));
         }
     }
 

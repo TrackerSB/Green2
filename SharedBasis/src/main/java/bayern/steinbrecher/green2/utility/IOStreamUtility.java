@@ -178,13 +178,13 @@ public final class IOStreamUtility {
      * @throws java.io.IOException Thrown if any I/O error occurs.
      */
     public static void printContent(String content, File outputFile, boolean withBom) throws IOException {
-        try (BufferedWriter bw
+        try (BufferedWriter outputWriter
                 = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(outputFile.toPath()), "UTF-8"))) {
             //To make no UTF-8 without BOM but with BOM (Big Endian).
             if (withBom) {
-                bw.append('\uFEFF');
+                outputWriter.append('\uFEFF');
             }
-            bw.append(content);
+            outputWriter.append(content);
         }
     }
 }

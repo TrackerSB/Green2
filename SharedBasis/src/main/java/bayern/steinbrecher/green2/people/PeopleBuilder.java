@@ -42,7 +42,7 @@ import java.util.function.Supplier;
  * @param <T> The people class to build.
  */
 //TODO Is there any way to force behaviour/handling of nested builders?
-public abstract class PeopleBuilder<T> {
+public class PeopleBuilder<T> {
 
     private final T toBuild;
 
@@ -51,7 +51,7 @@ public abstract class PeopleBuilder<T> {
      *
      * @param toBuild The initial object to build on.
      */
-    public PeopleBuilder(T toBuild) {
+    protected PeopleBuilder(T toBuild) {
         this.toBuild = Objects.requireNonNull(
                 toBuild, "The initial person must not be null. You may use #initializeNestedBuilder(...).");
     }
@@ -83,6 +83,7 @@ public abstract class PeopleBuilder<T> {
      * @return A {@link T} object.
      */
     public T generate() {
+        //TODO Force creation of a copy.
         T toBuildCopy = toBuild;
         return toBuildCopy;
     }

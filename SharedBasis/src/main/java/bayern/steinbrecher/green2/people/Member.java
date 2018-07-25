@@ -289,11 +289,10 @@ public final class Member implements Comparable<Member> {
          */
         @Override
         public Member generate() {
-            Member toBuildCopy = super.generate();
-            toBuildCopy.person = getPerson().generate();
-            toBuildCopy.home = getHome().generate();
-            toBuildCopy.accountHolder = getAccountHolder().generate();
-            return toBuildCopy;
+            getToBuild().person = getPerson().generate();
+            getToBuild().home = getHome().generate();
+            getToBuild().accountHolder = getAccountHolder().generate();
+            return super.generate();
         }
 
         /**
