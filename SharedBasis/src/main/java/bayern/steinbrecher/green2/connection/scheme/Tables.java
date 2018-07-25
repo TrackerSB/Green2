@@ -43,6 +43,7 @@ import javafx.util.Pair;
 //TODO Wait for generic enums
 public final class /* enum */ Tables<T, U> {
 
+    private static final Logger LOGGER = Logger.getLogger(Tables.class.getName());
     /**
      * Represents the table of members.
      */
@@ -328,15 +329,13 @@ public final class /* enum */ Tables<T, U> {
                         ColumnPattern<?, U> pattern = columnMapping.getKey();
                         List<Integer> targetIndices = columnMapping.getValue();
                         if (targetIndices.size() <= 0) {
-                            Logger.getLogger(Tables.class.getName())
-                                    .log(Level.WARNING, "Pattern {0} is registered but not associated to any "
-                                            + "target index.", pattern.getColumnNamePattern().pattern());
+                            LOGGER.log(Level.WARNING, "Pattern {0} is registered but not associated to any "
+                                    + "target index.", pattern.getColumnNamePattern().pattern());
                         } else if (pattern instanceof SimpleColumnPattern<?, ?>) {
                             if (targetIndices.size() > 1) { //NOPMD - Check whether association is ambiguous.
-                                Logger.getLogger(Tables.class.getName())
-                                        .log(Level.WARNING, "The simple column {0} is associated to more than "
-                                                + "1 target index. Only the first index is recognized.",
-                                                pattern.getColumnNamePattern().pattern());
+                                LOGGER.log(Level.WARNING, "The simple column {0} is associated to more than "
+                                        + "1 target index. Only the first index is recognized.",
+                                        pattern.getColumnNamePattern().pattern());
                             }
                             SimpleColumnPattern<?, U> simplePattern = (SimpleColumnPattern<?, U>) pattern;
                             rowRepresentation = simplePattern.combine(rowRepresentation, row.get(targetIndices.get(0)));
@@ -347,9 +346,8 @@ public final class /* enum */ Tables<T, U> {
                                         = regexPattern.combine(rowRepresentation, headings.get(index), row.get(index));
                             }
                         } else {
-                            Logger.getLogger(Tables.class.getName())
-                                    .log(Level.WARNING, "Can't handle patterns of type {0}.",
-                                            pattern == null ? null : pattern.getClass());
+                            LOGGER.log(Level.WARNING, "Can't handle patterns of type {0}.",
+                                    pattern == null ? null : pattern.getClass());
                         }
                     }
                     return rowRepresentation;

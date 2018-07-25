@@ -48,6 +48,7 @@ import javafx.stage.Stage;
  */
 public class ProfileChoice extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger(ProfileChoice.class.getName());
     private static final String LAST_PROFILE_KEY = "defaultProfile";
     private transient Stage stage;
     private Profile profile;
@@ -149,8 +150,7 @@ public class ProfileChoice extends Application {
                             try {
                                 new Profile(profileName, false).deleteProfile();
                             } catch (IOException ex) {
-                                Logger.getLogger(ProfileChoice.class.getName())
-                                        .log(Level.SEVERE, "The profile could not be deleted.", ex);
+                                LOGGER.log(Level.SEVERE, "The profile could not be deleted.", ex);
                             }
                             stage.sizeToScene();
                         }

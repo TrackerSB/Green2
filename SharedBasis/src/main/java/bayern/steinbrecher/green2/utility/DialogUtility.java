@@ -55,6 +55,7 @@ import javafx.stage.Window;
  */
 public final class DialogUtility {
 
+    private static final Logger LOGGER = Logger.getLogger(DialogUtility.class.getName());
     private static final int NUMBER_USED_PARAMETERS = 3;
 
     private DialogUtility() {
@@ -115,7 +116,7 @@ public final class DialogUtility {
             try {
                 alert = alertCreation.call();
             } catch (Exception ex) {
-                Logger.getLogger(DialogUtility.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         } else {
             FutureTask<Alert> alertCreationTask = new FutureTask<>(alertCreation);
@@ -123,7 +124,7 @@ public final class DialogUtility {
             try {
                 alert = alertCreationTask.get();
             } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(DialogUtility.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         return alert;
@@ -145,9 +146,8 @@ public final class DialogUtility {
         Alert alert = addStyleAndIcon(initOwner(getAlert(() -> new Alert(alertType)), owner));
         int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;
         if (parameterCount > NUMBER_USED_PARAMETERS) {
-            Logger.getLogger(DialogUtility.class.getName())
-                    .log(Level.WARNING, "You passed more than {0} parameters. Only the first {0} will be used.",
-                            NUMBER_USED_PARAMETERS);
+            LOGGER.log(Level.WARNING, "You passed more than {0} parameters. Only the first {0} will be used.",
+                    NUMBER_USED_PARAMETERS);
         }
         //CHECKSTYLE.OFF: MagicNumber - The JavaDoc explicitely describes these three possible parameters
         switch (parameterCount) {
@@ -299,7 +299,7 @@ public final class DialogUtility {
             try {
                 result = showAndWaitTask.get();
             } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(DialogUtility.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 result = Optional.empty();
             }
         }

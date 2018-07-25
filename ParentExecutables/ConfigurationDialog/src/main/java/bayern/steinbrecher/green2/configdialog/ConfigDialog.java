@@ -34,6 +34,8 @@ import javafx.stage.Stage;
  */
 public class ConfigDialog extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger(ConfigDialog.class.getName());
+
     /**
      * {@inheritDoc}
      */
@@ -57,9 +59,8 @@ public class ConfigDialog extends Application {
                         try {
                             profile.deleteProfile();
                         } catch (IOException ex) {
-                            Logger.getLogger(ConfigDialog.class.getName())
-                                    .log(Level.SEVERE, "The profile temporary generated for creating a new one "
-                                            + "could not be deleted again.", ex);
+                            LOGGER.log(Level.SEVERE, "The profile temporary generated for creating a new one "
+                                    + "could not be deleted again.", ex);
                         }
                     }
                 });
@@ -68,7 +69,7 @@ public class ConfigDialog extends Application {
                 stage.setScene(new Scene(root));
                 stage.show();
             } catch (IOException ex) {
-                Logger.getLogger(ConfigDialog.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         });
     }

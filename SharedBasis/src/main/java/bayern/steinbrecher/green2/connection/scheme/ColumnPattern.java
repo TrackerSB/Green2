@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
  */
 public class ColumnPattern<T, U> {
 
+    private static final Logger LOGGER = Logger.getLogger(ColumnPattern.class.getName());
     private final Pattern columnNamePattern;
     private final ColumnParser<T> parser;
 
@@ -42,9 +43,7 @@ public class ColumnPattern<T, U> {
      */
     protected ColumnPattern(String columnNamePattern, ColumnParser<T> parser) {
         if (columnNamePattern.charAt(0) != '^' || !columnNamePattern.endsWith("$")) {
-            Logger.getLogger(ColumnPattern.class.getName())
-                    .log(Level.WARNING,
-                            "The pattern \"{0}\" is not encapsulated in \"^\" and \"$\".", columnNamePattern);
+            LOGGER.log(Level.WARNING, "The pattern \"{0}\" is not encapsulated in \"^\" and \"$\".", columnNamePattern);
         }
         this.columnNamePattern = Pattern.compile(columnNamePattern);
         this.parser = parser;

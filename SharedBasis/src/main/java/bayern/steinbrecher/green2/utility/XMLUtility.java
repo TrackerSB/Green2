@@ -48,6 +48,8 @@ import org.xml.sax.SAXParseException;
  */
 public final class XMLUtility {
 
+    private static final Logger LOGGER = Logger.getLogger(XMLUtility.class.getName());
+
     private XMLUtility() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
     }
@@ -121,7 +123,7 @@ public final class XMLUtility {
         Optional<String> validationResult;
         if (isValidXML.get()) {
             if (!validationOutput.isEmpty()) {
-                Logger.getLogger(XMLUtility.class.getName()).log(Level.WARNING, validationOutput);
+                LOGGER.log(Level.WARNING, validationOutput);
             }
             validationResult = Optional.empty();
         } else {

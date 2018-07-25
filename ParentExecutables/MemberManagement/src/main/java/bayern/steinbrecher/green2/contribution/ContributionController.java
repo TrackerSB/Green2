@@ -60,6 +60,7 @@ import javafx.util.Pair;
  */
 public class ContributionController extends WizardableController<Optional<BiMap<Double, Color>>> {
 
+    private static final Logger LOGGER = Logger.getLogger(ContributionController.class.getName());
     /**
      * A CSS class added to all subelements if it contains duplicated values where not allowed.
      */
@@ -127,12 +128,10 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                             .distinct() //TODO Think about whether this is needed
                             .collect(Collectors.toList());
                     if (hboxes.isEmpty()) {
-                        Logger.getLogger(ContributionController.class.getName())
-                                .log(Level.WARNING, "Could not remove row containing the removed ContributionField.");
+                        LOGGER.log(Level.WARNING, "Could not remove row containing the removed ContributionField.");
                     } else {
                         if (hboxes.size() > 1) { //NOPMD - Check for ambiguous choices.
-                            Logger.getLogger(ContributionController.class.getName()).log(Level.WARNING,
-                                    "Found multiple rows containing the removed ContributionField.\n"
+                            LOGGER.log(Level.WARNING, "Found multiple rows containing the removed ContributionField.\n"
                                     + "Only first one got removed.");
                         }
                         contributionFieldsBox.getChildren().remove(hboxes.get(0));
@@ -208,6 +207,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
      */
     private static class DuplicateContributionField extends ContributionField {
 
+        private static final Logger LOGGER = Logger.getLogger(DuplicateContributionField.class.getName());
         private static final String DUPLICATE_COLOR_MESSAGE = EnvironmentHandler.getResourceValue("duplicateColor");
         private static final String DUPLICATE_CONTRIBUTION_MESSAGE
                 = EnvironmentHandler.getResourceValue("duplicateContribution");
@@ -252,16 +252,10 @@ public class ContributionController extends WizardableController<Optional<BiMap<
         private void initProperties() {
             findColorPicker().ifPresentOrElse(colorPicker -> {
                 ElementsUtility.addCssClassIf(colorPicker, duplicateColor, CSS_CLASS_DUPLICATE_ENTRY);
-            }, () -> {
-                Logger.getLogger(DuplicateContributionField.class.getName())
-                        .log(Level.WARNING, "Could not find ColorPicker of ContributionField.");
-            });
+            }, () -> LOGGER.log(Level.WARNING, "Could not find ColorPicker of ContributionField."));
             findContributionSpinner().ifPresentOrElse(contributionSpinner -> {
                 ElementsUtility.addCssClassIf(contributionSpinner, duplicateContribution, CSS_CLASS_DUPLICATE_ENTRY);
-            }, () -> {
-                Logger.getLogger(DuplicateContributionField.class.getName())
-                        .log(Level.WARNING, "Could not find ContributionSpinner of ContributionField.");
-            });
+            }, () -> LOGGER.log(Level.WARNING, "Could not find ContributionSpinner of ContributionField."));
         }
 
         /**

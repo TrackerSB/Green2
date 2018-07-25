@@ -39,6 +39,8 @@ import org.xml.sax.SAXException;
  */
 public final class SepaPain00800302XMLGenerator {
 
+    private static final Logger LOGGER = Logger.getLogger(SepaPain00800302XMLGenerator.class.getName());
+
     /**
      * Prohibit construction of an object.
      */
@@ -64,8 +66,7 @@ public final class SepaPain00800302XMLGenerator {
             SequenceType sequenceType, File outputfile, boolean sepaWithBom) throws IOException {
         List<Member> invalidMember = filterValidMember(member);
         if (member.isEmpty()) {
-            Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                    .log(Level.WARNING, "There are no valid members left to generate output for.");
+            LOGGER.log(Level.WARNING, "There are no valid members left to generate output for.");
         } else {
             IOStreamUtility.printContent(createXML(member, originator, sequenceType), outputfile, sepaWithBom);
         }
@@ -85,28 +86,24 @@ public final class SepaPain00800302XMLGenerator {
             AccountHolder accountHolder = m.getAccountHolder();
             if (!(accountHolder.hasIban() && SepaUtility.isValidIban(accountHolder.getIban()))) {
                 valid = false;
-                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                        .log(Level.WARNING, "{0} has an invalid IBAN", m);
+                LOGGER.log(Level.WARNING, "{0} has an invalid IBAN", m);
             }
             if (!accountHolder.hasBic()) {
                 valid = false;
-                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName()).log(Level.WARNING, "{0} has no BIC", m);
+                LOGGER.log(Level.WARNING, "{0} has no BIC", m);
             }
             if (accountHolder.getMandateSigned() == null) {
                 valid = false;
-                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                        .log(Level.WARNING, "{0} has a bad \"MandatErstellt\"", m);
+                LOGGER.log(Level.WARNING, "{0} has a bad \"MandatErstellt\"", m);
             }
             if (m.getContribution().isPresent()) {
                 if (m.getContribution().get() <= 0) {
                     valid = false;
-                    Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                            .log(Level.WARNING, "{0} has a contribution <= 0.", m);
+                    LOGGER.log(Level.WARNING, "{0} has a contribution <= 0.", m);
                 }
             } else {
                 valid = false;
-                Logger.getLogger(SepaPain00800302XMLGenerator.class.getName())
-                        .log(Level.WARNING, "{0} has no assinged contribution.", m);
+                LOGGER.log(Level.WARNING, "{0} has no assinged contribution.", m);
             }
             if (!valid) {
                 invalidMember.add(m);

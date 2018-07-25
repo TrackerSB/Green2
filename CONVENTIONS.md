@@ -42,8 +42,9 @@ As far as possible these conventions are checked by the checkstyle plugin.
     }
     ```
 #### Logging
-* Each class has to define `private static final Logger LOGGER = Logger.getLogger(MyClass.class.getName());`.
+* Each class needing a logger has to define it as `private static final Logger LOGGER = Logger.getLogger(MyClass.class.getName());`.
 * This is the only logger to be used by that class.
+* If it is an enum use `Logger.getLogger(MyClass.class.getName())`.
 ### Packages
 * Every package name has to start with `bayern.steinbrecher.green2`
 * All packages have to define a `package-info.java`

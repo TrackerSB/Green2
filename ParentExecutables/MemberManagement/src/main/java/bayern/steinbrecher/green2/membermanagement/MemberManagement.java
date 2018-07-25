@@ -62,6 +62,7 @@ import javafx.stage.Stage;
  */
 public class MemberManagement extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger(MemberManagement.class.getName());
     private static final long SPLASHSCREEN_MILLIS = 2500;
     private transient Profile profile;
     private transient Stage menuStage;
@@ -164,7 +165,7 @@ public class MemberManagement extends Application {
                                 menuStage.show();
                             });
                         } else {
-                            Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, throwable);
+                            LOGGER.log(Level.SEVERE, null, throwable);
                             Platform.runLater(() -> waitScreen.close());
                         }
                     });
@@ -209,8 +210,7 @@ public class MemberManagement extends Application {
             String checkInput = EnvironmentHandler.getResourceValue("checkInput");
             dialog = DialogUtility.createInfoAlert(null, checkInput, checkInput);
         } else {
-            Logger.getLogger(MemberManagement.class.getName())
-                    .log(Level.SEVERE, "Not action specified for: {0}", cause);
+            LOGGER.log(Level.SEVERE, "Not action specified for: {0}", cause);
             String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
             dialog = DialogUtility.createErrorAlert(null, unexpectedAbort, unexpectedAbort);
         }
@@ -274,7 +274,7 @@ public class MemberManagement extends Application {
 
                 con = getConnection(login, waitScreen);
             } catch (UnsupportedDatabaseException ex) {
-                Logger.getLogger(MemberManagement.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 DialogUtility.showAndWait(DialogUtility.createErrorAlert(
                         null, EnvironmentHandler.getResourceValue("noSupportedDatabase")));
                 con = Optional.empty();

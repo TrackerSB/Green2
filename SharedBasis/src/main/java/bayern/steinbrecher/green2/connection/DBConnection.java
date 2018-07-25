@@ -55,6 +55,7 @@ import javafx.util.Pair;
  */
 public abstract class DBConnection implements AutoCloseable {
 
+    private static final Logger LOGGER = Logger.getLogger(DBConnection.class.getName());
     /**
      * Caches the names of all really existing columns on every supported table in {@link Tables}. The cache is
      * refreshed whenever the currently loaded profile changes.
@@ -129,7 +130,7 @@ public abstract class DBConnection implements AutoCloseable {
                             .map(list -> list.get(0).toLowerCase(Locale.ROOT))
                             .collect(Collectors.toList()));
                 } catch (SQLException ex) {
-                    Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -220,8 +221,7 @@ public abstract class DBConnection implements AutoCloseable {
 
         Optional<String> searchQuery;
         if (existingColumns.isEmpty()) {
-            Logger.getLogger(DBConnection.class.getName())
-                    .log(Level.WARNING, "Generating search query without selecting any existing column.");
+            LOGGER.log(Level.WARNING, "Generating search query without selecting any existing column.");
             searchQuery = Optional.empty();
         } else {
             SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
@@ -281,9 +281,8 @@ public abstract class DBConnection implements AutoCloseable {
                                 .filter(existingColumn -> pattern.matches(existingColumn))
                                 .collect(Collectors.toSet());
                     } else {
-                        Logger.getLogger(DBConnection.class.getName())
-                                .log(Level.WARNING, "Can''t handle column patterns of type {0}.",
-                                        pattern == null ? "null" : pattern.getClass());
+                        LOGGER.log(Level.WARNING, "Can''t handle column patterns of type {0}.",
+                                pattern == null ? "null" : pattern.getClass());
                         columnNames = Set.of();
                     }
                     return columnNames.stream();
@@ -409,7 +408,7 @@ public abstract class DBConnection implements AutoCloseable {
                      */
                     EXISTING_COLUMNS_CACHE.put(table, listOfColumns);
                 } catch (SQLException ex) {
-                    Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         }

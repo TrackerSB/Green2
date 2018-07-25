@@ -49,9 +49,10 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public final class CollectorUtility {
 
-    private static boolean preparedToSend;
+    private static final Logger LOGGER = Logger.getLogger(CollectorUtility.class.getName());
     private static final URL POST_URL = resolvePostURL();
     private static final Charset CHARSET = StandardCharsets.UTF_8;
+    private static boolean preparedToSend;
 
     private CollectorUtility() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
@@ -65,7 +66,7 @@ public final class CollectorUtility {
                 url = new URL(resolvedURL.get());
                 preparedToSend = true;
             } catch (MalformedURLException ex) {
-                Logger.getLogger(CollectorUtility.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         return url;
@@ -77,8 +78,7 @@ public final class CollectorUtility {
             dp.getValue()
                     .ifPresentOrElse(value -> parameters.add(URLEncoder.encode(dp.toString(), StandardCharsets.UTF_8)
                     + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)),
-                            () -> Logger.getLogger(CollectorUtility.class.getName())
-                                    .log(Level.WARNING, "{0} not transmitted since it could not be computed.",
+                            () -> LOGGER.log(Level.WARNING, "{0} not transmitted since it could not be computed.",
                                             dp.toString()));
         }
         return parameters.stream().collect(Collectors.joining("&"));
@@ -116,12 +116,12 @@ public final class CollectorUtility {
                     response = IOStreamUtility.readAll(inputStream, CHARSET);
                 }
                 if (!response.isEmpty()) {
-                    Logger.getLogger(CollectorUtility.class.getName()).log(Level.INFO, response);
+                    LOGGER.log(Level.INFO, response);
                 }
 
                 connection.disconnect();
             } catch (IOException ex) {
-                Logger.getLogger(CollectorUtility.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         return wasSent;
@@ -145,8 +145,7 @@ public final class CollectorUtility {
                     NetworkInterface localhostInetAddress
                             = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
                     if (localhostInetAddress == null) {
-                        Logger.getLogger(DataParams.class.getName())
-                                .log(Level.SEVERE, "Could not resolve InetAddress of localhost.");
+                        LOGGER.log(Level.SEVERE, "Could not resolve InetAddress of localhost.");
                     } else {
                         byte[] mac = localhostInetAddress.getHardwareAddress();
                         StringJoiner macJoiner = new StringJoiner("-");
@@ -156,7 +155,7 @@ public final class CollectorUtility {
                         macAddress = macJoiner.toString();
                     }
                 } catch (SocketException | UnknownHostException ex) {
-                    Logger.getLogger(DataParams.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
                 return Optional.ofNullable(macAddress);
             }

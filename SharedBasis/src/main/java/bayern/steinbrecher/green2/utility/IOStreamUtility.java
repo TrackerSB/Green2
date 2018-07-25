@@ -46,6 +46,7 @@ import javafx.stage.Stage;
  */
 public final class IOStreamUtility {
 
+    private static final Logger LOGGER = Logger.getLogger(IOStreamUtility.class.getName());
     private static final int BUFFER_SIZE = 1024;
 
     /**
@@ -137,7 +138,7 @@ public final class IOStreamUtility {
                 bytesRead = isr.read(buffer);
             }
         } catch (IOException ex) {
-            Logger.getLogger(IOStreamUtility.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -163,7 +164,7 @@ public final class IOStreamUtility {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(IOStreamUtility.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 

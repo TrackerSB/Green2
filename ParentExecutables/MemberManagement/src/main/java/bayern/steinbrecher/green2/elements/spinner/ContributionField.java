@@ -49,6 +49,7 @@ import javafx.util.Pair;
  */
 public class ContributionField extends HBox implements Initializable, CheckedControl, Reportable {
 
+    private static final Logger LOGGER = Logger.getLogger(ContributionField.class.getName());
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
     @FXML
@@ -80,8 +81,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
             fxmlLoader.setController(this);
             fxmlLoader.load();
         } catch (IOException ex) {
-            Logger.getLogger(ContributionField.class.getName())
-                    .log(Level.SEVERE, "Could not load ContributionField", ex);
+            LOGGER.log(Level.SEVERE, "Could not load ContributionField", ex);
         }
     }
 

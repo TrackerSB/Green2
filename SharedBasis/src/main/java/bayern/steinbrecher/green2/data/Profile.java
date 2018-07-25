@@ -53,6 +53,7 @@ import javafx.collections.ObservableMap;
  */
 public class Profile {
 
+    private static final Logger LOGGER = Logger.getLogger(Profile.class.getName());
     private static final String CONFIGFILE_FORMAT = ".conf";
     private static final String ORIGINATORFILE_FORMAT = ".properties";
     /**
@@ -158,18 +159,16 @@ public class Profile {
                         if (isValid) {
                             configurations.put(key, new SimpleObjectProperty<>(value));
                         } else {
-                            Logger.getLogger(Profile.class.getName())
-                                    .log(Level.WARNING, "\"{0}\" has an invalid value. It is skipped.", key);
+                            LOGGER.log(Level.WARNING, "\"{0}\" has an invalid value. It is skipped.", key);
                         }
-                    }, () -> Logger.getLogger(Profile.class.getName())
-                            .log(Level.WARNING, "The value of \"{0}\" could not be parsed. It is skipped.", line));
+                    }, () -> LOGGER.log(
+                            Level.WARNING, "The value of \"{0}\" could not be parsed. It is skipped.", line));
                 } else {
-                    Logger.getLogger(Profile.class.getName())
-                            .log(Level.SEVERE, "Line \"{0}\" contains no \"" + VALUE_SEPARATOR + "\"", line);
+                    LOGGER.log(Level.SEVERE, "Line \"{0}\" contains no \"" + VALUE_SEPARATOR + "\"", line);
                 }
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return FXCollections.observableMap(configurations);
     }
@@ -200,12 +199,11 @@ public class Profile {
                                 functionPart = age -> age == Integer.parseInt(part.substring(1));
                                 break;
                             default:
-                                Logger.getLogger(EnvironmentHandler.class.getName())
-                                        .log(Level.WARNING, "{0} gets skipped", part);
+                                LOGGER.log(Level.WARNING, "{0} gets skipped", part);
                                 break;
                         }
                     } catch (NumberFormatException ex) {
-                        Logger.getLogger(Profile.class.getName()).log(Level.WARNING, "{0} gets skipped", part);
+                        LOGGER.log(Level.WARNING, "{0} gets skipped", part);
                     }
                     return functionPart;
                 })
@@ -247,7 +245,7 @@ public class Profile {
         try {
             IOStreamUtility.printContent(out, configFile.getValue(), false);
         } catch (IOException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, "The settings could not be saved.", ex);
+            LOGGER.log(Level.SEVERE, "The settings could not be saved.", ex);
         }
     }
 
@@ -300,9 +298,8 @@ public class Profile {
         checkDeleted();
         if (configFile.getValue().delete()) {
             if (originatorInfoFile.getValue().exists() && !originatorInfoFile.getValue().delete()) {
-                Logger.getLogger(Profile.class.getName())
-                        .log(Level.WARNING, "Even the config file of the profile was deleted, the originator info file "
-                                + "could not be deleted. It may interfere with new profiles having exactly this name.");
+                LOGGER.log(Level.WARNING, "Even the config file of the profile was deleted, the originator info file "
+                        + "could not be deleted. It may interfere with new profiles having exactly this name.");
             }
             deleted = true;
         } else {

@@ -46,6 +46,7 @@ public enum Programs {
      */
     CONFIGURATION_DIALOG("ConfigurationDialog.jar");
 
+    private static final Logger LOGGER = Logger.getLogger(Programs.class.getName());
     /**
      * The path of the local folder where to save the application itself.
      */
@@ -106,11 +107,10 @@ public enum Programs {
                 .whenComplete((errorMessage, ex) -> {
                     if (ex == null) {
                         if (!errorMessage.isEmpty()) {
-                            Logger.getLogger(Programs.class.getName())
-                                    .log(Level.WARNING, "The called program reported errors:\n{0}", errorMessage);
+                            LOGGER.log(Level.WARNING, "The called program reported errors:\n{0}", errorMessage);
                         }
                     } else {
-                        Logger.getLogger(Programs.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, null, ex);
                     }
                     Platform.exit();
                 });

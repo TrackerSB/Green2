@@ -30,6 +30,8 @@ import java.util.logging.Logger;
  */
 public final class URLUtility {
 
+    private static final Logger LOGGER = Logger.getLogger(URLUtility.class.getName());
+
     /**
      * Prohibit construction of an object.
      */
@@ -60,15 +62,14 @@ public final class URLUtility {
                         redirected = true;
                         resolvedUrl = connection.getHeaderField("Location");
                     } else {
-                        Logger.getLogger(URLUtility.class.getName())
-                                .log(Level.WARNING, "\"{0}\" returned code {1}. No action defined for handling.",
-                                        new Object[]{resolvedUrl, responseCode});
+                        LOGGER.log(Level.WARNING, "\"{0}\" returned code {1}. No action defined for handling.",
+                                new Object[]{resolvedUrl, responseCode});
                         resolvedUrl = null;
                     }
                 }
             } while (redirected);
         } catch (IOException ex) {
-            Logger.getLogger(URLUtility.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             resolvedUrl = null;
         }
         return Optional.ofNullable(resolvedUrl);

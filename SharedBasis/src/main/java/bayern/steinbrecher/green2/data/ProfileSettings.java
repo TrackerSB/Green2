@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 public abstract class /*enum*/ ProfileSettings<T> {
     //FIXME Add generic to enum when available (JDK9?)
 
+    private static final Logger LOGGER = Logger.getLogger(ProfileSettings.class.getName());
     /**
      * Indicating whether to use SSH or not. Write "1" or "true" to use SSH.
      */
@@ -100,7 +101,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
                 try {
                     return ProfileSettings.class.cast(field.get(null));
                 } catch (IllegalAccessException ex) {
-                    Logger.getLogger(ProfileSettings.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                     return null;
                 }
             })

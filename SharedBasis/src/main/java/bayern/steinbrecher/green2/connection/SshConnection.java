@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
  */
 public final class SshConnection extends DBConnection {
 
+    private static final Logger LOGGER = Logger.getLogger(SshConnection.class.getName());
     /**
      * The default port for ssh.
      */
@@ -224,7 +225,7 @@ public final class SshConnection extends DBConnection {
 
             channel.disconnect();
         } catch (IOException ex) {
-            Logger.getLogger(SshConnection.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             result = null;
         }
 

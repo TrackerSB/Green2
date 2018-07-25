@@ -38,6 +38,8 @@ import javafx.stage.Stage;
  */
 public final class Uninstaller extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger(Uninstaller.class.getName());
+
     /**
      * {@inheritDoc}
      */
@@ -126,14 +128,13 @@ public final class Uninstaller extends Application {
             try (InputStream errorStream = process.getErrorStream()) {
                 String errorMessage = IOStreamUtility.readAll(errorStream, Charset.defaultCharset());
                 if (!errorMessage.isEmpty()) {
-                    Logger.getLogger(Uninstaller.class.getName()).log(Level.SEVERE,
-                            "The uninstaller got the following error:\n{0}", errorMessage);
+                    LOGGER.log(Level.SEVERE, "The uninstaller got the following error:\n{0}", errorMessage);
                 }
             } catch (IOException ex) {
-                Logger.getLogger(Uninstaller.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }*/
         } catch (IOException ex) {
-            Logger.getLogger(Uninstaller.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 

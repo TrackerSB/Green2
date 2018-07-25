@@ -53,6 +53,7 @@ import org.xml.sax.SAXException;
  */
 public final class UpdateUtility {
 
+    private static final Logger LOGGER = Logger.getLogger(UpdateUtility.class.getName());
     private static final FileAttribute<Set<PosixFilePermission>> ALL_PERMISSIONS
             = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
     private static final String UPDATE_CONDITIONS_PATH
@@ -68,7 +69,7 @@ public final class UpdateUtility {
             updateConditions
                     = IOStreamUtility.readAll(new URL(UPDATE_CONDITIONS_PATH).openStream(), StandardCharsets.UTF_8);
         } catch (IOException ex) {
-            Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return Optional.ofNullable(updateConditions);
     }
@@ -106,7 +107,7 @@ public final class UpdateUtility {
                     .getMethod("test");
             test = () -> (Boolean) testMethod.invoke(null);
         } catch (IOException | ClassNotFoundException | NoSuchMethodException ex) {
-            Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, "Could not parse test.", ex);
+            LOGGER.log(Level.SEVERE, "Could not parse test.", ex);
             test = null;
         }
         return test;
@@ -128,8 +129,7 @@ public final class UpdateUtility {
                         Optional<String> validation
                                 = XMLUtility.isValidXML(xml, UpdateUtility.class.getResource("updateConditions.xsd"));
                         if (validation.isPresent()) {
-                            Logger.getLogger(UpdateUtility.class.getName())
-                                    .log(Level.WARNING, "The given XML is not valid:\n{0}", validation);
+                            LOGGER.log(Level.WARNING, "The given XML is not valid:\n{0}", validation);
                         } else {
                             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                             DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -159,15 +159,14 @@ public final class UpdateUtility {
                                     }
                                 }
                                 if (testName == null || test == null) {
-                                    Logger.getLogger(UpdateUtility.class.getName())
-                                            .log(Level.SEVERE, "Found conditions with missing conditions or names.");
+                                    LOGGER.log(Level.SEVERE, "Found conditions with missing conditions or names.");
                                 } else {
                                     updateConditions.put(testName, test);
                                 }
                             }
                         }
                     } catch (SAXException | IOException | ParserConfigurationException ex) {
-                        Logger.getLogger(UpdateUtility.class.getName()).log(Level.SEVERE, null, ex);
+                        LOGGER.log(Level.SEVERE, null, ex);
                         parsedSucessfully = false;
                     }
                     return parsedSucessfully ? updateConditions : null;

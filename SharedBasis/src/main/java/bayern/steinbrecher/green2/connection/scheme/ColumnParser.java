@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 //TODO Wait for generic enums
 public abstract /* final */ class ColumnParser<T> {
 
+    private static final Logger LOGGER = Logger.getLogger(ColumnParser.class.getName());
     /**
      * Parses {@link String} values from and to its SQL representation.
      */
@@ -78,7 +79,7 @@ public abstract /* final */ class ColumnParser<T> {
             try {
                 parsedValue = Optional.of(Integer.parseInt(value));
             } catch (NumberFormatException ex) {
-                Logger.getLogger(ColumnParser.class.getName()).log(Level.WARNING, null, ex);
+                LOGGER.log(Level.WARNING, null, ex);
                 parsedValue = Optional.empty();
             }
             return parsedValue;
@@ -138,7 +139,7 @@ public abstract /* final */ class ColumnParser<T> {
                     date = LocalDate.parse(value);
                 }
             } catch (DateTimeParseException ex) {
-                Logger.getLogger(ColumnParser.class.getName()).log(Level.WARNING, value + " is an invalid date", ex);
+                LOGGER.log(Level.WARNING, value + " is an invalid date", ex);
             }
             return Optional.ofNullable(date);
         }
@@ -172,7 +173,7 @@ public abstract /* final */ class ColumnParser<T> {
             try {
                 parsedValue = Optional.of(Double.parseDouble(value));
             } catch (NumberFormatException ex) {
-                Logger.getLogger(ColumnParser.class.getName()).log(Level.WARNING, null, ex);
+                LOGGER.log(Level.WARNING, null, ex);
                 parsedValue = Optional.empty();
             }
             return parsedValue;

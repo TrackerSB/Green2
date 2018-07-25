@@ -55,6 +55,7 @@ import javafx.scene.layout.VBox;
  */
 public class ResultDialogController extends WizardableController<Optional<Void>> {
 
+    private static final Logger LOGGER = Logger.getLogger(ResultDialogController.class.getName());
     @FXML
     private TableView<List<ReadOnlyStringProperty>> resultView;
     private final ObjectProperty<List<List<String>>> results = new SimpleObjectProperty<>();
@@ -125,7 +126,7 @@ public class ResultDialogController extends WizardableController<Optional<Void>>
                 try {
                     IOStreamUtility.printContent(content, path.get(), true);
                 } catch (IOException ex) {
-                    Logger.getLogger(ResultDialogController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                     DialogUtility.createStacktraceAlert(
                             getStage(), ex, EnvironmentHandler.getResourceValue("exportFailed"));
                 }

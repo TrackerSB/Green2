@@ -100,6 +100,7 @@ import javafx.stage.Stage;
  */
 public class MainMenuController extends Controller {
 
+    private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
     /**
      * Maps resource keys ({@link EnvironmentHandler#getResourceValue(java.lang.String, java.lang.Object...)} to
@@ -121,7 +122,7 @@ public class MainMenuController extends Controller {
             try {
                 return getBirthdayMember(year);
             } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 return null;
             }
         });
@@ -202,7 +203,7 @@ public class MainMenuController extends Controller {
                                         .map(Member::getHonorings)
                                         .allMatch(Map::isEmpty));
                             } catch (InterruptedException | ExecutionException ex) {
-                                Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                                LOGGER.log(Level.SEVERE, null, ex);
                                 honoringsAvailable.set(false);
                             }
                         });
@@ -235,7 +236,7 @@ public class MainMenuController extends Controller {
                         .collect(Collectors.toList())
                 );
             } catch (InterruptedException | ExecutionException ex) {
-                Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             Stage resultStage = new Stage();
             new ResultDialog(result)
@@ -269,7 +270,7 @@ public class MainMenuController extends Controller {
                                         });
                                     });
                         } catch (InterruptedException | ExecutionException ex) {
-                            Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                         }
                     }
                 });
@@ -283,7 +284,7 @@ public class MainMenuController extends Controller {
                     license.setWritable(false, false);
                     Desktop.getDesktop().open(license);
                 } catch (IOException ex) {
-                    Logger.getLogger(MainMenuController.class.getName()).log(Level.WARNING, "Could not open license", ex);
+                    LOGGER.log(Level.WARNING, "Could not open license", ex);
                 }
             });
             licensesMenu.getItems().add(item);
@@ -372,7 +373,7 @@ public class MainMenuController extends Controller {
                 }
             }
         } catch (InterruptedException | ExecutionException | IOException ex) {
-            Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, "Could not generate addresses.", ex);
+            LOGGER.log(Level.SEVERE, "Could not generate addresses.", ex);
         }
     }
 
@@ -395,7 +396,7 @@ public class MainMenuController extends Controller {
                 }
             }
         } catch (InterruptedException | ExecutionException | IOException ex) {
-            Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, "Could not generate addresses.", ex);
+            LOGGER.log(Level.SEVERE, "Could not generate addresses.", ex);
         }
     }
 
@@ -480,8 +481,7 @@ public class MainMenuController extends Controller {
                                             Platform.runLater(() -> alert.show());
                                         }
                                     } catch (IOException ex) {
-                                        Logger.getLogger(MainMenuController.class.getName())
-                                                .log(Level.SEVERE, "The sepa xml file could not be created.", ex);
+                                        LOGGER.log(Level.SEVERE, "The sepa xml file could not be created.", ex);
                                     }
                                 });
                     }
@@ -490,7 +490,7 @@ public class MainMenuController extends Controller {
                 wizardStage.showAndWait();
             }
         } catch (InterruptedException | ExecutionException | IOException ex) {
-            Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
             DialogUtility.showAndWait(DialogUtility.createStacktraceAlert(getStage(), ex, noSepaDebit, noSepaDebit));
         }
@@ -511,9 +511,8 @@ public class MainMenuController extends Controller {
                 Method isBoundMethod = disablePropertyMethod.getReturnType().getMethod("isBound");
                 if ((boolean) isBoundMethod.invoke(disablePropertyMethod.invoke(sourceObj))) {
                     //When getting here: sourceObj.disableProperty().isBound() == true
-                    Logger.getLogger(MainMenuController.class.getName())
-                            .log(Level.WARNING,
-                                    "Cannot disable control {0} since its DisableProperty is bound.", sourceObj);
+                    LOGGER.log(Level.WARNING,
+                            "Cannot disable control {0} since its DisableProperty is bound.", sourceObj);
                     run.run();
                 } else {
                     Method setDisableMethod = sourceClass.getMethod("setDisable", Boolean.TYPE);
@@ -523,10 +522,10 @@ public class MainMenuController extends Controller {
                 }
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException ex) {
-                Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         } else {
-            Logger.getLogger(MainMenuController.class.getName()).log(
+            LOGGER.log(
                     Level.WARNING, "The source of the ActionEvent is no Node and no MenuItem. It can´t be disabled.");
             run.run();
         }
@@ -542,8 +541,7 @@ public class MainMenuController extends Controller {
                     if (throwable == null) {
                         datetime = LocalDateTime.now();
                     } else {
-                        Logger.getLogger(MainMenuController.class.getName())
-                                .log(Level.SEVERE, "Retrieving the data failed.", throwable);
+                        LOGGER.log(Level.SEVERE, "Retrieving the data failed.", throwable);
                         datetime = null; //NOPMD - Make sure datetime is initialized.
                     }
                     Platform.runLater(() -> dataLastUpdated.set(Optional.ofNullable(datetime)));
@@ -587,7 +585,7 @@ public class MainMenuController extends Controller {
                 wizardStage.getScene().getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
                 wizardStage.showAndWait();
             } catch (IOException ex) {
-                Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 DialogUtility.createStacktraceAlert(
                         getStage(), ex, EnvironmentHandler.getResourceValue("noQueryDialog"))
                         .showAndWait();
@@ -671,7 +669,7 @@ public class MainMenuController extends Controller {
                         try {
                             messages = entry.getValue().call();
                         } catch (Exception ex) { //NOPMD - Make sure the checks are not abborted.
-                            Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                            LOGGER.log(Level.SEVERE, null, ex);
                             messages = Arrays.asList(ex.getLocalizedMessage().split("\n"));
                         }
                         reports.put(EnvironmentHandler.getResourceValue(entry.getKey()), messages);
@@ -722,8 +720,7 @@ public class MainMenuController extends Controller {
                         }
                     }
                 } catch (InterruptedException | ExecutionException | IOException ex) {
-                    Logger.getLogger(MainMenuController.class.getName())
-                            .log(Level.SEVERE, "Could not generate birthday infos.", ex);
+                    LOGGER.log(Level.SEVERE, "Could not generate birthday infos.", ex);
                 }
             });
         }
@@ -868,7 +865,7 @@ public class MainMenuController extends Controller {
                 try {
                     newValue.get();
                 } catch (InterruptedException | ExecutionException ex) {
-                    Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             })
                     .thenRunAsync(() -> available.set(true));

@@ -63,6 +63,7 @@ import javafx.util.Duration;
  */
 public class WizardController implements Initializable {
 
+    private static final Logger LOGGER = Logger.getLogger(WizardController.class.getName());
     private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
     /**
      * FIXME The initial dummy page is needed since the current page may be already requested before there is a chance
@@ -197,8 +198,7 @@ public class WizardController implements Initializable {
         Consumer<Node> removeCurrentPane = currentPane -> {
             currentPane.getStyleClass().remove(WIZARD_CONTENT_STYLECLASS);
             if (!contents.getChildren().remove(currentPane)) {
-                Logger.getLogger(WizardController.class.getName())
-                        .log(Level.SEVERE, "The currently shown content of the wizard could not be removed.");
+                LOGGER.log(Level.SEVERE, "The currently shown content of the wizard could not be removed.");
             }
         };
 

@@ -53,6 +53,7 @@ import javafx.stage.Stage;
  */
 public final class Launcher extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger(Launcher.class.getName());
     /**
      * The URL of the version file describing the version of the files at {@code PROGRAMFOLDER_PATH_ONLINE}.
      */
@@ -77,7 +78,7 @@ public final class Launcher extends Application {
         try (Scanner scanner = new Scanner(new URL(CHARSET_PATH_ONLINE).openStream(), StandardCharsets.UTF_8.name())) {
             zipCharset = Charset.forName(scanner.nextLine());
         } catch (IOException ex) {
-            Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             zipCharset = null;
         }
         return Optional.ofNullable(zipCharset);
@@ -127,8 +128,7 @@ public final class Launcher extends Application {
         if (installUpdateProcess != null) {
             installUpdateProcess.handle((voidResult, ex) -> {
                 if (ex != null) {
-                    Logger.getLogger(Launcher.class.getName())
-                            .log(Level.SEVERE, "The download/update/install process failed.", ex);
+                    LOGGER.log(Level.SEVERE, "The download/update/install process failed.", ex);
                 }
                 Platform.exit();
                 return null;
@@ -150,7 +150,7 @@ public final class Launcher extends Application {
                 onlineVersion = Optional.of(scanner.nextLine());
             }
         } catch (IOException ex) {
-            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             onlineVersion = Optional.empty();
         }
         return onlineVersion;

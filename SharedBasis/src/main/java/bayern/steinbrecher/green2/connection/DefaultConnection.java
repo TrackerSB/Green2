@@ -39,6 +39,7 @@ import java.util.logging.Logger;
  */
 public final class DefaultConnection extends DBConnection {
 
+    private static final Logger LOGGER = Logger.getLogger(DefaultConnection.class.getName());
     /**
      * The protocols of the supported databases.
      */
@@ -127,7 +128,7 @@ public final class DefaultConnection extends DBConnection {
         try {
             connection.close();
         } catch (SQLException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.WARNING, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
         }
     }
 }

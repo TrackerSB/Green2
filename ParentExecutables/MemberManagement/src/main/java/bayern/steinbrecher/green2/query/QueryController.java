@@ -78,6 +78,7 @@ import javafx.scene.layout.Priority;
  */
 public class QueryController extends WizardableController<Optional<List<List<String>>>> {
 
+    private static final Logger LOGGER = Logger.getLogger(QueryController.class.getName());
     @FXML
     private GridPane queryInput;
     private final ListProperty<CheckedConditionField<?>> conditionFields
@@ -132,16 +133,14 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                     //CHECKSTYLE.OFF: MagicNumber - Having exactly 3 elements is only important for the visual layout.
                     if (conditionFieldChildren.length != 3) { //NOPMD - Only triples are currently layouted nicely.
                         //CHECKSTYLE.ON: MagicNumber
-                        Logger.getLogger(QueryController.class.getName())
-                                .log(Level.WARNING, "An input field of the query dialog has not exactly 3 children. "
-                                        + "It may cause displacement of elements.");
+                        LOGGER.log(Level.WARNING, "An input field of the query dialog has not exactly 3 children. "
+                                + "It may cause displacement of elements.");
                     }
                     queryInput.addRow(rowCounter, conditionFieldChildren);
                     rowCounter++;
                 } else {
-                    Logger.getLogger(QueryController.class.getName())
-                            .log(Level.WARNING, "The type {0} of column {1} is not supported by the query dialog.",
-                                    new Object[]{column.getValue(), column.getKey()});
+                    LOGGER.log(Level.WARNING, "The type {0} of column {1} is not supported by the query dialog.",
+                            new Object[]{column.getValue(), column.getKey()});
                 }
             }
             if (rowCounter <= 0) {
@@ -180,8 +179,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                     lastQueryResult.set(Optional.of(dbConnectionProperty().get().execQuery(query)));
                     isLastQueryUptodate = true;
                 } catch (SQLException ex) {
-                    Logger.getLogger(QueryController.class.getName())
-                            .log(Level.SEVERE, "The query \"" + query + "\" failed.", ex);
+                    LOGGER.log(Level.SEVERE, "The query \"" + query + "\" failed.", ex);
                 }
             });
         }
@@ -242,6 +240,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     private abstract static class CheckedConditionField<T> extends HBox
             implements ReadOnlyCheckedControl, Initializable, Observable {
 
+        private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
         private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
         private final ListProperty<ObservableBooleanValue> validConditions
                 = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -277,8 +276,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                 fxmlLoader.setController(this);
                 fxmlLoader.load();
             } catch (IOException ex) {
-                Logger.getLogger(ContributionField.class.getName())
-                        .log(Level.SEVERE, "Could not load CheckedConditionField", ex);
+                LOGGER.log(Level.SEVERE, "Could not load CheckedConditionField", ex);
             }
         }
 

@@ -39,6 +39,8 @@ import javafx.stage.StageStyle;
  */
 public class Splashscreen extends View<Controller> {
 
+    private static final Logger LOGGER = Logger.getLogger(Splashscreen.class.getName());
+
     /**
      * {@inheritDoc}
      */
@@ -75,7 +77,7 @@ public class Splashscreen extends View<Controller> {
             try {
                 Thread.sleep(millis);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Splashscreen.class.getName()).log(Level.WARNING, null, ex);
+                LOGGER.log(Level.WARNING, null, ex);
             }
             Platform.runLater(() -> getStage().close());
             return null;

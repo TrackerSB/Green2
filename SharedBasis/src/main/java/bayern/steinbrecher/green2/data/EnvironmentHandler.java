@@ -46,6 +46,7 @@ import javafx.stage.Stage;
  */
 public final class EnvironmentHandler {
 
+    private static final Logger LOGGER = Logger.getLogger(EnvironmentHandler.class.getName());
     /**
      * Containing the version of this current program.
      */
@@ -115,9 +116,8 @@ public final class EnvironmentHandler {
         //Create configDir if not existing
         File appdataDir = new File(EnvironmentHandler.APP_DATA_PATH);
         if (!appdataDir.exists() && !appdataDir.mkdirs()) {
-            Logger.getLogger(EnvironmentHandler.class.getName())
-                    .log(Level.WARNING, "At least some of the directories of the path {0} could not be created.",
-                            EnvironmentHandler.APP_DATA_PATH);
+            LOGGER.log(Level.WARNING, "At least some of the directories of the path {0} could not be created.",
+                    EnvironmentHandler.APP_DATA_PATH);
         }
     }
 
@@ -181,7 +181,7 @@ public final class EnvironmentHandler {
         if (RESOURCE_BUNDLE.containsKey(key)) {
             resourceValue = MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
         } else {
-            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.INFO, "No resource for \"{0}\" found.", key);
+            LOGGER.log(Level.INFO, "No resource for \"{0}\" found.", key);
             resourceValue = key;
         }
         return resourceValue;
@@ -257,7 +257,7 @@ public final class EnvironmentHandler {
                     .map(path -> new File(path.toUri()))
                     .collect(Collectors.toList());
         } catch (IOException ex) {
-            Logger.getLogger(EnvironmentHandler.class.getName()).log(Level.WARNING, null, ex);
+            LOGGER.log(Level.WARNING, null, ex);
             licences = new ArrayList<>();
         }
         return licences;

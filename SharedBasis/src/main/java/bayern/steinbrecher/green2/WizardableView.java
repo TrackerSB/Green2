@@ -33,6 +33,8 @@ import javafx.scene.layout.Pane;
 public abstract class WizardableView<T extends Optional<?>, C extends WizardableController<T>>
         extends ResultView<T, C> {
 
+    private static final Logger LOGGER = Logger.getLogger(WizardableView.class.getName());
+
     /**
      * Returns the path of the FXML file to load to be used by a wizard.
      *
@@ -54,7 +56,7 @@ public abstract class WizardableView<T extends Optional<?>, C extends Wizardable
             page = new WizardPage<>(
                     root, null, false, () -> getController().getResult(), getController().validProperty());
         } catch (IOException ex) {
-            Logger.getLogger(WizardableView.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             page = null;
         }
         return page;

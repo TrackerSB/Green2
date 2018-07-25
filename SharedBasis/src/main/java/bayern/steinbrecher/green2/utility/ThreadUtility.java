@@ -28,6 +28,8 @@ import javafx.beans.binding.BooleanExpression;
  */
 public final class ThreadUtility {
 
+    private static final Logger LOGGER = Logger.getLogger(ThreadUtility.class.getName());
+
     /**
      * Prohibit construction.
      */
@@ -54,7 +56,7 @@ public final class ThreadUtility {
                     monitor.wait();
                 }
             } catch (InterruptedException ex1) {
-                Logger.getLogger(ThreadUtility.class.getName()).log(Level.WARNING, null, ex1);
+                LOGGER.log(Level.WARNING, null, ex1);
             }
         }
     }

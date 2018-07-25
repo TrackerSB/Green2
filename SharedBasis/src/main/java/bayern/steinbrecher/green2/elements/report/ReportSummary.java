@@ -51,6 +51,7 @@ import javafx.scene.layout.VBox;
  */
 public class ReportSummary extends TitledPane {
 
+    private static final Logger LOGGER = Logger.getLogger(ReportSummary.class.getName());
     //TODO Force uniqueness of messages.
     private final ListProperty<ReportEntry> reportEntries = new SimpleListProperty<>(this, "reportEntries",
             FXCollections.observableArrayList(
@@ -131,7 +132,7 @@ public class ReportSummary extends TitledPane {
             fxmlLoader.setController(this);
             fxmlLoader.load();
         } catch (IOException ex) {
-            Logger.getLogger(ReportSummary.class.getName()).log(Level.SEVERE, "Could not load ReportSummary", ex);
+            LOGGER.log(Level.SEVERE, "Could not load ReportSummary", ex);
         }
     }
 

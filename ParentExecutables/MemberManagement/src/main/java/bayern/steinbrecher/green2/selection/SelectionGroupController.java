@@ -78,6 +78,7 @@ import javafx.scene.shape.Rectangle;
  */
 public class SelectionGroupController<T extends Comparable<T>, G> extends WizardableController<Optional<Map<T, G>>> {
 
+    private static final Logger LOGGER = Logger.getLogger(SelectionController.class.getName());
     private final ObservableValue<ObservableList<AssociatedItem>> options
             = new SimpleObjectProperty<>(this, "options",
                     FXCollections.observableArrayList(i -> new Observable[]{i.itemProperty(), i.groupProperty()}));
@@ -210,8 +211,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                                     }
                                     groupsToggleGroup.getToggles().remove(radiobutton);
                                 },
-                                () -> Logger.getLogger(SelectionGroupController.class.getName())
-                                        .log(Level.WARNING, "Could not find the group radiobutton to remove."));
+                                () -> LOGGER.log(Level.WARNING, "Could not find the group radiobutton to remove."));
 
                 //Remove all associations of items with this group.
                 options.getValue().stream()

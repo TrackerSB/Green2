@@ -41,6 +41,7 @@ import java.util.logging.Logger;
  */
 public class Originator {
 
+    private static final Logger LOGGER = Logger.getLogger(Originator.class.getName());
     private String creator,
             msgId,
             creditor,
@@ -135,17 +136,16 @@ public class Originator {
                                 } else if (f.getType() == String.class) {
                                     f.set(this, property);
                                 } else {
-                                    Logger.getLogger(Originator.class.getName())
-                                            .log(Level.INFO, "No action for reading in {0} defined. Gets skipped.",
-                                                    f.getType());
+                                    LOGGER.log(Level.INFO, "No action for reading in {0} defined. Gets skipped.",
+                                            f.getType());
                                 }
                             } catch (IllegalArgumentException | IllegalAccessException ex) {
-                                Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
+                                LOGGER.log(Level.WARNING, null, ex);
                             }
                         });
                 readSuccessfull = true;
             } catch (IOException ex) {
-                Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
+                LOGGER.log(Level.WARNING, null, ex);
                 readSuccessfull = false;
             }
         } else {
@@ -167,14 +167,14 @@ public class Originator {
                     try {
                         originatorProps.put(f.getName(), f.get(this).toString());
                     } catch (IllegalArgumentException | IllegalAccessException ex) {
-                        Logger.getLogger(Originator.class.getName()).log(Level.WARNING, null, ex);
+                        LOGGER.log(Level.WARNING, null, ex);
                     }
                 });
         try (Writer writer
                 = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(originatorFile.toPath()), "UTF-8"))) {
             originatorProps.store(writer, null);
         } catch (IOException ex) {
-            Logger.getLogger(Originator.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
