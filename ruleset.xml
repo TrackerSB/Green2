@@ -96,6 +96,11 @@
             <property name="skipAnnotations" value="true" />
         </properties>
     </rule>
+    <rule ref="category/java/errorprone.xml/ProperLogger">
+        <properties>
+            <property name="staticLoggerName" value="LOGGER" />
+        </properties>
+    </rule>
 
     <!-- Java Multithreading -->
     <rule ref="category/java/multithreading.xml" />
