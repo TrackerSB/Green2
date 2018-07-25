@@ -17,7 +17,6 @@
 package bayern.steinbrecher.wizard;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,8 +36,9 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.MapProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -64,7 +64,12 @@ import javafx.util.Duration;
 public class WizardController implements Initializable {
 
     private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
-    private final Property<WizardPage<?>> currentPage = new SimpleObjectProperty<>(this, "currentPage");
+    /**
+     * FIXME The initial dummy page is needed since the current page may be already requested before there is a chance
+     * to specify the pages of the wizard.
+     */
+    private final ObjectProperty<WizardPage<?>> currentPage
+            = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<Void>(null, null, false, () -> null));
     private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
     private final BooleanProperty atBeginning = new SimpleBooleanProperty(this, "atBeginning", true);
     private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
@@ -246,6 +251,7 @@ public class WizardController implements Initializable {
      * @param pages The map of pages to set.
      */
     public void setPages(Map<String, WizardPage<?>> pages) {
+        System.out.println("Called setPages(...)");
         if (!pages.containsKey(WizardPage.FIRST_PAGE_KEY)) {
             throw new IllegalArgumentException("Map of pages must have a key WizardPage.FIRST_PAGE_KEY");
         }
@@ -334,7 +340,7 @@ public class WizardController implements Initializable {
      *
      * @return The property holding the currently shown page.
      */
-    public ReadOnlyProperty<WizardPage<?>> currentPageProperty() {
+    public ReadOnlyObjectProperty<WizardPage<?>> currentPageProperty() {
         return currentPage;
     }
 
