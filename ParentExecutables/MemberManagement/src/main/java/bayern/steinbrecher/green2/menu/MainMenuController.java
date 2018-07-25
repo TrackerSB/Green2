@@ -455,7 +455,7 @@ public class MainMenuController extends Controller {
                             selectedMember = groupedMember.entrySet().stream()
                                     .map(entry -> {
                                         return new Member.Builder(entry.getKey())
-                                                .setContribution(entry.getValue())
+                                                .setContribution(Optional.ofNullable(entry.getValue()))
                                                 .generate();
                                     })
                                     .collect(Collectors.toSet());

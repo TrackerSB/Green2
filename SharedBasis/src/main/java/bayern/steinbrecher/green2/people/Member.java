@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.people;
 import java.text.Collator;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +51,9 @@ public final class Member implements Comparable<Member> {
 
     private Member() {
         //A completely uninitialized person (Only to be used by the builder).
+        honorings = new HashMap<>();
+        active = Optional.empty();
+        contribution = Optional.empty();
     }
 
     /**
@@ -72,9 +76,9 @@ public final class Member implements Comparable<Member> {
         this.person = person;
         this.home = home;
         this.accountHolder = accountHolder;
-        this.active = active;
+        this.active = Objects.requireNonNull(active, "Pass Optional.empty() instead of null.");
         this.contributionfree = contributionfree;
-        this.contribution = contribution;
+        this.contribution = Objects.requireNonNull(contribution, "Pass Optional.empty() instead of null.");
         this.memberSince = memberSince;
         this.honorings = honorings;
     }
@@ -274,9 +278,10 @@ public final class Member implements Comparable<Member> {
          */
         public Builder(Member member) {
             super(member);
-            person = new Person.Builder(member.getPerson());
-            home = new Address.Builder(member.getHome());
-            accountHolder = new AccountHolder.Builder(member.getAccountHolder());
+            person = initializeNestedBuilder(member.getPerson(), Person.Builder::new, Person.Builder::new);
+            home = initializeNestedBuilder(member.getHome(), Address.Builder::new, Address.Builder::new);
+            accountHolder = initializeNestedBuilder(
+                    member.getAccountHolder(), AccountHolder.Builder::new, AccountHolder.Builder::new);
         }
 
         /**
@@ -320,12 +325,12 @@ public final class Member implements Comparable<Member> {
         /**
          * Sets whether this member is an active or a passive member.
          *
-         * @param active {@code true} only if this member is an active member. Pass {@code null} if the database stores
-         * no information about this.
+         * @param active {@code true} only if this member is an active member. Pass {@link Optional#empty()} if the
+         * database stores no information about this.
          * @return This builder which can be used for chaining calls to setter.
          */
-        public Builder setActive(Boolean active) {
-            getToBuild().active = Optional.ofNullable(active);
+        public Builder setActive(Optional<Boolean> active) {
+            getToBuild().active = Objects.requireNonNull(active, "Pass Optional.empty() instead of null.");
             return this;
         }
 
@@ -343,12 +348,12 @@ public final class Member implements Comparable<Member> {
         /**
          * Sets the contribution this member has to pay.
          *
-         * @param contribution The contribution this member has to pay or {@code null} if the database does not provide
-         * information about this.
+         * @param contribution The contribution this member has to pay or {@link Optional#empty()} if the database does
+         * not provide information about this.
          * @return This builder which can be used for chaining calls to setter.
          */
-        public Builder setContribution(Double contribution) {
-            getToBuild().contribution = Optional.ofNullable(contribution);
+        public Builder setContribution(Optional<Double> contribution) {
+            getToBuild().contribution = Objects.requireNonNull(contribution, "Pass Optional.empty() instead of null.");
             return this;
         }
 

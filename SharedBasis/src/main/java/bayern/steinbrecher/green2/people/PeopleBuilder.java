@@ -16,10 +16,9 @@
  */
 package bayern.steinbrecher.green2.people;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents a class meant for building immutable objects like {@link Member}, {@link Address} or {@link Person}.
@@ -27,18 +26,22 @@ import java.util.stream.Collectors;
  * <li>NOTE The current implementation does not forbid to reuse this class for other non-people classes. Subclasses
  * should have only getter methods for nested builder. These getter methods have to return a non-null builder and no
  * {@link java.util.Optional}.</li>
- * <li>NOTE Subclasses should have two constructors:
+ * <li>NOTE Subclasses should fulfill:
  * <ol>
- * <li>A default constructor</li>
- * <li>2. A constructor accepting a {@link T} whose value are used as initial values for this builder.</li>
+ * <li>Declare subclass as {@code final}.</li>
+ * <li>Define a default constructor.</li>
+ * <li>Define constructor accepting a {@link T} whose value are used as initial values for this builder.</li>
+ * <li>Make sure nested builder are initialized as non-null within constructors
+ * ({@link #initializeNestedBuilder(java.lang.Object, java.util.function.Supplier, java.util.function.Function)}).</li>
+ * <li>Declare nested builder as {@code final}.</li>
  * </ol>
  * </li>
- * <li>NOTE Subclasses should be final.</li>
  * </ul>
  *
  * @author Stefan Huber
  * @param <T> The people class to build.
  */
+//TODO How to enforce the rules above?
 public abstract class PeopleBuilder<T> {
 
     private final T toBuild;
@@ -49,51 +52,39 @@ public abstract class PeopleBuilder<T> {
      * @param toBuild The initial object to build on.
      */
     public PeopleBuilder(T toBuild) {
-        this.toBuild = toBuild;
+        this.toBuild = Objects.requireNonNull(
+                toBuild, "The initial person must not be null. You may use #initializeNestedBuilder(...).");
     }
 
     /**
-     * Returns all fields which were not set at least once using this builder.
+     * Returns a {@link PeopleBuilder} for the given person.It the person is {@code null} it returns an empty builder.
      *
-     * @return A {@link List} of all fields which were not set at least once using this builder.
+     * @param <P> The type of the person to build.
+     * @param <B> The type of the builder.
+     * @param initialPerson The initial person to use.
+     * @param emptyBuilder Constructs an uninitialilzed person.
+     * @param initializedBuilder Constructs an initialized person.
+     * @return The builder initialized with the given person.
      */
-    protected final List<Field> getUnsetFields() {
-        //TODO Implement a check to make sure all fields of {@link T} are initialized.
-        return new ArrayList<>();
+    protected static <P, B extends PeopleBuilder<P>> B initializeNestedBuilder(
+            P initialPerson, Supplier<B> emptyBuilder, Function<P, B> initializedBuilder) {
+        B builder;
+        if (initialPerson == null) {
+            builder = emptyBuilder.get();
+        } else {
+            builder = initializedBuilder.apply(initialPerson);
+        }
+        return builder;
     }
 
     /**
-     * Checks whether all fields needed for constructing a {@link T} object are set.
-     *
-     * @return {@code true} only if a {@link T} object can be constructed.
-     */
-    public final boolean isAllSet() {
-        return getUnsetFields().isEmpty();
-    }
-
-    /**
-     * Generates a {@link T} object. It is guaranteed that no field of the resulting object contains {@code null}
-     * anywhere.
+     * Generates a {@link T} object.
      *
      * @return A {@link T} object.
-     * @throws IllegalStateException Only if not all attributes needed for constructing a {@link T} object are set.
-     * @see #isAllSet()
      */
     public final T generate() {
-        if (isAllSet()) {
-            T toBuildCopy = toBuild;
-            return toBuildCopy;
-        } else {
-            String unsetFieldsMessage = getUnsetFields()
-                    .stream()
-                    .map(field -> field.toGenericString())
-                    .collect(Collectors.joining(
-                            "\n",
-                            "Can not generate since the following fields are not set via " + this.getClass() + ":\n",
-                            "")
-                    );
-            throw new IllegalStateException(unsetFieldsMessage);
-        }
+        T toBuildCopy = toBuild; //Make sure only to return a copy.
+        return toBuildCopy;
     }
 
     /**

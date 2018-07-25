@@ -148,9 +148,10 @@ public final class /* enum */ Tables<T, U> {
             List.of(
                     new SimpleColumnPattern<Double, Member.Builder>("Beitrag",
                             Set.of(Keywords.NOT_NULL), ColumnParser.DOUBLE_COLUMN_PARSER,
-                            Member.Builder::setContribution),
+                            (builder, contribution) -> builder.setContribution(Optional.ofNullable(contribution))),
                     new SimpleColumnPattern<Boolean, Member.Builder>("IstAktiv",
-                            Set.of(Keywords.NOT_NULL), ColumnParser.BOOLEAN_COLUMN_PARSER, Member.Builder::setActive),
+                            Set.of(Keywords.NOT_NULL), ColumnParser.BOOLEAN_COLUMN_PARSER,
+                            (builder, active) -> builder.setActive(Optional.ofNullable(active))),
                     new RegexColumnPattern<Boolean, Member.Builder, Integer>("^\\d+MitgliedGeehrt$",
                             ColumnParser.BOOLEAN_COLUMN_PARSER, Member.Builder::putHonoring,
                             cn -> Integer.parseInt(cn.substring(0, cn.length() - "MitgliedGeehrt".length())))
