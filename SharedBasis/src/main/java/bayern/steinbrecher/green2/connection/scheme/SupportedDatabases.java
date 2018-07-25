@@ -66,7 +66,6 @@ public enum SupportedDatabases {
             //TODO Think about whether to "SET SQL_MODE=ANSI_QUOTES;"
             '`');
 
-    private static final Logger LOGGER = Logger.getLogger(SupportedDatabases.class.getName());
     private final String displayName;
     private final int defaultPort;
     private final BiMap<Keywords, String> keywordRepresentations;
@@ -135,7 +134,8 @@ public enum SupportedDatabases {
                         }
                         return keywordString;
                     } else {
-                        LOGGER.log(Level.WARNING, "Keyword {0} is not defined by {1}", new Object[]{keyword, this});
+                        Logger.getLogger(SupportedDatabases.class.getName())
+                                .log(Level.WARNING, "Keyword {0} is not defined by {1}", new Object[]{keyword, this});
                         return null;
                     }
                 })
@@ -168,8 +168,9 @@ public enum SupportedDatabases {
     public Optional<Keywords> getKeyword(String sqlKeyword) {
         Optional<Keywords> keyword = Optional.ofNullable(keywordRepresentations.inverse().get(sqlKeyword));
         if (!keyword.isPresent()) {
-            LOGGER.log(Level.WARNING, "The database {0} does not define a keyword for {1}.",
-                    new Object[]{displayName, sqlKeyword});
+            Logger.getLogger(SupportedDatabases.class.getName())
+                    .log(Level.WARNING, "The database {0} does not define a keyword for {1}.",
+                            new Object[]{displayName, sqlKeyword});
         }
         return keyword;
     }
@@ -202,8 +203,9 @@ public enum SupportedDatabases {
     public Optional<Class<?>> getType(String sqlType) {
         Optional<Class<?>> type = Optional.ofNullable(types.inverse().get(new SQLTypeKeyword(sqlType)));
         if (!type.isPresent()) {
-            LOGGER.log(Level.WARNING, "The database {0} does not define a class for SQL type {1}.",
-                    new Object[]{displayName, sqlType});
+            Logger.getLogger(SupportedDatabases.class.getName())
+                    .log(Level.WARNING, "The database {0} does not define a class for SQL type {1}.",
+                            new Object[]{displayName, sqlType});
         }
         return type;
     }

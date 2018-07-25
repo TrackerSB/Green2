@@ -145,7 +145,8 @@ public final class CollectorUtility {
                     NetworkInterface localhostInetAddress
                             = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
                     if (localhostInetAddress == null) {
-                        LOGGER.log(Level.SEVERE, "Could not resolve InetAddress of localhost.");
+                        Logger.getLogger(DataParams.class.getName())
+                                .log(Level.SEVERE, "Could not resolve InetAddress of localhost.");
                     } else {
                         byte[] mac = localhostInetAddress.getHardwareAddress();
                         StringJoiner macJoiner = new StringJoiner("-");
@@ -155,7 +156,8 @@ public final class CollectorUtility {
                         macAddress = macJoiner.toString();
                     }
                 } catch (SocketException | UnknownHostException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DataParams.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
                 return Optional.ofNullable(macAddress);
             }
@@ -186,8 +188,6 @@ public final class CollectorUtility {
                 return Optional.of(EnvironmentHandler.VERSION);
             }
         };
-
-        private static final Logger LOGGER = Logger.getLogger(DataParams.class.getName());
 
         /**
          * Returns the value represented by the enum.
