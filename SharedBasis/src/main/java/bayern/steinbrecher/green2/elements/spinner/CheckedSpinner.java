@@ -21,6 +21,7 @@ import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -51,11 +52,14 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      * Holds {@code true} only if the content has to be checked.
      */
     private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
-    private final Map<String, Pair<ReportType, BooleanExpression>> reports
-            = Map.of(EnvironmentHandler.getResourceValue("inputMissing"),
-                    new Pair<>(ReportType.ERROR, valueProperty().isNull().and(checkedProperty())),
-                    EnvironmentHandler.getResourceValue("inputInvalid"),
+    private final Map<String, Pair<ReportType, BooleanExpression>> reports = new HashMap<>() {
+        {
+            put(EnvironmentHandler.getResourceValue("inputMissing"),
+                    new Pair<>(ReportType.ERROR, valueProperty().isNull().and(checkedProperty())));
+            put(EnvironmentHandler.getResourceValue("inputInvalid"),
                     new Pair<>(ReportType.ERROR, invalid.and(checkedProperty())));
+        }
+    };
 
     /**
      * Constructs a new {@code CheckedSpinner}.
