@@ -19,8 +19,8 @@ package bayern.steinbrecher.green2.elements;
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.View;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.utility.ServiceFactory;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -73,15 +73,18 @@ public class Splashscreen extends View<Controller> {
      * @param millis The time in milliseconds the screen has to be shown.
      */
     public void showSplashscreen(long millis) {
-        ServiceFactory.createService(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 Thread.sleep(millis);
             } catch (InterruptedException ex) {
-                LOGGER.log(Level.WARNING, null, ex);
+
             }
             Platform.runLater(() -> getStage().close());
-            return null;
-        }).start();
+        })
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, "The splashscreen was interrupted.", ex);
+                    return null;
+                });
         showOnceAndWait();
     }
 
