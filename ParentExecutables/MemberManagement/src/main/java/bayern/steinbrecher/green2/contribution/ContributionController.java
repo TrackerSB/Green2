@@ -28,6 +28,7 @@ import com.google.common.collect.HashBiMap;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -36,6 +37,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -49,6 +51,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 /**
  * Contains a window for inserting a double value representing a contribution.
@@ -65,9 +68,6 @@ public class ContributionController extends WizardableController<Optional<BiMap<
             Color.rgb(255, 48, 28), Color.rgb(78, 14, 232), Color.rgb(16, 255, 234), Color.rgb(135, 139, 38),
             Color.rgb(232, 115, 21), Color.rgb(246, 36, 255), Color.rgb(23, 115, 232), Color.rgb(24, 255, 54));
     private static final Random COLOR_RANDOM = new Random();
-    private static final String DUPLICATE_COLOR_MESSAGE = EnvironmentHandler.getResourceValue("duplicateColor");
-    private static final String DUPLICATE_CONTRIBUTION_MESSAGE
-            = EnvironmentHandler.getResourceValue("duplicateContribution");
     //TODO Use ListView<Pair<Color, Double>> instead?
     @FXML
     private VBox contributionFieldsBox;
@@ -117,9 +117,6 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                     reportSummary.addReportEntry(addedCf);
                 });
                 change.getRemoved().forEach(removedCf -> {
-                    reportSummary.removeReportValidation(DUPLICATE_COLOR_MESSAGE, removedCf.duplicateColorProperty());
-                    reportSummary.removeReportValidation(
-                            DUPLICATE_CONTRIBUTION_MESSAGE, removedCf.duplicateContributionProperty());
                     reportSummary.removeReportValidation(removedCf);
 
                     List<HBox> hboxes = contributionFieldsBox.getChildren().stream()
@@ -209,8 +206,11 @@ public class ContributionController extends WizardableController<Optional<BiMap<
      * The same as {@link ContributionField} but with an additional property holding whether it has duplicate value or
      * color.
      */
-    private class DuplicateContributionField extends ContributionField {
+    private static class DuplicateContributionField extends ContributionField {
 
+        private static final String DUPLICATE_COLOR_MESSAGE = EnvironmentHandler.getResourceValue("duplicateColor");
+        private static final String DUPLICATE_CONTRIBUTION_MESSAGE
+                = EnvironmentHandler.getResourceValue("duplicateContribution");
         private final BooleanProperty duplicateColor = new SimpleBooleanProperty(false);
         private final BooleanProperty duplicateContribution = new SimpleBooleanProperty(false);
 
@@ -262,9 +262,17 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                 Logger.getLogger(DuplicateContributionField.class.getName())
                         .log(Level.WARNING, "Could not find ContributionSpinner of ContributionField.");
             });
+        }
 
-            reportSummary.addReportEntry(DUPLICATE_COLOR_MESSAGE, ReportType.ERROR, duplicateColor);
-            reportSummary.addReportEntry(DUPLICATE_CONTRIBUTION_MESSAGE, ReportType.ERROR, duplicateContribution);
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
+            Map<String, Pair<ReportType, BooleanExpression>> reports = super.getReports();
+            reports.put(DUPLICATE_COLOR_MESSAGE, new Pair<>(ReportType.ERROR, duplicateColor));
+            reports.put(DUPLICATE_CONTRIBUTION_MESSAGE, new Pair<>(ReportType.ERROR, duplicateContribution));
+            return reports;
         }
 
         /**
