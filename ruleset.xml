@@ -50,11 +50,11 @@
     <rule ref="category/java/design.xml">
         <exclude name="LawOfDemeter" />
         <exclude name="LoosePackageCoupling" /> <!-- FIXME: How to use this rule correctly? -->
-        <exclude name="ModifiedCyclomaticComplexity" />
-        <exclude name="NcssConstructorCount" />
-        <exclude name="NcssMethodCount" />
-        <exclude name="NcssTypeCount" />
-        <exclude name="StdCyclomaticComplexity" />
+        <exclude name="ModifiedCyclomaticComplexity" /> <!-- Deprecated -->
+        <exclude name="NcssConstructorCount" /> <!-- Deprecated -->
+        <exclude name="NcssMethodCount" /> <!-- Deprecated -->
+        <exclude name="NcssTypeCount" /> <!-- Deprecated -->
+        <exclude name="StdCyclomaticComplexity" /> <!-- Deprecated -->
     </rule>
     <rule ref="category/java/design.xml/NcssCount">
         <properties>
