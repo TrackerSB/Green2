@@ -15,15 +15,15 @@
 
     <!-- Java Codestyle -->
     <rule ref="category/java/codestyle.xml">
-        <exclude name="AbstractNaming" />
+        <exclude name="AbstractNaming" /> <!-- Deprecated -->
         <exclude name="AtLeastOneConstructor" />
         <exclude name="CommentDefaultAccessModifier" />
-        <exclude name="ForLoopsMustUseBraces" />
-        <exclude name="IfElseStmtsMustUseBraces" />
-        <exclude name="IfStmtsMustUseBraces" />
+        <exclude name="ForLoopsMustUseBraces" /> <!-- Deprecated -->
+        <exclude name="IfElseStmtsMustUseBraces" /> <!-- Deprecated -->
+        <exclude name="IfStmtsMustUseBraces" /> <!-- Deprecated -->
         <exclude name="LocalVariableCouldBeFinal" />
         <exclude name="MethodArgumentCouldBeFinal" />
-        <exclude name="WhileLoopsMustUseBraces" />
+        <exclude name="WhileLoopsMustUseBraces" /> <!-- Deprecated -->
     </rule>
     <rule ref="category/java/codestyle.xml/ClassNamingConventions">
         <properties>
