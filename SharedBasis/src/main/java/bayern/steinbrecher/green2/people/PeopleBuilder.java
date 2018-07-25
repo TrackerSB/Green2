@@ -41,7 +41,7 @@ import java.util.function.Supplier;
  * @author Stefan Huber
  * @param <T> The people class to build.
  */
-//TODO How to enforce the rules above?
+//TODO Is there any way to force behaviour/handling of nested builders?
 public abstract class PeopleBuilder<T> {
 
     private final T toBuild;
@@ -78,12 +78,12 @@ public abstract class PeopleBuilder<T> {
     }
 
     /**
-     * Generates a {@link T} object.
+     * Generates a {@link T} object. NOTE Make sure to call all nested builder and to return only a copy.
      *
      * @return A {@link T} object.
      */
-    public final T generate() {
-        T toBuildCopy = toBuild; //Make sure only to return a copy.
+    public T generate() {
+        T toBuildCopy = toBuild;
         return toBuildCopy;
     }
 

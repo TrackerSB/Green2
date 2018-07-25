@@ -285,6 +285,18 @@ public final class Member implements Comparable<Member> {
         }
 
         /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Member generate() {
+            Member toBuildCopy = super.generate();
+            toBuildCopy.person = getPerson().generate();
+            toBuildCopy.home = getHome().generate();
+            toBuildCopy.accountHolder = getAccountHolder().generate();
+            return toBuildCopy;
+        }
+
+        /**
          * Sets the membershipnumer of this member.
          *
          * @param membershipnumber The membershipnumber of this member.
