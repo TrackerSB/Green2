@@ -165,7 +165,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
             try {
                 this.value.set(Optional.of(value.call()));
             } catch (Exception ex) { //NOPMD - Make sure (re-)evaluation of all conditions continues at any point.
-                Logger.getLogger(ConditionReportController.class.getName())
+                Logger.getLogger(Condition.class.getName())
                         .log(Level.WARNING, "An evaluation of a condition failed. It is skipped.", ex);
                 this.value.set(Optional.empty());
             }
