@@ -296,7 +296,7 @@ public class WizardController implements Initializable {
      * @return {@code true} only if the wizard is finished.
      */
     public boolean isFinished() {
-        return finished.get();
+        return finishedProperty().getValue();
     }
 
     /**
@@ -314,7 +314,7 @@ public class WizardController implements Initializable {
      * @return {@code true} only if the current page is the first one.
      */
     public boolean isAtBeginning() {
-        return atBeginning.get();
+        return atBeginningProperty().getValue();
     }
 
     /**
@@ -332,7 +332,7 @@ public class WizardController implements Initializable {
      * @return {@code true} only if the current page is a last one.
      */
     public boolean isAtFinish() {
-        return atFinish.get();
+        return atFinishProperty().getValue();
     }
 
     /**
@@ -350,7 +350,7 @@ public class WizardController implements Initializable {
      * @return The currently shown page.
      */
     public WizardPage<?> getCurrentPage() {
-        return currentPage.getValue();
+        return currentPageProperty().getValue();
     }
 
     /**
@@ -368,7 +368,7 @@ public class WizardController implements Initializable {
      * @return {@code true} only if this wizard is currently changing its page.
      */
     public boolean isChangingPage() {
-        return changingPage.get();
+        return changingPageProperty().getValue();
     }
 
     /**
