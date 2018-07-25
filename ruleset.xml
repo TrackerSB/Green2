@@ -9,7 +9,9 @@
     </description>
 
     <!-- Java Best practices -->
-    <rule ref="category/java/bestpractices.xml" />
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="GuardLogStatement" /> <!-- java.util.logging.Logger do not need to be guarded -->
+    </rule>
 
     <!-- Java Codestyle -->
     <rule ref="category/java/codestyle.xml">
