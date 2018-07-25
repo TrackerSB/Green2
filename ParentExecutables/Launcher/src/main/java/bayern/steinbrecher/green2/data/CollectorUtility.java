@@ -79,7 +79,7 @@ public final class CollectorUtility {
                     .ifPresentOrElse(value -> parameters.add(URLEncoder.encode(dp.toString(), StandardCharsets.UTF_8)
                     + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8)),
                             () -> LOGGER.log(Level.WARNING, "{0} not transmitted since it could not be computed.",
-                                            dp.toString()));
+                                    dp.toString()));
         }
         return parameters.stream().collect(Collectors.joining("&"));
     }
@@ -186,6 +186,8 @@ public final class CollectorUtility {
                 return Optional.of(EnvironmentHandler.VERSION);
             }
         };
+
+        private static final Logger LOGGER = Logger.getLogger(DataParams.class.getName());
 
         /**
          * Returns the value represented by the enum.

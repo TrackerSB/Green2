@@ -155,6 +155,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
      */
     private static class Condition implements Reportable {
 
+        private static final Logger LOGGER = Logger.getLogger(ConditionReportController.class.getName());
         private final StringProperty name = new SimpleStringProperty(this, "name");
         /**
          * Currently the hold value is not updated automatically.

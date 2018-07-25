@@ -841,6 +841,7 @@ public class MainMenuController extends Controller {
      */
     private static class CompletableFutureProperty<T> extends SimpleObjectProperty<CompletableFuture<T>> {
 
+        private static final Logger LOGGER = Logger.getLogger(CompletableFutureProperty.class.getName());
         private final BooleanProperty available = new SimpleBooleanProperty();
 
         /**

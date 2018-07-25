@@ -297,7 +297,7 @@ public final class EnvironmentHandler {
     /**
      * Contains supported operation systems.
      */
-    public static enum OS {
+    public enum OS {
         /**
          * Representing Windows operating system.
          */

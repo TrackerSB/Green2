@@ -25,7 +25,6 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.spinner.CheckedSpinner;
-import bayern.steinbrecher.green2.elements.spinner.ContributionField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
