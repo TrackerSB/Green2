@@ -69,7 +69,6 @@ public class ContributionController extends WizardableController<Optional<BiMap<
             Color.rgb(255, 48, 28), Color.rgb(78, 14, 232), Color.rgb(16, 255, 234), Color.rgb(135, 139, 38),
             Color.rgb(232, 115, 21), Color.rgb(246, 36, 255), Color.rgb(23, 115, 232), Color.rgb(24, 255, 54));
     private static final Random COLOR_RANDOM = new Random();
-    //TODO Use ListView<Pair<Color, Double>> instead?
     @FXML
     private VBox contributionFieldsBox;
     @FXML
@@ -125,7 +124,6 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                             .filter(node -> node instanceof HBox)
                             .map(node -> (HBox) node)
                             .filter(hbox -> hbox.getChildren().contains(removedCf))
-                            .distinct() //TODO Think about whether this is needed
                             .collect(Collectors.toList());
                     if (hboxes.isEmpty()) {
                         LOGGER.log(Level.WARNING, "Could not remove row containing the removed ContributionField.");

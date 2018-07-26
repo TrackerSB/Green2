@@ -106,7 +106,6 @@ public class CheckedSepaTextField extends CheckedTextField {
     public CheckedSepaTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
         invalidSymbols.bind(Bindings.createBooleanBinding(() -> {
-            //TODO This may be quite inefficient
             return textProperty().get().chars()
                     .parallel()
                     .anyMatch(codepoint -> {

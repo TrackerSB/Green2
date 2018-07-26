@@ -33,7 +33,7 @@ import bayern.steinbrecher.green2.result.ResultDialog;
 import bayern.steinbrecher.green2.selection.Selection;
 import bayern.steinbrecher.green2.selection.SelectionGroup;
 import bayern.steinbrecher.green2.sepaform.SepaForm;
-import bayern.steinbrecher.green2.utility.DefaultMap;
+import bayern.steinbrecher.green2.utility.SupplyingMap;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.utility.SepaUtility;
@@ -117,7 +117,7 @@ public class MainMenuController extends Controller {
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
             = new SimpleObjectProperty<>(Optional.empty());
     private final BooleanProperty honoringsAvailable = new SimpleBooleanProperty(this, "honoringsAvailable");
-    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new DefaultMap<>(year -> {
+    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new SupplyingMap<>(year -> {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return getBirthdayMember(year);

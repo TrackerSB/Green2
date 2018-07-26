@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -127,7 +128,6 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                     CheckBox groupGraphic = new CheckBox();
                     groupGraphic.setSelected(newGroup.isPresent());
                     groupGraphic.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                        //TODO Find a simplyfied boolean expression
                         if (newVal) {
                             //Selected
                             item.setGroup(currentGroup.get());
@@ -277,11 +277,14 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
             justification = "It is called by an appropriate fxml file")
     @SuppressWarnings("unused")
     private void selectAllOptions() {
-        options.getValue().stream()
+        options.getValue()
+                .parallelStream()
                 .forEach(option -> {
-                    if (!option.isAssociated()) {
-                        option.setGroup(currentGroup.get());
-                    }
+                    Platform.runLater(() -> {
+                        if (!option.isAssociated()) {
+                            option.setGroup(currentGroup.get());
+                        }
+                    });
                 });
     }
 
@@ -290,15 +293,9 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
             justification = "It is called by an appropriate fxml file")
     @SuppressWarnings("unused")
     private void selectNoOption() {
-        options.getValue().stream().forEach(option -> {
-            /*
-             * NOTE When only deselecting once it may be reselected since the user can change the group association
-             * directly without explicitely deselecting an item.
-             */
-            //TODO Check if this is really true
-            option.setGroup(Optional.empty());
-            option.setGroup(Optional.empty());
-        });
+        options.getValue()
+                .parallelStream()
+                .forEach(option -> Platform.runLater(() -> option.setGroup(Optional.empty())));
     }
 
     /**

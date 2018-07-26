@@ -66,6 +66,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Priority;
@@ -147,13 +148,15 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                         "The query dialog can not be opened since it can not show any column to query.");
             }
             isLastQueryUptodate = false;
-            //TODO Should lastQueryResult be cleared when changing the DBConnection?
+            updateLastQueryResult();
         });
         conditionFields.addListener((obs, oldVal, newVal) -> {
-            //FIXME When conditionFields is changing often a lot of listeners may be added but not removed.
-            conditionFields.stream().forEach(ccf -> ccf.addListener(invalidObs -> {
-                isLastQueryUptodate = false;
-            }));
+            newVal.addListener((ListChangeListener.Change<? extends CheckedConditionField<?>> change) -> {
+                while (change.next()) {
+                    change.getAddedSubList()
+                            .forEach(ccf -> ccf.addListener(invalidObs -> isLastQueryUptodate = false));
+                }
+            });
             bindValidProperty(
                     BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty))
                             .and(BindingUtility.reduceAnd(
@@ -163,7 +166,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         });
     }
 
-    //TODO What exactly should be synchronized?
     private synchronized void updateLastQueryResult() {
         if (!isLastQueryUptodate) {
             List<String> conditions = conditionFields.stream()
@@ -308,7 +310,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * @return The condition part like "LIKE 'some text'" or "&lt;= 0". Returns {@link Optional#empty()} only if the
          * condition could not be constructed.
          */
-        //TODO How to implement without referencing explicit columns?
         protected abstract Optional<String> getConditionImpl();
 
         /**

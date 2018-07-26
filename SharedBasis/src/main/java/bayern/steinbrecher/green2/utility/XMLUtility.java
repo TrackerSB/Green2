@@ -75,7 +75,7 @@ public final class XMLUtility {
         } catch (ParserConfigurationException ex) {
             throw new AssertionError("The DocumentBuilder used for the XML validation is invalid.", ex);
         }
-        Map<String, List<String>> validationProblemsMap = new DefaultMap<>(key -> new ArrayList<>());
+        Map<String, List<String>> validationProblemsMap = new SupplyingMap<>(key -> new ArrayList<>());
         BooleanProperty isValidXML = new SimpleBooleanProperty(true);
         xmlBuilder.setErrorHandler(new ErrorHandler() {
             private String createLine(SAXParseException exception) {

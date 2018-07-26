@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.utility;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -28,19 +29,21 @@ import java.util.function.Function;
  * @param <K> The type of the key values.
  * @param <V> The type of values.
  */
-public class DefaultMap<K, V> extends HashMap<K, V> {
+public class SupplyingMap<K, V> extends HashMap<K, V> {
 
     private final Function<K, V> entrySupplier;
 
     /**
-     * Creates a {@link DefaultMap} which generates empty entries when accessing them using the passed {@link Function}.
+     * Creates a {@link SupplierMap} which generates empty entries when accessing them using the passed
+     * {@link Function}.
      *
      * @param entrySupplier The supplier for generating new empty entries. Its input is the key to generate an empty
      * entry for.
      */
-    public DefaultMap(Function<K, V> entrySupplier) {
+    public SupplyingMap(Function<K, V> entrySupplier) {
         super();
-        this.entrySupplier = entrySupplier;
+        this.entrySupplier
+                = Objects.requireNonNull(entrySupplier, "The function generating empty entries must not be null.");
     }
 
     /**

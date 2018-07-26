@@ -27,6 +27,7 @@ import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.utility.DialogUtility;
+import bayern.steinbrecher.green2.utility.PopulatingMap;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,17 +61,41 @@ public abstract class DBConnection implements AutoCloseable {
      * Caches the names of all really existing columns on every supported table in {@link Tables}. The cache is
      * refreshed whenever the currently loaded profile changes.
      */
-    private static final Map<Tables<?, ?>, List<Pair<String, Class<?>>>> EXISTING_COLUMNS_CACHE = new HashMap<>();
-    private static final List<String> TABLES_CACHE = new ArrayList<>();
+    private final Map<Tables<?, ?>, List<Pair<String, Class<?>>>> columnsCache = new PopulatingMap<>(table -> {
+        List<Pair<String, Class<?>>> entry;
+        Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
+        try {
+            List<List<String>> result = execQuery(table.generateQuery(Queries.GET_COLUMN_NAMES_AND_TYPES,
+                    profileInfo.getValue(), profileInfo.getKey()));
+            entry = result.stream()
+                    .skip(1) //Skip headings
+                    .map(list -> {
+                        return profileInfo.getValue()
+                                .getType(list.get(1))
+                                .map(ct -> new Pair<String, Class<?>>(list.get(0), ct));
+                    })
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            entry = new ArrayList<>();
+        }
+        return entry;
+    });
+    private final List<String> tablesCache = new ArrayList<>();
     //TODO Any solution to decouple Profile from DBConnection?
-    private static final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> NAME_AND_TYPE_OF_DATABASE
+    private final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> nameAndTypeOfDbmsCache
             = new SimpleObjectProperty<>(Optional.empty());
 
-    static {
+    /**
+     * Creates a connection using the currently loaded profile.
+     */
+    public DBConnection() {
         EnvironmentHandler.loadedProfileProperty().addListener(change -> {
-            EXISTING_COLUMNS_CACHE.clear();
-            TABLES_CACHE.clear();
-            NAME_AND_TYPE_OF_DATABASE.set(Optional.empty());
+            columnsCache.clear();
+            tablesCache.clear();
+            nameAndTypeOfDbmsCache.set(Optional.empty());
         });
     }
 
@@ -98,14 +123,14 @@ public abstract class DBConnection implements AutoCloseable {
     public abstract void execUpdate(String sqlCode) throws SQLException;
 
     private Pair<String, SupportedDatabases> getNameAndTypeOfDatabase() {
-        synchronized (NAME_AND_TYPE_OF_DATABASE) {
-            if (!NAME_AND_TYPE_OF_DATABASE.get().isPresent()) {
+        synchronized (nameAndTypeOfDbmsCache) {
+            if (!nameAndTypeOfDbmsCache.get().isPresent()) {
                 Profile profile = EnvironmentHandler.getProfile();
-                NAME_AND_TYPE_OF_DATABASE.set(Optional.of(
+                nameAndTypeOfDbmsCache.set(Optional.of(
                         new Pair<>(profile.get(ProfileSettings.DATABASE_NAME), profile.get(ProfileSettings.DBMS))));
             }
         }
-        return NAME_AND_TYPE_OF_DATABASE.get().get();
+        return nameAndTypeOfDbmsCache.get().get();
     }
 
     /**
@@ -116,17 +141,16 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table exist.
      */
     public boolean tableExists(Tables<?, ?> table) {
-        synchronized (TABLES_CACHE) {
-            if (TABLES_CACHE.isEmpty()) {
+        synchronized (tablesCache) {
+            if (tablesCache.isEmpty()) {
                 Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
                 List<List<String>> result;
                 try {
                     result = execQuery(
                             table.generateQuery(Queries.GET_TABLE_NAMES, profileInfo.getValue(), profileInfo.getKey()));
-                    TABLES_CACHE.addAll(result.stream()
+                    tablesCache.addAll(result.stream()
                             //Skip column name
                             .skip(1)
-                            //FIXME Ignore case?
                             .map(list -> list.get(0).toLowerCase(Locale.ROOT))
                             .collect(Collectors.toList()));
                 } catch (SQLException ex) {
@@ -134,8 +158,7 @@ public abstract class DBConnection implements AutoCloseable {
                 }
             }
         }
-        //FIXME Ignore case?
-        return TABLES_CACHE.contains(table.getRealTableName().toLowerCase(Locale.ROOT));
+        return tablesCache.contains(table.getRealTableName().toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -204,8 +227,7 @@ public abstract class DBConnection implements AutoCloseable {
         List<String> existingColumns;
         List<String> notExistingColumns = new ArrayList<>();
         if (columnsToSelect.isEmpty()) {
-            checkExistingColumnsCache(table);
-            existingColumns = EXISTING_COLUMNS_CACHE.get(table).stream()
+            existingColumns = columnsCache.get(table).stream()
                     .map(Pair::getKey)
                     .collect(Collectors.toList());
         } else {
@@ -238,7 +260,6 @@ public abstract class DBConnection implements AutoCloseable {
                 List<Pattern> notExistingColumnsPattern = notExistingColumns.stream()
                         //Used regex: (?:^|.*\W)columnName(?:\W.*|$)
                         //Tested at: http://www.regexplanet.com/advanced/java/index.html
-                        //TODO Should it be case sensitive?
                         .map(cn -> Pattern.compile("(?:^|.*\\\\W)" + cn + "(?:\\\\W.*|$)", Pattern.CASE_INSENSITIVE))
                         .collect(Collectors.toList());
                 String conditionString = conditions.stream()
@@ -384,36 +405,6 @@ public abstract class DBConnection implements AutoCloseable {
         }
     }
 
-    //FIXME How to make sure it is called every time HashMap<>#get(...) is called?
-    private void checkExistingColumnsCache(Tables<?, ?> table) {
-        synchronized (EXISTING_COLUMNS_CACHE) {
-            if (!EXISTING_COLUMNS_CACHE.containsKey(table)) {
-                Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
-                try {
-                    List<List<String>> result = execQuery(table.generateQuery(Queries.GET_COLUMN_NAMES_AND_TYPES,
-                            profileInfo.getValue(), profileInfo.getKey()));
-                    List<Pair<String, Class<?>>> listOfColumns = result.stream()
-                            .skip(1) //Skip headings
-                            .map(list -> {
-                                return profileInfo.getValue()
-                                        .getType(list.get(1))
-                                        .map(ct -> new Pair<String, Class<?>>(list.get(0), ct));
-                            })
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .collect(Collectors.toList());
-                    /*
-                     * NOTE Use "if containsKey(...)" instead of putIfAbsent(...) since it is lacking lazy evaluation
-                     * for the second argument.
-                     */
-                    EXISTING_COLUMNS_CACHE.put(table, listOfColumns);
-                } catch (SQLException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
     /**
      * Checks whether the given table of the configured database contains a specific column and the column is
      * accessible.
@@ -423,9 +414,8 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table contains the given column and it is accessible.
      */
     public boolean columnExists(Tables<?, ?> table, String columnName) {
-        checkExistingColumnsCache(table);
         //TODO Think about ignoring small/capital letters in column names
-        return EXISTING_COLUMNS_CACHE.get(table).stream()
+        return columnsCache.get(table).stream()
                 .map(Pair::getKey)
                 .filter(c -> c.equalsIgnoreCase(columnName))
                 .findAny()
@@ -453,7 +443,6 @@ public abstract class DBConnection implements AutoCloseable {
      * @see Tables#getAllColumns()
      */
     public List<Pair<String, Class<?>>> getAllColumns(Tables<?, ?> table) {
-        checkExistingColumnsCache(table);
-        return EXISTING_COLUMNS_CACHE.get(table);
+        return columnsCache.get(table);
     }
 }

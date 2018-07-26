@@ -26,6 +26,8 @@ import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -45,14 +47,11 @@ import javafx.util.Pair;
 @SuppressWarnings("PMD.DataClass")
 public class CheckedDatePicker extends DatePicker implements CheckedControl, Reportable {
 
+    private static final Logger LOGGER = Logger.getLogger(CheckedDatePicker.class.getName());
     /**
      * The CSS class associated with this class.
      */
     public static final String CSS_CLASS_CHECKED_DATE_PICKER = "checked-date-picker";
-    private static final DateTimeFormatter DATE_TIME_FORMAT_SHORT
-            = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-    private static final DateTimeFormatter DATE_TIME_FORMAT_MEDIUM
-            = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
     /**
      * BooleanProperty indicating whether the currently inserted date is valid.
      */
@@ -118,13 +117,17 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
                 dateParts[1] = (dateParts[1].length() < 2 ? "0" : "") + dateParts[1];
                 dateToParse = Arrays.stream(dateParts).collect(Collectors.joining("."));
             }
-            try {
-                newDate = LocalDate.parse(dateToParse, DATE_TIME_FORMAT_SHORT);
-            } catch (DateTimeParseException ex) {
-                //FIXME Try not to use DateTimeParseException for control flow
+            if (!dateToParse.isEmpty()) {
                 try {
-                    newDate = LocalDate.parse(dateToParse, DATE_TIME_FORMAT_MEDIUM);
-                } catch (DateTimeParseException ignored) {
+                    newDate = LocalDate.parse(dateToParse, DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+                } catch (DateTimeParseException ex) {
+                    try {
+                        newDate = LocalDate.parse(dateToParse, DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+                    } catch (DateTimeParseException ex2) {
+                        LOGGER.log(Level.SEVERE,
+                                dateToParse + " can neither be parsed by FormatStyle.SHORT nor FormatStyle.MEDIUM.",
+                                ex2);
+                    }
                 }
             }
             return newDate;

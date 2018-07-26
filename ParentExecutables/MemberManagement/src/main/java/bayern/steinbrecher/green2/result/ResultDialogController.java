@@ -90,9 +90,7 @@ public class ResultDialogController extends WizardableController<Optional<Void>>
                 }
 
                 if (newVal.size() > 1) { //NOPMD - Check whether there are row entries besides the headings.
-                    //TODO Is there a way to "collect" to an observable list?
-                    ObservableList<List<ReadOnlyStringProperty>> items = FXCollections.observableArrayList();
-                    newVal.subList(1, newVal.size()).stream()
+                    ObservableList<List<ReadOnlyStringProperty>> items = newVal.subList(1, newVal.size()).stream()
                             .map(givenRow -> {
                                 List<ReadOnlyStringProperty> itemsRow = new ArrayList<>(numColumns);
                                 for (int i = 0; i < numColumns; i++) {
@@ -101,8 +99,7 @@ public class ResultDialogController extends WizardableController<Optional<Void>>
                                     itemsRow.add(new SimpleStringProperty(cellValue)); //NOPMD
                                 }
                                 return itemsRow;
-                            })
-                            .forEach(itemsRow -> items.add(itemsRow));
+                            }).collect(FXCollections::observableArrayList, ObservableList::add, ObservableList::addAll);
                     resultView.setItems(items);
                 }
             }
