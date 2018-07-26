@@ -16,6 +16,8 @@
  */
 package bayern.steinbrecher.wizard;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +44,10 @@ import javafx.stage.Stage;
  */
 public class Wizard extends Application {
 
+    /**
+     * The percentage of height/width the wizard has to have initially.
+     */
+    private static final double MAX_SIZE_FACTOR = 0.8;
     private transient /* final */ WizardController controller;
     private transient final Map<String, WizardPage<?>> pages;
 
@@ -71,6 +77,9 @@ public class Wizard extends Application {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        stage.setMaxHeight(screenSize.getHeight() * MAX_SIZE_FACTOR);
+        stage.setMaxWidth(screenSize.getWidth() * MAX_SIZE_FACTOR);
         controller = fxmlLoader.getController();
         controller.setStage(stage);
         controller.setPages(pages);
