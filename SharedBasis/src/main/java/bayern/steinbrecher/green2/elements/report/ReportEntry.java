@@ -65,7 +65,6 @@ final class ReportEntry {
                                     mayOccur.set(newValInner ? 1 : 0);
                                 };
                                 exp.addListener(listener);
-                                listener.changed(null, null, exp.get()); //TODO How to avoid explicit call?
                                 return mayOccur;
                             })));
         });

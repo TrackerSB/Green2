@@ -66,8 +66,8 @@ public class WizardController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger(WizardController.class.getName());
     private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
     /**
-     * FIXME The initial dummy page is needed since the current page may be already requested before there is a chance
-     * to specify the pages of the wizard.
+     * NOTE The initial dummy page is needed since the current page may be already requested before there is a chance to
+     * specify the pages of the wizard.
      */
     private final ObjectProperty<WizardPage<?>> currentPage
             = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<Void>(null, null, false, () -> null));

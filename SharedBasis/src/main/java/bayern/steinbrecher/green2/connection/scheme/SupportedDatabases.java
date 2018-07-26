@@ -63,7 +63,6 @@ public enum SupportedDatabases {
                     Queries.GET_TABLE_NAMES, "SELECT `table_name` FROM `information_schema`.`tables` "
                     + "WHERE `table_schema`=''{0}'';"
             ),
-            //TODO Think about whether to "SET SQL_MODE=ANSI_QUOTES;"
             '`');
 
     private final String displayName;

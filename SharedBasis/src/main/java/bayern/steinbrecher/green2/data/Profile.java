@@ -63,7 +63,7 @@ public class Profile {
     /**
      * The configurations found in a profile file.
      */
-    //TODO Think about how to force equallity of these two question marks
+    //TODO Think about how to force equallity of the two question marks of the map
     private final ConfigurationsMap configurations = new ConfigurationsMap(); //NOPMD - It is accessed over #get(...).
     /**
      * {@code true} only if all allowed configurations are specified.
@@ -460,7 +460,6 @@ public class Profile {
         return newProfile;
     }
 
-    //FIXME Is this needed?
     private static class ConfigurationsMap extends SimpleMapProperty<ProfileSettings<?>, Property<?>> {
 
         ConfigurationsMap() {
@@ -469,7 +468,6 @@ public class Profile {
 
         @SuppressWarnings("unchecked")
         public <T> Property<T> get(ProfileSettings<T> key) {
-            //FIXME How to do that typesafe?
             return (Property<T>) super.get(key);
         }
     }

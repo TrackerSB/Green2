@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -101,7 +102,9 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
             justification = "It is called by an appropriate fxml file")
     @SuppressWarnings("unused")
     private void selectAllOptions() {
-        optionsListView.getItems().stream().forEach(cb -> cb.setSelected(true)); //TODO May be parallel?
+        optionsListView.getItems()
+                .stream()
+                .forEach(cb -> Platform.runLater(() -> cb.setSelected(true)));
     }
 
     @FXML
@@ -109,7 +112,9 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
             justification = "It is called by an appropriate fxml file")
     @SuppressWarnings("unused")
     private void selectNoOption() {
-        optionsListView.getItems().stream().forEach(cb -> cb.setSelected(false)); //TODO May be parallel?
+        optionsListView.getItems()
+                .stream()
+                .forEach(cb -> Platform.runLater(() -> cb.setSelected(false)));
     }
 
     /**

@@ -147,7 +147,6 @@ public class SpecificRegexTextField extends CheckedTextField {
      * @return The modifiable property holding the regex used for validation.
      */
     protected StringProperty regexPropertyModifiable() {
-        //FIXME Avoid this method.
         return regex;
     }
 

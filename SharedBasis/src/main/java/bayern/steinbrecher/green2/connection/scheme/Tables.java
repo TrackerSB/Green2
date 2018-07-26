@@ -50,101 +50,99 @@ public final class /* enum */ Tables<T, U> {
     public static final Tables<Set<Member>, Member.Builder> MEMBER = new Tables<>(
             "Mitglieder",
             List.of(
-                    //TODO Is there any way to avoid passing the parser explicitely?
-                    //TODO Check whether patterns with the same name are rejected
                     new SimpleColumnPattern<Integer, Member.Builder>("Mitgliedsnummer",
                             Set.of(Keywords.NOT_NULL, Keywords.PRIMARY_KEY), ColumnParser.INTEGER_COLUMN_PARSER,
                             Member.Builder::setMembershipnumber),
                     new SimpleColumnPattern<String, Member.Builder>("Vorname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getPerson().setPrename(value);
-                                return m;
-                            }),
+                        m.getPerson().setPrename(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("Nachname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getPerson().setLastname(value);
-                                return m;
-                            }),
+                        m.getPerson().setLastname(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("Titel",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getPerson().setTitle(value);
-                                return m;
-                            }),
+                        m.getPerson().setTitle(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<Boolean, Member.Builder>("IstMaennlich",
                             Set.of(Keywords.NOT_NULL), ColumnParser.BOOLEAN_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getPerson().setMale(value);
-                                return m;
-                            }),
+                        m.getPerson().setMale(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<LocalDate, Member.Builder>("Geburtstag",
                             Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getPerson().setBirthday(value);
-                                return m;
-                            }),
+                        m.getPerson().setBirthday(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<LocalDate, Member.Builder>("MitgliedSeit",
                             Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
                             Member.Builder::setMemberSince),
                     new SimpleColumnPattern<String, Member.Builder>("Strasse",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getHome().setStreet(value);
-                                return m;
-                            }),
+                        m.getHome().setStreet(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("Hausnummer",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getHome().setHouseNumber(value);
-                                return m;
-                            }),
+                        m.getHome().setHouseNumber(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("PLZ",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getHome().setPostcode(value);
-                                return m;
-                            }),
+                        m.getHome().setPostcode(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("Ort",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getHome().setPlace(value);
-                                return m;
-                            }),
+                        m.getHome().setPlace(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<Boolean, Member.Builder>("IstBeitragsfrei",
                             Set.of(Keywords.NOT_NULL, Keywords.DEFAULT), ColumnParser.BOOLEAN_COLUMN_PARSER,
                             Member.Builder::setContributionfree, Optional.of(Optional.of(false))),
                     new SimpleColumnPattern<String, Member.Builder>("Iban",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getAccountHolder().setIban(value);
-                                return m;
-                            }),
+                        m.getAccountHolder().setIban(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("Bic",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getAccountHolder().setBic(value);
-                                return m;
-                            }),
+                        m.getAccountHolder().setBic(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("KontoinhaberVorname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getAccountHolder().setPrename(value);
-                                return m;
-                            }),
+                        m.getAccountHolder().setPrename(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<String, Member.Builder>("KontoinhaberNachname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getAccountHolder().setLastname(value);
-                                return m;
-                            }),
+                        m.getAccountHolder().setLastname(value);
+                        return m;
+                    }),
                     new SimpleColumnPattern<LocalDate, Member.Builder>("MandatErstellt",
                             Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
                             (m, value) -> {
-                                m.getAccountHolder().setMandateSigned(value);
-                                return m;
-                            })
+                        m.getAccountHolder().setMandateSigned(value);
+                        return m;
+                    })
             ),
             List.of(
                     new SimpleColumnPattern<Double, Member.Builder>("Beitrag",
@@ -197,6 +195,7 @@ public final class /* enum */ Tables<T, U> {
      * @see ColumnPattern#equals(java.lang.Object)
      */
     //TODO Is there any way to force duplication and intersection freedom at compile time?
+    //TODO Intersection with regex are ignored.
     private Tables(String realTableName, List<SimpleColumnPattern<?, U>> requiredColumns,
             List<ColumnPattern<?, U>> optionalColumns, Supplier<U> baseEntrySupplier, Function<Stream<U>, T> reducer) {
         Set<ColumnPattern<?, U>> intersection = new HashSet<>(optionalColumns);
@@ -296,7 +295,6 @@ public final class /* enum */ Tables<T, U> {
     public T generateRepresentations(List<List<String>> queryResult) {
         List<String> headings = queryResult.get(0);
         Map<ColumnPattern<?, U>, List<Integer>> patternToColumnMapping = streamAllColumns()
-                //TODO Why is Function::identity not acccepted?
                 .map(pattern -> {
                     List<Integer> targetIndices = new ArrayList<>();
                     for (int i = 0; i < headings.size(); i++) {
@@ -310,15 +308,12 @@ public final class /* enum */ Tables<T, U> {
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         //Check duplicate target column indices
-        //TODO Can this be replaced by an "assert" which can be disabled at compile time?
         Set<Integer> mappedTargetIndices = new HashSet<>();
-        boolean isDuplicateFree = patternToColumnMapping.values()
+        assert patternToColumnMapping.values()
                 .stream()
                 .flatMap(List::stream)
-                .allMatch(mappedTargetIndices::add);
-        if (!isDuplicateFree) {
-            throw new AssertionError("Table " + getRealTableName() + " contains intersecting column patterns.");
-        }
+                .allMatch(mappedTargetIndices::add) :
+                "Table " + getRealTableName() + " contains intersecting column patterns.";
 
         return reducer.apply(queryResult.stream()
                 .skip(1) //Skip headings

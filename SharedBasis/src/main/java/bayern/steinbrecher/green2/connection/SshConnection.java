@@ -215,13 +215,12 @@ public final class SshConnection extends DBConnection {
 
             channel.connect();
 
-            //FIXME Can this assignment be moved after the if-throw?
-            result = IOStreamUtility.readAll(inStream, charset);
-
             String errorMessage = errStream.toString(charset.name());
             if (errorMessage.toLowerCase(Locale.ROOT).contains("error")) {
                 throw new CommandException("The given command returned following error:\n" + errorMessage);
             }
+
+            result = IOStreamUtility.readAll(inStream, charset);
 
             channel.disconnect();
         } catch (IOException ex) {

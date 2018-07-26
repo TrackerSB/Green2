@@ -414,7 +414,6 @@ public abstract class DBConnection implements AutoCloseable {
      * @return {@code true} only if the given table contains the given column and it is accessible.
      */
     public boolean columnExists(Tables<?, ?> table, String columnName) {
-        //TODO Think about ignoring small/capital letters in column names
         return columnsCache.get(table).stream()
                 .map(Pair::getKey)
                 .filter(c -> c.equalsIgnoreCase(columnName))
