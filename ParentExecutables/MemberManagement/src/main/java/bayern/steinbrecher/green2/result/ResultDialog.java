@@ -82,6 +82,6 @@ public class ResultDialog extends WizardableView<Optional<Void>, ResultDialogCon
      */
     @Override
     protected String getWizardFxmlPath() {
-        return "Result.fxml";
+        return "ResultDialog.fxml";
     }
 }
