@@ -508,7 +508,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             ));
             compareMode.setConverter(createStringConverter(valueDisplayMap));
             compareMode.setItems(FXCollections.observableArrayList(valueDisplayMap.keySet()));
-            compareMode.getSelectionModel().select(new Pair<>("", ""));
+            compareMode.getSelectionModel().select(new Pair<>("%", "%"));
         }
 
         @Override
