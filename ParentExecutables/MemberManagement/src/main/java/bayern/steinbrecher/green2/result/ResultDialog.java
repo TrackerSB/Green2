@@ -32,7 +32,7 @@ import javafx.stage.Stage;
  */
 public class ResultDialog extends WizardableView<Optional<Void>, ResultDialogController> {
 
-    private transient final List<List<String>> results;
+    private final List<List<String>> results;
 
     /**
      * Creates a new {@link ResultDialog} initially showing the content of {@code results}. It is assumed that the first

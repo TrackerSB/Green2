@@ -35,7 +35,7 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
     private final String realColumnName;
     private final Optional<Optional<T>> defaultValue;
     private final Set<Keywords> keywords;
-    private transient final BiFunction<U, T, U> setter;
+    private final BiFunction<U, T, U> setter;
 
     /**
      * Creates a new simple column pattern, i.e. a pattern which specifies a specific column name. This constructor may

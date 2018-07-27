@@ -180,8 +180,8 @@ public final class /* enum */ Tables<T, U> {
     private final List<SimpleColumnPattern<?, U>> requiredColumns;
     private final List<ColumnPattern<?, U>> optionalColumns;
     private final String realTableName;
-    private transient final Supplier<U> baseEntrySupplier;
-    private transient final Function<Stream<U>, T> reducer;
+    private final Supplier<U> baseEntrySupplier;
+    private final Function<Stream<U>, T> reducer;
 
     /**
      * Creates a representation of a scheme of a table. {@code requiredColumns} and {@code optionalColumns} are checked

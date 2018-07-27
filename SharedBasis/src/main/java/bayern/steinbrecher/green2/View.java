@@ -41,10 +41,10 @@ public abstract class View<T extends Controller> extends Application {
     /**
      * The stage which has to be set in every start-Method of implementing classes.
      */
-    private transient Stage stage;
-    private transient final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
-    private transient final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
-    private transient final BooleanBinding wouldShowProperty = gotShownProperty.not();
+    private Stage stage;
+    private final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
+    private final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
+    private final BooleanBinding wouldShowProperty = gotShownProperty.not();
     /**
      * The controller handling the actions of this view.
      */

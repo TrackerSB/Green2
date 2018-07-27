@@ -32,7 +32,7 @@ import javafx.stage.Stage;
  */
 public class MainMenu extends View<MainMenuController> {
 
-    private transient final DBConnection dbConnection;
+    private final DBConnection dbConnection;
 
     /**
      * Creates a Menu which contains controls for all the functionality to be used by the user.

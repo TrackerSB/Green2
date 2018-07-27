@@ -48,8 +48,8 @@ public class Wizard extends Application {
      * The percentage of height/width the wizard has to have initially.
      */
     private static final double MAX_SIZE_FACTOR = 0.8;
-    private transient /* final */ WizardController controller;
-    private transient final Map<String, WizardPage<?>> pages;
+    private /* final */ WizardController controller;
+    private final Map<String, WizardPage<?>> pages;
 
     /**
      * Constructs a wizard with showing {@code pages} and using default stylesheet.

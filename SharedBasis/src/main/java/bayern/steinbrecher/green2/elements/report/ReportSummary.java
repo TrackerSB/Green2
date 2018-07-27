@@ -56,7 +56,7 @@ public class ReportSummary extends TitledPane {
     private final ListProperty<ReportEntry> reportEntries = new SimpleListProperty<>(this, "reportEntries",
             FXCollections.observableArrayList(
                     e -> new Observable[]{e.messageProperty(), e.occurrencesProperty(), e.reportTypeProperty()}));
-    private transient final IntegerProperty numEntries = new SimpleIntegerProperty(this, "numEntries", 0);
+    private final IntegerProperty numEntries = new SimpleIntegerProperty(this, "numEntries", 0);
     @FXML
     private VBox reportsBox;
 

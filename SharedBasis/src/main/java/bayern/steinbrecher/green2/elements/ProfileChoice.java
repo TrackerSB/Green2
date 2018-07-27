@@ -50,10 +50,10 @@ public class ProfileChoice extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileChoice.class.getName());
     private static final String LAST_PROFILE_KEY = "defaultProfile";
-    private transient Stage stage;
+    private Stage stage;
     private Profile profile;
-    private transient boolean created;
-    private transient final GridPane profilePane = new GridPane();
+    private boolean created;
+    private final GridPane profilePane = new GridPane();
 
     /**
      * {@inheritDoc}

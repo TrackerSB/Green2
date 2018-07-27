@@ -55,15 +55,15 @@ public final class SshConnection extends DBConnection {
      */
     public static final int DEFAULT_SSH_PORT = 22;
     private static final Map<SupportedDatabases, String> COMMANDS = Map.of(SupportedDatabases.MY_SQL, "mysql");
-    private transient final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
+    private final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
     /**
      * The ssh session used to connect to the database over a secure channel.
      */
-    private transient final Session sshSession;
+    private final Session sshSession;
     /**
      * The charset used by ssh response.
      */
-    private transient final Charset charset;
+    private final Charset charset;
 
     static {
         //Configurations which are applied to all sessions.

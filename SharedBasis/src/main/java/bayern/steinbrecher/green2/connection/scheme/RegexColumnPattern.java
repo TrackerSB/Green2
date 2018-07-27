@@ -32,8 +32,8 @@ import java.util.function.Function;
  */
 public class RegexColumnPattern<T, U, K> extends ColumnPattern<T, U> {
 
-    private transient final TriFunction<U, K, T, U> setter;
-    private transient final Function<String, K> keyExtractor;
+    private final TriFunction<U, K, T, U> setter;
+    private final Function<String, K> keyExtractor;
 
     /**
      * Creates a column pattern possibly matching multiple column names. This constructor may be used if {@link U} is an

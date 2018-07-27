@@ -64,9 +64,9 @@ public class MemberManagement extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(MemberManagement.class.getName());
     private static final long SPLASHSCREEN_MILLIS = 2500;
-    private transient Profile profile;
-    private transient Stage menuStage;
-    private transient DBConnection dbConnection;
+    private Profile profile;
+    private Stage menuStage;
+    private DBConnection dbConnection;
 
     /**
      * Default constructor.

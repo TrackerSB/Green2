@@ -83,13 +83,8 @@
 
     <!-- Java Error Prone -->
     <rule ref="category/java/errorprone.xml">
+        <exclude name="BeanMembersShouldSerialize" />
         <exclude name="CallSuperLast" />
-    </rule>
-    <rule ref="category/java/errorprone.xml/BeanMembersShouldSerialize">
-        <properties>
-            <property name="violationSuppressXPath"
-                      value="//FieldDeclaration[../Annotation//Name[@Image = 'FXML']]" />
-        </properties>
     </rule>
     <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
         <properties>

@@ -32,7 +32,7 @@ public class BicTextField extends SpecificRegexTextField {
      * The CSS class representing this class.
      */
     public static final String CSS_CLASS_BIC_TEXTFIELD = "bic-textfield";
-    private transient final BooleanProperty bicValid = new SimpleBooleanProperty(this, "bicValid");
+    private final BooleanProperty bicValid = new SimpleBooleanProperty(this, "bicValid");
 
     /**
      * Constructs a new {@link BicTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial

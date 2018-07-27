@@ -50,7 +50,7 @@ public class Originator {
             creditorId,
             pmtInfId,
             purpose;
-    private transient final File originatorFile;
+    private final File originatorFile;
     private static final Properties DEFAULT_PROPERTIES = new Properties();
 
     static {

@@ -88,15 +88,14 @@ public class Profile {
     /**
      * The path to the configfile. (May not exist, yet)
      */
-    private transient final StringExpression configFilePath
-            = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
-                    .concat("/")
-                    .concat(profileName)
-                    .concat(CONFIGFILE_FORMAT);
+    private final StringExpression configFilePath = new SimpleStringProperty(EnvironmentHandler.APP_DATA_PATH)
+            .concat("/")
+            .concat(profileName)
+            .concat(CONFIGFILE_FORMAT);
     /**
      * The file to the configurations for Green2.
      */
-    private transient final Property<File> configFile = new SimpleObjectProperty<>();
+    private final Property<File> configFile = new SimpleObjectProperty<>();
     private boolean deleted;
 
     /**

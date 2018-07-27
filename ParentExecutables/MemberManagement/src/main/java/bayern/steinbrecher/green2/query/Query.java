@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  */
 public class Query extends WizardableView<Optional<List<List<String>>>, QueryController> {
 
-    private transient final DBConnection dbConnection;
+    private final DBConnection dbConnection;
 
     /**
      * Creates a new query dialog which uses the given {@link DBConnection}.

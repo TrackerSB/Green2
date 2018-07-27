@@ -49,7 +49,7 @@ public final class DefaultConnection extends DBConnection {
     /**
      * The created connection used to execute queries.
      */
-    private transient Connection connection;
+    private Connection connection;
 
     /**
      * Constructs a new database connection.

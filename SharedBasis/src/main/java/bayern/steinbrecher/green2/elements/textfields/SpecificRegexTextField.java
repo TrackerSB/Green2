@@ -45,7 +45,7 @@ public class SpecificRegexTextField extends CheckedTextField {
      */
     private final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
     private final BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
-    private transient final ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
+    private final ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
     private final BooleanProperty eliminateSpaces = new SimpleBooleanProperty(this, "eliminateSpaces", false);
 
     /**
