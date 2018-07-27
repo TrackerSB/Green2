@@ -17,6 +17,8 @@
 package bayern.steinbrecher.wizard;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -64,6 +66,10 @@ import javafx.util.Duration;
 public class WizardController implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(WizardController.class.getName());
+    /**
+     * The percentage of height/width the wizard has to have initially.
+     */
+    private static final double MAX_SIZE_FACTOR = 0.8;
     private final StringProperty currentIndex = new SimpleStringProperty(this, "currentIndex");
     /**
      * NOTE The initial dummy page is needed since the current page may be already requested before there is a chance to
@@ -103,6 +109,9 @@ public class WizardController implements Initializable {
                 currentPage.setValue(newPage);
             });
         });
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        scrollContent.setMaxHeight(screenSize.getHeight() * MAX_SIZE_FACTOR);
+        scrollContent.setMaxWidth(screenSize.getWidth() * MAX_SIZE_FACTOR);
     }
 
     @FXML

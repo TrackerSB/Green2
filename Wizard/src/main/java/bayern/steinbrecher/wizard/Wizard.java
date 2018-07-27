@@ -44,10 +44,6 @@ import javafx.stage.Stage;
  */
 public class Wizard extends Application {
 
-    /**
-     * The percentage of height/width the wizard has to have initially.
-     */
-    private static final double MAX_SIZE_FACTOR = 0.8;
     private /* final */ WizardController controller;
     private final Map<String, WizardPage<?>> pages;
 
@@ -78,8 +74,6 @@ public class Wizard extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        stage.setMaxHeight(screenSize.getHeight() * MAX_SIZE_FACTOR);
-        stage.setMaxWidth(screenSize.getWidth() * MAX_SIZE_FACTOR);
         controller = fxmlLoader.getController();
         controller.setStage(stage);
         controller.setPages(pages);
