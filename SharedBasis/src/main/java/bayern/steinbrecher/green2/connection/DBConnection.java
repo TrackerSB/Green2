@@ -62,6 +62,9 @@ public abstract class DBConnection implements AutoCloseable {
      * refreshed whenever the currently loaded profile changes.
      */
     private final Map<Tables<?, ?>, List<Pair<String, Class<?>>>> columnsCache = new PopulatingMap<>(table -> {
+        if (table == null) {
+            throw new IllegalArgumentException("Can not generate query controls for table null.");
+        }
         List<Pair<String, Class<?>>> entry;
         Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
         try {
@@ -196,6 +199,7 @@ public abstract class DBConnection implements AutoCloseable {
         return !tablesAreMissing || tablesCreated;
     }
 
+    //TODO Is this method still needed?
     private void throwIfInvalid() {
         String missingColumnsString = getMissingColumnsString();
         if (!missingColumnsString.isEmpty()) {
@@ -217,8 +221,7 @@ public abstract class DBConnection implements AutoCloseable {
      * @return The statement selecting all existing columns of {@code columnsToSelect} satisfying all
      * {@code conditions}. Returns {@link Optional#empty()} if {@code columnsToSelect} contains no column which exists
      * in the scheme accessible through {@code connection}.
-     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.scheme.Tables, java.util.Collection,
-     * java.util.Collection)
+     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.scheme.Tables, java.util.Collection)
      */
     //FIXME The method does not tell which columns and condtions were excluded.
     public Optional<String> generateSearchQuery(Tables<?, ?> table, Collection<String> columnsToSelect,
@@ -443,5 +446,14 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public List<Pair<String, Class<?>>> getAllColumns(Tables<?, ?> table) {
         return columnsCache.get(table);
+    }
+
+    /**
+     * Returns all
+     *
+     * @return
+     */
+    public Set<Tables<?, ?>> getAllTables() {
+        return columnsCache.keySet();
     }
 }

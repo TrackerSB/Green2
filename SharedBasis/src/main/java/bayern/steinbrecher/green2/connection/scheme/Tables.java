@@ -398,4 +398,12 @@ public final class /* enum */ Tables<T, U> {
     public static Tables<?, ?>[] values() {
         return new Tables<?, ?>[]{MEMBER, NICKNAMES};
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return getRealTableName();
+    }
 }

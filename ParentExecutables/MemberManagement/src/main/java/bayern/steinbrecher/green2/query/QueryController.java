@@ -66,6 +66,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -81,6 +82,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     private static final Logger LOGGER = Logger.getLogger(QueryController.class.getName());
     @FXML
     private GridPane queryInput;
+    @FXML
+    private ComboBox<Tables<?, ?>> tableSelection;
     private final ListProperty<CheckedConditionField<?>> conditionFields
             = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<DBConnection> dbConnection = new SimpleObjectProperty<>(this, "dbConnection");
@@ -111,45 +114,60 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         return Optional.ofNullable(conditionField);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        dbConnection.addListener((obs, oldVal, newVal) -> {
-            queryInput.getChildren().clear();
-            int rowCounter = 0;
-            List<Pair<String, Class<?>>> sortedColumns = newVal.getAllColumns(Tables.MEMBER).stream()
-                    .sorted((c1, c2) -> c1.getKey().compareToIgnoreCase(c2.getKey()))
-                    .collect(Collectors.toList());
-            for (Pair<String, Class<?>> column : sortedColumns) {
+    private void generateQueryInterface(DBConnection connection, Tables<?, ?> table) {
+        queryInput.getChildren().clear();
+        conditionFields.clear();
+
+        List<Pair<String, Class<?>>> sortedColumns = connection.getAllColumns(table).stream()
+                .sorted((c1, c2) -> c1.getKey().compareToIgnoreCase(c2.getKey()))
+                .collect(Collectors.toList());
+        if (sortedColumns.isEmpty()) {
+            throw new IllegalStateException(
+                    "The query dialog can not be opened since it can not show any column to query.");
+        } else {
+            for (int rowCounter = 0; rowCounter < sortedColumns.size(); rowCounter++) {
+                Pair<String, Class<?>> column = sortedColumns.get(rowCounter);
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
+                    queryInput.addRow(rowCounter, new Label(column.getKey())); //NOPMD - Each iteration defines a unique label.
                     conditionFields.add(conditionField.get());
-                    Label columnLabel = new Label(column.getKey()); //NOPMD - Each iteration defines a unique label.
-                    queryInput.addRow(rowCounter, columnLabel);
-                    ObservableList<Node> children = conditionField.get().getChildren();
+                    ObservableList<Node> children = conditionField.get()
+                            .getChildren();
                     Node[] conditionFieldChildren = children.toArray(new Node[children.size()]); //NOPMD
-                    //CHECKSTYLE.OFF: MagicNumber - Having exactly 3 elements is only important for the visual layout.
+                    //CHECKSTYLE.OFF: MagicNumber - Having exactly 3 elements is important for the visual layout.
                     if (conditionFieldChildren.length != 3) { //NOPMD - Only triples are currently layouted nicely.
                         //CHECKSTYLE.ON: MagicNumber
                         LOGGER.log(Level.WARNING, "An input field of the query dialog has not exactly 3 children. "
                                 + "It may cause displacement of elements.");
                     }
                     queryInput.addRow(rowCounter, conditionFieldChildren);
-                    rowCounter++;
                 } else {
                     LOGGER.log(Level.WARNING, "The type {0} of column {1} is not supported by the query dialog.",
                             new Object[]{column.getValue(), column.getKey()});
                 }
             }
-            if (rowCounter <= 0) {
-                throw new IllegalStateException(
-                        "The query dialog can not be opened since it can not show any column to query.");
-            }
-            isLastQueryUptodate = false;
-            updateLastQueryResult();
+        }
+        isLastQueryUptodate = false;
+        updateLastQueryResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        dbConnection.addListener((obs, oldVal, newVal) -> {
+            ObservableList<Tables<?, ?>> items = FXCollections.observableArrayList();
+            items.addAll(newVal.getAllTables());
+            tableSelection.itemsProperty()
+                    .setValue(items);
+            tableSelection.getSelectionModel()
+                    .select(Tables.MEMBER);
+            generateQueryInterface(newVal, tableSelection.getSelectionModel().getSelectedItem());
         });
+        tableSelection.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldVal, newVal) -> generateQueryInterface(getDbConnection(), newVal));
         conditionFields.addListener((obs, oldVal, newVal) -> {
             newVal.addListener((ListChangeListener.Change<? extends CheckedConditionField<?>> change) -> {
                 while (change.next()) {
@@ -157,11 +175,18 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                             .forEach(ccf -> ccf.addListener(invalidObs -> isLastQueryUptodate = false));
                 }
             });
+            BooleanBinding allConditionFieldsValid
+                    = BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty));
+            BooleanBinding isNoConditionFieldEmpty
+                    = BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::emptyProperty))
+                            .not();
+            BooleanBinding isAnyTableSelected = tableSelection.getSelectionModel()
+                    .selectedItemProperty()
+                    .isNotNull();
             bindValidProperty(
-                    BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty))
-                            .and(BindingUtility.reduceAnd(
-                                    conditionFields.stream().map(CheckedConditionField::emptyProperty)).not()
-                            )
+                    allConditionFieldsValid
+                            .and(isNoConditionFieldEmpty)
+                            .and(isAnyTableSelected)
             );
         });
     }
