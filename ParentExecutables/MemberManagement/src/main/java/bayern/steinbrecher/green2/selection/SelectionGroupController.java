@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -68,6 +70,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Callback;
 
 /**
  * The controller of the SelectionGroup.
@@ -102,6 +105,72 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     @FXML
     private VBox groupsBox;
     private RadioButton unselectGroup;
+    private final Callback<ListView<AssociatedItem>, ListCell<AssociatedItem>> optionsCellFactory
+            = listview -> new ListCell<>() {
+        private final BiFunction<AssociatedItem, Optional<G>, Consumer<Boolean>> updateGroupGraphicTemplate
+                = (item, group) -> selected -> {
+                    if (selected) {
+                        //Selected
+                        item.setGroup(currentGroup.get());
+                    } else {
+                        if (currentGroup.get().equals(group) || !currentGroup.get().isPresent()) {
+                            //Unselected
+                            item.setGroup(Optional.empty());
+                        } else {
+                            //Reselect
+                            item.setGroup(currentGroup.get());
+                        }
+                    };
+                };
+
+        @Override
+        protected void updateItem(AssociatedItem item, boolean empty) {
+            super.updateItem(item, empty);
+            if (!empty && item != null) {
+                setText(item.getItem().toString());
+                Optional<G> newGroup = item.getGroup();
+
+                //TODO Spare creations of CheckBoxes
+                CheckBox groupGraphic = new CheckBox();
+                groupGraphic.setSelected(newGroup.isPresent());
+                Consumer<Boolean> updateGroupGraphic = updateGroupGraphicTemplate.apply(item, newGroup);
+                groupGraphic.selectedProperty()
+                        .addListener((obs, oldVal, newVal) -> {
+                            updateGroupGraphic.accept(newVal);
+                            updateItem(item, empty);
+                        });
+
+                if (newGroup.isPresent()) {
+                    Color fill = groups.get(newGroup.get());
+                    List<Region> boxes = groupGraphic.lookupAll(".box")
+                            .stream()
+                            //There should be only boxes (which are regions)
+                            .filter(node -> node instanceof Region)
+                            .map(node -> (Region) node)
+                            .collect(Collectors.toList());
+                    boxes.forEach(region -> region.setBackground(
+                            new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY))));
+                    groupGraphic.getChildrenUnmodifiable()
+                            .addListener((ListChangeListener.Change<? extends Node> change) -> {
+                                while (change.next()) {
+                                    change.getAddedSubList()
+                                            .stream()
+                                            .filter(node -> node.getStyleClass().contains("box"))
+                                            .filter(node -> node instanceof Region)
+                                            .map(node -> (Region) node)
+                                            //CHECKSTYLE.OFF: MagicNumber - The range of RGB goes from 0 to 255
+                                            .forEach(region -> region.setStyle("-fx-background-color: rgba("
+                                            + (255 * fill.getRed()) + ", " + (255 * fill.getGreen()) + ", "
+                                            + (255 * fill.getBlue()) + ", " + fill.getOpacity() + ")"));
+                                    //CHECKSTYLE.ON: MagicNumber
+                                }
+                            });
+                }
+                setGraphic(groupGraphic);
+                setOnMouseClicked(mevt -> updateGroupGraphic.accept(!groupGraphic.isSelected()));
+            }
+        }
+    };
 
     /**
      * {@inheritDoc}
@@ -115,64 +184,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
         currentGroup.addListener((obs, oldVal, newVal) -> currentGroupSelected.set(newVal.isPresent()));
 
         optionsListView.itemsProperty().bind(options);
-        optionsListView.setCellFactory(listview -> new ListCell<AssociatedItem>() {
-
-            @Override
-            protected void updateItem(AssociatedItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (!empty && item != null) {
-                    setText(item.getItem().toString());
-                    Optional<G> newGroup = item.getGroup();
-
-                    //TODO Spare creations of CheckBoxes
-                    CheckBox groupGraphic = new CheckBox();
-                    groupGraphic.setSelected(newGroup.isPresent());
-                    groupGraphic.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                        if (newVal) {
-                            //Selected
-                            item.setGroup(currentGroup.get());
-                        } else {
-                            if (currentGroup.get().equals(newGroup) || !currentGroup.get().isPresent()) {
-                                //Unselected
-                                item.setGroup(Optional.empty());
-                            } else {
-                                //Reselect
-                                item.setGroup(currentGroup.get());
-                            }
-                        }
-                        updateItem(item, empty);
-                    });
-
-                    if (newGroup.isPresent()) {
-                        Color fill = groups.get(newGroup.get());
-                        List<Region> boxes = groupGraphic.lookupAll(".box")
-                                .stream()
-                                //There should be only boxes (which are regions)
-                                .filter(node -> node instanceof Region)
-                                .map(node -> (Region) node)
-                                .collect(Collectors.toList());
-                        boxes.forEach(region -> region.setBackground(
-                                new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY))));
-                        groupGraphic.getChildrenUnmodifiable()
-                                .addListener((ListChangeListener.Change<? extends Node> change) -> {
-                                    while (change.next()) {
-                                        change.getAddedSubList()
-                                                .stream()
-                                                .filter(node -> node.getStyleClass().contains("box"))
-                                                .filter(node -> node instanceof Region)
-                                                .map(node -> (Region) node)
-                                                //CHECKSTYLE.OFF: MagicNumber - The range of RGB goes from 0 to 255
-                                                .forEach(region -> region.setStyle("-fx-background-color: rgba("
-                                                + (255 * fill.getRed()) + ", " + (255 * fill.getGreen()) + ", "
-                                                + (255 * fill.getBlue()) + ", " + fill.getOpacity() + ")"));
-                                        //CHECKSTYLE.ON: MagicNumber
-                                    }
-                                });
-                    }
-                    setGraphic(groupGraphic);
-                }
-            }
-        });
+        optionsListView.setCellFactory(optionsCellFactory);
 
         unselectGroup = addGroupRadioButton(EnvironmentHandler.getResourceValue("unselect"), Optional.empty(), false);
         selectedPerGroup.addListener((MapChangeListener.Change<? extends G, ? extends IntegerProperty> change) -> {
