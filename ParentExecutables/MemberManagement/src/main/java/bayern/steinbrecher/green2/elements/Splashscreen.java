@@ -51,7 +51,7 @@ public class Splashscreen extends View<Controller> {
 
         ImageView imageView = new ImageView();
         EnvironmentHandler.LogoSet splashscreenImage;
-        if (Locale.getDefault().equals(Locale.GERMAN.getLanguage())) {
+        if (Locale.getDefault().equals(Locale.GERMANY)) {
             splashscreenImage = EnvironmentHandler.LogoSet.SPLASHSCREEN_DE;
         } else {
             splashscreenImage = EnvironmentHandler.LogoSet.SPLASHSCREEN_EN;
