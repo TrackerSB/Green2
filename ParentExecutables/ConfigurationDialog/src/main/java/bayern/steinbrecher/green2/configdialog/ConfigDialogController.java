@@ -102,7 +102,7 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
                 .and(databasePort.validProperty()));
 
         reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
-                birthdayExpressionTextField.regexValidProperty().not()
+                birthdayExpressionTextField.matchRegexProperty().not()
                         .and(birthdayFeaturesCheckbox.selectedProperty()))
                 .addReportEntry(sshPort)
                 .addReportEntry(databasePort);

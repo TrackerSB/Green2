@@ -32,6 +32,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.css.PseudoClass;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 import javafx.util.Pair;
@@ -52,30 +53,32 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      * The CSS class representing this class.
      */
     public static final String CSS_CLASS_CHECKED_TEXTFIELD = "checked-textfield";
-    /**
-     * Holds the string representation of the css class attribute added when the content of this text field is too long.
-     */
-    public static final String CSS_CLASS_TOO_LONG_CONTENT = "toLongContent";
-    /**
-     * Holds the string representation of the css class attribute added when there´s no content in this field.
-     */
-    public static final String CSS_CLASS_NO_CONTENT = "emptyTextField";
-    /**
-     * Represents the maximum column count.
-     */
     private final IntegerProperty maxColumnCount = new SimpleIntegerProperty(this, "maxColumnCount");
-    /**
-     * Holds {@code true} only if the content has to be checked.
-     */
-    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
-    /**
-     * Holds {@code true} only if the text field is empty.
-     */
-    private final BooleanProperty emptyContent = new SimpleBooleanProperty(this, "emptyContent");
-    /**
-     * Holds {@code true} only if the text of the text field is too long.
-     */
-    private final BooleanProperty toLongContent = new SimpleBooleanProperty(this, "toLongContent");
+
+    private static final PseudoClass CHECKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("checked");
+    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true) {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(CHECKED_PSEUDO_CLASS, get());
+        }
+    };
+
+    private static final PseudoClass EMPTY_PSEUDO_CLASS = PseudoClass.getPseudoClass("empty");
+    private final BooleanProperty emptyContent = new SimpleBooleanProperty(this, "emptyContent") {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(EMPTY_PSEUDO_CLASS, get());
+        }
+    };
+
+    private static final PseudoClass TO_LONG_PSEUDO_CLASS = PseudoClass.getPseudoClass("toLong");
+    private final BooleanProperty toLongContent = new SimpleBooleanProperty(this, "toLongContent") {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(TO_LONG_PSEUDO_CLASS, get());
+        }
+
+    };
     /**
      * Holds {@code true} only if the content is valid. {@code true} if one of the following is true (as implemented by
      * this class):
@@ -140,8 +143,6 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
         valid.bind(toLongContent.or(emptyContent).not().and(validCondition).or(checked.not()));
         invalid.bind(valid.not());
         ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
-        ElementsUtility.addCssClassIf(this, emptyContent, CSS_CLASS_NO_CONTENT);
-        ElementsUtility.addCssClassIf(this, toLongContent, CSS_CLASS_TOO_LONG_CONTENT);
     }
 
     /**

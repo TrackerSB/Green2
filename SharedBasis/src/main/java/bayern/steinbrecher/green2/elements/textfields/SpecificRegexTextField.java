@@ -16,7 +16,6 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
-import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.util.regex.Pattern;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -27,6 +26,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.css.PseudoClass;
 
 /**
  * Represents a {@link CheckedRegexTextField} whose regex is unchangeable.
@@ -44,7 +44,13 @@ public class SpecificRegexTextField extends CheckedTextField {
      * The property holding the regex used for validation.
      */
     private final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
-    private final BooleanProperty regexValid = new SimpleBooleanProperty(this, "regexValid");
+    private static final PseudoClass UNMATCH_REGEX_PSEUDO_CLASS = PseudoClass.getPseudoClass("unmatch");
+    private final BooleanProperty matchRegex = new SimpleBooleanProperty(this, "matchRegex") {
+        @Override
+        protected void invalidated() {
+            pseudoClassStateChanged(UNMATCH_REGEX_PSEUDO_CLASS, !get());
+        }
+    };
     private final ObjectProperty<Pattern> pattern = new SimpleObjectProperty<>(this, "pattern");
     private final BooleanProperty eliminateSpaces = new SimpleBooleanProperty(this, "eliminateSpaces", false);
 
@@ -104,12 +110,12 @@ public class SpecificRegexTextField extends CheckedTextField {
         this.eliminateSpaces.set(eliminateSpaces);
         initProperties();
 
-        addValidCondition(regexValid);
+        addValidCondition(matchRegex);
     }
 
     private void initProperties() {
         pattern.bind(Bindings.createObjectBinding(() -> Pattern.compile(this.regex.get()), this.regex));
-        regexValid.bind(Bindings.createBooleanBinding(() -> {
+        matchRegex.bind(Bindings.createBooleanBinding(() -> {
             Pattern patternValue = this.pattern.get();
             String regexText = textProperty().get();
             if (this.eliminateSpaces.get()) {
@@ -117,7 +123,6 @@ public class SpecificRegexTextField extends CheckedTextField {
             }
             return patternValue != null && patternValue.matcher(regexText).matches();
         }, pattern, textProperty(), this.eliminateSpaces));
-        ElementsUtility.addCssClassIf(this, regexValid.not(), CSS_CLASS_REGEX_NO_MATCH);
     }
 
     /**
@@ -128,7 +133,7 @@ public class SpecificRegexTextField extends CheckedTextField {
      * given regex. Otherwise it returns an empty {@link String}.
      */
     public String getRegexValidText() {
-        return isRegexValid() ? getText() : "";
+        return isMatchRegex() ? getText() : "";
     }
 
     /**
@@ -165,8 +170,8 @@ public class SpecificRegexTextField extends CheckedTextField {
      * @return The property containing whether the current input is valid according to the current regex.
      * @see CheckedRegexTextField#getRegex()
      */
-    public ReadOnlyBooleanProperty regexValidProperty() {
-        return regexValid;
+    public ReadOnlyBooleanProperty matchRegexProperty() {
+        return matchRegex;
     }
 
     /**
@@ -174,8 +179,8 @@ public class SpecificRegexTextField extends CheckedTextField {
      *
      * @return {@code true} only if the current regex matches the current input.
      */
-    public boolean isRegexValid() {
-        return regexValid.get();
+    public boolean isMatchRegex() {
+        return matchRegex.get();
     }
 
     /**
