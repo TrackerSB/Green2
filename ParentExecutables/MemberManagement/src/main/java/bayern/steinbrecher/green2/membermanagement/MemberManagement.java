@@ -36,7 +36,6 @@ import bayern.steinbrecher.green2.login.standard.DefaultLogin;
 import bayern.steinbrecher.green2.menu.MainMenu;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.Programs;
-import bayern.steinbrecher.green2.utility.ThreadUtility;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -270,7 +269,15 @@ public class MemberManagement extends Application {
             } catch (UnknownHostException | AuthException ex) {
                 handleAuthException(login, waitScreen, ex);
 
-                ThreadUtility.waitWhile(this, login.wouldShowBinding().not());
+                while (!login.wouldShowBinding().get()) {
+                    try {
+                        synchronized (this) {
+                            wait();
+                        }
+                    } catch (InterruptedException ex1) {
+                        LOGGER.log(Level.WARNING, null, ex1);
+                    }
+                }
 
                 con = getConnection(login, waitScreen);
             } catch (UnsupportedDatabaseException ex) {

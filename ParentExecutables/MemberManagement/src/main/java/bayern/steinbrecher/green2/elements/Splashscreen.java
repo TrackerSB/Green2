@@ -85,7 +85,7 @@ public class Splashscreen extends View<Controller> {
                     LOGGER.log(Level.SEVERE, "The splashscreen was interrupted.", ex);
                     return null;
                 });
-        showOnceAndWait();
+        getStage().showAndWait();
     }
 
     /**

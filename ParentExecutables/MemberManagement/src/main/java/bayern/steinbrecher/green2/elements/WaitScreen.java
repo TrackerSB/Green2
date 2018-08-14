@@ -170,12 +170,4 @@ public class WaitScreen extends View<Controller> {
         }
         return new Polygon(coo);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanBinding wouldShowBinding() {
-        throw new UnsupportedOperationException("WaitScreen does not use showOnceAndWait()");
-    }
 }

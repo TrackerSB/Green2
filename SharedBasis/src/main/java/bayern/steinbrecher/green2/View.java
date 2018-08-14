@@ -17,14 +17,9 @@
 package bayern.steinbrecher.green2;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.utility.ThreadUtility;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
@@ -42,9 +37,6 @@ public abstract class View<T extends Controller> extends Application {
      * The stage which has to be set in every start-Method of implementing classes.
      */
     private Stage stage;
-    private final BooleanProperty gotShownProperty = new SimpleBooleanProperty(this, "gotShown", false);
-    private final BooleanProperty gotClosedProperty = new SimpleBooleanProperty(this, "gotClosed", false);
-    private final BooleanBinding wouldShowProperty = gotShownProperty.not();
     /**
      * The controller handling the actions of this view.
      */
@@ -75,15 +67,6 @@ public abstract class View<T extends Controller> extends Application {
         this.stage = primaryStage;
         startImpl(primaryStage);
         primaryStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
-    }
-
-    @SuppressFBWarnings(value = "NN_NAKED_NOTIFY", justification = "The wait is called by other methods like "
-            + "Stage#showAndWait() or ThreadUtility#waitWhile(...).")
-    private void setClosedAndNotify() {
-        gotClosedProperty.set(true);
-        synchronized (this) {
-            notifyAll();
-        }
     }
 
     /**
@@ -117,72 +100,6 @@ public abstract class View<T extends Controller> extends Application {
         controller = fxmlLoader.getController();
         callWhenLoadFXML();
         return root;
-    }
-
-    /**
-     * Makes sure the window is only shown once. When multiple threads are calling this method they will be set to
-     * {@link Thread#wait()} apart from the first one. This one opens the stage set in {@link Application#start(Stage)},
-     * blocks until the window is closed and then notifies all other threads. If the JavaFX Application Thread calls it,
-     * it calls {@link View#showOnceAndWait()}.
-     *
-     * @see Stage#showAndWait()
-     * @see View#showOnce(java.lang.Runnable)
-     */
-    public void showOnceAndWait() {
-        if (!gotShownProperty.get()) {
-            gotShownProperty.set(true);
-            if (Platform.isFxApplicationThread()) {
-                getStage().showAndWait();
-                setClosedAndNotify();
-            } else {
-                getStage().showingProperty().addListener((obs, oldVal, newVal) -> {
-                    if (!newVal) {
-                        setClosedAndNotify();
-                    }
-                });
-                Platform.runLater(() -> getStage().show());
-            }
-        }
-        ThreadUtility.waitWhile(this, gotClosedProperty.not());
-    }
-
-    /**
-     * Makes sure the window is only shown once. The first call opens the view and returns. Further calls have no effect
-     * until {@link View#reset()} is called. This method does NOT block.
-     *
-     * @param callback The runnable to call when the view gets closed.
-     * @see View#showOnceAndWait()
-     */
-    public void showOnce(Runnable callback) {
-        if (!gotShownProperty.get()) {
-            gotShownProperty.set(true);
-            getStage().showingProperty().addListener((obs, oldVal, newVal) -> {
-                if (!newVal) {
-                    if (callback != null) {
-                        callback.run();
-                    }
-                    setClosedAndNotify();
-                }
-            });
-            Platform.runLater(() -> getStage().show());
-        }
-    }
-
-    /**
-     * After calling this method the window can be opened once again. But previously inserted data stays unchanged.
-     */
-    public synchronized void reset() {
-        gotClosedProperty.set(false);
-        gotShownProperty.set(false);
-    }
-
-    /**
-     * Returns the property indicating whether the next call of {@link View#showOnceAndWait()} would open the window.
-     *
-     * @return The property indicating whether the next call of {@link View#showOnceAndWait()} would open the window.
-     */
-    public BooleanBinding wouldShowBinding() {
-        return wouldShowProperty;
     }
 
     /**
