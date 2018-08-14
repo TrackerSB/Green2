@@ -578,7 +578,7 @@ public class MainMenuController extends Controller {
                 });
                 Stage wizardStage = new Stage();
                 wizardStage.initOwner(getStage());
-                wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryMemberTitle"));
+                wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
                 wizardStage.setResizable(true);
                 wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 queryWizard.start(wizardStage);

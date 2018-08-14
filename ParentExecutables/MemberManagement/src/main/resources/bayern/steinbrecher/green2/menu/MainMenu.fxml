@@ -99,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <Menu text="%data">
                 <MenuItem fx:id="queryDialogMenuItem"
                           onAction="#openQueryDialog"
-                          text="%queryMember"/>
+                          text="%queryData"/>
                 <MenuItem onAction="#checkData"
                           text="%checkData"
                           accelerator="Alt+P"/>

@@ -68,7 +68,7 @@ public class Query extends WizardableView<Optional<List<List<String>>>, QueryCon
         getController().setStage(stage);
 
         stage.setScene(new Scene(root));
-        stage.setTitle(EnvironmentHandler.getResourceValue("queryMemberTitle"));
+        stage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
         stage.setResizable(false);
     }
 
