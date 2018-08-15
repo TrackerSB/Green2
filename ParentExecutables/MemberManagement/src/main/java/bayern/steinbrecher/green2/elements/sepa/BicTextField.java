@@ -28,10 +28,6 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class BicTextField extends SpecificRegexTextField {
 
-    /**
-     * The CSS class representing this class.
-     */
-    public static final String CSS_CLASS_BIC_TEXTFIELD = "bic-textfield";
     private final BooleanProperty bicValid = new SimpleBooleanProperty(this, "bicValid");
 
     /**
@@ -60,10 +56,10 @@ public class BicTextField extends SpecificRegexTextField {
      */
     public BicTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text, SepaUtility.BIC_REGEX, false);
+        getStyleClass().add("bic-textfield");
         bicValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidBic(textProperty().get()), textProperty()));
         addValidCondition(bicValid);
-        getStyleClass().add(CSS_CLASS_BIC_TEXTFIELD);
         getStylesheets().add(BicTextField.class.getResource("bicTextField.css").toExternalForm());
     }
 }

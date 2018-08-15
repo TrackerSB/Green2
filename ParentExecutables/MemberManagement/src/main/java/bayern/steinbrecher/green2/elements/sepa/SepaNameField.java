@@ -25,11 +25,6 @@ package bayern.steinbrecher.green2.elements.sepa;
 public class SepaNameField extends CheckedSepaTextField {
 
     /**
-     * The CSS class name of {@link SepaNameField}.
-     */
-    public static final String CSS_CLASS_SEPA_NAME_FIELD = "sepa-name-field";
-
-    /**
      * Constructs a new {@link SepaNameField} with an max input length of {@link Integer#MAX_VALUE} and no initial
      * content.
      */
@@ -55,7 +50,7 @@ public class SepaNameField extends CheckedSepaTextField {
      */
     public SepaNameField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
-        getStyleClass().add(CSS_CLASS_SEPA_NAME_FIELD);
+        getStyleClass().add("sepa-name-field");
         getStylesheets().add(SepaNameField.class.getResource("sepaNameField.css").toExternalForm());
     }
 }

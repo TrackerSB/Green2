@@ -60,6 +60,7 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
     public CheckedSpinner(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
         super(factory);
         initProperties(factory, parser);
+        getStyleClass().add("checked-spinner");
     }
 
     private void initProperties(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {

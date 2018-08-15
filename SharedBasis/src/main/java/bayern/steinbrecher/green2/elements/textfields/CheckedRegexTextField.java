@@ -78,6 +78,7 @@ public class CheckedRegexTextField extends SpecificRegexTextField {
      */
     public CheckedRegexTextField(int maxColumnCount, String text, String regex, boolean eliminateSpaces) {
         super(maxColumnCount, text, regex, eliminateSpaces);
+        getStyleClass().add("checked-regex-textfield");
     }
 
     /**

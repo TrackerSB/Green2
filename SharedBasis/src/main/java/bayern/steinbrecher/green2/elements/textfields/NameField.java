@@ -25,11 +25,6 @@ package bayern.steinbrecher.green2.elements.textfields;
 public class NameField extends CheckedTextField {
 
     /**
-     * The CSS class representing this class.
-     */
-    public static final String CSS_CLASS_NAME_FIELD = "name-field";
-
-    /**
      * Constructs a new {@link NameField} with an max input length of {@link Integer#MAX_VALUE} and no initial content.
      */
     public NameField() {
@@ -55,7 +50,7 @@ public class NameField extends CheckedTextField {
     public NameField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
 
-        getStyleClass().add(CSS_CLASS_NAME_FIELD);
+        getStyleClass().add("name-field");
         getStylesheets().add(NameField.class.getResource("nameField.css").toExternalForm());
     }
 }

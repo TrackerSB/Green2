@@ -22,17 +22,12 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@link javafx.scene.control.TextField} for inserting a creditor id. Css class
- * {@link #CSS_CLASS_CREDITORID_TEXTFIELD} is added.
+ * Represents a {@link javafx.scene.control.TextField} for inserting a creditor id.
  *
  * @author Stefan Huber
  */
 public final class CreditorIdTextField extends CheckedSepaTextField {
 
-    /**
-     * The CSS class representing objects of this class.
-     */
-    public static final String CSS_CLASS_CREDITORID_TEXTFIELD = "creditorid-textfield";
     private final BooleanProperty creditorIdValid = new SimpleBooleanProperty(this, "creditorIdValid");
 
     /**
@@ -52,7 +47,7 @@ public final class CreditorIdTextField extends CheckedSepaTextField {
         creditorIdValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidCreditorId(textProperty().get()), textProperty()));
         addValidCondition(creditorIdValid);
-        getStyleClass().add(CSS_CLASS_CREDITORID_TEXTFIELD);
+        getStyleClass().add("creditorid-textfield");
         getStylesheets().add(CreditorIdTextField.class.getResource("creditorIdTextField.css").toExternalForm());
     }
 }

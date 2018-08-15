@@ -36,11 +36,6 @@ import javafx.css.PseudoClass;
 public class SpecificRegexTextField extends CheckedTextField {
 
     /**
-     * Holds the string representation of the css class attribute added when the content of this text field does not
-     * match the current regex.
-     */
-    public static final String CSS_CLASS_REGEX_NO_MATCH = "unmatch-regex";
-    /**
      * The property holding the regex used for validation.
      */
     private final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");

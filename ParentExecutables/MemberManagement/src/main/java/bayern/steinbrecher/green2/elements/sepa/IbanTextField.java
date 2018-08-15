@@ -23,17 +23,12 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField} specialized for IBANs. CSS
- * class {@link #CSS_CLASS_IBAN_TEXTFIELD} is added.
+ * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField} specialized for IBANs.
  *
  * @author Stefan Huber
  */
 public final class IbanTextField extends SpecificRegexTextField {
 
-    /**
-     * The CSS class representing objects of this class.
-     */
-    public static final String CSS_CLASS_IBAN_TEXTFIELD = "iban-textfield";
     private final BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
 
     /**
@@ -53,7 +48,7 @@ public final class IbanTextField extends SpecificRegexTextField {
         ibanValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidIban(textProperty().get()), textProperty()));
         addValidCondition(ibanValid);
-        getStyleClass().add(CSS_CLASS_IBAN_TEXTFIELD);
+        getStyleClass().add("iban-textfield");
         getStylesheets().add(IbanTextField.class.getResource("ibanTextField.css").toExternalForm());
     }
 }

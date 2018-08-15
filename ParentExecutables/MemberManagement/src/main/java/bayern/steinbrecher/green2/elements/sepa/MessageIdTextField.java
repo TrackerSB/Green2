@@ -24,16 +24,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField} for entering a message id.
- * {@link #CSS_CLASS_MESSAGE_ID} is added.
  *
  * @author Stefan Huber
  */
 public final class MessageIdTextField extends SpecificRegexTextField {
 
-    /**
-     * The CSS class representing objects of this class.
-     */
-    public static final String CSS_CLASS_MESSAGE_ID = "messageIdTextField";
     private final BooleanProperty messageIdValid = new SimpleBooleanProperty(this, "messageIdValid");
 
     /**
@@ -53,6 +48,6 @@ public final class MessageIdTextField extends SpecificRegexTextField {
         messageIdValid.bind(Bindings.createBooleanBinding(
                 () -> SepaUtility.isValidMessageId(textProperty().get()), textProperty()));
         addValidCondition(messageIdValid);
-        getStyleClass().add(CSS_CLASS_MESSAGE_ID);
+        getStyleClass().add("messageIdTextField");
     }
 }

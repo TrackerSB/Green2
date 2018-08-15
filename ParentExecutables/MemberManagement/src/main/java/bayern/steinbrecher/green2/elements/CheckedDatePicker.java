@@ -48,10 +48,6 @@ import javafx.util.Pair;
 public class CheckedDatePicker extends DatePicker implements CheckedControl, Reportable {
 
     private static final Logger LOGGER = Logger.getLogger(CheckedDatePicker.class.getName());
-    /**
-     * The CSS class associated with this class.
-     */
-    public static final String CSS_CLASS_CHECKED_DATE_PICKER = "checked-date-picker";
     private final CheckedControlBase<CheckedDatePicker> ccBase = new CheckedControlBase<>(this);
     private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
     private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
@@ -91,7 +87,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
         this.forceFuture.set(forceFuture);
         initProperties();
 
-        getStyleClass().add(CSS_CLASS_CHECKED_DATE_PICKER);
+        getStyleClass().add("checked-date-picker");
         getStylesheets().add(CheckedDatePicker.class.getResource("checkedDatePicker.css").toExternalForm());
     }
 

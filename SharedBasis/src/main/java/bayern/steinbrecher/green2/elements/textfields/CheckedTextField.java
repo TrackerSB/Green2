@@ -22,7 +22,6 @@ import bayern.steinbrecher.green2.elements.CheckedControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.BindingUtility;
-import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,21 +38,13 @@ import javafx.scene.control.TextField;
 import javafx.util.Pair;
 
 /**
- * Represents text fields that detect whether their input text is longer than a given maximum column count. These text
- * fields do not stop users from entering too long text. On the one hand they can tell you whether the input is too
- * long, on the other hand they set {@link #CSS_CLASS_TOO_LONG_CONTENT} when the content is too long and
- * {@link #CSS_CLASS_NO_CONTENT} when there´s no content as one of their css classes if checked is set to {@code true}.
- * If any condition is false, {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} is set. Also
- * {@link #CSS_CLASS_CHECKED_TEXTFIELD} is added.
+ * Represents text fields that detects whether their input text is longer than a given maximum column count. These text
+ * fields do not stop users from entering too long text.
  *
  * @author Stefan Huber
  */
 public class CheckedTextField extends TextField implements CheckedControl, Reportable {
 
-    /**
-     * The CSS class representing this class.
-     */
-    public static final String CSS_CLASS_CHECKED_TEXTFIELD = "checked-textfield";
     private final CheckedControlBase<CheckedTextField> ccBase = new CheckedControlBase<>(this);
     private final IntegerProperty maxColumnCount = new SimpleIntegerProperty(this, "maxColumnCount");
 
@@ -114,7 +105,7 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
         initProperties();
 
         setMaxColumnCount(maxColumnCount);
-        getStyleClass().add(CSS_CLASS_CHECKED_TEXTFIELD);
+        getStyleClass().add("checked-textfield");
         getStylesheets().add(CharsetTextField.class.getResource("checkedTextField.css").toExternalForm());
     }
 

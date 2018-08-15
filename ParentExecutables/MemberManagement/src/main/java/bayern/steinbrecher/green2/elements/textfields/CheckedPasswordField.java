@@ -21,17 +21,11 @@ import javafx.scene.AccessibleRole;
 import javafx.scene.control.skin.TextFieldSkin;
 
 /**
- * Represents a password field which recognizes empty content and may set a css class attribute to signal it. It also
- * adds {@link CheckedPasswordField#CSS_CLASS_CHECKED_PASSWORD_FIELD}.
+ * Represents a password field which recognizes empty content and may set a css class attribute to signal it.
  *
  * @author Stefan Huber
  */
 public class CheckedPasswordField extends CheckedTextField {
-
-    /**
-     * The CSS class identifying a {@link CheckedPasswordField}.
-     */
-    public static final String CSS_CLASS_CHECKED_PASSWORD_FIELD = "checked-password-field";
 
     /**
      * Constructs a new {@link CheckedPasswordField} with an max input length of {@link Integer#MAX_VALUE} and no
@@ -62,7 +56,7 @@ public class CheckedPasswordField extends CheckedTextField {
         super(maxColumnCount, text);
         setAccessibleRole(AccessibleRole.PASSWORD_FIELD);
         setSkin(new PasswordFieldSkin(this));
-        getStyleClass().add(CSS_CLASS_CHECKED_PASSWORD_FIELD);
+        getStyleClass().add("checked-password-field");
         getStylesheets().add(CheckedPasswordField.class.getResource("checkedPasswordField.css").toExternalForm());
     }
 

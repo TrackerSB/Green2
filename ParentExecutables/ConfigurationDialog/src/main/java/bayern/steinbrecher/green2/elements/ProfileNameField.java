@@ -48,6 +48,7 @@ public class ProfileNameField extends NameField {
                     && Profile.getAvailableProfiles().contains(newVal));
         });
         addValidCondition(profileAlreadyExists.not());
+        getStyleClass().add("profile-name-field");
     }
 
     /**

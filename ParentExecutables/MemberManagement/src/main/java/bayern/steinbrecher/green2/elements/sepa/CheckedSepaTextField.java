@@ -34,10 +34,6 @@ import javafx.util.Pair;
 public class CheckedSepaTextField extends CheckedTextField {
 
     /**
-     * The CSS class representing this class.
-     */
-    public static final String CSS_CLASS_CHECKED_SEPA_TEXTFIELD = "checked-sepa-textfield";
-    /**
      * This list contains all regions of codepoints containing symbols not accepted by SEPA. First and last codepoint
      * are both included.
      */
@@ -116,6 +112,6 @@ public class CheckedSepaTextField extends CheckedTextField {
         }, textProperty()));
         addValidCondition(invalidSymbols.not());
 
-        getStyleClass().add(CSS_CLASS_CHECKED_SEPA_TEXTFIELD);
+        getStyleClass().add("checked-sepa-textfield");
     }
 }

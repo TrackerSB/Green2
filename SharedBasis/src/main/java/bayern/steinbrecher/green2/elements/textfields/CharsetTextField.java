@@ -55,6 +55,7 @@ public final class CharsetTextField extends CheckedTextField {
      */
     public CharsetTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
+        getStyleClass().add("charset-textfield");
         validCharset.bind(Bindings.createBooleanBinding(
                 () -> !textProperty().get().isEmpty() && Charset.isSupported(textProperty().get()), textProperty()));
         addValidCondition(validCharset);
