@@ -52,15 +52,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      * The CSS class associated with this class.
      */
     public static final String CSS_CLASS_CHECKED_DATE_PICKER = "checked-date-picker";
-    /**
-     * BooleanProperty indicating whether the currently inserted date is valid.
-     */
-    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
-    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
-    /**
-     * Holds {@code true} only if the content has to be checked.
-     */
-    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
+    private final CheckedControlBase<CheckedDatePicker> ccBase = new CheckedControlBase<>(this);
     private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
     private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
     private final BooleanProperty invalidPastDate = new SimpleBooleanProperty(this, "invalidPastDate");
@@ -69,7 +61,8 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
                     new Pair<>(ReportType.ERROR, invalidPastDateProperty()),
                     EnvironmentHandler.getResourceValue("inputMissing"),
                     new Pair<>(ReportType.ERROR, checkedProperty().and(emptyProperty())),
-                    EnvironmentHandler.getResourceValue("inputInvalid"), new Pair<>(ReportType.ERROR, invalid));
+                    EnvironmentHandler.getResourceValue("inputInvalid"),
+                    new Pair<>(ReportType.ERROR, ccBase.invalidProperty()));
 
     /**
      * Constructs {@link CheckedDatePicker} without initial date and {@code forceFuture} set to {@code false}.
@@ -138,11 +131,12 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
             return executionDate != null && executionDate.isAfter(LocalDate.now());
         }, executionDateBinding);
 
-        valid.bind(executionDateBinding.isNotNull().and(invalidPastDate.not()).and(empty.not()).or(checked.not()));
-        invalid.bind(valid.not());
+        BooleanBinding validBinding = executionDateBinding.isNotNull()
+                .and(invalidPastDate.not())
+                .and(empty.not())
+                .or(ccBase.checkedProperty().not());
+        ccBase.bindValidProperty(validBinding);
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
-
-        ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**
@@ -158,7 +152,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      */
     @Override
     public BooleanProperty checkedProperty() {
-        return checked;
+        return ccBase.checkedProperty();
     }
 
     /**
@@ -166,7 +160,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      */
     @Override
     public boolean isChecked() {
-        return checked.get();
+        return ccBase.isChecked();
     }
 
     /**
@@ -174,7 +168,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      */
     @Override
     public void setChecked(boolean checked) {
-        this.checked.set(checked);
+        ccBase.setChecked(checked);
     }
 
     /**
@@ -182,7 +176,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      */
     @Override
     public ReadOnlyBooleanProperty validProperty() {
-        return valid;
+        return ccBase.validProperty();
     }
 
     /**
@@ -190,7 +184,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      */
     @Override
     public boolean isValid() {
-        return valid.get();
+        return ccBase.isValid();
     }
 
     /**

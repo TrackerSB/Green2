@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.elements.textfields;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.CheckedControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.BindingUtility;
@@ -53,15 +54,8 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      * The CSS class representing this class.
      */
     public static final String CSS_CLASS_CHECKED_TEXTFIELD = "checked-textfield";
+    private final CheckedControlBase<CheckedTextField> ccBase = new CheckedControlBase<>(this);
     private final IntegerProperty maxColumnCount = new SimpleIntegerProperty(this, "maxColumnCount");
-
-    private static final PseudoClass CHECKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("checked");
-    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true) {
-        @Override
-        protected void invalidated() {
-            pseudoClassStateChanged(CHECKED_PSEUDO_CLASS, get());
-        }
-    };
 
     private static final PseudoClass EMPTY_PSEUDO_CLASS = PseudoClass.getPseudoClass("empty");
     private final BooleanProperty emptyContent = new SimpleBooleanProperty(this, "emptyContent") {
@@ -79,25 +73,15 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
         }
 
     };
-    /**
-     * Holds {@code true} only if the content is valid. {@code true} if one of the following is true (as implemented by
-     * this class):
-     * <ol>
-     * <li>This field is not checked</li>
-     * <li>It is not empty and the content is not too long</li>
-     * </ol>
-     */
-    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
     private final List<ObservableBooleanValue> validConditions = new ArrayList<>();
     private final BooleanProperty validCondition = new SimpleBooleanProperty(this, "validCondition", true);
-    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
     private final Map<String, Pair<ReportType, BooleanExpression>> reports
             = Map.of(EnvironmentHandler.getResourceValue("inputMissing"),
                     new Pair<>(ReportType.ERROR, emptyProperty().and(checkedProperty())),
                     EnvironmentHandler.getResourceValue("inputToLong"),
                     new Pair<>(ReportType.ERROR, toLongProperty().and(checkedProperty())),
                     EnvironmentHandler.getResourceValue("inputInvalid"),
-                    new Pair<>(ReportType.ERROR, invalid.and(checkedProperty())));
+                    new Pair<>(ReportType.ERROR, ccBase.invalidProperty().and(checkedProperty())));
 
     /**
      * Constructs a new {@link CheckedTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
@@ -140,9 +124,8 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
-        valid.bind(toLongContent.or(emptyContent).not().and(validCondition).or(checked.not()));
-        invalid.bind(valid.not());
-        ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ccBase.bindValidProperty(
+                toLongContent.or(emptyContent).not().and(validCondition).or(ccBase.checkedProperty().not()));
     }
 
     /**
@@ -188,7 +171,7 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      */
     @Override
     public BooleanProperty checkedProperty() {
-        return checked;
+        return ccBase.checkedProperty();
     }
 
     /**
@@ -196,7 +179,7 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      */
     @Override
     public boolean isChecked() {
-        return checked.get();
+        return ccBase.isChecked();
     }
 
     /**
@@ -204,7 +187,7 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      */
     @Override
     public void setChecked(boolean checked) {
-        this.checked.set(checked);
+        ccBase.setChecked(checked);
     }
 
     /**
@@ -249,7 +232,7 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      */
     @Override
     public ReadOnlyBooleanProperty validProperty() {
-        return valid;
+        return ccBase.validProperty();
     }
 
     /**
@@ -257,7 +240,7 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      */
     @Override
     public boolean isValid() {
-        return valid.get();
+        return ccBase.isValid();
     }
 
     private void updateValidConditions() {

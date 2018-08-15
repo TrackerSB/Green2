@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.CheckedControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
@@ -29,7 +30,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.util.Pair;
@@ -43,20 +43,12 @@ import javafx.util.Pair;
  */
 public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Reportable {
 
-    /**
-     * {@link BooleanProperty} indicating whether the current value is valid.
-     */
-    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
-    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
-    /**
-     * Holds {@code true} only if the content has to be checked.
-     */
-    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
+    private final CheckedControlBase<CheckedSpinner<T>> ccBase = new CheckedControlBase<>(this);
     private final Map<String, Pair<ReportType, BooleanExpression>> reports = new HashMap<>(Map.of(
             EnvironmentHandler.getResourceValue("inputMissing"),
             new Pair<>(ReportType.ERROR, valueProperty().isNull().and(checkedProperty())),
             EnvironmentHandler.getResourceValue("inputInvalid"),
-            new Pair<>(ReportType.ERROR, invalid.and(checkedProperty()))
+            new Pair<>(ReportType.ERROR, ccBase.invalidProperty().and(checkedProperty()))
     ));
 
     /**
@@ -71,14 +63,11 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
     }
 
     private void initProperties(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
-        valid.bind(Bindings.createBooleanBinding(() -> {
+        ccBase.bindValidProperty(Bindings.createBooleanBinding(() -> {
             Optional<T> parsed = parser.apply(getEditor().textProperty().get());
             parsed.ifPresent(p -> factory.setValue(p));
             return parsed.isPresent();
-        }, getEditor().textProperty()).or(checked.not()));
-        invalid.bind(valid.not());
-
-        ElementsUtility.addCssClassIf(this, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        }, getEditor().textProperty()).or(ccBase.checkedProperty().not()));
     }
 
     /**
@@ -94,7 +83,7 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      */
     @Override
     public BooleanProperty checkedProperty() {
-        return checked;
+        return ccBase.checkedProperty();
     }
 
     /**
@@ -102,7 +91,7 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      */
     @Override
     public boolean isChecked() {
-        return checked.get();
+        return ccBase.isChecked();
     }
 
     /**
@@ -110,7 +99,7 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      */
     @Override
     public void setChecked(boolean checked) {
-        this.checked.set(checked);
+        ccBase.setChecked(checked);
     }
 
     /**
@@ -118,7 +107,7 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      */
     @Override
     public ReadOnlyBooleanProperty validProperty() {
-        return valid;
+        return ccBase.validProperty();
     }
 
     /**
@@ -126,6 +115,6 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      */
     @Override
     public boolean isValid() {
-        return valid.get();
+        return ccBase.isValid();
     }
 }

@@ -101,13 +101,13 @@ VBox, HBox {
 /*******************************************
 //Invalid and warning classes
 *******************************************/
-.invalidContent {
+.checked-control-base:invalid {
     -fx-border-color: -fx-main-error-color;
     -fx-highlight-fill: -fx-main-error-color;
     -fx-focus-color: -fx-main-error-color;
 }
 
-.invalidContent:focused {
+.checked-control-base:focused {
     -fx-border-color: transparent;
 }
 

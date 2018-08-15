@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.CheckedControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
@@ -32,7 +33,6 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -50,16 +50,11 @@ import javafx.util.Pair;
 public class ContributionField extends HBox implements Initializable, CheckedControl, Reportable {
 
     private static final Logger LOGGER = Logger.getLogger(ContributionField.class.getName());
+    private final CheckedControlBase<ContributionField> ccBase = new CheckedControlBase<>(this);
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
     @FXML
     private ColorPicker colorPicker;
-    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
-    private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid");
-    /**
-     * Holds {@code true} only if the content has to be checked.
-     */
-    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true);
 
     /**
      * Represents a combination of a spinner for entering a contribution and an associated color. The minimum value is
@@ -90,13 +85,13 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        valid.bind(contributionSpinner.validProperty().or(checked.not()));
-        invalid.bind(valid.not());
+        ccBase.bindValidProperty(contributionSpinner.validProperty().or(ccBase.checkedProperty().not()));
 
         colorPicker.setValue(Color.TRANSPARENT);
 
-        ElementsUtility.addCssClassIf(contributionSpinner, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
-        ElementsUtility.addCssClassIf(colorPicker, invalid, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(
+                contributionSpinner, ccBase.invalidProperty(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        ElementsUtility.addCssClassIf(colorPicker, ccBase.invalidProperty(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**
@@ -167,7 +162,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      */
     @Override
     public BooleanProperty checkedProperty() {
-        return checked;
+        return ccBase.checkedProperty();
     }
 
     /**
@@ -175,7 +170,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      */
     @Override
     public boolean isChecked() {
-        return checked.get();
+        return ccBase.isChecked();
     }
 
     /**
@@ -183,7 +178,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      */
     @Override
     public void setChecked(boolean checked) {
-        this.checked.set(checked);
+        ccBase.setChecked(checked);
     }
 
     /**
@@ -191,7 +186,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      */
     @Override
     public ReadOnlyBooleanProperty validProperty() {
-        return valid;
+        return ccBase.validProperty();
     }
 
     /**
@@ -199,6 +194,6 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      */
     @Override
     public boolean isValid() {
-        return valid.get();
+        return ccBase.isValid();
     }
 }
