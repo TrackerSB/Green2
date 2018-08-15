@@ -75,8 +75,6 @@ public class ContributionController extends WizardableController<Optional<BiMap<
     private ReportSummary reportSummary;
     private final ListProperty<DuplicateContributionField> contributionFields
             = new SimpleListProperty<>(this, "contributionSpinner", FXCollections.observableArrayList());
-    private final BooleanProperty uniqueColors = new SimpleBooleanProperty(this, "uniqueColors", true);
-    private final BooleanProperty uniqueContributions = new SimpleBooleanProperty(this, "uniqueContributions", true);
     private final BooleanProperty allContributionFieldsValid
             = new SimpleBooleanProperty(this, "allContributionFieldsValid", true);
     private final ChangeListener<Object> calculateAllContributionFieldsValid = (obs, oldVal, newVal) -> {
@@ -137,7 +135,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                 });
             }
         });
-        bindValidProperty(allContributionFieldsValid.and(uniqueColors).and(uniqueContributions));
+        bindValidProperty(allContributionFieldsValid);
         addContributionField();
     }
 
