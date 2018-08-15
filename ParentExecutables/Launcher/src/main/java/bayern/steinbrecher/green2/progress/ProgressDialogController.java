@@ -20,12 +20,10 @@ import bayern.steinbrecher.green2.Controller;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 
 /**
  * The controller of a {@link ProgressDialog}.
@@ -36,8 +34,8 @@ import javafx.beans.property.StringProperty;
 public class ProgressDialogController extends Controller {
 
     private static final DecimalFormat FORMAT = new DecimalFormat("#0.0");
-    private final DoubleProperty percentage = new SimpleDoubleProperty();
-    private final StringProperty percentageString = new SimpleStringProperty("0%");
+    private final ReadOnlyDoubleWrapper percentage = new ReadOnlyDoubleWrapper(this, "percentage", 0);
+    private final ReadOnlyStringWrapper percentageString = new ReadOnlyStringWrapper(this, "percentageStrnig", "0%");
 
     /**
      * {@inheritDoc}
@@ -57,7 +55,7 @@ public class ProgressDialogController extends Controller {
      * @return The property containing the current value representing the progress of download.
      */
     public ReadOnlyDoubleProperty percentageProperty() {
-        return percentage;
+        return percentage.getReadOnlyProperty();
     }
 
     /**
@@ -90,7 +88,7 @@ public class ProgressDialogController extends Controller {
      * @see #percentageProperty()
      */
     public ReadOnlyStringProperty percentageStringProperty() {
-        return percentageString;
+        return percentageString.getReadOnlyProperty();
     }
 
     /**

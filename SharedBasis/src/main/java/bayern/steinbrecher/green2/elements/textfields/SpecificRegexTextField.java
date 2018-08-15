@@ -21,10 +21,11 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.css.PseudoClass;
 
@@ -38,9 +39,9 @@ public class SpecificRegexTextField extends CheckedTextField {
     /**
      * The property holding the regex used for validation.
      */
-    private final StringProperty regex = new SimpleStringProperty(this, "regex", ".*");
+    private final ReadOnlyStringWrapper regex = new ReadOnlyStringWrapper(this, "regex", ".*");
     private static final PseudoClass UNMATCH_REGEX_PSEUDO_CLASS = PseudoClass.getPseudoClass("unmatch");
-    private final BooleanProperty matchRegex = new SimpleBooleanProperty(this, "matchRegex") {
+    private final ReadOnlyBooleanWrapper matchRegex = new ReadOnlyBooleanWrapper(this, "matchRegex") {
         @Override
         protected void invalidated() {
             pseudoClassStateChanged(UNMATCH_REGEX_PSEUDO_CLASS, !get());
@@ -137,7 +138,7 @@ public class SpecificRegexTextField extends CheckedTextField {
      * @return The property representing the regex used for validation.
      */
     public ReadOnlyStringProperty regexProperty() {
-        return regex;
+        return regex.getReadOnlyProperty();
     }
 
     /**
@@ -166,7 +167,7 @@ public class SpecificRegexTextField extends CheckedTextField {
      * @see CheckedRegexTextField#getRegex()
      */
     public ReadOnlyBooleanProperty matchRegexProperty() {
-        return matchRegex;
+        return matchRegex.getReadOnlyProperty();
     }
 
     /**

@@ -19,7 +19,6 @@ package bayern.steinbrecher.wizard;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
@@ -36,12 +35,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.MapProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -75,13 +73,13 @@ public class WizardController implements Initializable {
      * NOTE The initial dummy page is needed since the current page may be already requested before there is a chance to
      * specify the pages of the wizard.
      */
-    private final ObjectProperty<WizardPage<?>> currentPage
-            = new SimpleObjectProperty<>(this, "currentPage", new WizardPage<Void>(null, null, false, () -> null));
+    private final ReadOnlyObjectWrapper<WizardPage<?>> currentPage
+            = new ReadOnlyObjectWrapper<>(this, "currentPage", new WizardPage<Void>(null, null, false, () -> null));
     private final MapProperty<String, WizardPage<?>> pages = new SimpleMapProperty<>();
-    private final BooleanProperty atBeginning = new SimpleBooleanProperty(this, "atBeginning", true);
-    private final BooleanProperty atFinish = new SimpleBooleanProperty(this, "atEnd");
-    private final BooleanProperty finished = new SimpleBooleanProperty(this, "finished", false);
-    private final BooleanProperty changingPage = new SimpleBooleanProperty(this, "swiping", false);
+    private final ReadOnlyBooleanWrapper atBeginning = new ReadOnlyBooleanWrapper(this, "atBeginning", true);
+    private final ReadOnlyBooleanWrapper atFinish = new ReadOnlyBooleanWrapper(this, "atEnd");
+    private final ReadOnlyBooleanWrapper finished = new ReadOnlyBooleanWrapper(this, "finished", false);
+    private final ReadOnlyBooleanWrapper changingPage = new ReadOnlyBooleanWrapper(this, "swiping", false);
     private final Stack<String> history = new Stack<>();
     @FXML
     private ScrollPane scrollContent;
@@ -294,7 +292,7 @@ public class WizardController implements Initializable {
      * @return The property representing whether the wizard is finished.
      */
     public ReadOnlyBooleanProperty finishedProperty() {
-        return finished;
+        return finished.getReadOnlyProperty();
     }
 
     /**
@@ -313,7 +311,7 @@ public class WizardController implements Initializable {
      * @return {@code true} only if the current page is the first one.
      */
     public ReadOnlyBooleanProperty atBeginningProperty() {
-        return atBeginning;
+        return atBeginning.getReadOnlyProperty();
     }
 
     /**
@@ -331,7 +329,7 @@ public class WizardController implements Initializable {
      * @return {@code true} only if the current page is a last one.
      */
     public ReadOnlyBooleanProperty atFinishProperty() {
-        return atFinish;
+        return atFinish.getReadOnlyProperty();
     }
 
     /**
@@ -349,7 +347,7 @@ public class WizardController implements Initializable {
      * @return The property holding the currently shown page.
      */
     public ReadOnlyObjectProperty<WizardPage<?>> currentPageProperty() {
-        return currentPage;
+        return currentPage.getReadOnlyProperty();
     }
 
     /**
@@ -367,7 +365,7 @@ public class WizardController implements Initializable {
      * @return The property holding whether the current page is currently changed.
      */
     public ReadOnlyBooleanProperty changingPageProperty() {
-        return changingPage;
+        return changingPage.getReadOnlyProperty();
     }
 
     /**

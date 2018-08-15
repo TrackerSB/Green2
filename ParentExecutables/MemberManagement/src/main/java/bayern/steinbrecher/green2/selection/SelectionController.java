@@ -26,13 +26,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -52,10 +50,10 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
 
     private final MapProperty<T, Optional<CheckBox>> optionsProperty
             = new SimpleMapProperty<>(FXCollections.observableHashMap());
-    private final IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount");
+    private final ReadOnlyIntegerWrapper selectedCount = new ReadOnlyIntegerWrapper(this, "selectedCount");
     private final ReadOnlyIntegerProperty totalCount = optionsProperty.sizeProperty();
-    private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
-    private final BooleanProperty allSelected = new SimpleBooleanProperty(this, "allSelected");
+    private final ReadOnlyBooleanWrapper nothingSelected = new ReadOnlyBooleanWrapper(this, "nothingSelected");
+    private final ReadOnlyBooleanWrapper allSelected = new ReadOnlyBooleanWrapper(this, "allSelected");
     @FXML
     private ListView<CheckBox> optionsListView; //TODO Use ListView<T>
     private final ChangeListener<Boolean> selectionChange
@@ -139,7 +137,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
      * @return The property representing the number of currently selected fields.
      */
     public ReadOnlyIntegerProperty selectedCountProperty() {
-        return selectedCount;
+        return selectedCount.getReadOnlyProperty();
     }
 
     /**
@@ -175,7 +173,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
      * @return The property representing a boolean indicating whether no entry is currently selected.
      */
     public ReadOnlyBooleanProperty nothingSelectedProperty() {
-        return nothingSelected;
+        return nothingSelected.getReadOnlyProperty();
     }
 
     /**
@@ -193,7 +191,7 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
      * @return The property representing a boolean indicating whether every entry is currently selected.
      */
     public ReadOnlyBooleanProperty allSelectedProperty() {
-        return allSelected;
+        return allSelected.getReadOnlyProperty();
     }
 
     /**

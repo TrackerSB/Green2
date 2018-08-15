@@ -35,6 +35,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -59,7 +60,7 @@ public class ResultDialogController extends WizardableController<Optional<Void>>
     @FXML
     private TableView<List<ReadOnlyStringProperty>> resultView;
     private final ObjectProperty<List<List<String>>> results = new SimpleObjectProperty<>();
-    private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
+    private final ReadOnlyBooleanWrapper empty = new ReadOnlyBooleanWrapper(this, "empty");
 
     /**
      * {@inheritDoc}
@@ -173,7 +174,7 @@ public class ResultDialogController extends WizardableController<Optional<Void>>
      * result contains no columns, no rows or only one row representing the headings of the columns.
      */
     public ReadOnlyBooleanProperty emptyProperty() {
-        return empty;
+        return empty.getReadOnlyProperty();
     }
 
     /**

@@ -19,10 +19,10 @@ package bayern.steinbrecher.green2.elements.report;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import java.util.Objects;
 import javafx.beans.binding.BooleanExpression;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -43,7 +43,7 @@ final class ReportEntry {
 
     private final StringProperty message = new SimpleStringProperty(this, "message");
     private final ObjectProperty<ReportType> reportType = new SimpleObjectProperty<>(this, "reportType");
-    private final IntegerProperty occurrences = new SimpleIntegerProperty(this, "occurrences");
+    private final ReadOnlyIntegerWrapper occurrences = new ReadOnlyIntegerWrapper(this, "occurrences");
     private final ListProperty<BooleanExpression> reportValidations
             = new SimpleListProperty<>(this, "reportValidations", FXCollections.observableArrayList());
 
@@ -130,7 +130,7 @@ final class ReportEntry {
      * @return The property holding the number of validations evaluating to {@code true}.
      */
     public ReadOnlyIntegerProperty occurrencesProperty() {
-        return occurrences;
+        return occurrences.getReadOnlyProperty();
     }
 
     /**

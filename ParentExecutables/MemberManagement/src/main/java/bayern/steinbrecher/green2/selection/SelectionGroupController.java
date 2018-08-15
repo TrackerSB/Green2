@@ -34,15 +34,16 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.Observable;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyMapProperty;
+import javafx.beans.property.ReadOnlyMapWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -86,18 +87,19 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     private final ObservableValue<ObservableList<AssociatedItem>> options
             = new SimpleObjectProperty<>(this, "options",
                     FXCollections.observableArrayList(i -> new Observable[]{i.itemProperty(), i.groupProperty()}));
-    private final IntegerProperty totalCount = new SimpleIntegerProperty(this, "totalCount");
+    private final ReadOnlyIntegerWrapper totalCount = new ReadOnlyIntegerWrapper(this, "totalCount");
     //FIXME Since the value should also be unique it should be something like a BiMapProperty.
     private final MapProperty<G, Color> groups
             = new SimpleMapProperty<>(this, "groups", FXCollections.observableHashMap());
     private final ObjectProperty<Optional<G>> currentGroup
             = new SimpleObjectProperty<>(this, "selectedGroup", Optional.empty());
-    private final BooleanProperty currentGroupSelected = new SimpleBooleanProperty(this, "currentGroupSelected");
-    private final MapProperty<G, IntegerProperty> selectedPerGroup
-            = new SimpleMapProperty<>(this, "selectedPerGroup", FXCollections.observableHashMap());
-    private final IntegerProperty selectedCount = new SimpleIntegerProperty(this, "selectedCount", 0);
-    private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected", true);
-    private final BooleanProperty allSelected = new SimpleBooleanProperty(this, "allSelected");
+    private final ReadOnlyBooleanWrapper currentGroupSelected
+            = new ReadOnlyBooleanWrapper(this, "currentGroupSelected");
+    private final ReadOnlyMapWrapper<G, IntegerProperty> selectedPerGroup
+            = new ReadOnlyMapWrapper<>(this, "selectedPerGroup", FXCollections.observableHashMap());
+    private final ReadOnlyIntegerWrapper selectedCount = new ReadOnlyIntegerWrapper(this, "selectedCount", 0);
+    private final ReadOnlyBooleanWrapper nothingSelected = new ReadOnlyBooleanWrapper(this, "nothingSelected", true);
+    private final ReadOnlyBooleanWrapper allSelected = new ReadOnlyBooleanWrapper(this, "allSelected");
     @FXML
     private ListView<AssociatedItem> optionsListView;
     @FXML
@@ -367,7 +369,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
      * @return The property holding whether a group is selected which is not the unselect group.
      */
     public ReadOnlyBooleanProperty currentGroupSelectedProperty() {
-        return currentGroupSelected;
+        return currentGroupSelected.getReadOnlyProperty();
     }
 
     /**
@@ -385,7 +387,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
      * @return The property representing the number of items associated with a group.
      */
     public ReadOnlyMapProperty<G, ? extends ReadOnlyIntegerProperty> selectedPerGroupProperty() {
-        return selectedPerGroup;
+        return selectedPerGroup.getReadOnlyProperty();
     }
 
     /**
@@ -403,7 +405,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
      * @return The property representing the total number of entries to select.
      */
     public ReadOnlyIntegerProperty totalCountProperty() {
-        return totalCount;
+        return totalCount.getReadOnlyProperty();
     }
 
     /**
@@ -416,12 +418,30 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
     }
 
     /**
+     * Returns the property holding how many options are selected ignoring their associated group.
+     *
+     * @return The property holding how many options are selected ignoring their associated group.
+     */
+    public ReadOnlyIntegerProperty selectedCountProperty() {
+        return selectedCount.getReadOnlyProperty();
+    }
+
+    /**
+     * Returns the number of associated options, i.e. options that are selected.
+     *
+     * @return The number of associated options, i.e. options that are selected.
+     */
+    public int getSelectedCount() {
+        return selectedCountProperty().getValue();
+    }
+
+    /**
      * Returns the property representing a boolean indicating whether no entry is currently selected.
      *
      * @return The property representing a boolean indicating whether no entry is currently selected.
      */
     public ReadOnlyBooleanProperty nothingSelectedProperty() {
-        return nothingSelected;
+        return nothingSelected.getReadOnlyProperty();
     }
 
     /**
@@ -439,7 +459,7 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
      * @return The property representing a boolean indicating whether every entry is currently selected.
      */
     public ReadOnlyBooleanProperty allSelectedProperty() {
-        return allSelected;
+        return allSelected.getReadOnlyProperty();
     }
 
     /**

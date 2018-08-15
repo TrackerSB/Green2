@@ -19,7 +19,6 @@ package bayern.steinbrecher.green2.elements;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
-import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -35,6 +34,7 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.DatePicker;
 import javafx.util.Pair;
@@ -49,9 +49,9 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
 
     private static final Logger LOGGER = Logger.getLogger(CheckedDatePicker.class.getName());
     private final CheckedControlBase<CheckedDatePicker> ccBase = new CheckedControlBase<>(this);
-    private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty");
+    private final ReadOnlyBooleanWrapper empty = new ReadOnlyBooleanWrapper(this, "empty");
     private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
-    private final BooleanProperty invalidPastDate = new SimpleBooleanProperty(this, "invalidPastDate");
+    private final ReadOnlyBooleanWrapper invalidPastDate = new ReadOnlyBooleanWrapper(this, "invalidPastDate");
     private final Map<String, Pair<ReportType, BooleanExpression>> reports
             = Map.of(EnvironmentHandler.getResourceValue("pastExecutionDate"),
                     new Pair<>(ReportType.ERROR, invalidPastDateProperty()),
@@ -189,7 +189,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      * @return The property represents a boolean value indicating whether the textfield is empty or not.
      */
     public ReadOnlyBooleanProperty emptyProperty() {
-        return empty;
+        return empty.getReadOnlyProperty();
     }
 
     /**
@@ -238,7 +238,7 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      * the future. It saves {@code false} otherwise.
      */
     public ReadOnlyBooleanProperty invalidPastDateProperty() {
-        return invalidPastDate;
+        return invalidPastDate.getReadOnlyProperty();
     }
 
     /**

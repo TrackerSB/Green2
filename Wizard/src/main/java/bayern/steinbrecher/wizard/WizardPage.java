@@ -18,10 +18,9 @@ package bayern.steinbrecher.wizard;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Pane;
@@ -38,8 +37,8 @@ public final class WizardPage<T> {
      * The key of the page to be used as first one.
      */
     public static final String FIRST_PAGE_KEY = "first";
-    private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid");
-    private final BooleanProperty hasNextFunction = new SimpleBooleanProperty(this, "hasNextFunction");
+    private final ReadOnlyBooleanWrapper valid = new ReadOnlyBooleanWrapper(this, "valid");
+    private final ReadOnlyBooleanWrapper hasNextFunction = new ReadOnlyBooleanWrapper(this, "hasNextFunction");
     private final Pane root;
     private final Property<Callable<String>> nextFunction = new SimpleObjectProperty<>(this, "nextFunction");
     private boolean finish;
@@ -160,7 +159,7 @@ public final class WizardPage<T> {
      * @return The property representing whether this page has valid input.
      */
     public ReadOnlyBooleanProperty validProperty() {
-        return valid;
+        return valid.getReadOnlyProperty();
     }
 
     /**
@@ -179,7 +178,7 @@ public final class WizardPage<T> {
      * @see #nextFunctionProperty()
      */
     public ReadOnlyBooleanProperty hasNextFunctionProperty() {
-        return hasNextFunction;
+        return hasNextFunction.getReadOnlyProperty();
     }
 
     /**
