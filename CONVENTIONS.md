@@ -81,7 +81,7 @@ Place CSS files containing rules for specific classes or dialogs in the same pac
 * `var` is allowed in direct definitions of variables like `var someObject = new SomeObject()`
 * If the type is generic and `var` is used on the left side the right side should not use the diamond operator `<>` but specify the generic type explitely.
 #### default keyword for methods
-Do not use `default` methods.
+Avoid `default` methods as much as possible. An allowed usecase could be one-line setter or getter.
 #### Initializable(...)
 * When overriding initializable(...) of any class call `super.initializable(...)`.
 #### Stream API
