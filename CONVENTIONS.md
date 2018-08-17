@@ -78,7 +78,7 @@ Place CSS files containing rules for specific classes or dialogs in the same pac
 ### Java
 #### var keyword
 * Avoid the var keyword in general
-* `var` is allowed in direct definitions of variables like `var someObject = new SomeObject()
+* `var` is allowed in direct definitions of variables like `var someObject = new SomeObject()`
 * If the type is generic and `var` is used on the left side the right side should not use the diamond operator `<>` but specify the generic type explitely.
 #### default keyword for methods
 Do not use `default` methods.
