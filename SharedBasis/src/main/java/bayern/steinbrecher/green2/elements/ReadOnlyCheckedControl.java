@@ -25,6 +25,7 @@ import javafx.beans.value.ObservableBooleanValue;
  * describing whether the current input is valid or if it is checked whether it is valid.
  *
  * @author Stefan Huber
+ * @since 2u14
  */
 public interface ReadOnlyCheckedControl {
 
