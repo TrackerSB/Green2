@@ -20,9 +20,6 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.NameField;
-import java.util.HashMap;
-import java.util.Map;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -43,24 +40,18 @@ public class ProfileNameField extends NameField {
      */
     public ProfileNameField() {
         super();
+        getStyleClass().add("profile-name-field");
+        initProperties();
+    }
+
+    private void initProperties() {
         textProperty().addListener((obs, oldVal, newVal) -> {
             profileAlreadyExists.set(!EnvironmentHandler.getProfile().getProfileName().equals(newVal)
                     && Profile.getAvailableProfiles().contains(newVal));
         });
         addValidCondition(profileAlreadyExists.not());
-        getStyleClass().add("profile-name-field");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
-        Map<String, Pair<ReportType, BooleanExpression>> reports = new HashMap<>();
-        reports.putAll(super.getReports());
-        reports.put(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
+        addReport(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
                 new Pair<>(ReportType.ERROR, profileAlreadyExists));
-        return reports;
     }
 
     /**

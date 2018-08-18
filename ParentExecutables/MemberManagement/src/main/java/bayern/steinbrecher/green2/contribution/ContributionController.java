@@ -27,7 +27,6 @@ import com.google.common.collect.HashBiMap;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -36,7 +35,6 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -242,17 +240,8 @@ public class ContributionController extends WizardableController<Optional<BiMap<
         private void initProperties() {
             addValidCondition(duplicateColor.not());
             addValidCondition(duplicateContribution.not());
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
-            Map<String, Pair<ReportType, BooleanExpression>> reports = super.getReports();
-            reports.put(DUPLICATE_COLOR_MESSAGE, new Pair<>(ReportType.ERROR, duplicateColor));
-            reports.put(DUPLICATE_CONTRIBUTION_MESSAGE, new Pair<>(ReportType.ERROR, duplicateContribution));
-            return reports;
+            addReport(DUPLICATE_COLOR_MESSAGE, new Pair<>(ReportType.ERROR, duplicateColor));
+            addReport(DUPLICATE_CONTRIBUTION_MESSAGE, new Pair<>(ReportType.ERROR, duplicateContribution));
         }
 
         /**

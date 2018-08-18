@@ -17,14 +17,11 @@
 package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.elements.CheckedControl;
-import bayern.steinbrecher.green2.elements.CheckedControlBase;
+import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
-import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -41,6 +38,8 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
+import bayern.steinbrecher.green2.elements.CheckableControl;
+import javafx.collections.ObservableMap;
 
 /**
  * Represents a contribution spinner. It is a {@link CheckedDoubleSpinner} which has a further field for associating a
@@ -48,10 +47,10 @@ import javafx.util.Pair;
  *
  * @author Stefan Huber
  */
-public class ContributionField extends HBox implements Initializable, CheckedControl, Reportable {
+public class ContributionField extends HBox implements Initializable, CheckableControl {
 
     private static final Logger LOGGER = Logger.getLogger(ContributionField.class.getName());
-    private final CheckedControlBase<ContributionField> ccBase = new CheckedControlBase<>(this);
+    private final CheckableControlBase<ContributionField> ccBase = new CheckableControlBase<>(this);
     @FXML
     private CheckedDoubleSpinner contributionSpinner;
     @FXML
@@ -88,6 +87,10 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ccBase.addValidCondition(contributionSpinner.validProperty());
+        contributionSpinner.getReports()
+                .entrySet()
+                .stream()
+                .forEach(report -> ccBase.addReport(report.getKey(), report.getValue()));
 
         colorPicker.setValue(Color.TRANSPARENT);
 
@@ -100,8 +103,16 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
-        return contributionSpinner.getReports();
+    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return ccBase.getReports();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
+        ccBase.addReport(message, report);
     }
 
     /**

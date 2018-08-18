@@ -17,11 +17,8 @@
 package bayern.steinbrecher.green2.elements.textfields;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.elements.CheckedControl;
-import bayern.steinbrecher.green2.elements.CheckedControlBase;
+import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
-import bayern.steinbrecher.green2.elements.report.Reportable;
-import java.util.Map;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -33,6 +30,8 @@ import javafx.css.PseudoClass;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 import javafx.util.Pair;
+import bayern.steinbrecher.green2.elements.CheckableControl;
+import javafx.collections.ObservableMap;
 
 /**
  * Represents text fields that detects whether their input text is longer than a given maximum column count. These text
@@ -40,9 +39,9 @@ import javafx.util.Pair;
  *
  * @author Stefan Huber
  */
-public class CheckedTextField extends TextField implements CheckedControl, Reportable {
+public class CheckedTextField extends TextField implements CheckableControl {
 
-    private final CheckedControlBase<CheckedTextField> ccBase = new CheckedControlBase<>(this);
+    private final CheckableControlBase<CheckedTextField> ccBase = new CheckableControlBase<>(this);
     private final IntegerProperty maxColumnCount = new SimpleIntegerProperty(this, "maxColumnCount");
 
     private static final PseudoClass EMPTY_PSEUDO_CLASS = PseudoClass.getPseudoClass("empty");
@@ -61,13 +60,6 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
         }
 
     };
-    private final Map<String, Pair<ReportType, BooleanExpression>> reports
-            = Map.of(EnvironmentHandler.getResourceValue("inputMissing"),
-                    new Pair<>(ReportType.ERROR, emptyProperty().and(checkedProperty())),
-                    EnvironmentHandler.getResourceValue("inputToLong"),
-                    new Pair<>(ReportType.ERROR, toLongProperty().and(checkedProperty())),
-                    EnvironmentHandler.getResourceValue("inputInvalid"),
-                    new Pair<>(ReportType.ERROR, ccBase.invalidProperty().and(checkedProperty())));
 
     /**
      * Constructs a new {@link CheckedTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
@@ -112,14 +104,28 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
         ccBase.addValidCondition(toLongContent.not());
         ccBase.addValidCondition(emptyContent.not());
+        ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
+                new Pair<>(ReportType.ERROR, emptyProperty().and(checkedProperty())));
+        ccBase.addReport(EnvironmentHandler.getResourceValue("inputToLong"),
+                new Pair<>(ReportType.ERROR, toLongProperty().and(checkedProperty())));
+        ccBase.addReport(EnvironmentHandler.getResourceValue("inputInvalid"),
+                new Pair<>(ReportType.ERROR, ccBase.invalidProperty().and(checkedProperty())));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
-        return reports;
+    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return ccBase.getReports();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
+        ccBase.addReport(message, report);
     }
 
     /**

@@ -16,29 +16,29 @@
  */
 package bayern.steinbrecher.green2.elements.report;
 
-import com.google.errorprone.annotations.DoNotCall;
-import java.util.Map;
 import javafx.beans.binding.BooleanExpression;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.util.Pair;
 
 /**
- * Represents objects which can be added to a {@link ReportSummary} directly.
+ * Represents a base implementation of {@link Reportable} which may be used for delegation.
  *
  * @author Stefan Huber
+ * @since 2u14
  */
-public interface Reportable {
+public class ReportableBase implements Reportable {
+
+    private final ObservableMap<String, Pair<ReportType, BooleanExpression>> reports
+            = FXCollections.observableHashMap();
 
     /**
-     * Returns a {@link Map} from messages to their {@link ReportType} and to an expression which holds when to
-     * show/hide the message. NOTE When implementing this method it has to be made sure that the
-     * {@link BooleanExpression}s representing the validation are always the same when requested. Otherwise
-     * {@link ReportSummary} may not be able to remove all validation associated with this {@link Reportable}.
-     *
-     * @return A {@link Map} from messages to their {@link ReportType} and to an expression which holds when to
-     * show/hide the message.
+     * {@inheritDoc}
      */
-    ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports();
+    @Override
+    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return reports;
+    }
 
     /**
      * Adds a further report to the list of reports. NOTE Use this method in subclasses of implementing classes only!
@@ -48,7 +48,12 @@ public interface Reportable {
      * @param message The message to display.
      * @param report The report containing its type and an expression evaluating whether to show the report.
      */
-    //FIXME How to make it protected and final?
-    @DoNotCall
-    /* protected final */ void addReport(String message, Pair<ReportType, BooleanExpression> report);
+    @Override
+    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
+        if (reports.containsKey(message)) {
+            throw new IllegalArgumentException("A report for \"" + message + "\" is already registered.");
+        } else {
+            reports.put(message, report);
+        }
+    }
 }

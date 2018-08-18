@@ -23,8 +23,7 @@ import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.ProfileSettings;
-import bayern.steinbrecher.green2.elements.CheckedControl;
-import bayern.steinbrecher.green2.elements.CheckedControlBase;
+import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.spinner.CheckedSpinner;
 import bayern.steinbrecher.green2.utility.BindingUtility;
@@ -72,6 +71,10 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Priority;
+import bayern.steinbrecher.green2.elements.CheckableControl;
+import bayern.steinbrecher.green2.elements.report.ReportType;
+import javafx.beans.binding.BooleanExpression;
+import javafx.collections.ObservableMap;
 
 /**
  * Represents the controller of the dialog for querying member.
@@ -265,10 +268,10 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      * @param <T> The type of the column to query.
      */
     private abstract static class CheckedConditionField<T> extends HBox
-            implements CheckedControl, Initializable, Observable {
+            implements CheckableControl, Initializable, Observable {
 
         private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
-        private final CheckedControlBase<CheckedConditionField<T>> ccBase = new CheckedControlBase<>(this);
+        private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
         private final String realColumnName;
 
@@ -380,6 +383,22 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                     }
                 }
             };
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+            return ccBase.getReports();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
+            ccBase.addReport(message, report);
         }
 
         /**

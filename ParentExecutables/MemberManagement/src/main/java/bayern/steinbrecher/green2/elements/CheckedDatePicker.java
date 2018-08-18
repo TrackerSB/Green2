@@ -18,13 +18,11 @@ package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.report.ReportType;
-import bayern.steinbrecher.green2.elements.report.Reportable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -37,6 +35,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.collections.ObservableMap;
 import javafx.scene.control.DatePicker;
 import javafx.util.Pair;
 
@@ -46,20 +45,13 @@ import javafx.util.Pair;
  * @author Stefan Huber
  */
 @SuppressWarnings("PMD.DataClass")
-public class CheckedDatePicker extends DatePicker implements CheckedControl, Reportable {
+public class CheckedDatePicker extends DatePicker implements CheckableControl {
 
     private static final Logger LOGGER = Logger.getLogger(CheckedDatePicker.class.getName());
-    private final CheckedControlBase<CheckedDatePicker> ccBase = new CheckedControlBase<>(this);
+    private final CheckableControlBase<CheckedDatePicker> ccBase = new CheckableControlBase<>(this);
     private final ReadOnlyBooleanWrapper empty = new ReadOnlyBooleanWrapper(this, "empty");
     private final BooleanProperty forceFuture = new SimpleBooleanProperty(this, "forceFuture", false);
     private final ReadOnlyBooleanWrapper invalidPastDate = new ReadOnlyBooleanWrapper(this, "invalidPastDate");
-    private final Map<String, Pair<ReportType, BooleanExpression>> reports
-            = Map.of(EnvironmentHandler.getResourceValue("pastExecutionDate"),
-                    new Pair<>(ReportType.ERROR, invalidPastDateProperty()),
-                    EnvironmentHandler.getResourceValue("inputMissing"),
-                    new Pair<>(ReportType.ERROR, checkedProperty().and(emptyProperty())),
-                    EnvironmentHandler.getResourceValue("inputInvalid"),
-                    new Pair<>(ReportType.ERROR, ccBase.invalidProperty()));
 
     /**
      * Constructs {@link CheckedDatePicker} without initial date and {@code forceFuture} set to {@code false}.
@@ -131,6 +123,12 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
         ccBase.addValidCondition(executionDateBinding.isNotNull());
         ccBase.addValidCondition(invalidPastDate.not());
         ccBase.addValidCondition(empty.not());
+        ccBase.addReport(EnvironmentHandler.getResourceValue("pastExecutionDate"),
+                new Pair<>(ReportType.ERROR, invalidPastDateProperty()));
+        ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
+                new Pair<>(ReportType.ERROR, checkedProperty().and(emptyProperty())));
+        ccBase.addReport(EnvironmentHandler.getResourceValue("inputInvalid"),
+                new Pair<>(ReportType.ERROR, ccBase.invalidProperty()));
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
     }
 
@@ -138,8 +136,16 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
-        return reports;
+    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return ccBase.getReports();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
+        ccBase.addReport(message, report);
     }
 
     /**

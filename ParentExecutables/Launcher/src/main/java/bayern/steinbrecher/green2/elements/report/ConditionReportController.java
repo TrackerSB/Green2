@@ -28,7 +28,6 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.Observable;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -152,7 +151,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
     /**
      * Represents a condition and whether it is currently fullfilled ({@code true}/{@code false}).
      */
-    private static class Condition implements Reportable {
+    private static class Condition extends ReportableBase {
 
         private static final Logger LOGGER = Logger.getLogger(ConditionReportController.class.getName());
         private final StringProperty name = new SimpleStringProperty(this, "name");
@@ -169,15 +168,12 @@ public class ConditionReportController extends ResultController<Optional<Boolean
                 LOGGER.log(Level.WARNING, "An evaluation of a condition failed. It is skipped.", ex);
                 this.value.set(Optional.empty());
             }
+            initProperties();
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Map<String, Pair<ReportType, BooleanExpression>> getReports() {
-            return Map.of(EnvironmentHandler.getResourceValue("skippedConditions"),
-                    new Pair<>(ReportType.WARNING, value.isEqualTo(Optional.empty())));
+        private void initProperties() {
+            addReport(EnvironmentHandler.getResourceValue("skippedConditions"),
+                    new Pair<>(ReportType.WARNING, this.value.isEqualTo(Optional.empty())));
         }
 
         /**
