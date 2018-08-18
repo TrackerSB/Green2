@@ -26,6 +26,7 @@ import javafx.beans.property.BooleanProperty;
  * @see ReadOnlyCheckedControl
  *
  * @author Stefan Huber
+ * @since 2u14
  */
 public interface CheckedControl extends ReadOnlyCheckedControl {
 
