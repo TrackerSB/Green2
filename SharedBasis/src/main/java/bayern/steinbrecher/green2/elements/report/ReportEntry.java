@@ -18,17 +18,16 @@ package bayern.steinbrecher.green2.elements.report;
 
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import java.util.Objects;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 
 /**
@@ -59,14 +58,7 @@ final class ReportEntry {
         reportValidations.addListener((obs, oldVal, newVal) -> {
             occurrences.bind(BindingUtility.reduceSum(
                     newVal.stream()
-                            .map(exp -> {
-                                SimpleIntegerProperty mayOccur = new SimpleIntegerProperty();
-                                ChangeListener<? super Boolean> listener = (obsInner, oldValInner, newValInner) -> {
-                                    mayOccur.set(newValInner ? 1 : 0);
-                                };
-                                exp.addListener(listener);
-                                return mayOccur;
-                            })));
+                            .map(exp -> Bindings.createIntegerBinding(() -> exp.get() ? 1 : 0, exp))));
         });
     }
 
