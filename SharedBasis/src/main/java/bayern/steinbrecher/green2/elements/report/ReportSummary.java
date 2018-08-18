@@ -18,7 +18,6 @@ package bayern.steinbrecher.green2.elements.report;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.utility.BindingUtility;
-import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -102,10 +101,8 @@ public class ReportSummary extends TitledPane {
                             reportLabel.textProperty().bind(reportText);
                             reportLabel.graphicProperty().bind(Bindings.createObjectBinding(
                                     () -> entry.getReportType().getGraphic(), entry.reportTypeProperty()));
-                            for (ReportType type : ReportType.values()) {
-                                ElementsUtility.addCssClassIf(
-                                        reportLabel, entry.reportTypeProperty().isEqualTo(type), type.getCSSClass());
-                            }
+                            reportLabel.getStyleClass()
+                                    .add(entry.getReportType().getCSSClass());
                             entry.occurrencesProperty().addListener((obs, oldVal, newVal) -> {
                                 if (newVal.intValue() > 0) {
                                     if (!reportsBox.getChildren().contains(reportLabel)) {
