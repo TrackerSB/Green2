@@ -85,6 +85,8 @@
     <rule ref="category/java/errorprone.xml">
         <exclude name="BeanMembersShouldSerialize" />
         <exclude name="CallSuperLast" />
+        <exclude name="DataflowAnomalyAnalysis" /> <!-- NOTE May include it at some point again -->
+        <!-- See https://github.com/pmd/pmd/issues/1304#issuecomment-412925368 -->
     </rule>
     <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
         <properties>
