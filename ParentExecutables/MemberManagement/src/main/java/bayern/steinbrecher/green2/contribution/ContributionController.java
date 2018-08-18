@@ -252,6 +252,8 @@ public class ContributionController extends WizardableController<Optional<BiMap<
             findContributionSpinner().ifPresentOrElse(contributionSpinner -> {
                 ElementsUtility.addCssClassIf(contributionSpinner, duplicateContribution, CSS_CLASS_DUPLICATE_ENTRY);
             }, () -> LOGGER.log(Level.WARNING, "Could not find ContributionSpinner of ContributionField."));
+            addValidCondition(duplicateColor.not());
+            addValidCondition(duplicateContribution.not());
         }
 
         /**
