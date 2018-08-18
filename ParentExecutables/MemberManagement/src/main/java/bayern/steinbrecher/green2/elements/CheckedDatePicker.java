@@ -36,6 +36,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.DatePicker;
 import javafx.util.Pair;
 
@@ -127,11 +128,9 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
             return executionDate != null && executionDate.isAfter(LocalDate.now());
         }, executionDateBinding);
 
-        BooleanBinding validBinding = executionDateBinding.isNotNull()
-                .and(invalidPastDate.not())
-                .and(empty.not())
-                .or(ccBase.checkedProperty().not());
-        ccBase.bindValidProperty(validBinding);
+        ccBase.addValidCondition(executionDateBinding.isNotNull());
+        ccBase.addValidCondition(invalidPastDate.not());
+        ccBase.addValidCondition(empty.not());
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
     }
 
@@ -180,7 +179,15 @@ public class CheckedDatePicker extends DatePicker implements CheckedControl, Rep
      */
     @Override
     public boolean isValid() {
-        return ccBase.isValid();
+        return validProperty().get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addValidCondition(ObservableBooleanValue condition) {
+        ccBase.addValidCondition(condition);
     }
 
     /**

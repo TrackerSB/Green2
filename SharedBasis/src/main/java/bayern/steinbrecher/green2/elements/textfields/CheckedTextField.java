@@ -21,9 +21,6 @@ import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.elements.CheckedControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
-import bayern.steinbrecher.green2.utility.BindingUtility;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
@@ -64,8 +61,6 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
         }
 
     };
-    private final List<ObservableBooleanValue> validConditions = new ArrayList<>();
-    private final BooleanProperty validCondition = new SimpleBooleanProperty(this, "validCondition", true);
     private final Map<String, Pair<ReportType, BooleanExpression>> reports
             = Map.of(EnvironmentHandler.getResourceValue("inputMissing"),
                     new Pair<>(ReportType.ERROR, emptyProperty().and(checkedProperty())),
@@ -115,8 +110,8 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
-        ccBase.bindValidProperty(
-                toLongContent.or(emptyContent).not().and(validCondition).or(ccBase.checkedProperty().not()));
+        ccBase.addValidCondition(toLongContent.not());
+        ccBase.addValidCondition(emptyContent.not());
     }
 
     /**
@@ -231,33 +226,14 @@ public class CheckedTextField extends TextField implements CheckedControl, Repor
      */
     @Override
     public boolean isValid() {
-        return ccBase.isValid();
-    }
-
-    private void updateValidConditions() {
-        validCondition.unbind();
-        validCondition.bind(BindingUtility.reduceAnd(validConditions.stream()));
+        return validProperty().get();
     }
 
     /**
-     * Adds the given condition and binds it to {@code validProperty}.
-     *
-     * @param condition The condition to add.
+     * {@inheritDoc}
      */
-    protected final void addValidCondition(ObservableBooleanValue condition) {
-        validConditions.add(condition);
-        updateValidConditions();
-    }
-
-    /**
-     * Removes the given element. The element will be compared according to {@code equals(...)}.
-     *
-     * @param condition The condition to remove.
-     * @return {@code true} only if any element was removed.
-     */
-    protected final boolean removeValidCondition(ObservableBooleanValue condition) {
-        boolean removedElement = validConditions.remove(condition);
-        updateValidConditions();
-        return removedElement;
+    @Override
+    public void addValidCondition(ObservableBooleanValue condition) {
+        ccBase.addValidCondition(condition);
     }
 }

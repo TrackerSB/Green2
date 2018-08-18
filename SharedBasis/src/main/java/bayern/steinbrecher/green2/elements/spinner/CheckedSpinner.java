@@ -30,6 +30,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.util.Pair;
@@ -64,11 +65,11 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
     }
 
     private void initProperties(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
-        ccBase.bindValidProperty(Bindings.createBooleanBinding(() -> {
+        ccBase.addValidCondition(Bindings.createBooleanBinding(() -> {
             Optional<T> parsed = parser.apply(getEditor().textProperty().get());
             parsed.ifPresent(p -> factory.setValue(p));
             return parsed.isPresent();
-        }, getEditor().textProperty()).or(ccBase.checkedProperty().not()));
+        }, getEditor().textProperty()));
     }
 
     /**
@@ -116,6 +117,14 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckedControl, Rep
      */
     @Override
     public boolean isValid() {
-        return ccBase.isValid();
+        return validProperty().get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addValidCondition(ObservableBooleanValue condition) {
+        ccBase.addValidCondition(condition);
     }
 }

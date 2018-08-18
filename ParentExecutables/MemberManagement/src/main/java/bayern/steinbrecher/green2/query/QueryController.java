@@ -23,6 +23,8 @@ import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.ProfileSettings;
+import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.CheckedControlBase;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.spinner.CheckedSpinner;
 import bayern.steinbrecher.green2.utility.BindingUtility;
@@ -60,7 +62,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
-import bayern.steinbrecher.green2.elements.ReadOnlyCheckedControl;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -264,15 +265,10 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      * @param <T> The type of the column to query.
      */
     private abstract static class CheckedConditionField<T> extends HBox
-            implements ReadOnlyCheckedControl, Initializable, Observable {
+            implements CheckedControl, Initializable, Observable {
 
         private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
-        private final BooleanProperty valid = new SimpleBooleanProperty(this, "valid", true);
-        private final ListProperty<ObservableBooleanValue> validConditions
-                = new SimpleListProperty<>(FXCollections.observableArrayList());
-        private final BooleanProperty validCondition = new SimpleBooleanProperty(true);
-        private final BooleanProperty invalid = new SimpleBooleanProperty(this, "invalid", false);
-        private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", false);
+        private final CheckedControlBase<CheckedConditionField<T>> ccBase = new CheckedControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
         private final String realColumnName;
 
@@ -320,11 +316,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          */
         @Override
         public final void initialize(URL location, ResourceBundle resources) {
-            validConditions.addListener(
-                    (obs, oldVal, newVal) -> validCondition.bind(BindingUtility.reduceAnd(newVal.stream())));
-            valid.bind(validCondition.or(checked.not()));
-            invalid.bind(valid.not());
-            checked.bind(emptyProperty().not());
+            ccBase.checkedProperty().bind(emptyProperty().not());
             initializeImpl();
         }
 
@@ -394,8 +386,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * {@inheritDoc}
          */
         @Override
-        public ReadOnlyBooleanProperty checkedProperty() {
-            return checked;
+        public BooleanProperty checkedProperty() {
+            return ccBase.checkedProperty();
         }
 
         /**
@@ -403,7 +395,15 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          */
         @Override
         public boolean isChecked() {
-            return checked.get();
+            return ccBase.isChecked();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void setChecked(boolean checked) {
+            ccBase.setChecked(checked);
         }
 
         /**
@@ -439,7 +439,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          */
         @Override
         public ReadOnlyBooleanProperty validProperty() {
-            return valid;
+            return ccBase.validProperty();
         }
 
         /**
@@ -447,17 +447,15 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          */
         @Override
         public boolean isValid() {
-            return valid.get();
+            return validProperty().get();
         }
 
         /**
-         * Adds a valid condition. Only if the already added conditions and this condition hold {@code true} the input
-         * is valid.
-         *
-         * @param condition The addition to add for validation.
+         * {@inheritDoc}
          */
-        protected void addValidCondition(ObservableBooleanValue condition) {
-            validConditions.get().add(condition);
+        @Override
+        public void addValidCondition(ObservableBooleanValue condition) {
+            ccBase.addValidCondition(condition);
         }
     }
 

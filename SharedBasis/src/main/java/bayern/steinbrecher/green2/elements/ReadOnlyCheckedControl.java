@@ -16,7 +16,9 @@
  */
 package bayern.steinbrecher.green2.elements;
 
+import com.google.errorprone.annotations.DoNotCall;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 
 /**
  * Represents which represents controls like buttons, checkboxes, input fields, etc which have addional properties
@@ -26,8 +28,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
  */
 public interface ReadOnlyCheckedControl {
 
-    //TODO Is there any way to pull up the implementation to here?
-    //TODO If so it may directly implement Reportable
+    //TODO Is it possible to directly implement Reportable?
     /**
      * Returns the {@link javafx.beans.property.BooleanProperty} representing whether the current input is valid or not.
      * NOTE: When the input is not checked it is always valid.
@@ -45,6 +46,17 @@ public interface ReadOnlyCheckedControl {
      * @see #isChecked()
      */
     boolean isValid();
+
+    /**
+     * Adds a condition to the set of conditions to be met to be a valid control, i.e. the input the control represents
+     * is valid. NOTE Use this method in subclasses of implementing classes only! Since multiple inheritance is not
+     * possible in Java this class has to be an interface and interfaces are not allowed to have protected members.
+     *
+     * @param condition The condition to add.
+     */
+    //FIXME How to make it protected?
+    @DoNotCall
+    /* protected */ void addValidCondition(ObservableBooleanValue condition);
 
     /**
      * Represents whether the input is checked or not.

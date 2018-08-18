@@ -16,12 +16,6 @@
  */
 package bayern.steinbrecher.green2.elements;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.css.PseudoClass;
 import javafx.scene.Node;
 
 /**
@@ -32,52 +26,10 @@ import javafx.scene.Node;
  * @param <C> The type of the control delegating to this class.
  */
 //TODO May restrict to Control instead of Node (but ContributionField).
-public class CheckedControlBase<C extends Node> implements CheckedControl {
+public class CheckedControlBase<C extends Node> extends ReadOnlyCheckedControlBase<C> implements CheckedControl {
 
-    private final C control;
-    private final ReadOnlyBooleanWrapper valid = new ReadOnlyBooleanWrapper(this, "valid");
-
-    private static final PseudoClass INVALID_PSEUDO_CLASS = PseudoClass.getPseudoClass("invalid");
-    private final ReadOnlyBooleanWrapper invalid = new ReadOnlyBooleanWrapper(this, "invalid") {
-        @Override
-        protected void invalidated() {
-            control.pseudoClassStateChanged(INVALID_PSEUDO_CLASS, get());
-        }
-    };
-
-    private static final PseudoClass CHECKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("checked");
-    private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true) {
-        @Override
-        protected void invalidated() {
-            control.pseudoClassStateChanged(CHECKED_PSEUDO_CLASS, get());
-        }
-    };
-
-    /**
-     * Creates a basic object which can be used for delegation by classes implementing {@link CheckedControl}.
-     *
-     * @param control The control delegating to this class.
-     */
     public CheckedControlBase(C control) {
-        this.control = control;
-        control.getStyleClass().add("checked-control-base");
-        invalid.bind(valid.not());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BooleanProperty checkedProperty() {
-        return checked;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isChecked() {
-        return checkedProperty().getValue();
+        super(control);
     }
 
     /**
@@ -85,15 +37,7 @@ public class CheckedControlBase<C extends Node> implements CheckedControl {
      */
     @Override
     public void setChecked(boolean checked) {
-        checkedProperty().setValue(checked);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ReadOnlyBooleanProperty validProperty() {
-        return valid.getReadOnlyProperty();
+        checkedProperty().set(checked);
     }
 
     /**
@@ -101,36 +45,6 @@ public class CheckedControlBase<C extends Node> implements CheckedControl {
      */
     @Override
     public boolean isValid() {
-        return validProperty().getValue();
-    }
-
-    /**
-     * Binds the valid property to an value to observe. This method may be needed by any class using this class for
-     * delegation.
-     *
-     * @param bind The valid to bind the valid property to.
-     * @see #validProperty()
-     */
-    public void bindValidProperty(ObservableValue<? extends Boolean> bind) {
-        valid.bind(bind);
-    }
-
-    /**
-     * Returns the property holding the inverse value of {@link #validProperty()}. This method may be used for
-     * convenience.
-     *
-     * @return The property holding the inverse value of {@link #validProperty()}.
-     */
-    public ReadOnlyBooleanProperty invalidProperty() {
-        return invalid.getReadOnlyProperty();
-    }
-
-    /**
-     * Returns the opposite value of {@link #isValid()}. This method may be used for convenience.
-     *
-     * @return The opposite value of {@link #isValid()}.
-     */
-    public boolean isInvalid() {
-        return invalidProperty().getValue();
+        return validProperty().get();
     }
 }
