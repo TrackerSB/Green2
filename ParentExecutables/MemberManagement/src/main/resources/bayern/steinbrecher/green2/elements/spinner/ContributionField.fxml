@@ -21,9 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <fx:root type="javafx.scene.layout.HBox"
          xmlns:fx="http://javafx.com/fxml/1">
-    <stylesheets>
-        <URL value="@contributionField.css"/>
-    </stylesheets>
     
     <ColorPicker fx:id="colorPicker" />
     <CheckedDoubleSpinner fx:id="contributionSpinner"

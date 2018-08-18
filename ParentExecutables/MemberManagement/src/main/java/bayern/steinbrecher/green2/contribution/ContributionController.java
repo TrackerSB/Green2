@@ -22,7 +22,6 @@ import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
 import bayern.steinbrecher.green2.elements.spinner.ContributionField;
-import bayern.steinbrecher.green2.utility.ElementsUtility;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.net.URL;
@@ -45,6 +44,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -61,10 +61,6 @@ import javafx.util.Pair;
 public class ContributionController extends WizardableController<Optional<BiMap<Double, Color>>> {
 
     private static final Logger LOGGER = Logger.getLogger(ContributionController.class.getName());
-    /**
-     * A CSS class added to all subelements if it contains duplicated values where not allowed.
-     */
-    public static final String CSS_CLASS_DUPLICATE_ENTRY = "duplicate";
     private static final List<Color> PREDEFINED_COLORS = List.of(Color.FORESTGREEN, Color.rgb(232, 181, 14),
             Color.rgb(255, 48, 28), Color.rgb(78, 14, 232), Color.rgb(16, 255, 234), Color.rgb(135, 139, 38),
             Color.rgb(232, 115, 21), Color.rgb(246, 36, 255), Color.rgb(23, 115, 232), Color.rgb(24, 255, 54));
@@ -203,12 +199,36 @@ public class ContributionController extends WizardableController<Optional<BiMap<
      */
     private static class DuplicateContributionField extends ContributionField {
 
-        private static final Logger LOGGER = Logger.getLogger(DuplicateContributionField.class.getName());
         private static final String DUPLICATE_COLOR_MESSAGE = EnvironmentHandler.getResourceValue("duplicateColor");
         private static final String DUPLICATE_CONTRIBUTION_MESSAGE
                 = EnvironmentHandler.getResourceValue("duplicateContribution");
-        private final BooleanProperty duplicateColor = new SimpleBooleanProperty(false);
-        private final BooleanProperty duplicateContribution = new SimpleBooleanProperty(false);
+        private static final PseudoClass DUPLICATE_PSEUDO_CLASS = PseudoClass.getPseudoClass("duplicate");
+        private final BooleanProperty duplicateColor = new SimpleBooleanProperty(false) {
+
+            //TODO Try to avoid.
+            private final Optional<ColorPicker> colorPicker = getChildren().stream()
+                    .filter(child -> child instanceof ColorPicker)
+                    .map(child -> (ColorPicker) child)
+                    .findAny();
+
+            @Override
+            protected void invalidated() {
+                colorPicker.ifPresent(cp -> cp.pseudoClassStateChanged(DUPLICATE_PSEUDO_CLASS, get()));
+            }
+        };
+        private final BooleanProperty duplicateContribution = new SimpleBooleanProperty(false) {
+
+            //TODO Try to avoid.
+            private final Optional<CheckedDoubleSpinner> spinner = getChildren().stream()
+                    .filter(child -> child instanceof CheckedDoubleSpinner)
+                    .map(child -> (CheckedDoubleSpinner) child)
+                    .findAny();
+
+            @Override
+            protected void invalidated() {
+                spinner.ifPresent(cs -> cs.pseudoClassStateChanged(DUPLICATE_PSEUDO_CLASS, get()));
+            }
+        };
 
         /**
          * Creates a {@link DuplicateContributionField} where neither the duplicated color nor the duplicated
@@ -219,39 +239,7 @@ public class ContributionController extends WizardableController<Optional<BiMap<
             initProperties();
         }
 
-        /**
-         * Returns the {@link ColorPicker} associated with this control.
-         *
-         * @return The {@link ColorPicker} associated with this control. Returns {@link Optional#empty()} only if it
-         * could not be found.
-         */
-        public Optional<ColorPicker> findColorPicker() {
-            return getChildren().stream()
-                    .filter(child -> child instanceof ColorPicker)
-                    .map(child -> (ColorPicker) child)
-                    .findAny();
-        }
-
-        /**
-         * Returns the {@link CheckedDoubleSpinner} associated with this control.
-         *
-         * @return The {@link CheckedDoubleSpinner} associated with this control. Returns {@link Optional#empty()} only
-         * if it could not be found.
-         */
-        public Optional<CheckedDoubleSpinner> findContributionSpinner() {
-            return getChildren().stream()
-                    .filter(child -> child instanceof CheckedDoubleSpinner)
-                    .map(child -> (CheckedDoubleSpinner) child)
-                    .findAny();
-        }
-
         private void initProperties() {
-            findColorPicker().ifPresentOrElse(colorPicker -> {
-                ElementsUtility.addCssClassIf(colorPicker, duplicateColor, CSS_CLASS_DUPLICATE_ENTRY);
-            }, () -> LOGGER.log(Level.WARNING, "Could not find ColorPicker of ContributionField."));
-            findContributionSpinner().ifPresentOrElse(contributionSpinner -> {
-                ElementsUtility.addCssClassIf(contributionSpinner, duplicateContribution, CSS_CLASS_DUPLICATE_ENTRY);
-            }, () -> LOGGER.log(Level.WARNING, "Could not find ContributionSpinner of ContributionField."));
             addValidCondition(duplicateColor.not());
             addValidCondition(duplicateContribution.not());
         }

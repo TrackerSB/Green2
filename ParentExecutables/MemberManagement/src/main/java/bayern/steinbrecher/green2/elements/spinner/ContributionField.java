@@ -67,6 +67,7 @@ public class ContributionField extends HBox implements Initializable, CheckedCon
     public ContributionField() {
         super();
         loadFXML();
+        getStyleClass().add("contribution-field");
     }
 
     private void loadFXML() {
