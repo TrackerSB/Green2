@@ -14,6 +14,7 @@
     <packaging>jar</packaging>
 
     <name>Launcher</name>
+    <description>Contains the launcher application.</description>
 
     <properties>
         <mainClass>bayern.steinbrecher.green2.launcher.Launcher</mainClass>

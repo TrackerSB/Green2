@@ -14,6 +14,7 @@
         <module>SharedBasis</module>
     </modules>
     <name>Parent</name>
+    <description>Represents the parent of all part applications including their shared settings.</description>
     <inceptionYear>2016</inceptionYear>
 
     <properties>

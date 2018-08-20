@@ -14,6 +14,7 @@
     <packaging>jar</packaging>
 
     <name>SharedBasis</name>
+    <description>Contains all classes and elements used by multiple other part applications.</description>
 
     <dependencies>
         <dependency>

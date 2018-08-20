@@ -8,6 +8,9 @@
     <artifactId>Wizard</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
+    
+    <name>Wizard</name>
+    <description>Contains a JavaFX wizard which can be used as separate library.</description>
 
     <organization>
         <name>Steinbrecher</name>

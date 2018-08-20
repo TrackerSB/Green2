@@ -14,6 +14,7 @@
     <packaging>jar</packaging>
 
     <name>ConfigurationDialog</name>
+    <description>Contains the application for handling configurations of Green2</description>
 
     <properties>
         <mainClass>bayern.steinbrecher.green2.configdialog.ConfigDialog</mainClass>
