@@ -19,9 +19,6 @@ package bayern.steinbrecher.green2.elements.spinner;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
-import bayern.steinbrecher.green2.utility.ElementsUtility;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import javafx.beans.binding.Bindings;
@@ -36,8 +33,7 @@ import bayern.steinbrecher.green2.elements.CheckableControl;
 import javafx.collections.ObservableMap;
 
 /**
- * Extends the class {@link Spinner} with a valid property and sets {@link ElementsUtility#CSS_CLASS_INVALID_CONTENT} if
- * the content of the spinner is not valid.
+ * Extends the class {@link Spinner} with a valid and checked property.
  *
  * @author Stefan Huber
  * @param <T> The type of the values to spin.

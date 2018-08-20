@@ -97,7 +97,7 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
         });
 
         bindValidProperty(BindingUtility.reduceAnd(checkedTextFields.stream().map(CheckedTextField::validProperty))
-                .and(dbmsComboBox.nothingSelectedProperty().not())
+                .and(dbmsComboBox.validProperty())
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
 

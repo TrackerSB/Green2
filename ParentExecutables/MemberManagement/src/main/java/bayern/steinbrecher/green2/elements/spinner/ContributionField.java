@@ -19,7 +19,6 @@ package bayern.steinbrecher.green2.elements.spinner;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
-import bayern.steinbrecher.green2.utility.ElementsUtility;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -93,10 +92,6 @@ public class ContributionField extends HBox implements Initializable, CheckableC
                 .forEach(report -> ccBase.addReport(report.getKey(), report.getValue()));
 
         colorPicker.setValue(Color.TRANSPARENT);
-
-        ElementsUtility.addCssClassIf(
-                contributionSpinner, ccBase.invalidProperty(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
-        ElementsUtility.addCssClassIf(colorPicker, ccBase.invalidProperty(), ElementsUtility.CSS_CLASS_INVALID_CONTENT);
     }
 
     /**

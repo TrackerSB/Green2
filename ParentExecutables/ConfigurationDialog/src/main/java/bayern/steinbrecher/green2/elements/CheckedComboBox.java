@@ -16,14 +16,19 @@
  */
 package bayern.steinbrecher.green2.elements;
 
-import bayern.steinbrecher.green2.utility.ElementsUtility;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.control.ComboBox;
+import javafx.util.Pair;
 
 /**
  * Extended version of {@link ComboBox}. Also contains {@link BooleanProperty} indicating whether nothing is selected.
@@ -31,8 +36,9 @@ import javafx.scene.control.ComboBox;
  * @author Stefan Huber
  * @param <T> The type of the element of the ComboBox.
  */
-public class CheckedComboBox<T> extends ComboBox<T> {
+public class CheckedComboBox<T> extends ComboBox<T> implements CheckedControl {
 
+    private final CheckedControlBase<CheckedComboBox<T>> ccBase = new CheckedControlBase<>(this);
     private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
 
     /**
@@ -55,7 +61,9 @@ public class CheckedComboBox<T> extends ComboBox<T> {
     private void initProperties() {
         nothingSelected.bind(Bindings.createBooleanBinding(() -> getSelectionModel().isEmpty(),
                 selectionModelProperty(), getSelectionModel().selectedItemProperty()));
-        ElementsUtility.addCssClassIf(this, nothingSelected, ElementsUtility.CSS_CLASS_INVALID_CONTENT);
+        addValidCondition(nothingSelected.not());
+        addReport(EnvironmentHandler.getResourceValue("nothingSelected"),
+                new Pair<>(ReportType.ERROR, nothingSelected));
     }
 
     /**
@@ -74,5 +82,61 @@ public class CheckedComboBox<T> extends ComboBox<T> {
      */
     public boolean isNothingSelected() {
         return nothingSelected.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ReadOnlyBooleanProperty checkedProperty() {
+        return ccBase.checkedProperty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isChecked() {
+        return ccBase.isChecked();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ReadOnlyBooleanProperty validProperty() {
+        return ccBase.validProperty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isValid() {
+        return ccBase.isValid();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addValidCondition(ObservableBooleanValue condition) {
+        ccBase.addValidCondition(condition);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+        return ccBase.getReports();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
+        ccBase.addReport(message, report);
     }
 }
