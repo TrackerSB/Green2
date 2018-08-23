@@ -44,6 +44,8 @@ import javafx.stage.Stage;
  */
 public class Wizard extends Application {
 
+    private double xDragOffset;
+    private double yDragOffset;
     private /* final */ WizardController controller;
     private final Map<String, WizardPage<?>> pages;
 
@@ -72,6 +74,14 @@ public class Wizard extends Application {
         fxmlLoader.setResources(ResourceBundle.getBundle("bayern.steinbrecher.wizard.bundles.Wizard"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
+        scene.setOnMousePressed(mevt -> {
+            xDragOffset = stage.getX() - mevt.getScreenX();
+            yDragOffset = stage.getY() - mevt.getScreenY();
+        });
+        scene.setOnMouseDragged(mevt -> {
+            stage.setX(mevt.getScreenX() + xDragOffset);
+            stage.setY(mevt.getScreenY() + yDragOffset);
+        });
         stage.setScene(scene);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         controller = fxmlLoader.getController();

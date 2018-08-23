@@ -22,6 +22,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
@@ -32,6 +33,9 @@ import javafx.stage.Stage;
  */
 @SuppressWarnings("PMD.ShortClassName")
 public abstract class View<T extends Controller> extends Application {
+    
+    private double xDragOffset;
+    private double yDragOffset;
 
     /**
      * The stage which has to be set in every start-Method of implementing classes.
@@ -67,6 +71,15 @@ public abstract class View<T extends Controller> extends Application {
         this.stage = primaryStage;
         startImpl(primaryStage);
         primaryStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+        Scene scene = primaryStage.getScene();
+        scene.setOnMousePressed(mevt -> {
+            xDragOffset = primaryStage.getX() - mevt.getScreenX();
+            yDragOffset = primaryStage.getY() - mevt.getScreenY();
+        });
+        scene.setOnMouseDragged(mevt -> {
+            primaryStage.setX(mevt.getScreenX() + xDragOffset);
+            primaryStage.setY(mevt.getScreenY() + yDragOffset);
+        });
     }
 
     /**

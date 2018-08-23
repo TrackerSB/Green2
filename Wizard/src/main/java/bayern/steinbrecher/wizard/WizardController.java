@@ -46,6 +46,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -85,7 +86,11 @@ public class WizardController implements Initializable {
     private ScrollPane scrollContent;
     @FXML
     private StackPane contents;
+    @FXML
+    private ButtonBar controls;
     private Stage stage;
+    private double xDragOffset;
+    private double yDragOffset;
     private static final String WIZARD_CONTENT_STYLECLASS = "wizard-content";
     private static final Duration SWIPE_DURATION = Duration.seconds(0.75);
 
@@ -110,6 +115,22 @@ public class WizardController implements Initializable {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         scrollContent.setMaxHeight(screenSize.getHeight() * MAX_SIZE_FACTOR);
         scrollContent.setMaxWidth(screenSize.getWidth() * MAX_SIZE_FACTOR);
+        contents.setOnMousePressed(mevt -> {
+            xDragOffset = stage.getX() - mevt.getScreenX();
+            yDragOffset = stage.getY() - mevt.getScreenY();
+        });
+        contents.setOnMouseDragged(mevt -> {
+            stage.setX(mevt.getScreenX() + xDragOffset);
+            stage.setY(mevt.getScreenY() + yDragOffset);
+        });
+        controls.setOnMousePressed(mevt -> {
+            xDragOffset = stage.getX() - mevt.getScreenX();
+            yDragOffset = stage.getY() - mevt.getScreenY();
+        });
+        controls.setOnMouseDragged(mevt -> {
+            stage.setX(mevt.getScreenX() + xDragOffset);
+            stage.setY(mevt.getScreenY() + yDragOffset);
+        });
     }
 
     @FXML

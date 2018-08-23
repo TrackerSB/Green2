@@ -34,7 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <StackPane fx:id="contents"
                    styleClass="wizard-content"/>
     </ScrollPane>
-    <ButtonBar styleClass="wizard-controls">
+    <ButtonBar fx:id="controls"
+               styleClass="wizard-controls">
         <buttons>
             <Button fx:id="wizardControlPrevious"
                     text="%previous"
