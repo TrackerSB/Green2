@@ -41,6 +41,7 @@ import javafx.util.Pair;
  * @param <C> The type of the control delegating to this class.
  */
 //TODO May restrict to Control instead of Node (but ContributionField).
+//FIXME Has this base any use since the checked property can´t be influenced? (The appropriate interfaces have use)
 public class CheckedControlBase<C extends Node> implements CheckedControl {
 
     private final ReportableBase reportBase = new ReportableBase();
@@ -100,6 +101,7 @@ public class CheckedControlBase<C extends Node> implements CheckedControl {
      */
     @Override
     public BooleanProperty checkedProperty() {
+        //FIXME Shouldn´t this be ReadOnlyBooleanProperty?
         return checked;
     }
 
