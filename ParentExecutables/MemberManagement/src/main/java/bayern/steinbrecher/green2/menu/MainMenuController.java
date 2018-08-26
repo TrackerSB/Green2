@@ -419,10 +419,19 @@ public class MainMenuController extends Controller {
             } else {
                 boolean askForContribution = !(useMemberContributions && isContributionColumnEnabled());
 
-                WizardPage<Optional<Originator>> sepaFormPage = new SepaForm().getWizardPage();
+                WizardPage<Optional<Originator>> sepaFormPage = new SepaForm()
+                        .getWizardPage()
+                        .orElseThrow(() -> new IllegalStateException(
+                        "The originator form of the SEPA wizard could not be created."));
                 sepaFormPage.setNextFunction(() -> askForContribution ? "contribution" : "selection");
-                WizardPage<Optional<BiMap<Double, Color>>> contributionPage = new Contribution().getWizardPage();
-                WizardPage<Optional<Set<Member>>> selectionPage = new Selection<>(memberToSelect).getWizardPage();
+                WizardPage<Optional<BiMap<Double, Color>>> contributionPage = new Contribution()
+                        .getWizardPage()
+                        .orElseThrow(() -> new IllegalStateException(
+                        "The contribution page of the SEPA wizard could not be created."));
+                WizardPage<Optional<Set<Member>>> selectionPage = new Selection<>(memberToSelect)
+                        .getWizardPage()
+                        .orElseThrow(() -> new IllegalStateException(
+                        "The page for selecting people of the SEPA wizard could not be created."));
                 selectionPage.setFinish(true);
 
                 Map<String, WizardPage<?>> pages = new HashMap<>();
@@ -434,7 +443,10 @@ public class MainMenuController extends Controller {
                     WizardPage<Optional<Map<Member, Double>>> selectionGroupPage
                             = new SelectionGroup<>(new HashSet<>(memberToSelect),
                                     contributionPage.getResultFunction().call().orElse(HashBiMap.create()))
-                                    .getWizardPage();
+                                    .getWizardPage()
+                                    .orElseThrow(() -> new IllegalStateException(
+                                    "The page for selecting people and associating them to contribution groups "
+                                    + "could not be created."));
                     selectionGroupPage.setFinish(true);
                     wizard.put("selectionGroup", selectionGroupPage);
                     return "selectionGroup";
@@ -565,13 +577,17 @@ public class MainMenuController extends Controller {
         callOnDisabled(aevt, () -> {
             try {
                 Map<String, WizardPage<?>> pages = new HashMap<>();
-                WizardPage<Optional<List<List<String>>>> queryDialogPage = new Query(dbConnection).getWizardPage();
+                WizardPage<Optional<List<List<String>>>> queryDialogPage = new Query(dbConnection)
+                        .getWizardPage()
+                        .orElseThrow(() -> new IllegalStateException("The query filter page could not be created."));
                 pages.put(WizardPage.FIRST_PAGE_KEY, queryDialogPage);
                 Wizard queryWizard = new Wizard(pages);
                 queryDialogPage.setNextFunction(() -> {
                     WizardPage<Optional<Void>> queryResultPage
                             = new ResultDialog(queryDialogPage.getResultFunction().call().orElse(new ArrayList<>()))
-                                    .getWizardPage();
+                                    .getWizardPage()
+                                    .orElseThrow(() -> new IllegalStateException(
+                                    "The query result page could not be created."));
                     queryResultPage.setFinish(true);
                     queryWizard.put("queryResult", queryResultPage);
                     return "queryResult";
