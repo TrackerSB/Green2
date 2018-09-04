@@ -113,7 +113,7 @@ public class SpecificRegexTextField extends CheckedTextField {
         pattern.bind(Bindings.createObjectBinding(() -> Pattern.compile(this.regex.get()), this.regex));
         matchRegex.bind(Bindings.createBooleanBinding(() -> {
             Pattern patternValue = this.pattern.get();
-            String regexText = textProperty().get();
+            String regexText = textProperty().getValueSafe();
             if (this.eliminateSpaces.get()) {
                 regexText = regexText.replaceAll(" ", "");
             }
