@@ -19,8 +19,6 @@ package bayern.steinbrecher.green2;
 import bayern.steinbrecher.wizard.WizardPage;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.layout.Pane;
 
 /**
@@ -33,8 +31,6 @@ import javafx.scene.layout.Pane;
 public abstract class WizardableView<T extends Optional<?>, C extends WizardableController<T>>
         extends ResultView<T, C> {
 
-    private static final Logger LOGGER = Logger.getLogger(WizardableView.class.getName());
-
     /**
      * Returns the path of the FXML file to load to be used by a wizard.
      *
@@ -44,21 +40,17 @@ public abstract class WizardableView<T extends Optional<?>, C extends Wizardable
     protected abstract String getWizardFxmlPath();
 
     /**
-     * Creates a {@link WizardPage}. The nextFunction is set to {@code null} and isFinish is set to {@code false}.
+     * Creates a {@link WizardPage}.The nextFunction is set to {@code null} and isFinish is set to {@code false}.
      *
      * @return The newly created {@link WizardPage}. Returns {@code null} if the {@link WizardPage} could not be
      * created.
+     * @throws IOException {@link #loadFXML(java.lang.String)}
      */
-    public WizardPage<T> getWizardPage() {
+    public WizardPage<T> getWizardPage() throws IOException {
         WizardPage<T> page;
-        try {
-            Pane root = loadFXML(getWizardFxmlPath());
-            page = new WizardPage<>(
-                    root, null, false, () -> getController().getResult(), getController().validProperty());
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            page = null;
-        }
+        Pane root = loadFXML(getWizardFxmlPath());
+        page = new WizardPage<>(
+                root, null, false, () -> getController().getResult(), getController().validProperty());
         return page;
     }
 }
