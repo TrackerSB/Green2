@@ -75,6 +75,7 @@ public class MemberManagement extends Application {
         List<String> availableProfiles = Profile.getAvailableProfiles();
         if (availableProfiles.isEmpty()) {
             Programs.CONFIGURATION_DIALOG.call();
+            throw new IllegalStateException("The are no profiles which can be loaded.");
         } else if (availableProfiles.size() == 1) { //NOPMD - Do not ask user when there is no choice for selection.
             profile = EnvironmentHandler.loadProfile(availableProfiles.get(0), false);
         } else {
