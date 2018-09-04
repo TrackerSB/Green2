@@ -109,7 +109,7 @@ public final class EnvironmentHandler {
      * inserted in the SEPA form.
      */
     public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
-            ? "/AppData/Roaming/" : "/.") + APPLICATION_FOLDER_NAME;
+            ? "/AppData/Roaming/" : "/.config/") + APPLICATION_FOLDER_NAME;
     private static Property<Profile> loadedProfile = new SimpleObjectProperty<>();
 
     static {

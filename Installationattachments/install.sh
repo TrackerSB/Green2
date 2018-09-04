@@ -18,7 +18,7 @@ fi
 
 # Set variables
 TempDir=$(dirname $0)
-ConfigDir="$HOME/.Green2"
+ConfigDir="$HOME/.config/Green2"
 ProgramFolder="/opt/Green2"
 MenuEntryFolder="/usr/share/applications"
 
