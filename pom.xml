@@ -112,7 +112,15 @@
                 <version>3.7.1</version>
                 <configuration>
                     <generateSitemap>true</generateSitemap>
+                    <skipDeploy>true</skipDeploy>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh</artifactId>
+                        <version>3.1.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -193,6 +201,14 @@
             <distribution>manuel</distribution>
         </license>
     </licenses>
+
+    <distributionManagement>
+        <site>
+            <id>traunviertler-green2</id>
+            <name>Traunviertler Green2</name>
+            <url>scp://traunviertler-traunwalchen.de/green2</url>
+        </site>
+    </distributionManagement>
 
     <issueManagement>
         <system>GitHub</system>
