@@ -23,7 +23,6 @@ import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.ProfileSettings;
-import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.spinner.CheckedSpinner;
 import bayern.steinbrecher.green2.utility.BindingUtility;
@@ -66,12 +65,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Priority;
-import bayern.steinbrecher.green2.elements.CheckableControl;
+import bayern.steinbrecher.green2.elements.CheckedControl;
+import bayern.steinbrecher.green2.elements.CheckedControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import javafx.beans.binding.BooleanExpression;
 import javafx.collections.ObservableMap;
@@ -90,6 +89,9 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     private ComboBox<Tables<?, ?>> tableSelection;
     private final ListProperty<CheckedConditionField<?>> conditionFields
             = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final BooleanProperty allConditionFieldsValid = new SimpleBooleanProperty(this, "allConditionFieldsValid");
+    private final BooleanProperty isNoConditionFieldEmpty = new SimpleBooleanProperty(this, "isNoConditionFieldEmpty");
+    private final BooleanProperty isAnyTableSelected = new SimpleBooleanProperty(this, "isAnyTableSelected");
     private final ObjectProperty<DBConnection> dbConnection = new SimpleObjectProperty<>(this, "dbConnection");
     private final ObjectProperty<Optional<List<List<String>>>> lastQueryResult
             = new SimpleObjectProperty<>(Optional.empty());
@@ -172,6 +174,11 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         tableSelection.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((obs, oldVal, newVal) -> generateQueryInterface(getDbConnection(), newVal));
+        isAnyTableSelected.bind(
+                tableSelection.getSelectionModel()
+                        .selectedItemProperty()
+                        .isNotNull()
+        );
         conditionFields.addListener((obs, oldVal, newVal) -> {
             newVal.addListener((ListChangeListener.Change<? extends CheckedConditionField<?>> change) -> {
                 while (change.next()) {
@@ -179,14 +186,13 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                             .forEach(ccf -> ccf.addListener(invalidObs -> isLastQueryUptodate = false));
                 }
             });
-            BooleanBinding allConditionFieldsValid
-                    = BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::validProperty));
-            BooleanBinding isNoConditionFieldEmpty
-                    = BindingUtility.reduceAnd(conditionFields.stream().map(CheckedConditionField::emptyProperty))
-                            .not();
-            BooleanBinding isAnyTableSelected = tableSelection.getSelectionModel()
-                    .selectedItemProperty()
-                    .isNotNull();
+            allConditionFieldsValid.bind(
+                    BindingUtility.reduceAnd(newVal.stream().map(CheckedConditionField::validProperty))
+            );
+            isNoConditionFieldEmpty.bind(
+                    BindingUtility.reduceAnd(newVal.stream().map(CheckedConditionField::emptyProperty))
+                            .not()
+            );
             bindValidProperty(
                     allConditionFieldsValid
                             .and(isNoConditionFieldEmpty)
@@ -268,10 +274,10 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      * @param <T> The type of the column to query.
      */
     private abstract static class CheckedConditionField<T> extends HBox
-            implements CheckableControl, Initializable, Observable {
+            implements CheckedControl, Initializable, Observable {
 
         private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
-        private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
+        private final CheckedControlBase<CheckedConditionField<T>> ccBase = new CheckedControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
         private final String realColumnName;
 
@@ -415,14 +421,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         @Override
         public boolean isChecked() {
             return ccBase.isChecked();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void setChecked(boolean checked) {
-            ccBase.setChecked(checked);
         }
 
         /**

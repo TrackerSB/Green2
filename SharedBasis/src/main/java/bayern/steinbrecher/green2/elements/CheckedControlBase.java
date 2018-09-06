@@ -47,8 +47,7 @@ public class CheckedControlBase<C extends Node> implements CheckedControl {
     private final ReportableBase reportBase = new ReportableBase();
     private final C control;
     private final ReadOnlyBooleanWrapper valid = new ReadOnlyBooleanWrapper(this, "valid");
-    private final ObservableList<ObservableBooleanValue> validConditions
-            = FXCollections.observableArrayList(BindingUtility.TRUE_BINDING);
+    private final ObservableList<ObservableBooleanValue> validConditions = FXCollections.observableArrayList();
 
     private static final PseudoClass INVALID_PSEUDO_CLASS = PseudoClass.getPseudoClass("invalid");
     private final ReadOnlyBooleanWrapper invalid = new ReadOnlyBooleanWrapper(this, "invalid") {
@@ -78,6 +77,7 @@ public class CheckedControlBase<C extends Node> implements CheckedControl {
             valid.bind(BindingUtility.reduceAnd(validConditions.stream()).or(checked.not()));
         });
         invalid.bind(valid.not());
+        validConditions.add(BindingUtility.TRUE_BINDING); //Trigger init of property valid
     }
 
     /**
@@ -135,7 +135,7 @@ public class CheckedControlBase<C extends Node> implements CheckedControl {
 
     /**
      * Adds a condition to the set of conditions to be met to be a valid control, i.e. the input the control represents
-     * is valid.
+     * is valid. If the list of valid condtions is empty it is considered as "all conditions fulfilled".
      *
      * @param condition The condition to add.
      */
