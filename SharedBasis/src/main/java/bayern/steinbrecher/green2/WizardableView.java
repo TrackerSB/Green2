@@ -46,11 +46,11 @@ public abstract class WizardableView<T extends Optional<?>, C extends Wizardable
      * created.
      * @throws IOException {@link #loadFXML(java.lang.String)}
      */
-    public Optional<WizardPage<T>> getWizardPage() throws IOException {
+    public WizardPage<T> getWizardPage() throws IOException {
         WizardPage<T> page;
         Pane root = loadFXML(getWizardFxmlPath());
         page = new WizardPage<>(
                 root, null, false, () -> getController().getResult(), getController().validProperty());
-        return Optional.of(page);
+        return page;
     }
 }
