@@ -106,7 +106,7 @@ public class CheckedDatePicker extends DatePicker implements CheckableControl {
                     try {
                         newDate = LocalDate.parse(dateToParse, DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
                     } catch (DateTimeParseException ex2) {
-                        LOGGER.log(Level.SEVERE,
+                        LOGGER.log(Level.WARNING,
                                 dateToParse + " can neither be parsed by FormatStyle.SHORT nor FormatStyle.MEDIUM.",
                                 ex2);
                     }
