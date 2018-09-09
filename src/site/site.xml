@@ -27,19 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
     <custom>
         <fluidoSkin>
-            <sideBarEnabled>false</sideBarEnabled>
-            <topBarEnabled>true</topBarEnabled>
-            <topBarIcon>
-                <alt>Green2</alt>
-                <src>/images/icon.png</src>
-                <href>/index.html</href>
-            </topBarIcon>
+            <sideBarEnabled>true</sideBarEnabled>
+            <topBarEnabled>false</topBarEnabled>
             <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
-            <gitHub>
-                <projectId>TrackerSB/Green2</projectId>
-                <ribbonOrientation>right</ribbonOrientation>
-                <ribbonColor>green</ribbonColor>
-            </gitHub>
             <breadcrumbDivider>»</breadcrumbDivider>
         </fluidoSkin>
     </custom>
@@ -61,8 +51,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             ]]>
         </head>
 
-        <menu ref="parent" inherit="top" />
-        <menu ref="modules" inherit="top" />
-        <menu ref="reports" inherit="top" />
+        <menu name="Aggregation modules"
+              inherit="top">
+            <item name="Aggregation"
+                  href="/Aggregation/index.html" />
+            <item name="Parent"
+                  href="/index.html" />
+            <item name="ParentExecutables"
+                  href="/ParentExecutables/index.html" />
+        </menu>
+        <menu name="Sub modules"
+              ref="modules"
+              inherit="top" />
+        <menu ref="reports"
+              inherit="top" />
     </body>
 </project>
