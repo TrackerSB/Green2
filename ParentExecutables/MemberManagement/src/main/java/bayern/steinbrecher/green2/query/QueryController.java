@@ -70,7 +70,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Priority;
 import bayern.steinbrecher.green2.elements.CheckedControl;
-import bayern.steinbrecher.green2.elements.CheckedControlBase;
+import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import javafx.beans.binding.BooleanExpression;
 import javafx.collections.ObservableMap;
@@ -277,7 +277,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             implements CheckedControl, Initializable, Observable {
 
         private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
-        private final CheckedControlBase<CheckedConditionField<T>> ccBase = new CheckedControlBase<>(this);
+        private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
         private final String realColumnName;
 

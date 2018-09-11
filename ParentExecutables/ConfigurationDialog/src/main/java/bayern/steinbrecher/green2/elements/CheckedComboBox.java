@@ -38,7 +38,7 @@ import javafx.util.Pair;
  */
 public class CheckedComboBox<T> extends ComboBox<T> implements CheckedControl {
 
-    private final CheckedControlBase<CheckedComboBox<T>> ccBase = new CheckedControlBase<>(this);
+    private final CheckableControlBase<CheckedComboBox<T>> ccBase = new CheckableControlBase<>(this);
     private final BooleanProperty nothingSelected = new SimpleBooleanProperty(this, "nothingSelected");
 
     /**
