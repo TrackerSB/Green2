@@ -119,17 +119,14 @@ public class CheckedDatePicker extends DatePicker implements CheckableControl {
             LocalDate executionDate = executionDateBinding.get();
             return executionDate != null && executionDate.isAfter(LocalDate.now());
         }, executionDateBinding);
+        invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 
-        ccBase.addValidCondition(executionDateBinding.isNotNull());
-        ccBase.addValidCondition(invalidPastDate.not());
-        ccBase.addValidCondition(empty.not());
         ccBase.addReport(EnvironmentHandler.getResourceValue("pastExecutionDate"),
                 new Pair<>(ReportType.ERROR, invalidPastDateProperty()));
         ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
-                new Pair<>(ReportType.ERROR, checkedProperty().and(emptyProperty())));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("inputInvalid"),
-                new Pair<>(ReportType.ERROR, ccBase.invalidProperty()));
-        invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
+                new Pair<>(ReportType.ERROR, emptyProperty()));
+        ccBase.addReport(EnvironmentHandler.getResourceValue("noDate"),
+                new Pair<>(ReportType.ERROR, executionDateBinding.isNull()));
     }
 
     /**
@@ -186,14 +183,6 @@ public class CheckedDatePicker extends DatePicker implements CheckableControl {
     @Override
     public boolean isValid() {
         return validProperty().get();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addValidCondition(ObservableBooleanValue condition) {
-        ccBase.addValidCondition(condition);
     }
 
     /**

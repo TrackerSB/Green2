@@ -25,7 +25,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.css.PseudoClass;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
@@ -102,14 +101,10 @@ public class CheckedTextField extends TextField implements CheckableControl {
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
-        ccBase.addValidCondition(toLongContent.not());
-        ccBase.addValidCondition(emptyContent.not());
         ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
-                new Pair<>(ReportType.ERROR, emptyProperty().and(checkedProperty())));
+                new Pair<>(ReportType.ERROR, emptyProperty()));
         ccBase.addReport(EnvironmentHandler.getResourceValue("inputToLong"),
-                new Pair<>(ReportType.ERROR, toLongProperty().and(checkedProperty())));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("inputInvalid"),
-                new Pair<>(ReportType.ERROR, ccBase.invalidProperty().and(checkedProperty())));
+                new Pair<>(ReportType.ERROR, toLongProperty()));
     }
 
     /**
@@ -233,13 +228,5 @@ public class CheckedTextField extends TextField implements CheckableControl {
     @Override
     public boolean isValid() {
         return validProperty().get();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addValidCondition(ObservableBooleanValue condition) {
-        ccBase.addValidCondition(condition);
     }
 }

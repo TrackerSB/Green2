@@ -197,9 +197,6 @@ public class ContributionController extends WizardableController<Optional<BiMap<
      */
     private static class DuplicateContributionField extends ContributionField {
 
-        private static final String DUPLICATE_COLOR_MESSAGE = EnvironmentHandler.getResourceValue("duplicateColor");
-        private static final String DUPLICATE_CONTRIBUTION_MESSAGE
-                = EnvironmentHandler.getResourceValue("duplicateContribution");
         private static final PseudoClass DUPLICATE_PSEUDO_CLASS = PseudoClass.getPseudoClass("duplicate");
         private final BooleanProperty duplicateColor = new SimpleBooleanProperty(false) {
 
@@ -238,10 +235,10 @@ public class ContributionController extends WizardableController<Optional<BiMap<
         }
 
         private void initProperties() {
-            addValidCondition(duplicateColor.not());
-            addValidCondition(duplicateContribution.not());
-            addReport(DUPLICATE_COLOR_MESSAGE, new Pair<>(ReportType.ERROR, duplicateColor));
-            addReport(DUPLICATE_CONTRIBUTION_MESSAGE, new Pair<>(ReportType.ERROR, duplicateContribution));
+            addReport(EnvironmentHandler.getResourceValue("duplicateColor"),
+                    new Pair<>(ReportType.ERROR, duplicateColor));
+            addReport(EnvironmentHandler.getResourceValue("duplicateContribution"),
+                    new Pair<>(ReportType.ERROR, duplicateContribution));
         }
 
         /**

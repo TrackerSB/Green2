@@ -51,4 +51,20 @@ public interface Reportable {
     //FIXME How to make it protected and final?
     @DoNotCall
     /* protected final */ void addReport(String message, Pair<ReportType, BooleanExpression> report);
+
+    /**
+     * Adds all reports of the given {@link Reportable} to this {@link Reportable}. NOTE Use this method in subclasses
+     * of implementing classes only! Since multiple inheritance is not possible in Java this class has to be an
+     * interface and interfaces are not allowed to have protected members.
+     *
+     * @param reportable The {@link Reportable} whose messages have to be added to this one.
+     */
+    //FIXME How to make it protected and final?
+    @DoNotCall
+    /* protected final */ default void addReports(Reportable reportable) {
+        reportable.getReports()
+                .entrySet()
+                .stream()
+                .forEach(report -> addReport(report.getKey(), report.getValue()));
+    }
 }

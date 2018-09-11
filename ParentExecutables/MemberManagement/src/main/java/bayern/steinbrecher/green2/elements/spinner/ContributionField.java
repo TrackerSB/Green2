@@ -29,7 +29,6 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -85,12 +84,7 @@ public class ContributionField extends HBox implements Initializable, CheckableC
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ccBase.addValidCondition(contributionSpinner.validProperty());
-        contributionSpinner.getReports()
-                .entrySet()
-                .stream()
-                .forEach(report -> ccBase.addReport(report.getKey(), report.getValue()));
-
+        ccBase.addReports(contributionSpinner);
         colorPicker.setValue(Color.TRANSPARENT);
     }
 
@@ -203,13 +197,5 @@ public class ContributionField extends HBox implements Initializable, CheckableC
     @Override
     public boolean isValid() {
         return validProperty().get();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addValidCondition(ObservableBooleanValue condition) {
-        ccBase.addValidCondition(condition);
     }
 }

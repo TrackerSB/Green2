@@ -16,6 +16,8 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import java.util.List;
 import javafx.beans.binding.Bindings;
@@ -72,7 +74,7 @@ public class CheckedSepaTextField extends CheckedTextField {
             new Pair<>('\u20AD', '\uFFFF')
     //NOTE Disallow characters until \u10FFFF (not representable by char)
     );
-    private final BooleanProperty invalidSymbols = new SimpleBooleanProperty(this, "invalidSymbols");
+    private final BooleanProperty unsupportedSymbols = new SimpleBooleanProperty(this, "unsupportedSymbols");
 
     /**
      * Constructs a new {@link CheckedTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
@@ -101,7 +103,7 @@ public class CheckedSepaTextField extends CheckedTextField {
      */
     public CheckedSepaTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
-        invalidSymbols.bind(Bindings.createBooleanBinding(() -> {
+        unsupportedSymbols.bind(Bindings.createBooleanBinding(() -> {
             return textProperty().get().chars()
                     .parallel()
                     .anyMatch(codepoint -> {
@@ -110,8 +112,13 @@ public class CheckedSepaTextField extends CheckedTextField {
                                 .anyMatch(range -> range.getKey() <= codepoint && codepoint <= range.getValue());
                     });
         }, textProperty()));
-        addValidCondition(invalidSymbols.not());
+        initProperties();
 
         getStyleClass().add("checked-sepa-textfield");
+    }
+
+    private void initProperties() {
+        addReport(EnvironmentHandler.getResourceValue("unsupportedSymbols"),
+                new Pair<>(ReportType.ERROR, unsupportedSymbols));
     }
 }

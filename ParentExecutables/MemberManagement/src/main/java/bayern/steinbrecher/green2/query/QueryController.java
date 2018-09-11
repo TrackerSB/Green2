@@ -47,7 +47,6 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -466,14 +465,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         public boolean isValid() {
             return validProperty().get();
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void addValidCondition(ObservableBooleanValue condition) {
-            ccBase.addValidCondition(condition);
-        }
     }
 
     /**
@@ -540,7 +531,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         protected void initializeImpl() {
             GridPane.setHgrow(inputField, Priority.ALWAYS);
             bindEmptyProperty(inputField.emptyProperty());
-            addValidCondition(inputField.validProperty());
+            addReports(inputField);
             inputField.checkedProperty().bind(checkedProperty());
             final BiMap<Pair<String, String>, String> valueDisplayMap = HashBiMap.create(Map.of(
                     new Pair<>("", ""), EnvironmentHandler.getResourceValue("exactlyMatches"),
@@ -595,7 +586,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         protected void initializeImpl() {
             GridPane.setHgrow(spinner, Priority.ALWAYS);
             bindEmptyProperty(spinner.getEditor().textProperty().isEmpty());
-            addValidCondition(spinner.validProperty());
+            addReports(spinner);
             spinner.checkedProperty().bind(checkedProperty());
             spinner.setEditable(true);
             spinner.getEditor().setText("");
@@ -686,7 +677,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         @Override
         protected void initializeImpl() {
             bindEmptyProperty(datePicker.emptyProperty());
-            addValidCondition(datePicker.validProperty());
+            addReports(datePicker);
             datePicker.checkedProperty().bind(checkedProperty());
             final BiMap<String, String> valueDisplayMap = HashBiMap.create(Map.of(
                     "<", EnvironmentHandler.getResourceValue("beforeDate"),

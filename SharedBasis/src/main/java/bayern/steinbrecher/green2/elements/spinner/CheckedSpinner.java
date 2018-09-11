@@ -55,15 +55,14 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckableControl {
     }
 
     private void initProperties(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
-        ccBase.addValidCondition(Bindings.createBooleanBinding(() -> {
-            Optional<T> parsed = parser.apply(getEditor().textProperty().get());
-            parsed.ifPresent(p -> factory.setValue(p));
-            return parsed.isPresent();
-        }, getEditor().textProperty()));
+        ccBase.addReport(EnvironmentHandler.getResourceValue("noNumber"),
+                new Pair<>(ReportType.ERROR, Bindings.createBooleanBinding(() -> {
+                    Optional<T> parsed = parser.apply(getEditor().textProperty().get());
+                    parsed.ifPresent(p -> factory.setValue(p));
+                    return !parsed.isPresent();
+                }, getEditor().textProperty())));
         ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
-                new Pair<>(ReportType.ERROR, valueProperty().isNull().and(checkedProperty())));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("inputInvalid"),
-                new Pair<>(ReportType.ERROR, ccBase.invalidProperty().and(checkedProperty())));
+                new Pair<>(ReportType.ERROR, valueProperty().isNull()));
     }
 
     /**
@@ -120,13 +119,5 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckableControl {
     @Override
     public boolean isValid() {
         return validProperty().get();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addValidCondition(ObservableBooleanValue condition) {
-        ccBase.addValidCondition(condition);
     }
 }

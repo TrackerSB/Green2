@@ -16,11 +16,14 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.util.Pair;
 
 /**
  * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedTextField} which contains a BIC. Currently
@@ -28,7 +31,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class BicTextField extends SpecificRegexTextField {
 
-    private final BooleanProperty bicValid = new SimpleBooleanProperty(this, "bicValid");
+    private final BooleanProperty invalidBic = new SimpleBooleanProperty(this, "invalidBic");
 
     /**
      * Constructs a new {@link BicTextField} with an max input length of {@link Integer#MAX_VALUE} and no initial
@@ -57,9 +60,13 @@ public class BicTextField extends SpecificRegexTextField {
     public BicTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text, SepaUtility.BIC_REGEX, false);
         getStyleClass().add("bic-textfield");
-        bicValid.bind(Bindings.createBooleanBinding(
-                () -> SepaUtility.isValidBic(textProperty().get()), textProperty()));
-        addValidCondition(bicValid);
+        invalidBic.bind(Bindings.createBooleanBinding(
+                () -> !SepaUtility.isValidBic(textProperty().get()), textProperty()));
         getStylesheets().add(BicTextField.class.getResource("bicTextField.css").toExternalForm());
+        initProperties();
+    }
+
+    private void initProperties() {
+        addReport(EnvironmentHandler.getResourceValue("invalidBic"), new Pair<>(ReportType.ERROR, invalidBic));
     }
 }

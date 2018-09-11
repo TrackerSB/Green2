@@ -49,7 +49,6 @@ public class ProfileNameField extends NameField {
             profileAlreadyExists.set(!EnvironmentHandler.getProfile().getProfileName().equals(newVal)
                     && Profile.getAvailableProfiles().contains(newVal));
         });
-        addValidCondition(profileAlreadyExists.not());
         addReport(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
                 new Pair<>(ReportType.ERROR, profileAlreadyExists));
     }

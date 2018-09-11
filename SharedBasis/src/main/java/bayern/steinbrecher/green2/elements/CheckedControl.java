@@ -16,10 +16,12 @@
  */
 package bayern.steinbrecher.green2.elements;
 
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
 import com.google.errorprone.annotations.DoNotCall;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
+import javafx.util.Pair;
 
 /**
  * Represents which represents controls like buttons, checkboxes, input fields, etc which have addional properties
@@ -32,11 +34,12 @@ public interface CheckedControl extends Reportable {
 
     /**
      * Returns the {@link javafx.beans.property.BooleanProperty} representing whether the current input is valid or not.
-     * NOTE: When the input is not checked it is always valid.
+     * It is valid if it is checked and there are no reports of errors triggered.
      *
      * @return The {@link javafx.beans.property.BooleanProperty} representing whether the current input is valid or not.
      * @see #isValid()
      * @see #checkedProperty()
+     * @see #addReport(java.lang.String, javafx.util.Pair)
      */
     ReadOnlyBooleanProperty validProperty();
 
@@ -49,15 +52,19 @@ public interface CheckedControl extends Reportable {
     boolean isValid();
 
     /**
-     * Adds a condition to the set of conditions to be met to be a valid control, i.e. the input the control represents
-     * is valid. NOTE Use this method in subclasses of implementing classes only! Since multiple inheritance is not
-     * possible in Java this class has to be an interface and interfaces are not allowed to have protected members.
+     * Adds a report to the set of reports. If the {@link ReportType} is {@link ReportType#ERROR} the negation of the
+     * {@link BooleanExpression} is added to the set of conditions for validity of the input of this control. Reports
+     * are only shown if this control {@link #isChecked()}. Be careful about cyclic dependencies between the
+     * {@link BooleanExpression}s of the reports. NOTE Use this method in subclasses of implementing classes only! Since
+     * multiple inheritance is not possible in Java this class has to be an interface and interfaces are not allowed to
+     * have protected members.
      *
-     * @param condition The condition to add.
+     * @param message The message to display.
+     * @param report The report containing its type and an expression evaluating whether to show the report.
      */
-    //FIXME How to make it protected and final?
     @DoNotCall
-    /* protected final */ void addValidCondition(ObservableBooleanValue condition);
+    @Override
+    void addReport(String message, Pair<ReportType, BooleanExpression> report);
 
     /**
      * Represents whether the input is checked or not.

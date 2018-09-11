@@ -61,7 +61,6 @@ public class CheckedComboBox<T> extends ComboBox<T> implements CheckedControl {
     private void initProperties() {
         nothingSelected.bind(Bindings.createBooleanBinding(() -> getSelectionModel().isEmpty(),
                 selectionModelProperty(), getSelectionModel().selectedItemProperty()));
-        addValidCondition(nothingSelected.not());
         addReport(EnvironmentHandler.getResourceValue("nothingSelected"),
                 new Pair<>(ReportType.ERROR, nothingSelected));
     }
@@ -114,14 +113,6 @@ public class CheckedComboBox<T> extends ComboBox<T> implements CheckedControl {
     @Override
     public boolean isValid() {
         return ccBase.isValid();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addValidCondition(ObservableBooleanValue condition) {
-        ccBase.addValidCondition(condition);
     }
 
     /**

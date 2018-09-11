@@ -16,11 +16,14 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.util.Pair;
 
 /**
  * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField} for entering a message id.
@@ -29,7 +32,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public final class MessageIdTextField extends SpecificRegexTextField {
 
-    private final BooleanProperty messageIdValid = new SimpleBooleanProperty(this, "messageIdValid");
+    private final BooleanProperty invalidMessageId = new SimpleBooleanProperty(this, "invalidMessageId");
 
     /**
      * Constructs an {@link MessageIdTextField} with no initial content.
@@ -45,9 +48,10 @@ public final class MessageIdTextField extends SpecificRegexTextField {
      */
     public MessageIdTextField(String text) {
         super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX);
-        messageIdValid.bind(Bindings.createBooleanBinding(
-                () -> SepaUtility.isValidMessageId(textProperty().get()), textProperty()));
-        addValidCondition(messageIdValid);
+        invalidMessageId.bind(Bindings.createBooleanBinding(
+                () -> !SepaUtility.isValidMessageId(textProperty().get()), textProperty()));
+        addReport(EnvironmentHandler.getResourceValue("invalidMessageId"),
+                new Pair<>(ReportType.ERROR, invalidMessageId));
         getStyleClass().add("messageIdTextField");
     }
 }

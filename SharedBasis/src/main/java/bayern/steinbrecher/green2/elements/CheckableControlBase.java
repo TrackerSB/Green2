@@ -17,7 +17,6 @@
 package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.elements.report.ReportType;
-import bayern.steinbrecher.green2.elements.report.ReportableBase;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
@@ -43,7 +42,8 @@ import javafx.util.Pair;
 //TODO May restrict to Control instead of Node (but ContributionField).
 public class CheckableControlBase<C extends Node> implements CheckableControl {
 
-    private final ReportableBase reportBase = new ReportableBase();
+    private final ObservableMap<String, Pair<ReportType, BooleanExpression>> reports
+            = FXCollections.observableHashMap();
     private final C control;
     private final ReadOnlyBooleanWrapper valid = new ReadOnlyBooleanWrapper(this, "valid");
     private final ObservableList<ObservableBooleanValue> validConditions = FXCollections.observableArrayList();
@@ -63,6 +63,7 @@ public class CheckableControlBase<C extends Node> implements CheckableControl {
             control.pseudoClassStateChanged(CHECKED_PSEUDO_CLASS, get());
         }
     };
+
     public CheckableControlBase(C control) {
         this.control = control;
         control.getStyleClass().add("checked-control-base");
@@ -78,7 +79,7 @@ public class CheckableControlBase<C extends Node> implements CheckableControl {
      */
     @Override
     public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
-        return reportBase.getReports();
+        return reports;
     }
 
     /**
@@ -86,7 +87,15 @@ public class CheckableControlBase<C extends Node> implements CheckableControl {
      */
     @Override
     public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-        reportBase.addReport(message, report);
+        if (reports.containsKey(message)) {
+            throw new IllegalArgumentException("A report for \"" + message + "\" is already registered.");
+        } else {
+            reports.put(message, report);
+        }
+
+        if (report.getKey() == ReportType.ERROR) {
+            validConditions.add(report.getValue().not());
+        }
     }
 
     /**
@@ -131,17 +140,6 @@ public class CheckableControlBase<C extends Node> implements CheckableControl {
     @Override
     public boolean isValid() {
         return validProperty().get();
-    }
-
-    /**
-     * Adds a condition to the set of conditions to be met to be a valid control, i.e. the input the control represents
-     * is valid. If the list of valid condtions is empty it is considered as "all conditions fulfilled".
-     *
-     * @param condition The condition to add.
-     */
-    @Override
-    public void addValidCondition(ObservableBooleanValue condition) {
-        validConditions.add(condition);
     }
 
     /**

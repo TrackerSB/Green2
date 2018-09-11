@@ -16,11 +16,14 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.util.Pair;
 
 /**
  * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField} specialized for IBANs.
@@ -29,7 +32,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public final class IbanTextField extends SpecificRegexTextField {
 
-    private final BooleanProperty ibanValid = new SimpleBooleanProperty(this, "ibanValid");
+    private final BooleanProperty invalidIban = new SimpleBooleanProperty(this, "invalidIban");
 
     /**
      * Constructs an {@link IbanTextField} with no initial content.
@@ -45,9 +48,9 @@ public final class IbanTextField extends SpecificRegexTextField {
      */
     public IbanTextField(String text) {
         super(SepaUtility.MAX_CHAR_IBAN, text, SepaUtility.IBAN_REGEX, true);
-        ibanValid.bind(Bindings.createBooleanBinding(
-                () -> SepaUtility.isValidIban(textProperty().get()), textProperty()));
-        addValidCondition(ibanValid);
+        invalidIban.bind(Bindings.createBooleanBinding(
+                () -> !SepaUtility.isValidIban(textProperty().get()), textProperty()));
+        addReport(EnvironmentHandler.getResourceValue("invalidIban"), new Pair<>(ReportType.ERROR, invalidIban));
         getStyleClass().add("iban-textfield");
         getStylesheets().add(IbanTextField.class.getResource("ibanTextField.css").toExternalForm());
     }

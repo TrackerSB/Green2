@@ -16,10 +16,13 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportType;
 import java.nio.charset.Charset;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.util.Pair;
 
 /**
  * Represents a {@link CheckedTextField} for entering a {@link Charset}. It also checks whether the current system
@@ -27,7 +30,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public final class CharsetTextField extends CheckedTextField {
 
-    private final BooleanProperty validCharset = new SimpleBooleanProperty(this, "invalid");
+    private final BooleanProperty invalidCharset = new SimpleBooleanProperty(this, "invalidCharset");
 
     /**
      * Creates a new {@link CharsetTextField} with a maximum column count of {@link Integer#MAX_VALUE} and no initial
@@ -56,8 +59,8 @@ public final class CharsetTextField extends CheckedTextField {
     public CharsetTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
         getStyleClass().add("charset-textfield");
-        validCharset.bind(Bindings.createBooleanBinding(
-                () -> !textProperty().get().isEmpty() && Charset.isSupported(textProperty().get()), textProperty()));
-        addValidCondition(validCharset);
+        invalidCharset.bind(Bindings.createBooleanBinding(
+                () -> !textProperty().get().isEmpty() && !Charset.isSupported(textProperty().get()), textProperty()));
+        addReport(EnvironmentHandler.getResourceValue("invalidCharset"), new Pair<>(ReportType.ERROR, invalidCharset));
     }
 }

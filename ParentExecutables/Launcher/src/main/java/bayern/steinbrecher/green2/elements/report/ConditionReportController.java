@@ -28,6 +28,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.Observable;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,6 +38,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -151,9 +153,11 @@ public class ConditionReportController extends ResultController<Optional<Boolean
     /**
      * Represents a condition and whether it is currently fullfilled ({@code true}/{@code false}).
      */
-    private static class Condition extends ReportableBase {
+    private static class Condition implements Reportable {
 
         private static final Logger LOGGER = Logger.getLogger(ConditionReportController.class.getName());
+        private final ObservableMap<String, Pair<ReportType, BooleanExpression>> reports
+                = FXCollections.observableHashMap();
         private final StringProperty name = new SimpleStringProperty(this, "name");
         /**
          * Currently the hold value is not updated automatically.
@@ -221,6 +225,26 @@ public class ConditionReportController extends ResultController<Optional<Boolean
          */
         public Optional<Boolean> getValue() {
             return valueProperty().get();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+            return reports;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
+            if (reports.containsKey(message)) {
+                throw new IllegalArgumentException("A report for \"" + message + "\" is already registered.");
+            } else {
+                reports.put(message, report);
+            }
         }
     }
 }
