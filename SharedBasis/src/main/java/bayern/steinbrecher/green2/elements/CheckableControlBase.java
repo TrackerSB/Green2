@@ -91,10 +91,9 @@ public class CheckableControlBase<C extends Node> implements CheckableControl {
             throw new IllegalArgumentException("A report for \"" + message + "\" is already registered.");
         } else {
             reports.put(message, report);
-        }
-
-        if (report.getKey() == ReportType.ERROR) {
-            validConditions.add(report.getValue().not());
+            if (report.getKey() == ReportType.ERROR) {
+                validConditions.add(report.getValue().not());
+            }
         }
     }
 
