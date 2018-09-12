@@ -28,9 +28,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <ComboBox fx:id="tableSelection"/>
     </HBox>
     <GridPane fx:id="queryInput" />
-    <HBox>
-        <Label text="%invalidOrMissingInput"
-               visible="${!controller.valid}"
-               styleClass="warningLabel"/>
-    </HBox>
 </VBox>

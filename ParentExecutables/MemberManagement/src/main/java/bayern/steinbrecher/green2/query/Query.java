@@ -61,7 +61,7 @@ public class Query extends WizardableView<Optional<List<List<String>>>, QueryCon
     protected void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("Query.fxml");
+            root = loadFXML("QueryParent.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
@@ -77,6 +77,6 @@ public class Query extends WizardableView<Optional<List<List<String>>>, QueryCon
      */
     @Override
     protected String getWizardFxmlPath() {
-        return "Query_Wizard.fxml";
+        return "QueryWizard.fxml";
     }
 }

@@ -23,12 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.query.QueryController">
-    <GridPane fx:id="queryInput" />
-    <HBox>
-        <Label text="%invalidOrMissingInput"
-               visible="${!controller.valid}"
-               styleClass="warningLabel"/>
-    </HBox>
+    <fx:include source="QueryWizard.fxml"/>
     <Button onAction="#query"
             disable="${!controller.valid}"
             text="%search"/>
