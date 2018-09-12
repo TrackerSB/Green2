@@ -16,19 +16,15 @@
  */
 package bayern.steinbrecher.green2.elements;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.scene.control.ComboBox;
-import javafx.util.Pair;
 
 /**
  * Extended version of {@link ComboBox}. Also contains {@link BooleanProperty} indicating whether nothing is selected.
@@ -61,8 +57,7 @@ public class CheckedComboBox<T> extends ComboBox<T> implements CheckedControl {
     private void initProperties() {
         nothingSelected.bind(Bindings.createBooleanBinding(() -> getSelectionModel().isEmpty(),
                 selectionModelProperty(), getSelectionModel().selectedItemProperty()));
-        addReport(EnvironmentHandler.getResourceValue("nothingSelected"),
-                new Pair<>(ReportType.ERROR, nothingSelected));
+        addReport(new ReportEntry("nothingSelected", ReportType.ERROR, nothingSelected));
     }
 
     /**
@@ -119,7 +114,7 @@ public class CheckedComboBox<T> extends ComboBox<T> implements CheckedControl {
      * {@inheritDoc}
      */
     @Override
-    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+    public ObservableList<ReportEntry> getReports() {
         return ccBase.getReports();
     }
 
@@ -127,7 +122,7 @@ public class CheckedComboBox<T> extends ComboBox<T> implements CheckedControl {
      * {@inheritDoc}
      */
     @Override
-    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-        ccBase.addReport(message, report);
+    public boolean addReport(ReportEntry report) {
+        return ccBase.addReport(report);
     }
 }

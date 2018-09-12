@@ -15,7 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<?import bayern.steinbrecher.green2.elements.report.ReportSummary?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
@@ -30,7 +29,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <Button onAction="#close"
             defaultButton="true"
             text="%ready"/>
-        <ReportSummary fx:id="reportSummary"
-                       expanded="true"/>
     </HBox>
 </VBox>

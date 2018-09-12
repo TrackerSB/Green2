@@ -17,7 +17,6 @@
 package bayern.steinbrecher.green2.login;
 
 import bayern.steinbrecher.green2.WizardableController;
-import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -38,12 +37,10 @@ public abstract class LoginController extends WizardableController<Optional<Map<
      * Adds all given textfields into {@code textInputFields} and sets up the properties {@code anyInputMissing},
      * {@code anyInputToLong} and {@code valid}.
      *
-     * @param reportSummary The report summary where to place warnings and errors.
      * @param fields The textfields to use for setup.
      */
-    protected void initProperties(ReportSummary reportSummary, CheckedTextField... fields) {
+    protected void initProperties(CheckedTextField... fields) {
         List<CheckedTextField> textInputFields = Arrays.asList(fields);
-        textInputFields.stream().forEach(reportSummary::addReportEntry);
 
         bindValidProperty(BindingUtility.reduceAnd(textInputFields.stream().map(CheckedTextField::validProperty)));
     }

@@ -16,21 +16,14 @@
  */
 package bayern.steinbrecher.green2.elements;
 
-import bayern.steinbrecher.green2.elements.report.ReportType;
-import bayern.steinbrecher.green2.utility.BindingUtility;
-import javafx.beans.binding.BooleanExpression;
+import bayern.steinbrecher.green2.elements.report.ReportableBase;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
-import javafx.util.Pair;
 
 /**
  * This class represents an implementation of {@link CheckableControl} which can be used for delegation.
@@ -40,23 +33,11 @@ import javafx.util.Pair;
  * @param <C> The type of the control delegating to this class.
  */
 //TODO May restrict to Control instead of Node (but ContributionField).
-public class CheckableControlBase<C extends Node> implements CheckableControl {
+public class CheckableControlBase<C extends Node> extends ReportableBase<C> implements CheckableControl {
 
-    private final ObservableMap<String, Pair<ReportType, BooleanExpression>> reports
-            = FXCollections.observableHashMap();
-    private final C control;
-    private final ReadOnlyBooleanWrapper valid = new ReadOnlyBooleanWrapper(this, "valid");
-    private final ObservableList<ObservableBooleanValue> validConditions = FXCollections.observableArrayList();
-
-    private static final PseudoClass INVALID_PSEUDO_CLASS = PseudoClass.getPseudoClass("invalid");
-    private final ReadOnlyBooleanWrapper invalid = new ReadOnlyBooleanWrapper(this, "invalid") {
-        @Override
-        protected void invalidated() {
-            control.pseudoClassStateChanged(INVALID_PSEUDO_CLASS, get());
-        }
-    };
-
+    private static final Logger LOGGER = Logger.getLogger(CheckableControlBase.class.getName());
     private static final PseudoClass CHECKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("checked");
+    private final C control;
     private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true) {
         @Override
         protected void invalidated() {
@@ -64,37 +45,32 @@ public class CheckableControlBase<C extends Node> implements CheckableControl {
         }
     };
 
+    /**
+     * Creates a {@link CheckableControlBase} which can be used for delgating calls when implementing
+     * {@link CheckableControl}.
+     *
+     * @param control The control to add pseudo classes to.
+     */
     public CheckableControlBase(C control) {
+        super(control);
         this.control = control;
         control.getStyleClass().add("checked-control-base");
-        validConditions.addListener((ListChangeListener.Change<? extends ObservableBooleanValue> c) -> {
-            valid.bind(BindingUtility.reduceAnd(validConditions.stream()).or(checked.not()));
-        });
-        invalid.bind(valid.not());
-        validConditions.add(BindingUtility.TRUE_BINDING); //Trigger init of property valid
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
-        return reports;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-        if (reports.containsKey(message)) {
-            throw new IllegalArgumentException("A report for \"" + message + "\" is already registered.");
+    protected BooleanBinding createValidBinding() {
+        BooleanBinding validBinding;
+        if (checkedProperty() == null) {
+            LOGGER.log(Level.WARNING, "CheckedProperty() returns null and could not be connected, yet.");
+            validBinding = super.createValidBinding();
         } else {
-            reports.put(message, report);
-            if (report.getKey() == ReportType.ERROR) {
-                validConditions.add(report.getValue().not());
-            }
+            validBinding = super.createValidBinding()
+                    .or(checkedProperty().not());
         }
+        return validBinding;
     }
 
     /**
@@ -119,44 +95,5 @@ public class CheckableControlBase<C extends Node> implements CheckableControl {
     @Override
     public void setChecked(boolean checked) {
         checkedProperty().set(checked);
-    }
-
-    /**
-     * Returns the property holding whether the current state of the control is valid. It is valid if and only if all
-     * {@link #validCondition}s hold and the control {@link #isChecked()}.
-     *
-     * @return The property holding whether the current state of the control is valid.
-     * @see #addValidCondition(javafx.beans.value.ObservableBooleanValue)
-     */
-    @Override
-    public ReadOnlyBooleanProperty validProperty() {
-        return valid.getReadOnlyProperty();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isValid() {
-        return validProperty().get();
-    }
-
-    /**
-     * Returns the property holding the inverse value of {@link #validProperty()}. This method may be used for
-     * convenience.
-     *
-     * @return The property holding the inverse value of {@link #validProperty()}.
-     */
-    public ReadOnlyBooleanProperty invalidProperty() {
-        return invalid.getReadOnlyProperty();
-    }
-
-    /**
-     * Returns the opposite value of {@link #isValid()}. This method may be used for convenience.
-     *
-     * @return The opposite value of {@link #isValid()}.
-     */
-    public boolean isInvalid() {
-        return invalidProperty().getValue();
     }
 }

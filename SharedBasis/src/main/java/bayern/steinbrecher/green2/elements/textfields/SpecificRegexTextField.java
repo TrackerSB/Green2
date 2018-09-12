@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.elements.textfields;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import java.util.regex.Pattern;
 import javafx.beans.binding.Bindings;
@@ -30,7 +31,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.css.PseudoClass;
-import javafx.util.Pair;
 
 /**
  * Represents a {@link CheckedRegexTextField} whose regex is unchangeable.
@@ -121,8 +121,7 @@ public class SpecificRegexTextField extends CheckedTextField {
             return patternValue != null && patternValue.matcher(regexText).matches();
         }, pattern, textProperty(), this.eliminateSpaces));
 
-        addReport(EnvironmentHandler.getResourceValue("unmatchRegex", getRegex()),
-                new Pair<>(ReportType.ERROR, matchRegex.not()));
+        addReport(new ReportEntry("unmatchRegex", ReportType.ERROR, matchRegex.not(), regexProperty()));
     }
 
     /**

@@ -16,14 +16,13 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.util.Pair;
 
 /**
  * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField} for entering a message id.
@@ -50,8 +49,7 @@ public final class MessageIdTextField extends SpecificRegexTextField {
         super(SepaUtility.MAX_CHAR_MESSAGE_ID, text, SepaUtility.MESSAGE_ID_REGEX);
         invalidMessageId.bind(Bindings.createBooleanBinding(
                 () -> !SepaUtility.isValidMessageId(textProperty().get()), textProperty()));
-        addReport(EnvironmentHandler.getResourceValue("invalidMessageId"),
-                new Pair<>(ReportType.ERROR, invalidMessageId));
+        addReport(new ReportEntry("invalidMessageId", ReportType.ERROR, invalidMessageId));
         getStyleClass().add("messageIdTextField");
     }
 }

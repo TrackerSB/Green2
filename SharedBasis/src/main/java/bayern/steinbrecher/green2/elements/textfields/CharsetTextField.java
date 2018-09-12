@@ -16,13 +16,12 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import java.nio.charset.Charset;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.util.Pair;
 
 /**
  * Represents a {@link CheckedTextField} for entering a {@link Charset}. It also checks whether the current system
@@ -61,6 +60,6 @@ public final class CharsetTextField extends CheckedTextField {
         getStyleClass().add("charset-textfield");
         invalidCharset.bind(Bindings.createBooleanBinding(
                 () -> !textProperty().get().isEmpty() && !Charset.isSupported(textProperty().get()), textProperty()));
-        addReport(EnvironmentHandler.getResourceValue("invalidCharset"), new Pair<>(ReportType.ERROR, invalidCharset));
+        addReport(new ReportEntry("invalidCharset", ReportType.ERROR, invalidCharset));
     }
 }

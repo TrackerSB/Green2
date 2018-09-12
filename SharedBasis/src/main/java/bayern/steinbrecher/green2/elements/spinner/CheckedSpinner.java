@@ -16,21 +16,18 @@
  */
 package bayern.steinbrecher.green2.elements.spinner;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import java.util.Optional;
 import java.util.function.Function;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.util.Pair;
 import bayern.steinbrecher.green2.elements.CheckableControl;
-import javafx.collections.ObservableMap;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
+import javafx.collections.ObservableList;
 
 /**
  * Extends the class {@link Spinner} with a valid and checked property.
@@ -55,21 +52,19 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckableControl {
     }
 
     private void initProperties(SpinnerValueFactory<T> factory, Function<String, Optional<T>> parser) {
-        ccBase.addReport(EnvironmentHandler.getResourceValue("noNumber"),
-                new Pair<>(ReportType.ERROR, Bindings.createBooleanBinding(() -> {
-                    Optional<T> parsed = parser.apply(getEditor().textProperty().get());
-                    parsed.ifPresent(p -> factory.setValue(p));
-                    return !parsed.isPresent();
-                }, getEditor().textProperty())));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
-                new Pair<>(ReportType.ERROR, valueProperty().isNull()));
+        ccBase.addReport(new ReportEntry("noNumber", ReportType.ERROR, Bindings.createBooleanBinding(() -> {
+            Optional<T> parsed = parser.apply(getEditor().textProperty().get());
+            parsed.ifPresent(p -> factory.setValue(p));
+            return !parsed.isPresent();
+        }, getEditor().textProperty())));
+        ccBase.addReport(new ReportEntry("inputMissing", ReportType.ERROR, valueProperty().isNull()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+    public ObservableList<ReportEntry> getReports() {
         return ccBase.getReports();
     }
 
@@ -77,8 +72,8 @@ public class CheckedSpinner<T> extends Spinner<T> implements CheckableControl {
      * {@inheritDoc}
      */
     @Override
-    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-        ccBase.addReport(message, report);
+    public boolean addReport(ReportEntry report) {
+        return ccBase.addReport(report);
     }
 
     /**

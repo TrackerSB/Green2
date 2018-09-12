@@ -16,183 +16,113 @@
  */
 package bayern.steinbrecher.green2.elements.report;
 
-import bayern.steinbrecher.green2.utility.BindingUtility;
-import java.util.Objects;
-import javafx.beans.binding.Bindings;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import javafx.beans.binding.BooleanExpression;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 
 /**
- * Represents an entry in a {@link ReportSummary}. Every entry has a type and a message and is associated with one or
- * multiple validations. The number of occurrences describes the number of validations evaluating to {@code true}. When
- * the number of occurrences is greater 0 the message may be shown by a {@link ReportSummary}.
+ * Represents an immutable entry of a report which can be used with {@link ReportBubble}.
  *
  * @author Stefan Huber
  * @since 2u14
  */
-final class ReportEntry {
+public final class ReportEntry {
 
-    private final StringProperty message = new SimpleStringProperty(this, "message");
-    private final ObjectProperty<ReportType> reportType = new SimpleObjectProperty<>(this, "reportType");
-    private final ReadOnlyIntegerWrapper occurrences = new ReadOnlyIntegerWrapper(this, "occurrences");
-    private final ListProperty<BooleanExpression> reportValidations
-            = new SimpleListProperty<>(this, "reportValidations", FXCollections.observableArrayList());
+    private final ReadOnlyStringWrapper messageKey = new ReadOnlyStringWrapper(this, "messageKey");
+    private final ReadOnlyProperty<?>[] messageParams;
+    private final ReadOnlyObjectWrapper<ReportType> type = new ReadOnlyObjectWrapper<>(this, "type");
+    private final ReadOnlyObjectWrapper<BooleanExpression> reportTrigger
+            = new ReadOnlyObjectWrapper<>(this, "reportTrigger");
 
     /**
-     * Creates a {@link ReportEntry} of a certain type and showing a given message.
+     * Creates an immutable {@link ReportEntry}.
      *
-     * @param message The message the entry has to show.
-     * @param type The type of the message.
+     * @param messageKey The key used for retrieving the acutal message from the resource bundles.
+     * @param type The type of the report.
+     * @param reportTrigger The expression determining whether the report has to be shown.
+     * @param messageParams The parameters passed to the resource bundle along the message key.
      */
-    ReportEntry(String message, ReportType type) {
-        setMessage(message);
-        setReportType(type);
-        reportValidations.addListener((obs, oldVal, newVal) -> {
-            occurrences.bind(BindingUtility.reduceSum(
-                    newVal.stream()
-                            .map(exp -> Bindings.createIntegerBinding(() -> exp.get() ? 1 : 0, exp))));
-        });
+    public ReportEntry(
+            String messageKey, ReportType type, BooleanExpression reportTrigger, ReadOnlyProperty<?>... messageParams) {
+        this.messageKey.set(messageKey);
+        this.type.set(type);
+        this.reportTrigger.set(reportTrigger);
+        this.messageParams = messageParams;
     }
 
     /**
-     * Return the property holding the message the {@link ReportEntry} represents.
+     * Returns the property holding the associated message key.
      *
-     * @return The property holding the message the {@link ReportEntry} represents.
+     * @return The property holding the associated message key.
      */
-    public StringProperty messageProperty() {
-        return message;
+    public ReadOnlyStringProperty messageKeyProperty() {
+        return messageKey.getReadOnlyProperty();
     }
 
     /**
-     * Returns the message describing the entry.
+     * Returns the message key associated with this report.
      *
-     * @return The message describing the entry.
+     * @return The message key associated with this report.
+     * @see #getMessage()
+     */
+    public String getMessageKey() {
+        return messageKeyProperty().get();
+    }
+
+    /**
+     * Returns the retrieved message of the resource bundle after passing {@link #getMessageKey()} and the given params
+     * to the resource bundle.
+     *
+     * @return The message of the resource bundle assocated with {@link #getMessageKey()}.
+     * @see #messageKeyProperty()
      */
     public String getMessage() {
-        return messageProperty().get();
+        Object[] params = Arrays.stream(messageParams)
+                .map(ReadOnlyProperty::getValue)
+                .collect(Collectors.toList())
+                .toArray(new Object[messageParams.length]);
+        return EnvironmentHandler.getResourceValue(getMessageKey(), params);
     }
 
     /**
-     * Sets the message describing the entry.
+     * Returns the property holding the type of this report.
      *
-     * @param message The message describing the entry.
+     * @return The property holding the type of this report.
      */
-    public void setMessage(String message) {
-        messageProperty().set(message);
+    public ReadOnlyObjectProperty<ReportType> typeProperty() {
+        return type;
     }
 
     /**
-     * Returns the property holding the type of the entry.
+     * Returns the type of this report.
      *
-     * @return The property holding the type of the entry.
+     * @return The type of this report.
      */
-    public ObjectProperty<ReportType> reportTypeProperty() {
-        return reportType;
+    public ReportType getType() {
+        return typeProperty().get();
     }
 
     /**
-     * Returns the type of the report entry.
+     * Returns the property holding the expression determing whether this report has to be shown.
      *
-     * @return The type of the report entry.
+     * @return The property holding the expression determing whether this report has to be shown.
      */
-    public ReportType getReportType() {
-        return reportTypeProperty().get();
+    public ReadOnlyObjectProperty<BooleanExpression> reportTriggerProperty() {
+        return reportTrigger;
     }
 
     /**
-     * Changes the type of the entry.
+     * Returns the expression determing whether this report has to be shown.
      *
-     * @param reportType The new type of the entry.
+     * @return The expression determing whether this report has to be shown.
      */
-    public void setReportType(ReportType reportType) {
-        reportTypeProperty().set(reportType);
-    }
-
-    /**
-     * Returns the property holding the number of validations evaluating to {@code true}.
-     *
-     * @return The property holding the number of validations evaluating to {@code true}.
-     */
-    public ReadOnlyIntegerProperty occurrencesProperty() {
-        return occurrences.getReadOnlyProperty();
-    }
-
-    /**
-     * Returns the number of validations evaluating to {@code true}.
-     *
-     * @return The number of occurences validations evaluating to {@code true}.
-     */
-    public int getOccurrences() {
-        return occurrencesProperty().get();
-    }
-
-    /**
-     * Returns the property holding the number of associated validations.
-     *
-     * @return The property holding the number of associated validations.
-     */
-    public ReadOnlyIntegerProperty reportValidationsSizeProperty() {
-        return reportValidations.sizeProperty();
-    }
-
-    /**
-     * Associates another validation with this entry.
-     *
-     * @param validation The validation to associate this entry with.
-     * @return {@code true} only if the validation was added.
-     * @see ListProperty#add(java.lang.Object)
-     */
-    public boolean addReportValidation(BooleanExpression validation) {
-        Objects.requireNonNull(validation, "A validation is not allowed to be null.");
-        return reportValidations.add(validation);
-    }
-
-    /**
-     * Removes the given validation from the associated validations.
-     *
-     * @param validation The validation to unassociate.
-     * @return {@code true} only if the validation was removed.
-     * @see ListProperty#remove(java.lang.Object)
-     */
-    public boolean removeReportValidation(BooleanExpression validation) {
-        return reportValidations.remove(validation);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        boolean areEqual;
-        if (obj instanceof ReportEntry) {
-            ReportEntry entry = (ReportEntry) obj;
-            areEqual = getMessage().equalsIgnoreCase(entry.getMessage());
-        } else {
-            areEqual = false;
-        }
-        return areEqual;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        //NOTE This is the default implementation of NetBeans
-        //CHECKSTYLE.OFF: MagicNumber - This is the default implementation of NetBeans
-        int hash = 3;
-        hash = 97 * hash + Objects.hashCode(this.message);
-        hash = 97 * hash + Objects.hashCode(this.reportType);
-        hash = 97 * hash + Objects.hashCode(this.occurrences);
-        //CHECKSTYLE.ON: MagicNumber
-        return hash;
+    public BooleanExpression getReportTrigger() {
+        return reportTriggerProperty().get();
     }
 }

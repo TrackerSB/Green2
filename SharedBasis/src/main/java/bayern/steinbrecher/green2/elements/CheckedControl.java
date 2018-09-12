@@ -16,12 +16,12 @@
  */
 package bayern.steinbrecher.green2.elements;
 
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.report.Reportable;
 import com.google.errorprone.annotations.DoNotCall;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.util.Pair;
 
 /**
  * Represents which represents controls like buttons, checkboxes, input fields, etc which have addional properties
@@ -33,14 +33,15 @@ import javafx.util.Pair;
 public interface CheckedControl extends Reportable {
 
     /**
-     * Returns the {@link javafx.beans.property.BooleanProperty} representing whether the current input is valid or not.
-     * It is valid if it is checked and there are no reports of errors triggered.
+     * Returns the {@link ReadOnlyBooleanProperty} representing whether the current input is valid or not. It is valid
+     * if it is checked and there are no reports of errors triggered.
      *
-     * @return The {@link javafx.beans.property.BooleanProperty} representing whether the current input is valid or not.
+     * @return The {@link ReadOnlyBooleanProperty} representing whether the current input is valid or not.
      * @see #isValid()
      * @see #checkedProperty()
-     * @see #addReport(java.lang.String, javafx.util.Pair)
+     * @see #addReport(bayern.steinbrecher.green2.elements.report.ReportEntry)
      */
+    @Override
     ReadOnlyBooleanProperty validProperty();
 
     /**
@@ -49,6 +50,7 @@ public interface CheckedControl extends Reportable {
      * @return {@code true} only if the current input is valid or it is not checked.
      * @see #isChecked()
      */
+    @Override
     boolean isValid();
 
     /**
@@ -59,12 +61,11 @@ public interface CheckedControl extends Reportable {
      * multiple inheritance is not possible in Java this class has to be an interface and interfaces are not allowed to
      * have protected members.
      *
-     * @param message The message to display.
-     * @param report The report containing its type and an expression evaluating whether to show the report.
+     * @param report The report to add.
      */
     @DoNotCall
     @Override
-    void addReport(String message, Pair<ReportType, BooleanExpression> report);
+    boolean addReport(ReportEntry report);
 
     /**
      * Represents whether the input is checked or not.

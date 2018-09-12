@@ -16,14 +16,13 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.SpecificRegexTextField;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.util.Pair;
 
 /**
  * Represents a {@link bayern.steinbrecher.green2.elements.textfields.CheckedTextField} which contains a BIC. Currently
@@ -67,6 +66,6 @@ public class BicTextField extends SpecificRegexTextField {
     }
 
     private void initProperties() {
-        addReport(EnvironmentHandler.getResourceValue("invalidBic"), new Pair<>(ReportType.ERROR, invalidBic));
+        addReport(new ReportEntry("invalidBic", ReportType.ERROR, invalidBic));
     }
 }

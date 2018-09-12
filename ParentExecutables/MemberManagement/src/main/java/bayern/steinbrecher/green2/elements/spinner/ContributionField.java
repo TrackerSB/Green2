@@ -18,14 +18,12 @@ package bayern.steinbrecher.green2.elements.spinner;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckableControlBase;
-import bayern.steinbrecher.green2.elements.report.ReportType;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -35,9 +33,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 import bayern.steinbrecher.green2.elements.CheckableControl;
-import javafx.collections.ObservableMap;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
+import javafx.collections.ObservableList;
 
 /**
  * Represents a contribution spinner. It is a {@link CheckedDoubleSpinner} which has a further field for associating a
@@ -92,7 +90,7 @@ public class ContributionField extends HBox implements Initializable, CheckableC
      * {@inheritDoc}
      */
     @Override
-    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+    public ObservableList<ReportEntry> getReports() {
         return ccBase.getReports();
     }
 
@@ -100,8 +98,8 @@ public class ContributionField extends HBox implements Initializable, CheckableC
      * {@inheritDoc}
      */
     @Override
-    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-        ccBase.addReport(message, report);
+    public boolean addReport(ReportEntry report) {
+        return ccBase.addReport(report);
     }
 
     /**

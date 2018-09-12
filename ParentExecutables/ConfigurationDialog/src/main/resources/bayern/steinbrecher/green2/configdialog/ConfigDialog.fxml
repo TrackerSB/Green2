@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import bayern.steinbrecher.green2.elements.CheckedComboBox?>
 <?import bayern.steinbrecher.green2.elements.buttons.HelpButton?>
 <?import bayern.steinbrecher.green2.elements.ProfileNameField?>
-<?import bayern.steinbrecher.green2.elements.report.ReportSummary?>
 <?import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner?>
 <?import bayern.steinbrecher.green2.elements.textfields.CharsetTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField?>
@@ -151,5 +150,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     ButtonBar.buttonData="NEXT_FORWARD"/>
         </buttons>
     </ButtonBar>
-    <ReportSummary fx:id="reportSummary"/>
 </VBox>

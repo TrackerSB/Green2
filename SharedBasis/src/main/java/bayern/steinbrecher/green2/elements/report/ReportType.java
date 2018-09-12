@@ -27,22 +27,23 @@ import javafx.scene.image.ImageView;
  * @since 2u14
  */
 public enum ReportType {
-    /**
-     * Marks a report entry as errors.
-     */
-    ERROR(ImageSet.ERROR_SMALL),
-    /**
-     * Marks a report entry as additional information.
-     */
-    INFO(ImageSet.INFO_SMALL),
+    //NOTE These enums have to be ordered based on their severity starting from the lowest.
     /**
      * Marks not yet classified report entries.
      */
     UNDEFINED(null),
     /**
+     * Marks a report entry as additional information.
+     */
+    INFO(ImageSet.INFO_SMALL),
+    /**
      * Marks a report entry as warning.
      */
-    WARNING(ImageSet.WARNING_SMALL);
+    WARNING(ImageSet.WARNING_SMALL),
+    /**
+     * Marks a report entry as errors.
+     */
+    ERROR(ImageSet.ERROR_SMALL);
 
     private final ImageSet graphic;
 

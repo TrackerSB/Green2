@@ -18,12 +18,12 @@ package bayern.steinbrecher.green2.elements;
 
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.NameField;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.util.Pair;
 
 /**
  * Represents a {@link NameField} specialized for profile names which also checks whether the currently inserted
@@ -49,8 +49,7 @@ public class ProfileNameField extends NameField {
             profileAlreadyExists.set(!EnvironmentHandler.getProfile().getProfileName().equals(newVal)
                     && Profile.getAvailableProfiles().contains(newVal));
         });
-        addReport(EnvironmentHandler.getResourceValue("profileAlreadyExists"),
-                new Pair<>(ReportType.ERROR, profileAlreadyExists));
+        addReport(new ReportEntry("profileAlreadyExists", ReportType.ERROR, profileAlreadyExists));
     }
 
     /**

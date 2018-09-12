@@ -17,40 +17,50 @@
 package bayern.steinbrecher.green2.elements.report;
 
 import com.google.errorprone.annotations.DoNotCall;
-import java.util.Map;
-import javafx.beans.binding.BooleanExpression;
-import javafx.collections.ObservableMap;
-import javafx.util.Pair;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.collections.ObservableList;
 
 /**
- * Represents objects which can be added to a {@link ReportSummary} directly.
+ * Represents objects which can be added to a {@link ReportBubble} directly.
  *
  * @author Stefan Huber
  */
 public interface Reportable {
 
     /**
-     * Returns a {@link Map} from messages to their {@link ReportType} and to an expression which holds when to
-     * show/hide the message. NOTE When implementing this method it has to be made sure that the
-     * {@link BooleanExpression}s representing the validation are always the same when requested. Otherwise
-     * {@link ReportSummary} may not be able to remove all validation associated with this {@link Reportable}.
+     * Returns the property holding whether the current is valid. It is valid if and and only if there are no reports
+     * triggered which are classified as {@link ReportType#ERROR}.
      *
-     * @return A {@link Map} from messages to their {@link ReportType} and to an expression which holds when to
-     * show/hide the message.
+     * @return The property holding whether the current is valid.
      */
-    ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports();
+    ReadOnlyBooleanProperty validProperty();
 
     /**
-     * Adds a further report to the list of reports. NOTE Use this method in subclasses of implementing classes only!
+     * Checks whether the current input is valid.
+     *
+     * @return {@code true} only if the current input is valid.
+     */
+    boolean isValid();
+
+    /**
+     * Returns all associated reports.
+     *
+     * @return All associated reports. The list is unmodifiable.
+     */
+    ObservableList<ReportEntry> getReports();
+
+    /**
+     * Adds a further report to the list of reports.NOTE Use this method in subclasses of implementing classes only!
      * Since multiple inheritance is not possible in Java this class has to be an interface and interfaces are not
      * allowed to have protected members.
      *
-     * @param message The message to display.
-     * @param report The report containing its type and an expression evaluating whether to show the report.
+     * @param report The report to add.
+     * @return {@code true} only if the {@link ReportEntry} was added.
+     * @throws IllegalArgumentException Only if the given {@link ReportEntry} has a message which was already added.
      */
     //FIXME How to make it protected and final?
     @DoNotCall
-    /* protected final */ void addReport(String message, Pair<ReportType, BooleanExpression> report);
+    /* protected final */ boolean addReport(ReportEntry report);
 
     /**
      * Adds all reports of the given {@link Reportable} to this {@link Reportable}. NOTE Use this method in subclasses
@@ -63,8 +73,7 @@ public interface Reportable {
     @DoNotCall
     /* protected final */ default void addReports(Reportable reportable) {
         reportable.getReports()
-                .entrySet()
                 .stream()
-                .forEach(report -> addReport(report.getKey(), report.getValue()));
+                .forEach(report -> addReport(report));
     }
 }

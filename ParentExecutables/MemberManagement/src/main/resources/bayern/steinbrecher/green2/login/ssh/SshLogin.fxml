@@ -15,7 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<?import bayern.steinbrecher.green2.elements.report.ReportSummary?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField?>
 <?import bayern.steinbrecher.green2.elements.textfields.CheckedTextField?>
 <?import bayern.steinbrecher.green2.elements.textfields.NameField?>
@@ -75,7 +74,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             onAction="#login"
             GridPane.rowIndex="4"
             GridPane.columnIndex="0"/>
-    <ReportSummary fx:id="reportSummary"
-                   GridPane.rowIndex="5"
-                   GridPane.columnIndex="0"/>
 </GridPane>

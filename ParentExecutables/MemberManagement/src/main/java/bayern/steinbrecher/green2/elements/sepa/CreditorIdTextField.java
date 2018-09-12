@@ -16,13 +16,12 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.utility.SepaUtility;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.util.Pair;
 
 /**
  * Represents a {@link javafx.scene.control.TextField} for inserting a creditor id.
@@ -49,8 +48,7 @@ public final class CreditorIdTextField extends CheckedSepaTextField {
         super(Integer.MAX_VALUE, text);
         invalidCreditorId.bind(Bindings.createBooleanBinding(
                 () -> !SepaUtility.isValidCreditorId(textProperty().get()), textProperty()));
-        addReport(EnvironmentHandler.getResourceValue("invalidCreditorId"),
-                new Pair<>(ReportType.ERROR, invalidCreditorId));
+        addReport(new ReportEntry("invalidCreditorId", ReportType.ERROR, invalidCreditorId));
         getStyleClass().add("creditorid-textfield");
         getStylesheets().add(CreditorIdTextField.class.getResource("creditorIdTextField.css").toExternalForm());
     }

@@ -30,13 +30,13 @@ import java.util.logging.Logger;
 import javafx.beans.Observable;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -53,13 +53,12 @@ import javafx.util.Pair;
  */
 public class ConditionReportController extends ResultController<Optional<Boolean>> {
 
+    private static final Logger LOGGER = Logger.getLogger(ConditionReportController.class.getName());
     private final ObservableValue<ObservableList<Condition>> conditions
             = new SimpleObjectProperty<>(this, "conditions",
                     FXCollections.observableArrayList(i -> new Observable[]{i.nameProperty(), i.valueProperty()}));
     @FXML
     private TableView<Condition> conditionsReport;
-    @FXML
-    private ReportSummary reportSummary;
 
     /**
      * {@inheritDoc}
@@ -101,17 +100,6 @@ public class ConditionReportController extends ResultController<Optional<Boolean
         });
         conditionsReport.getColumns()
                 .setAll(List.of(conditionNameColumn, conditionValueColumn));
-
-        conditions.getValue().addListener((ListChangeListener.Change<? extends Condition> change) -> {
-            while (change.next()) {
-                change.getAddedSubList()
-                        .stream()
-                        .forEach(reportSummary::addReportEntry);
-                change.getRemoved()
-                        .stream()
-                        .forEach(reportSummary::removeReportValidation);
-            }
-        });
     }
 
     /**
@@ -153,9 +141,10 @@ public class ConditionReportController extends ResultController<Optional<Boolean
     /**
      * Represents a condition and whether it is currently fullfilled ({@code true}/{@code false}).
      */
-    private static class Condition implements Reportable {
+    //FIXME How to make this class static again?
+    private /*static*/ class Condition implements Reportable {
 
-        private static final Logger LOGGER = Logger.getLogger(ConditionReportController.class.getName());
+        private final ReportableBase<TableView<Condition>> reportableBase = new ReportableBase<>(conditionsReport);
         private final ObservableMap<String, Pair<ReportType, BooleanExpression>> reports
                 = FXCollections.observableHashMap();
         private final StringProperty name = new SimpleStringProperty(this, "name");
@@ -176,8 +165,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
         }
 
         private void initProperties() {
-            addReport(EnvironmentHandler.getResourceValue("skippedConditions"),
-                    new Pair<>(ReportType.WARNING, this.value.isEqualTo(Optional.empty())));
+            addReport(new ReportEntry("skippedConditions", ReportType.WARNING, this.value.isEqualTo(Optional.empty())));
         }
 
         /**
@@ -231,20 +219,32 @@ public class ConditionReportController extends ResultController<Optional<Boolean
          * {@inheritDoc}
          */
         @Override
-        public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
-            return reports;
+        public ObservableList<ReportEntry> getReports() {
+            return reportableBase.getReports();
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-            if (reports.containsKey(message)) {
-                throw new IllegalArgumentException("A report for \"" + message + "\" is already registered.");
-            } else {
-                reports.put(message, report);
-            }
+        public boolean addReport(ReportEntry report) {
+            return reportableBase.addReport(report);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ReadOnlyBooleanProperty validProperty() {
+            return reportableBase.validProperty();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isValid() {
+            return reportableBase.isValid();
         }
     }
 }

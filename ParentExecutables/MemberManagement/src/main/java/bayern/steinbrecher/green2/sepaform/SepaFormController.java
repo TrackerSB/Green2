@@ -20,7 +20,6 @@ import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckedDatePicker;
 import bayern.steinbrecher.green2.elements.buttons.HelpButton;
-import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.sepa.CreditorIdTextField;
 import bayern.steinbrecher.green2.elements.sepa.IbanTextField;
 import bayern.steinbrecher.green2.elements.sepa.MessageIdTextField;
@@ -72,8 +71,6 @@ public class SepaFormController extends WizardableController<Optional<Originator
     private HelpButton messageIdHelpButton;
     @FXML
     private HelpButton pmtInfIdHelpButton;
-    @FXML
-    private ReportSummary reportSummary;
 
     /**
      * {@inheritDoc}
@@ -96,10 +93,6 @@ public class SepaFormController extends WizardableController<Optional<Originator
         bindValidProperty(executionDatePicker.validProperty()
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()
                         .map(CheckedTextField::validProperty))));
-
-        reportSummary.addReportEntry(executionDatePicker);
-        checkedTextFields.stream()
-                .forEach(reportSummary::addReportEntry);
 
         originator = Originator.readCurrentOriginatorInfo().orElse(new Originator());
         creatorTextField.setText(originator.getCreator());

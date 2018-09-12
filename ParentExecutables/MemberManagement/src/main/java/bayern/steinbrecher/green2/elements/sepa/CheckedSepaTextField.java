@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.elements.sepa;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import java.util.List;
@@ -118,7 +118,6 @@ public class CheckedSepaTextField extends CheckedTextField {
     }
 
     private void initProperties() {
-        addReport(EnvironmentHandler.getResourceValue("unsupportedSymbols"),
-                new Pair<>(ReportType.ERROR, unsupportedSymbols));
+        addReport(new ReportEntry("unsupportedSymbols", ReportType.ERROR, unsupportedSymbols));
     }
 }

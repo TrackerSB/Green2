@@ -16,7 +16,6 @@
  */
 package bayern.steinbrecher.green2.login.ssh;
 
-import bayern.steinbrecher.green2.elements.report.ReportSummary;
 import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
@@ -37,8 +36,6 @@ import javafx.fxml.FXML;
 public class SshLoginController extends LoginController {
 
     @FXML
-    private ReportSummary reportSummary;
-    @FXML
     private CheckedTextField sshUsernameField;
     @FXML
     private CheckedPasswordField sshPasswordField;
@@ -52,7 +49,7 @@ public class SshLoginController extends LoginController {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initProperties(reportSummary, sshUsernameField, sshPasswordField, databaseUsernameField, databasePasswordField);
+        initProperties(sshUsernameField, sshPasswordField, databaseUsernameField, databasePasswordField);
         Platform.runLater(() -> sshUsernameField.requestFocus());
     }
 

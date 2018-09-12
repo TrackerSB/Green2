@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.contribution;
 
 import bayern.steinbrecher.green2.WizardableController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.elements.report.ReportSummary;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
 import bayern.steinbrecher.green2.elements.spinner.ContributionField;
@@ -49,7 +49,6 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 /**
  * Contains a window for inserting a double value representing a contribution.
@@ -65,8 +64,6 @@ public class ContributionController extends WizardableController<Optional<BiMap<
     private static final Random COLOR_RANDOM = new Random();
     @FXML
     private VBox contributionFieldsBox;
-    @FXML
-    private ReportSummary reportSummary;
     private final ListProperty<DuplicateContributionField> contributionFields
             = new SimpleListProperty<>(this, "contributionSpinner", FXCollections.observableArrayList());
     private final BooleanProperty allContributionFieldsValid
@@ -106,11 +103,8 @@ public class ContributionController extends WizardableController<Optional<BiMap<
                     addedCf.colorProperty().addListener(calculateUniqueColors);
                     addedCf.contributionProperty().addListener(calculateUniqueContributions);
                     addedCf.validProperty().addListener(calculateAllContributionFieldsValid);
-                    reportSummary.addReportEntry(addedCf);
                 });
                 change.getRemoved().forEach(removedCf -> {
-                    reportSummary.removeReportValidation(removedCf);
-
                     List<HBox> hboxes = contributionFieldsBox.getChildren().stream()
                             //If working as expected there should only be objects of the class HBox
                             .filter(node -> node instanceof HBox)
@@ -235,10 +229,8 @@ public class ContributionController extends WizardableController<Optional<BiMap<
         }
 
         private void initProperties() {
-            addReport(EnvironmentHandler.getResourceValue("duplicateColor"),
-                    new Pair<>(ReportType.ERROR, duplicateColor));
-            addReport(EnvironmentHandler.getResourceValue("duplicateContribution"),
-                    new Pair<>(ReportType.ERROR, duplicateContribution));
+            addReport(new ReportEntry("duplicateColor", ReportType.ERROR, duplicateColor));
+            addReport(new ReportEntry("duplicateContribution", ReportType.ERROR, duplicateContribution));
         }
 
         /**

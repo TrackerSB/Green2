@@ -23,8 +23,6 @@ import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
 import bayern.steinbrecher.green2.elements.CheckedComboBox;
 import bayern.steinbrecher.green2.elements.ProfileNameField;
-import bayern.steinbrecher.green2.elements.report.ReportSummary;
-import bayern.steinbrecher.green2.elements.report.ReportType;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.green2.elements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
@@ -74,8 +72,6 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
     @FXML
     private CheckBox birthdayFeaturesCheckbox;
     @FXML
-    private ReportSummary reportSummary;
-    @FXML
     private CheckedRegexTextField birthdayExpressionTextField;
     private final List<CheckedTextField> checkedTextFields = new ArrayList<>();
     private Profile profile;
@@ -100,13 +96,6 @@ public class ConfigDialogController extends WizardableController<Optional<Void>>
                 .and(dbmsComboBox.validProperty())
                 .and(sshPort.validProperty())
                 .and(databasePort.validProperty()));
-
-        reportSummary.addReportEntry(EnvironmentHandler.getResourceValue("invalidBirthdayExpression"), ReportType.ERROR,
-                birthdayExpressionTextField.matchRegexProperty().not()
-                        .and(birthdayFeaturesCheckbox.selectedProperty()))
-                .addReportEntry(sshPort)
-                .addReportEntry(databasePort);
-        checkedTextFields.stream().forEach(reportSummary::addReportEntry);
 
         //TODO Can loading/saving be abstracted?
         //Load settings

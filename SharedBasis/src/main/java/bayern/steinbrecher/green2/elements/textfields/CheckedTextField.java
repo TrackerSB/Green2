@@ -16,10 +16,8 @@
  */
 package bayern.steinbrecher.green2.elements.textfields;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.CheckableControlBase;
 import bayern.steinbrecher.green2.elements.report.ReportType;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -28,9 +26,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.css.PseudoClass;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
-import javafx.util.Pair;
 import bayern.steinbrecher.green2.elements.CheckableControl;
-import javafx.collections.ObservableMap;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
+import javafx.collections.ObservableList;
 
 /**
  * Represents text fields that detects whether their input text is longer than a given maximum column count. These text
@@ -101,17 +99,15 @@ public class CheckedTextField extends TextField implements CheckableControl {
     private void initProperties() {
         emptyContent.bind(textProperty().isEmpty());
         toLongContent.bind(textProperty().length().greaterThan(maxColumnCount));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
-                new Pair<>(ReportType.ERROR, emptyProperty()));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("inputToLong"),
-                new Pair<>(ReportType.ERROR, toLongProperty()));
+        ccBase.addReport(new ReportEntry("inputMissing", ReportType.ERROR, emptyProperty()));
+        ccBase.addReport(new ReportEntry("inputToLong", ReportType.ERROR, toLongProperty()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+    public ObservableList<ReportEntry> getReports() {
         return ccBase.getReports();
     }
 
@@ -119,8 +115,8 @@ public class CheckedTextField extends TextField implements CheckableControl {
      * {@inheritDoc}
      */
     @Override
-    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-        ccBase.addReport(message, report);
+    public boolean addReport(ReportEntry report) {
+        return ccBase.addReport(report);
     }
 
     /**

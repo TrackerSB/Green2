@@ -16,7 +16,7 @@
  */
 package bayern.steinbrecher.green2.elements;
 
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.report.ReportType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,16 +28,13 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.collections.ObservableMap;
+import javafx.collections.ObservableList;
 import javafx.scene.control.DatePicker;
-import javafx.util.Pair;
 
 /**
  * Represents a DatePicker which sets a css class attribute when it is empty or an invalid date is inserted.
@@ -121,19 +118,16 @@ public class CheckedDatePicker extends DatePicker implements CheckableControl {
         }, executionDateBinding);
         invalidPastDate.bind(this.forceFuture.and(executionDateInFuture.not()));
 
-        ccBase.addReport(EnvironmentHandler.getResourceValue("pastExecutionDate"),
-                new Pair<>(ReportType.ERROR, invalidPastDateProperty()));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("inputMissing"),
-                new Pair<>(ReportType.ERROR, emptyProperty()));
-        ccBase.addReport(EnvironmentHandler.getResourceValue("noDate"),
-                new Pair<>(ReportType.ERROR, executionDateBinding.isNull()));
+        ccBase.addReport(new ReportEntry("pastExecutionDate", ReportType.ERROR, invalidPastDateProperty()));
+        ccBase.addReport(new ReportEntry("inputMissing", ReportType.ERROR, emptyProperty()));
+        ccBase.addReport(new ReportEntry("noDate", ReportType.ERROR, executionDateBinding.isNull()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+    public ObservableList<ReportEntry> getReports() {
         return ccBase.getReports();
     }
 
@@ -141,8 +135,8 @@ public class CheckedDatePicker extends DatePicker implements CheckableControl {
      * {@inheritDoc}
      */
     @Override
-    public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-        ccBase.addReport(message, report);
+    public boolean addReport(ReportEntry report) {
+        return ccBase.addReport(report);
     }
 
     /**

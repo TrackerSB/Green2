@@ -70,9 +70,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.Priority;
 import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.elements.CheckableControlBase;
-import bayern.steinbrecher.green2.elements.report.ReportType;
-import javafx.beans.binding.BooleanExpression;
-import javafx.collections.ObservableMap;
+import bayern.steinbrecher.green2.elements.report.ReportEntry;
 
 /**
  * Represents the controller of the dialog for querying member.
@@ -394,7 +392,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * {@inheritDoc}
          */
         @Override
-        public ObservableMap<String, Pair<ReportType, BooleanExpression>> getReports() {
+        public ObservableList<ReportEntry> getReports() {
             return ccBase.getReports();
         }
 
@@ -402,8 +400,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * {@inheritDoc}
          */
         @Override
-        public void addReport(String message, Pair<ReportType, BooleanExpression> report) {
-            ccBase.addReport(message, report);
+        public boolean addReport(ReportEntry report) {
+            return ccBase.addReport(report);
         }
 
         /**
