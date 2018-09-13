@@ -57,7 +57,7 @@ public class ReportBubble {
     public ReportBubble(Reportable reportable) {
         Canvas bubbleCanvas = new Canvas();
 
-        bubble.setOpacity(0);
+        bubble.setOpacity(1);
         bubble.setAutoFix(true);
         bubble.getContent()
                 .add(bubbleCanvas);
