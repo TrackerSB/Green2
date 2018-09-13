@@ -59,6 +59,7 @@ public class ReportBubble {
 
         bubble.setOpacity(1);
         bubble.setAutoFix(true);
+        bubble.setAutoHide(true);
         bubble.getContent()
                 .add(bubbleCanvas);
 
@@ -68,11 +69,7 @@ public class ReportBubble {
                             .stream()
                             .filter(report -> report.getReportTrigger().get())
                             .collect(Collectors.toList());
-                    if (triggeredReports.isEmpty()) {
-                        bubble.setAutoHide(false);
-                        bubble.hide();
-                    } else {
-                        bubble.setAutoHide(true);
+                    if (!triggeredReports.isEmpty()) {
                         ReportType bubbleType = triggeredReports
                                 .stream()
                                 .map(ReportEntry::getType)

@@ -29,6 +29,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
+import javafx.stage.Popup;
 
 /**
  * Contains a basic implementation of {@link Reportable} which may be used for delegation.
@@ -85,10 +86,11 @@ public class ReportableBase<C extends Node> implements Reportable {
         ReportBubble reportBubble = new ReportBubble(this);
         invalidProperty().and(control.focusedProperty())
                 .addListener((obs, oldVal, newVal) -> {
+                    Popup bubble = reportBubble.getBubble();
                     if (newVal) {
-                        //TODO Show reports in bubble popup.
-                        reportBubble.getBubble()
-                                .show(control, 0, 0);
+                        bubble.show(control, 0, 0);
+                    } else {
+                        bubble.hide();
                     }
                 });
     }
