@@ -82,17 +82,6 @@ public class ReportableBase<C extends Node> implements Reportable {
         });
         invalid.bind(valid.not());
         validConditions.add(BindingUtility.TRUE_BINDING); //Trigger init of property valid
-
-        ReportBubble reportBubble = new ReportBubble(this);
-        invalidProperty().and(control.focusedProperty())
-                .addListener((obs, oldVal, newVal) -> {
-                    Popup bubble = reportBubble.getBubble();
-                    if (newVal) {
-                        bubble.show(control, 0, 0);
-                    } else {
-                        bubble.hide();
-                    }
-                });
     }
 
     /**

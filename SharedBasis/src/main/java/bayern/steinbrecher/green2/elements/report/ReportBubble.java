@@ -98,6 +98,9 @@ public class ReportBubble {
                         }
                         bubbleCanvas.setWidth(MAX_BUBBLE_WIDTH);
                         bubbleCanvas.setHeight(BUBBLE_ARC + numInsertedReports * FONT_SIZE);
+                        bubble.show(reportable, 0, 0);
+                    } else {
+                        bubble.hide();
                     }
                 });
     }

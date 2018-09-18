@@ -27,6 +27,7 @@ import javafx.css.PseudoClass;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.TextField;
 import bayern.steinbrecher.green2.elements.CheckableControl;
+import bayern.steinbrecher.green2.elements.report.ReportBubble;
 import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import javafx.collections.ObservableList;
 
@@ -87,6 +88,8 @@ public class CheckedTextField extends TextField implements CheckableControl {
         super(text);
         setAccessibleRole(AccessibleRole.TEXT_FIELD);
         initProperties();
+
+        ReportBubble reportBubble = new ReportBubble(this);
 
         setMaxColumnCount(maxColumnCount);
         getStyleClass().add("checked-textfield");
