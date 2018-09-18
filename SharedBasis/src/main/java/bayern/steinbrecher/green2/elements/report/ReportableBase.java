@@ -63,7 +63,11 @@ public class ReportableBase<C extends Node> implements Reportable {
      */
     public ReportableBase(C control) {
         this.control = control;
-        initProperties();
+        validConditions.addListener((ListChangeListener.Change<? extends ObservableBooleanValue> c) -> {
+            valid.bind(createValidBinding());
+        });
+        invalid.bind(valid.not());
+        validConditions.add(BindingUtility.TRUE_BINDING); //Trigger init of property valid
     }
 
     /**
@@ -74,14 +78,6 @@ public class ReportableBase<C extends Node> implements Reportable {
      */
     protected BooleanBinding createValidBinding() {
         return BindingUtility.reduceAnd(validConditions.stream());
-    }
-
-    private void initProperties() {
-        validConditions.addListener((ListChangeListener.Change<? extends ObservableBooleanValue> c) -> {
-            valid.bind(createValidBinding());
-        });
-        invalid.bind(valid.not());
-        validConditions.add(BindingUtility.TRUE_BINDING); //Trigger init of property valid
     }
 
     /**
