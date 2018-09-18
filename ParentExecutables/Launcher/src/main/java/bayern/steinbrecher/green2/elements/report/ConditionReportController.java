@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.elements.report;
 
 import bayern.steinbrecher.green2.ResultController;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.elements.CheckedTableView;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.util.List;
@@ -28,7 +29,6 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.Observable;
-import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -38,12 +38,9 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.util.Pair;
 
 /**
  * The controller of {@link ConditionReport}.
@@ -58,7 +55,7 @@ public class ConditionReportController extends ResultController<Optional<Boolean
             = new SimpleObjectProperty<>(this, "conditions",
                     FXCollections.observableArrayList(i -> new Observable[]{i.nameProperty(), i.valueProperty()}));
     @FXML
-    private TableView<Condition> conditionsReport;
+    private CheckedTableView<Condition> conditionsReport;
 
     /**
      * {@inheritDoc}
@@ -144,9 +141,8 @@ public class ConditionReportController extends ResultController<Optional<Boolean
     //FIXME How to make this class static again?
     private /*static*/ class Condition implements Reportable {
 
-        private final ReportableBase<TableView<Condition>> reportableBase = new ReportableBase<>(conditionsReport);
-        private final ObservableMap<String, Pair<ReportType, BooleanExpression>> reports
-                = FXCollections.observableHashMap();
+        private final ReportableBase<CheckedTableView<Condition>> reportableBase
+                = new ReportableBase<>(conditionsReport);
         private final StringProperty name = new SimpleStringProperty(this, "name");
         /**
          * Currently the hold value is not updated automatically.
