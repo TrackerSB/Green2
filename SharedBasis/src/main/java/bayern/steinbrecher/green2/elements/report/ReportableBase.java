@@ -19,10 +19,9 @@ package bayern.steinbrecher.green2.elements.report;
 import bayern.steinbrecher.green2.utility.BindingUtility;
 import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -52,7 +51,7 @@ public class ReportableBase<C extends Node> implements Reportable {
             control.pseudoClassStateChanged(INVALID_PSEUDO_CLASS, get());
         }
     };
-    private final ListProperty<ReportEntry> reports = new SimpleListProperty<>(
+    private final ReadOnlyListWrapper<ReportEntry> reports = new ReadOnlyListWrapper<>(
             this, "reports", FXCollections.observableArrayList(
                     report -> new Observable[]{report.reportTriggerProperty().get()}));
 
