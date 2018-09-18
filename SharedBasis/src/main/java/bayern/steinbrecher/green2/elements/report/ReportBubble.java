@@ -17,18 +17,16 @@
 package bayern.steinbrecher.green2.elements.report;
 
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.Popup;
 import javafx.util.Pair;
 
 /**
@@ -41,39 +39,39 @@ import javafx.util.Pair;
  */
 public final class ReportBubble<C extends Node & Reportable> {
 
-    private static final double BUBBLE_ARC = 30;
-    private static final double HALF_BUBBLE_ARC = BUBBLE_ARC / 2;
-    private static final double MAX_BUBBLE_WIDTH = 400;
-    private static final String FONT_URL = ReportBubble.class.getResource("/lato/Lato-Light.ttf")
-            .toExternalForm();
-    private static final double FONT_SIZE = 14;
     /**
-     * The map has the following structure: ReportType --> (background color, font color)
+     * The map has the following structure: ReportType --> (background color, font color). The colors represent CSS
+     * values.
      */
-    private static final Map<ReportType, Pair<Color, Color>> COLOR_SCHEMES = Map.of(
-            ReportType.ERROR, new Pair<>(Color.web("#ff4d4d"), Color.WHITE),
-            ReportType.WARNING, new Pair<>(Color.web("#ffe680"), Color.BLACK),
-            ReportType.INFO, new Pair<>(Color.web("#80bfff"), Color.BLACK),
-            ReportType.UNDEFINED, new Pair<>(Color.web("#d9d9d9"), Color.BLACK)
+    private static final Map<ReportType, Pair<String, String>> COLOR_SCHEMES = Map.of(
+            ReportType.ERROR, new Pair<>("#ff4d4d", "white"),
+            ReportType.WARNING, new Pair<>("#ffe680", "black"),
+            ReportType.INFO, new Pair<>("#80bfff", "black"),
+            ReportType.UNDEFINED, new Pair<>("#d9d9d9", "black")
     );
     private final ListProperty<ReportEntry> triggeredReports = new SimpleListProperty<>(this, "triggeredReports");
-    private final Popup bubble = new Popup();
+    private final ReadOnlyStringWrapper reportsMessage = new ReadOnlyStringWrapper(this, "reportsMessage");
+    private final Tooltip bubble = new Tooltip();
 
     public ReportBubble(C reportable) {
-        Canvas bubbleCanvas = new Canvas();
-
-        bubble.setAutoFix(true);
-        bubble.setAutoHide(false);
-        bubble.getContent()
-                .add(bubbleCanvas);
+        bubble.textProperty()
+                .bind(reportsMessage);
 
         reportable.getReports()
                 .addListener((ListChangeListener.Change<? extends ReportEntry> change) -> {
                     triggeredReports.set(FXCollections.observableArrayList(change.getList()
                             .stream()
-                            .filter(report -> report.getReportTrigger().get())
+                            .filter(r -> r.getReportTrigger().get())
                             .collect(Collectors.toList())));
                 });
+        triggeredReports.addListener((obs, oldVal, newVal) -> {
+            StringJoiner reportBuilder = new StringJoiner("\n");
+            newVal.stream()
+                    .forEach(reportEntry -> {
+                        reportBuilder.add(reportEntry.getMessage());
+                    });
+            reportsMessage.set(reportBuilder.toString());
+        });
         triggeredReports.emptyProperty()
                 .not()
                 .and(reportable.validProperty().not())
@@ -86,29 +84,15 @@ public final class ReportBubble<C extends Node & Reportable> {
                                 .distinct()
                                 .max((typeA, typeB) -> typeA.compareTo(typeB))
                                 .orElse(ReportType.UNDEFINED);
-                        Pair<Color, Color> scheme = COLOR_SCHEMES.get(bubbleType);
+                        Pair<String, String> scheme = COLOR_SCHEMES.get(bubbleType);
                         assert scheme != null : "There is no scheme defined for ReportType " + bubbleType;
 
-                        GraphicsContext bubbleContext = bubbleCanvas.getGraphicsContext2D();
-                        bubbleContext.setFill(scheme.getKey());
-                        bubbleContext.fillRoundRect(
-                                0, 0, bubbleCanvas.getWidth(), bubbleCanvas.getHeight(), BUBBLE_ARC, BUBBLE_ARC);
-                        bubbleContext.setFill(scheme.getValue());
-                        bubbleContext.setTextBaseline(VPos.TOP);
-                        bubbleContext.setFont(Font.loadFont(FONT_URL, FONT_SIZE));
+                        bubble.setStyle("-fx-background-color: " + scheme.getKey() + ";"
+                                + "-fx-text-fill: " + scheme.getValue());
 
-                        int numInsertedReports = 0;
-                        for (ReportEntry report : triggeredReports) {
-                            double yOffset = HALF_BUBBLE_ARC + numInsertedReports * FONT_SIZE;
-                            bubbleContext.fillText(
-                                    report.getMessage(), HALF_BUBBLE_ARC, yOffset, MAX_BUBBLE_WIDTH);
-                            numInsertedReports++;
-                        }
-                        bubbleCanvas.setWidth(MAX_BUBBLE_WIDTH);
-                        bubbleCanvas.setHeight(BUBBLE_ARC + numInsertedReports * FONT_SIZE);
-                        bubble.show(reportable, 0, 0);
+                        Tooltip.install(reportable, bubble);
                     } else {
-                        bubble.hide();
+                        Tooltip.uninstall(reportable, bubble);
                     }
                 });
     }
