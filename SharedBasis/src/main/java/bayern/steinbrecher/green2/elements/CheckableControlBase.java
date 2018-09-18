@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.elements;
 
+import bayern.steinbrecher.green2.elements.report.Reportable;
 import bayern.steinbrecher.green2.elements.report.ReportableBase;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,17 +34,18 @@ import javafx.scene.Node;
  * @param <C> The type of the control delegating to this class.
  */
 //TODO May restrict to Control instead of Node (but ContributionField).
-public class CheckableControlBase<C extends Node> extends ReportableBase<C> implements CheckableControl {
+public class CheckableControlBase<C extends Node & Reportable> extends ReportableBase<C> implements CheckableControl {
 
     private static final Logger LOGGER = Logger.getLogger(CheckableControlBase.class.getName());
     private static final PseudoClass CHECKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("checked");
-    private final C control;
+
     private final BooleanProperty checked = new SimpleBooleanProperty(this, "checked", true) {
         @Override
         protected void invalidated() {
             control.pseudoClassStateChanged(CHECKED_PSEUDO_CLASS, get());
         }
     };
+    private final C control;
 
     /**
      * Creates a {@link CheckableControlBase} which can be used for delgating calls when implementing

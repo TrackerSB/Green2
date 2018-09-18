@@ -16,11 +16,14 @@
  */
 package bayern.steinbrecher.green2.elements.report;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -29,13 +32,14 @@ import javafx.stage.Popup;
 import javafx.util.Pair;
 
 /**
- * Represents a bubble like popup showing attached and triggered reports of a control. It is meant for being used for
+ * Represents a bubble like popup showing attached and triggered reports of a control.It is meant for being used for
  * inline validations.
  *
  * @author Stefan Huber
+ * @param <C> The type of the reporting {@link Node} where to attach a {@link ReportBubble} to.
  * @since 2u14
  */
-public class ReportBubble {
+public final class ReportBubble<C extends Node & Reportable> {
 
     private static final double BUBBLE_ARC = 30;
     private static final double HALF_BUBBLE_ARC = BUBBLE_ARC / 2;
@@ -52,24 +56,30 @@ public class ReportBubble {
             ReportType.INFO, new Pair<>(Color.web("#80bfff"), Color.BLACK),
             ReportType.UNDEFINED, new Pair<>(Color.web("#d9d9d9"), Color.BLACK)
     );
+    private final ListProperty<ReportEntry> triggeredReports = new SimpleListProperty<>(this, "triggeredReports");
     private final Popup bubble = new Popup();
 
-    public ReportBubble(Reportable reportable) {
+    public ReportBubble(C reportable) {
         Canvas bubbleCanvas = new Canvas();
 
-        bubble.setOpacity(1);
         bubble.setAutoFix(true);
-        bubble.setAutoHide(true);
+        bubble.setAutoHide(false);
         bubble.getContent()
                 .add(bubbleCanvas);
 
         reportable.getReports()
                 .addListener((ListChangeListener.Change<? extends ReportEntry> change) -> {
-                    List<? extends ReportEntry> triggeredReports = change.getList()
+                    triggeredReports.set(FXCollections.observableArrayList(change.getList()
                             .stream()
                             .filter(report -> report.getReportTrigger().get())
-                            .collect(Collectors.toList());
-                    if (!triggeredReports.isEmpty()) {
+                            .collect(Collectors.toList())));
+                });
+        triggeredReports.emptyProperty()
+                .not()
+                .and(reportable.validProperty().not())
+                .and(reportable.focusedProperty())
+                .addListener((obs, oldVal, newVal) -> {
+                    if (newVal) {
                         ReportType bubbleType = triggeredReports
                                 .stream()
                                 .map(ReportEntry::getType)
@@ -88,13 +98,11 @@ public class ReportBubble {
                         bubbleContext.setFont(Font.loadFont(FONT_URL, FONT_SIZE));
 
                         int numInsertedReports = 0;
-                        for (ReportEntry report : change.getList()) {
-                            if (report.getReportTrigger().get()) {
-                                double yOffset = HALF_BUBBLE_ARC + numInsertedReports * FONT_SIZE;
-                                bubbleContext.fillText(
-                                        report.getMessage(), HALF_BUBBLE_ARC, yOffset, MAX_BUBBLE_WIDTH);
-                                numInsertedReports++;
-                            }
+                        for (ReportEntry report : triggeredReports) {
+                            double yOffset = HALF_BUBBLE_ARC + numInsertedReports * FONT_SIZE;
+                            bubbleContext.fillText(
+                                    report.getMessage(), HALF_BUBBLE_ARC, yOffset, MAX_BUBBLE_WIDTH);
+                            numInsertedReports++;
                         }
                         bubbleCanvas.setWidth(MAX_BUBBLE_WIDTH);
                         bubbleCanvas.setHeight(BUBBLE_ARC + numInsertedReports * FONT_SIZE);
@@ -103,9 +111,5 @@ public class ReportBubble {
                         bubble.hide();
                     }
                 });
-    }
-
-    public Popup getBubble() {
-        return bubble;
     }
 }

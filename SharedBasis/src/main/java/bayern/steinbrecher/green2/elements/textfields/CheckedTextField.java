@@ -89,7 +89,7 @@ public class CheckedTextField extends TextField implements CheckableControl {
         setAccessibleRole(AccessibleRole.TEXT_FIELD);
         initProperties();
 
-        ReportBubble reportBubble = new ReportBubble(this);
+        ReportBubble<CheckedTextField> reportBubble = new ReportBubble<>(this);
 
         setMaxColumnCount(maxColumnCount);
         getStyleClass().add("checked-textfield");

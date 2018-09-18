@@ -28,7 +28,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
-import javafx.stage.Popup;
 
 /**
  * Contains a basic implementation of {@link Reportable} which may be used for delegation.
@@ -38,9 +37,8 @@ import javafx.stage.Popup;
  * @since 2u14
  */
 //TODO May restrict to Control instead of Node (but ContributionField).
-public class ReportableBase<C extends Node> implements Reportable {
+public class ReportableBase<C extends Node & Reportable> implements Reportable {
 
-    private final C control;
     private final ReadOnlyBooleanWrapper valid = new ReadOnlyBooleanWrapper(this, "valid");
     private final ObservableList<ObservableBooleanValue> validConditions = FXCollections.observableArrayList();
 
@@ -51,6 +49,7 @@ public class ReportableBase<C extends Node> implements Reportable {
             control.pseudoClassStateChanged(INVALID_PSEUDO_CLASS, get());
         }
     };
+    private final C control;
     private final ReadOnlyListWrapper<ReportEntry> reports = new ReadOnlyListWrapper<>(
             this, "reports", FXCollections.observableArrayList(
                     report -> new Observable[]{report.reportTriggerProperty().get()}));
