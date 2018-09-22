@@ -128,7 +128,9 @@ public class MainMenuController extends Controller {
         });
     });
     private final CompletableFutureProperty<Set<Member>> member = new CompletableFutureProperty<>();
-    private final CompletableFutureProperty<Set<Member>> memberNonContributionfree = new CompletableFutureProperty<>();
+    private final CompletableFutureProperty<Set<Member>> currentMember = new CompletableFutureProperty<>();
+    private final CompletableFutureProperty<Set<Member>> currentMemberNonContributionfree
+            = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Map<String, String>> nicknames = new CompletableFutureProperty<>();
     private final BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
     private final BooleanProperty activateBirthdayFeatures
@@ -171,7 +173,8 @@ public class MainMenuController extends Controller {
 
     private void bindAvailabilityInformations() {
         allDataAvailable.bind(member.availableProperty()
-                .and(memberNonContributionfree.availableProperty())
+                .and(currentMember.availableProperty())
+                .and(currentMemberNonContributionfree.availableProperty())
                 .and(nicknames.availableProperty()));
         dataLastUpdatedLabel.textProperty().bind(Bindings.createStringBinding(() -> {
             Optional<LocalDateTime> dataLastUpdatedOptional = getDataLastUpdated();
@@ -222,7 +225,7 @@ public class MainMenuController extends Controller {
                     EnvironmentHandler.getResourceValue("isActive")
             ));
             try {
-                result.addAll(member.get()
+                result.addAll(currentMember.get()
                         .get()
                         .stream()
                         .filter(m -> !m.getHonorings().getOrDefault(yearsOfMembership, Boolean.FALSE))
@@ -338,7 +341,8 @@ public class MainMenuController extends Controller {
     }
 
     private List<Member> getBirthdayMember(int year) throws InterruptedException, ExecutionException {
-        return member.get().get()
+        return currentMember.get()
+                .get()
                 .parallelStream()
                 .filter(m -> BirthdayGenerator.getsNotified(m, year))
                 .collect(Collectors.toList());
@@ -363,7 +367,7 @@ public class MainMenuController extends Controller {
      */
     public void generateAddressesAll() {
         try {
-            Set<Member> memberList = this.member.get().get();
+            Set<Member> memberList = this.currentMember.get().get();
             if (memberList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
@@ -546,7 +550,11 @@ public class MainMenuController extends Controller {
                     }
                     Platform.runLater(() -> dataLastUpdated.set(Optional.ofNullable(datetime)));
                 });
-        memberNonContributionfree.set(member.get().thenApplyAsync(
+        currentMember.set(member.get().thenApply(
+                ml -> ml.parallelStream()
+                        .filter(m -> !m.getLeavingDate().isPresent())
+                        .collect(Collectors.toSet())));
+        currentMemberNonContributionfree.set(currentMember.get().thenApplyAsync(
                 ml -> ml.parallelStream()
                         .filter(m -> !m.isContributionfree())
                         .collect(Collectors.toSet())));
@@ -598,7 +606,7 @@ public class MainMenuController extends Controller {
             justification = "It is called by an appropriate fxml file")
     @SuppressWarnings("unused")
     private void generateContributionSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(memberNonContributionfree.get(), true, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(currentMemberNonContributionfree.get(), true, SequenceType.RCUR));
     }
 
     @FXML

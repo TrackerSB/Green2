@@ -151,6 +151,10 @@ public final class /* enum */ Tables<T, U> {
                     new SimpleColumnPattern<Boolean, Member.Builder>("IstAktiv",
                             Set.of(Keywords.NOT_NULL), ColumnParser.BOOLEAN_COLUMN_PARSER,
                             (builder, active) -> builder.setActive(Optional.ofNullable(active))),
+                    new SimpleColumnPattern<LocalDate, Member.Builder>("AusgetretenSeit",
+                            Set.of(Keywords.DEFAULT), ColumnParser.LOCALDATE_COLUMN_PARSER,
+                            (builder, leavingDate) -> builder.setLeavingDate(Optional.ofNullable(leavingDate)),
+                            Optional.of(Optional.empty())),
                     new RegexColumnPattern<Boolean, Member.Builder, Integer>("^\\d+MitgliedGeehrt$",
                             ColumnParser.BOOLEAN_COLUMN_PARSER, Member.Builder::putHonoring,
                             cn -> Integer.parseInt(cn.substring(0, cn.length() - "MitgliedGeehrt".length())))

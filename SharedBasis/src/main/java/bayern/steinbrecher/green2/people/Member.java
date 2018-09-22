@@ -43,6 +43,7 @@ public final class Member implements Comparable<Member> {
     private boolean contributionfree;
     private Optional<Double> contribution;
     private LocalDate memberSince;
+    private Optional<LocalDate> leavingDate;
     private Map<Integer, Boolean> honorings;
 
     static {
@@ -67,11 +68,12 @@ public final class Member implements Comparable<Member> {
      * @param contributionfree {@code true} only if this {@link Member} does not have to pay any contributions.
      * @param contribution The contribution associated.
      * @param memberSince The date when its membership was accepted.
+     * @param leavingDate The date when a member left the association.
      * @param honorings The honorings for years of membership gotten.
      */
     public Member(int membershipnumber, Person person, Address home, AccountHolder accountHolder,
             Optional<Boolean> active, boolean contributionfree, Optional<Double> contribution, LocalDate memberSince,
-            Map<Integer, Boolean> honorings) {
+            Optional<LocalDate> leavingDate, Map<Integer, Boolean> honorings) {
         this.membershipnumber = membershipnumber;
         this.person = person;
         this.home = home;
@@ -80,6 +82,7 @@ public final class Member implements Comparable<Member> {
         this.contributionfree = contributionfree;
         this.contribution = Objects.requireNonNull(contribution, "Pass Optional.empty() instead of null.");
         this.memberSince = memberSince;
+        this.leavingDate = leavingDate;
         this.honorings = honorings;
     }
 
@@ -200,6 +203,15 @@ public final class Member implements Comparable<Member> {
      */
     public LocalDate getMemberSince() {
         return memberSince;
+    }
+
+    /**
+     * Returns the date when this member left the association if he left.
+     *
+     * @return The date when this member left the association if he left.
+     */
+    public Optional<LocalDate> getLeavingDate() {
+        return leavingDate;
     }
 
     /**
@@ -376,6 +388,18 @@ public final class Member implements Comparable<Member> {
          */
         public Builder setMemberSince(LocalDate memberSince) {
             getToBuild().memberSince = memberSince;
+            return this;
+        }
+
+        /**
+         * Changes the date when the member left the association if he did.
+         *
+         * @param leavingDate The date when the member left the association if he did. Pass {@link Optional#empty()} if
+         * he has not left the association.
+         * @return This builder which can be used for chaining calls to setter.
+         */
+        public Builder setLeavingDate(Optional<LocalDate> leavingDate) {
+            getToBuild().leavingDate = leavingDate;
             return this;
         }
 
