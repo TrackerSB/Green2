@@ -71,6 +71,7 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
         super("^\\Q" + realColumnName + "\\E$", parser);
         Set<Keywords> keywordsCopy = new HashSet<>(keywords);
         //Make sure DEFAULT keyword is added when a default value is specified.
+        //FIXME Think about null check vs Optional.isPresent()
         if (defaultValue != null || !keywordsCopy.contains(Keywords.NOT_NULL)) {
             keywordsCopy.add(Keywords.DEFAULT);
         }
