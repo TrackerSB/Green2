@@ -56,93 +56,93 @@ public final class /* enum */ Tables<T, U> {
                     new SimpleColumnPattern<String, Member.Builder>("Vorname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getPerson().setPrename(value);
-                        return m;
-                    }),
+                                m.getPerson().setPrename(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("Nachname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getPerson().setLastname(value);
-                        return m;
-                    }),
+                                m.getPerson().setLastname(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("Titel",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getPerson().setTitle(value);
-                        return m;
-                    }),
+                                m.getPerson().setTitle(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<Boolean, Member.Builder>("IstMaennlich",
                             Set.of(Keywords.NOT_NULL), ColumnParser.BOOLEAN_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getPerson().setMale(value);
-                        return m;
-                    }),
+                                m.getPerson().setMale(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<LocalDate, Member.Builder>("Geburtstag",
                             Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getPerson().setBirthday(value);
-                        return m;
-                    }),
+                                m.getPerson().setBirthday(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<LocalDate, Member.Builder>("MitgliedSeit",
                             Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
                             Member.Builder::setMemberSince),
                     new SimpleColumnPattern<String, Member.Builder>("Strasse",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getHome().setStreet(value);
-                        return m;
-                    }),
+                                m.getHome().setStreet(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("Hausnummer",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getHome().setHouseNumber(value);
-                        return m;
-                    }),
+                                m.getHome().setHouseNumber(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("PLZ",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getHome().setPostcode(value);
-                        return m;
-                    }),
+                                m.getHome().setPostcode(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("Ort",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getHome().setPlace(value);
-                        return m;
-                    }),
+                                m.getHome().setPlace(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<Boolean, Member.Builder>("IstBeitragsfrei",
                             Set.of(Keywords.NOT_NULL, Keywords.DEFAULT), ColumnParser.BOOLEAN_COLUMN_PARSER,
                             Member.Builder::setContributionfree, Optional.of(Optional.of(false))),
                     new SimpleColumnPattern<String, Member.Builder>("Iban",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getAccountHolder().setIban(value);
-                        return m;
-                    }),
+                                m.getAccountHolder().setIban(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("Bic",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getAccountHolder().setBic(value);
-                        return m;
-                    }),
+                                m.getAccountHolder().setBic(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("KontoinhaberVorname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getAccountHolder().setPrename(value);
-                        return m;
-                    }),
+                                m.getAccountHolder().setPrename(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<String, Member.Builder>("KontoinhaberNachname",
                             Set.of(Keywords.NOT_NULL), ColumnParser.STRING_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getAccountHolder().setLastname(value);
-                        return m;
-                    }),
+                                m.getAccountHolder().setLastname(value);
+                                return m;
+                            }),
                     new SimpleColumnPattern<LocalDate, Member.Builder>("MandatErstellt",
                             Set.of(Keywords.NOT_NULL), ColumnParser.LOCALDATE_COLUMN_PARSER,
                             (m, value) -> {
-                        m.getAccountHolder().setMandateSigned(value);
-                        return m;
-                    })
+                                m.getAccountHolder().setMandateSigned(value);
+                                return m;
+                            })
             ),
             List.of(
                     new SimpleColumnPattern<Double, Member.Builder>("Beitrag",
