@@ -251,7 +251,8 @@ public final class SshConnection extends DBConnection {
         List<List<String>> resultTable = Arrays.stream(rows)
                 .map(row -> splitUp(row, '\t'))
                 .map(rowFields -> rowFields.stream()
-                .map(f -> "0000-00-00".equals(f) ? null : f) //TODO Remove legacy check 0000-00-00
+                .map(f -> "0000-00-00".equals(f) ? null : f)
+                .map(f -> (f == null || "NULL".equalsIgnoreCase(f)) ? null : f)
                 .collect(Collectors.toList()))
                 .collect(Collectors.toList());
 

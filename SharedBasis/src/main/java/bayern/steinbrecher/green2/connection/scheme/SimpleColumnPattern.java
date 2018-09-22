@@ -85,12 +85,17 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
      * Parses the given value and sets it to the object of type {@link U}.
      *
      * @param toSet The object to set the parsed value to.
-     * @param value The value to parse and to set.
+     * @param value The value to parse and to set. If it is {@code null} or equals to "NULL" {@code null} is returned.
      * @return The resulting object of type {@link U}.
      */
     public U combine(U toSet, String value) {
-        T parsedValue = getParser().parse(value)
-                .orElseThrow(() -> new IllegalArgumentException(getRealColumnName() + " can not parse " + value));
+        T parsedValue;
+        if (value == null || value.equalsIgnoreCase("null")) {
+            parsedValue = null;
+        } else {
+            parsedValue = getParser().parse(value)
+                    .orElseThrow(() -> new IllegalArgumentException(getRealColumnName() + " can not parse " + value));
+        }
         return setter.apply(toSet, parsedValue);
     }
 
