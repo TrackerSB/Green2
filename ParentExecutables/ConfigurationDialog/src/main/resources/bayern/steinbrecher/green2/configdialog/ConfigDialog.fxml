@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?language javascript?>
 <!--
 Copyright (C) 2018 Stefan Huber
 
@@ -32,18 +33,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.configdialog.ConfigDialogController">
+    <fx:script>
+        //FIXME Binding disable and checked property directly to a CheckedIntegerSpinner seems not to work.
+        function handleCheckBoxAction(event) {
+            sshPort.disable = !useSSHCheckBox.selected;
+            sshPort.checked = useSSHCheckBox.selected;
+        }
+    </fx:script>
     <GridPane>
         <ProfileNameField fx:id="profileNameTextField"
-                   promptText="%profileName"
-                   GridPane.rowIndex="0"
-                   GridPane.columnIndex="0"
-                   GridPane.columnSpan="2"/>
+                          promptText="%profileName"
+                          GridPane.rowIndex="0"
+                          GridPane.columnIndex="0"
+                          GridPane.columnSpan="2"/>
         <CheckBox fx:id="useSSHCheckBox"
                   selected="true"
                   text="%useSSH"
                   GridPane.rowIndex="1"
                   GridPane.columnIndex="0"
-                  GridPane.columnSpan="2"/>
+                  GridPane.columnSpan="2"
+                  onAction="handleCheckBoxAction(event);"/>
         <Label text="%sshHost"
                labelFor="${sshHostTextField}"
                GridPane.rowIndex="2"
