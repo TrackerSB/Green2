@@ -36,6 +36,7 @@
             <groupId>com.android.support</groupId>
             <artifactId>support-annotations</artifactId>
             <version>27.1.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
