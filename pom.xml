@@ -103,6 +103,9 @@
                             <classpathLayoutType>custom</classpathLayoutType>
                             <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
                         </manifest>
+                        <manifestEntries>
+                            <Automatic-Module-Name>${artifactId}</Automatic-Module-Name>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
