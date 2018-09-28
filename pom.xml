@@ -104,7 +104,7 @@
                             <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
                         </manifest>
                         <manifestEntries>
-                            <Automatic-Module-Name>${artifactId}</Automatic-Module-Name>
+                            <Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
