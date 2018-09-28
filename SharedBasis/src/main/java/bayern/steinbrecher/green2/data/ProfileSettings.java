@@ -216,6 +216,14 @@ public abstract class /*enum*/ ProfileSettings<T> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return getClass() + ":" + name(this);
+    }
+
+    /**
      * A setting holding a {@link String}.
      */
     private static class StringSetting extends ProfileSettings<String> {
