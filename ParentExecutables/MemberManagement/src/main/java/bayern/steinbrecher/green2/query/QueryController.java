@@ -161,7 +161,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     public void initialize(URL location, ResourceBundle resources) {
         dbConnection.addListener((obs, oldVal, newVal) -> {
             ObservableList<Tables<?, ?>> items = FXCollections.observableArrayList();
-            items.addAll(newVal.getAllTables());
+            items.addAll(Tables.values());
             tableSelection.itemsProperty()
                     .setValue(items);
             tableSelection.getSelectionModel()

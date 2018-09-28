@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -86,7 +87,7 @@ public abstract class DBConnection implements AutoCloseable {
         }
         return entry;
     });
-    private final List<String> tablesCache = new ArrayList<>();
+    private final Set<String> tablesCache = new HashSet<>();
     //TODO Any solution to decouple Profile from DBConnection?
     private final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> nameAndTypeOfDbmsCache
             = new SimpleObjectProperty<>(Optional.empty());
@@ -136,21 +137,15 @@ public abstract class DBConnection implements AutoCloseable {
         return nameAndTypeOfDbmsCache.get().get();
     }
 
-    /**
-     * Checks whether the given table exists. It DOES NOT check whether it has all needed columns and is configured
-     * right.
-     *
-     * @param table The table to search for.
-     * @return {@code true} only if the given table exist.
-     */
-    public boolean tableExists(Tables<?, ?> table) {
+    private void populateTablesCache() {
         synchronized (tablesCache) {
             if (tablesCache.isEmpty()) {
                 Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
                 List<List<String>> result;
                 try {
                     result = execQuery(
-                            table.generateQuery(Queries.GET_TABLE_NAMES, profileInfo.getValue(), profileInfo.getKey()));
+                            Tables.MEMBER.generateQuery( //NOTE The concrete table does not matter.
+                                    Queries.GET_TABLE_NAMES, profileInfo.getValue(), profileInfo.getKey()));
                     tablesCache.addAll(result.stream()
                             //Skip column name
                             .skip(1)
@@ -161,6 +156,17 @@ public abstract class DBConnection implements AutoCloseable {
                 }
             }
         }
+    }
+
+    /**
+     * Checks whether the given table exists. It DOES NOT check whether it has all needed columns and is configured
+     * right.
+     *
+     * @param table The table to search for.
+     * @return {@code true} only if the given table exist.
+     */
+    public boolean tableExists(Tables<?, ?> table) {
+        populateTablesCache();
         return tablesCache.contains(table.getRealTableName().toLowerCase(Locale.ROOT));
     }
 
@@ -449,11 +455,12 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Returns all
+     * Returns all available table names of accessible over this connection.
      *
-     * @return
+     * @return All available table names of accessible over this connection.
      */
-    public Set<Tables<?, ?>> getAllTables() {
-        return columnsCache.keySet();
+    public Set<String> getAllTables() {
+        populateTablesCache();
+        return tablesCache;
     }
 }
