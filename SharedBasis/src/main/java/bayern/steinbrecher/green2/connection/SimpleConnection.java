@@ -26,6 +26,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,12 @@ public final class SimpleConnection extends DBConnection {
                     databaseUsername, databasePasswd);
         } catch (CommunicationsException ex) {
             throw new UnknownHostException(ex.getMessage()); //NOPMD - UnknownHostException does not accept a cause.
+        } catch (SQLSyntaxErrorException ex) {
+            if (ex.getMessage().toLowerCase().contains("unknown database")) {
+                throw new IllegalStateException("The database " + databaseName + " was not found.", ex);
+            } else {
+                throw new Error("The internal implementation generates invalid SQL.", ex);
+            }
         } catch (SQLException ex) {
             throw new AuthException("The authentication to the database failed.", ex);
         }
