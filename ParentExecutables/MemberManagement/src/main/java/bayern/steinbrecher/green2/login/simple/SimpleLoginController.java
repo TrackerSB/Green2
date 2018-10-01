@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.login.standard;
+package bayern.steinbrecher.green2.login.simple;
 
 import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
@@ -33,7 +33,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public class DefaultLoginController extends LoginController {
+public class SimpleLoginController extends LoginController {
 
     @FXML
     private CheckedTextField databaseUsernameField;

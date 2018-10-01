@@ -32,7 +32,7 @@ import bayern.steinbrecher.green2.elements.WaitScreen;
 import bayern.steinbrecher.green2.login.Login;
 import bayern.steinbrecher.green2.login.LoginKey;
 import bayern.steinbrecher.green2.login.ssh.SshLogin;
-import bayern.steinbrecher.green2.login.standard.DefaultLogin;
+import bayern.steinbrecher.green2.login.simple.SimpleLogin;
 import bayern.steinbrecher.green2.menu.MainMenu;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.Programs;
@@ -186,7 +186,7 @@ public class MemberManagement extends Application {
         if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
             login = new SshLogin();
         } else {
-            login = new DefaultLogin();
+            login = new SimpleLogin();
         }
         return login;
     }

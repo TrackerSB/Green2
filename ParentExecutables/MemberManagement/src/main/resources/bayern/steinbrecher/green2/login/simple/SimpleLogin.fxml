@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import javafx.scene.layout.GridPane?>
 
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="bayern.steinbrecher.green2.login.standard.DefaultLoginController">
+          fx:controller="bayern.steinbrecher.green2.login.simple.SimpleLoginController">
     <!-- This checkbox needs to be out of order because of referencing its id -->
     <CheckBox fx:id="allowEmptyFieldsCheckbox"
               text="%allowEmptyFields"

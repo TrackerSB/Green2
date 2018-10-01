@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.login.standard;
+package bayern.steinbrecher.green2.login.simple;
 
 import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
@@ -29,7 +29,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class DefaultLogin extends Login {
+public class SimpleLogin extends Login {
 
     /**
      * {@inheritDoc}
@@ -38,7 +38,7 @@ public class DefaultLogin extends Login {
     public void startImpl(Stage stage) {
         Parent root;
         try {
-            root = loadFXML("DefaultLogin.fxml");
+            root = loadFXML("SimpleLogin.fxml");
         } catch (IOException ex) {
             throw new ViewStartException(ex);
         }
