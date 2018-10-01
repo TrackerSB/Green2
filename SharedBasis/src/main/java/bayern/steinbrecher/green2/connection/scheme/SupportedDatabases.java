@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This enum lists all supported databases like MySQL.
@@ -123,23 +124,26 @@ public enum SupportedDatabases {
      */
     public String generateCreateLine(SimpleColumnPattern<?, ?> column) {
         String realColumnName = column.getRealColumnName();
-        return column.getKeywords().stream()
-                .map(keyword -> {
-                    if (this.keywordRepresentations.containsKey(keyword)) {
-                        StringBuilder keywordString = new StringBuilder(this.keywordRepresentations.get(keyword));
-                        if (keyword == Keywords.DEFAULT) {
-                            keywordString.append(' ')
-                                    .append(column.getDefaultValueSql());
-                        }
-                        return keywordString;
-                    } else {
-                        Logger.getLogger(SupportedDatabases.class.getName())
-                                .log(Level.WARNING, "Keyword {0} is not defined by {1}", new Object[]{keyword, this});
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining(" ", realColumnName + " " + getType(realColumnName), ""));
+        return Stream.concat(
+                Stream.of(realColumnName, getType(column)),
+                column.getKeywords().stream()
+                        .map(keyword -> {
+                            if (this.keywordRepresentations.containsKey(keyword)) {
+                                StringBuilder keywordString = new StringBuilder(this.keywordRepresentations.get(keyword));
+                                if (keyword == Keywords.DEFAULT) {
+                                    keywordString.append(' ')
+                                            .append(column.getDefaultValueSql());
+                                }
+                                return keywordString;
+                            } else {
+                                Logger.getLogger(SupportedDatabases.class.getName())
+                                        .log(Level.WARNING, "Keyword {0} is not defined by {1}",
+                                                new Object[]{keyword, this});
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull))
+                .collect(Collectors.joining(" "));
     }
 
     /**
