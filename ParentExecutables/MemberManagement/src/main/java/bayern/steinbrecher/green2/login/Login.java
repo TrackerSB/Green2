@@ -17,15 +17,16 @@
 package bayern.steinbrecher.green2.login;
 
 import bayern.steinbrecher.green2.ResultView;
-import java.util.Map;
 import java.util.Optional;
+import bayern.steinbrecher.green2.connection.credentials.DBCredentials;
 
 /**
  * Represents a login.
  *
  * @author Stefan Huber
+ * @param <C> The type of the login credentials.
  */
-public abstract class Login extends ResultView<Optional<Map<LoginKey, String>>, LoginController> {
+public abstract class Login<C extends DBCredentials> extends ResultView<Optional<C>, LoginController<C>> {
 
     /**
      * {@inheritDoc}

@@ -71,8 +71,7 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
         super("^\\Q" + realColumnName + "\\E$", parser);
         Set<Keywords> keywordsCopy = new HashSet<>(keywords);
         //Make sure DEFAULT keyword is added when a default value is specified.
-        //FIXME Think about null check vs Optional.isPresent()
-        if (defaultValue != null || !keywordsCopy.contains(Keywords.NOT_NULL)) {
+        if (defaultValue.isPresent()) {
             keywordsCopy.add(Keywords.DEFAULT);
         }
         this.realColumnName = realColumnName;
@@ -124,8 +123,7 @@ public class SimpleColumnPattern<T, U> extends ColumnPattern<T, U> {
     /**
      * Returns the default value to set when creating a table containing this column.
      *
-     * @return The default value to set when creating a table containing this column. It returns {@code null} only if
-     * {@code null} is the explicitely specified default value.
+     * @return The default value to set when creating a table containing this column. See description of constructors.
      */
     public Optional<Optional<T>> getDefaultValue() {
         return defaultValue;

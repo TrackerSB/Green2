@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.connection;
 
+import bayern.steinbrecher.green2.connection.credentials.SshCredentials;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.ProfileSettings;
@@ -50,10 +51,6 @@ import java.util.stream.Collectors;
 public final class SshConnection extends DBConnection {
 
     private static final Logger LOGGER = Logger.getLogger(SshConnection.class.getName());
-    /**
-     * The default port for ssh.
-     */
-    public static final int DEFAULT_SSH_PORT = 22;
     private static final Map<SupportedDatabases, String> COMMANDS = Map.of(SupportedDatabases.MY_SQL, "mysql");
     private final Map<SupportedDatabases, Function<String, String>> sqlCommands = new HashMap<>();
     /**
@@ -86,34 +83,32 @@ public final class SshConnection extends DBConnection {
     /**
      * Constructs a new database connection over SSH.
      *
-     * @param sshHost The address of the ssh host.
-     * @param sshUsername The username for the ssh connection.
-     * @param sshPassword The password for the ssh connection.
      * @param databaseHost The address of the database host (without protocol).
      * @param databasePort The port of the database.
-     * @param databaseUsername The username for the database.
-     * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
-     * @param charset The charset used by ssh response.
+     * @param sshHost The address of the ssh host.
+     * @param sshPort The port to use for SSH connection.
+     * @param sshCharset The charset used by ssh response.
+     * @param credentials The credentials for the database and SSH connection.
      * @throws AuthException Thrown if some of username, password or host is wrong or not reachable.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      * @throws UnsupportedDatabaseException Thrown only if no supported database was found.
      * @see SupportedDatabases
      */
-    public SshConnection(String sshHost, String sshUsername, String sshPassword, String databaseHost, int databasePort,
-            String databaseUsername, String databasePasswd, String databaseName, Charset charset)
+    public SshConnection(String databaseHost, int databasePort, String databaseName, String sshHost, int sshPort,
+            Charset sshCharset, SshCredentials credentials)
             throws AuthException, UnknownHostException, UnsupportedDatabaseException {
         super();
-        this.sshSession = createSshSession(sshHost, sshUsername, sshPassword);
-        this.charset = charset;
+        this.sshSession = createSshSession(credentials, sshHost, sshPort);
+        this.charset = sshCharset;
 
         //NOTE The echo command is needed for handling UTF8 chars on non UTF8 terminals.
         sqlCommands.put(SupportedDatabases.MY_SQL, query -> "echo -e '" + escapeSingleQuotes(replaceNonAscii(query))
                 + "' | "
                 + COMMANDS.get(SupportedDatabases.MY_SQL)
                 + " --default-character-set=utf8"
-                + " -u" + databaseUsername
-                + " -p" + databasePasswd
+                + " -u" + credentials.getDbUsername()
+                + " -p" + credentials.getDbPassword()
                 + " -h" + databaseHost
                 + " -P" + databasePort
                 + " " + databaseName);
@@ -185,17 +180,17 @@ public final class SshConnection extends DBConnection {
     /**
      * Creates a ssh session.
      *
+     * @param credentials The credentials for logging in into a SSH connection:
      * @param sshHost The address of the host of the ssh service to connect to.
-     * @param sshUsername The username used to login.
-     * @param sshPassword The password used to login.
+     * @param sshPort The port to use for SSH connection.
      * @return A Session representing the ssh connection.
      * @throws AuthException Thrown if some of username, password or host is wrong or unreachable.
      */
-    private Session createSshSession(String sshHost, String sshUsername, String sshPassword)
+    private Session createSshSession(SshCredentials credentials, String sshHost, int sshPort)
             throws AuthException {
         try {
-            Session session = new JSch().getSession(sshUsername, sshHost, DEFAULT_SSH_PORT);
-            session.setPassword(sshPassword);
+            Session session = new JSch().getSession(credentials.getSshUsername(), sshHost, sshPort);
+            session.setPassword(credentials.getSshPassword());
             session.setDaemonThread(true);
             return session;
         } catch (JSchException ex) {

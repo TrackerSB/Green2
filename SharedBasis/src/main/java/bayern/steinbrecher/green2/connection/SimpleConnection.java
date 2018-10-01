@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.connection;
 
+import bayern.steinbrecher.green2.connection.credentials.SimpleCredentials;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.ProfileSettings;
@@ -57,14 +58,12 @@ public final class SimpleConnection extends DBConnection {
      *
      * @param databaseHost The address of the database host.
      * @param databasePort The port of the database.
-     * @param databaseUsername The username for the database.
-     * @param databasePasswd The password for the database.
      * @param databaseName The name of the database to connect to.
      * @throws AuthException Is thrown if some username, password or address is wrong.
      * @throws UnknownHostException Is thrown if the host is not reachable.
+     * @param credentials The database credentials.
      */
-    public SimpleConnection(String databaseHost, int databasePort, String databaseUsername, String databasePasswd,
-            String databaseName)
+    public SimpleConnection(String databaseHost, int databasePort, String databaseName, SimpleCredentials credentials)
             throws AuthException, UnknownHostException {
         super();
         String databaseHostPrefix = databaseHost;
@@ -77,7 +76,7 @@ public final class SimpleConnection extends DBConnection {
             connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(dbms) + databaseAddress
                     + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
                     + "&serverTimezone=UTC",
-                    databaseUsername, databasePasswd);
+                    credentials.getUsername(), credentials.getPassword());
         } catch (CommunicationsException ex) {
             throw new UnknownHostException(ex.getMessage()); //NOPMD - UnknownHostException does not accept a cause.
         } catch (SQLSyntaxErrorException ex) {

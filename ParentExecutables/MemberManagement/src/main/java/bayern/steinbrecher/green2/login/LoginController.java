@@ -22,16 +22,17 @@ import bayern.steinbrecher.green2.utility.BindingUtility;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javafx.fxml.FXML;
+import bayern.steinbrecher.green2.connection.credentials.DBCredentials;
 
 /**
  * Represents a controller for a login.
  *
  * @author Stefan Huber
+ * @param <C> The type of the login credentials.
  */
-public abstract class LoginController extends WizardableController<Optional<Map<LoginKey, String>>> {
+public abstract class LoginController<C extends DBCredentials> extends WizardableController<Optional<C>> {
 
     /**
      * Adds all given textfields into {@code textInputFields} and sets up the properties {@code anyInputMissing},

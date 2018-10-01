@@ -23,6 +23,8 @@ import bayern.steinbrecher.green2.connection.InvalidSchemeException;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
+import bayern.steinbrecher.green2.connection.credentials.SimpleCredentials;
+import bayern.steinbrecher.green2.connection.credentials.SshCredentials;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
@@ -30,7 +32,6 @@ import bayern.steinbrecher.green2.elements.ProfileChoice;
 import bayern.steinbrecher.green2.elements.Splashscreen;
 import bayern.steinbrecher.green2.elements.WaitScreen;
 import bayern.steinbrecher.green2.login.Login;
-import bayern.steinbrecher.green2.login.LoginKey;
 import bayern.steinbrecher.green2.login.ssh.SshLogin;
 import bayern.steinbrecher.green2.login.simple.SimpleLogin;
 import bayern.steinbrecher.green2.menu.MainMenu;
@@ -42,8 +43,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
@@ -96,6 +97,8 @@ public class MemberManagement extends Application {
         menuStage = primaryStage;
 
         if (profile.isAllConfigurationsSet()) {
+            Platform.setImplicitExit(false);
+
             //Show splashscreen
             Splashscreen.showSplashscreen(SPLASHSCREEN_MILLIS, new Stage());
 
@@ -104,7 +107,12 @@ public class MemberManagement extends Application {
             waitScreen.start(new Stage());
 
             //Show login
-            Login login = createLogin();
+            Login<?> login;
+            if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
+                login = new SshLogin();
+            } else {
+                login = new SimpleLogin();
+            }
             Stage loginStage = new Stage();
             loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
@@ -117,11 +125,11 @@ public class MemberManagement extends Application {
             });
             login.start(loginStage);
 
-            CompletableFuture.supplyAsync(() -> getConnection(login, waitScreen))
-                    //Get connection
-                    .thenAcceptAsync(connection -> {
-                        dbConnection = connection.orElseThrow(
-                                () -> new IllegalStateException("Could not create a connection"));
+            CompletableFuture.supplyAsync(
+                    () -> {
+                        dbConnection = getConnection(login, waitScreen)
+                                .orElseThrow(() -> new IllegalStateException("Could not create a connection"));
+                        return dbConnection;
                     })
                     //Check existence of tables
                     .thenRunAsync(() -> {
@@ -166,7 +174,7 @@ public class MemberManagement extends Application {
                             });
                         } else {
                             LOGGER.log(Level.SEVERE, null, throwable);
-                            Platform.runLater(() -> waitScreen.close());
+                            Platform.exit();
                         }
                     });
         } else {
@@ -181,16 +189,6 @@ public class MemberManagement extends Application {
         }
     }
 
-    private Login createLogin() {
-        Login login;
-        if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
-            login = new SshLogin();
-        } else {
-            login = new SimpleLogin();
-        }
-        return login;
-    }
-
     /**
      * This method is called when the application should stop, destroys resources and prepares for application exit.
      */
@@ -199,39 +197,6 @@ public class MemberManagement extends Application {
         if (dbConnection != null) {
             dbConnection.close();
         }
-    }
-
-    private void handleAuthException(Login login, WaitScreen waitScreen, Exception cause) {
-        Alert dialog;
-        if (cause instanceof UnknownHostException || cause instanceof ConnectException) {
-            String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
-            dialog = DialogUtility.createStacktraceAlert(null, cause, checkConnection, checkConnection);
-        } else if (cause instanceof AuthException) {
-            String checkInput = EnvironmentHandler.getResourceValue("checkInput");
-            dialog = DialogUtility.createInfoAlert(null, checkInput, checkInput);
-        } else {
-            LOGGER.log(Level.SEVERE, "Not action specified for: {0}", cause);
-            String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
-            dialog = DialogUtility.createErrorAlert(null, unexpectedAbort, unexpectedAbort);
-        }
-
-        dialog.showingProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                if (dialog.getResult() == ButtonType.OK) {
-                    login.reset();
-                    synchronized (this) {
-                        notifyAll();
-                    }
-                } else {
-                    Platform.exit();
-                }
-            }
-        });
-
-        Platform.runLater(() -> {
-            waitScreen.close();
-            dialog.show();
-        });
     }
 
     /**
@@ -243,55 +208,70 @@ public class MemberManagement extends Application {
      * @return {@link Optional#empty()} only if the connection could not be established. E.g. the user closed the window
      * or the configured connection is not reachable.
      */
-    private Optional<DBConnection> getConnection(Login login, WaitScreen waitScreen) {
-        Optional<DBConnection> con;
+    private Optional<? extends DBConnection> getConnection(Login<?> login, WaitScreen waitScreen) {
+        String databaseHost = profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
+        int databasePort = profile.getOrDefault(
+                ProfileSettings.DATABASE_PORT, profile.get(ProfileSettings.DBMS).getDefaultPort());
+        String databaseName = profile.get(ProfileSettings.DATABASE_NAME);
 
-        Optional<Map<LoginKey, String>> loginInfos = login.getResult();
-        if (loginInfos.isPresent()) {
-            Map<LoginKey, String> loginValues = loginInfos.get();
-            try {
-                String databaseHost = profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
-                int databasePort = profile.getOrDefault(ProfileSettings.DATABASE_PORT,
-                        profile.get(ProfileSettings.DBMS).getDefaultPort());
-                String databaseUsername = loginValues.get(LoginKey.DATABASE_USERNAME);
-                String databasePassword = loginValues.get(LoginKey.DATABASE_PASSWORD);
-                String databaseName = profile.getOrDefault(ProfileSettings.DATABASE_NAME, "dbname");
-                if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
-                    String sshHost = profile.getOrDefault(ProfileSettings.SSH_HOST, "localhost");
-                    String sshUsername = loginValues.get(LoginKey.SSH_USERNAME);
-                    String sshPassword = loginValues.get(LoginKey.SSH_PASSWORD);
-                    Charset sshCharset = profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
-                    con = Optional.of(new SshConnection(sshHost, sshUsername, sshPassword, databaseHost, databasePort,
-                            databaseUsername, databasePassword, databaseName, sshCharset));
-                } else {
-                    con = Optional.of(new SimpleConnection(
-                            databaseHost, databasePort, databaseUsername, databasePassword, databaseName));
-                }
-            } catch (UnknownHostException | AuthException ex) {
-                handleAuthException(login, waitScreen, ex);
+        return login.getResult()
+                .map(dbCredentials -> {
+                    DBConnection connection = null;
+                    Callable<DBConnection> createConnection;
+                    if (profile.getOrDefault(ProfileSettings.USE_SSH, false)) {
+                        assert dbCredentials.getClass() == SshCredentials.class :
+                                "Profile is configured to use SSH, but there were no SshCredentials requested.";
+                        SshCredentials credentials = (SshCredentials) dbCredentials;
 
-                while (!login.wouldShowBinding().get()) {
-                    try {
-                        synchronized (this) {
-                            wait();
-                        }
-                    } catch (InterruptedException ex1) {
-                        LOGGER.log(Level.WARNING, null, ex1);
+                        String sshHost = profile.getOrDefault(ProfileSettings.SSH_HOST, "localhost");
+                        int sshPort = profile.getOrDefault(ProfileSettings.SSH_PORT, 22);
+                        Charset sshCharset = profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
+
+                        createConnection = () -> new SshConnection(
+                                databaseHost, databasePort, databaseHost, sshHost, sshPort, sshCharset, credentials);
+
+                    } else {
+                        assert dbCredentials.getClass() == SimpleCredentials.class :
+                                "Profile is configured to directly connect to a database, "
+                                + "but it got no SimpleCredentials.";
+                        SimpleCredentials credentials = (SimpleCredentials) dbCredentials;
+                        createConnection
+                                = () -> new SimpleConnection(databaseHost, databasePort, databaseName, credentials);
                     }
-                }
 
-                con = getConnection(login, waitScreen);
-            } catch (UnsupportedDatabaseException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                DialogUtility.showAndWait(DialogUtility.createErrorAlert(
-                        null, EnvironmentHandler.getResourceValue("noSupportedDatabase")));
-                con = Optional.empty();
-            }
-        } else {
-            con = Optional.empty();
-        }
-
-        return con;
+                    Optional<Alert> userReport = Optional.empty();
+                    boolean retryConnection = false;
+                    try {
+                        connection = createConnection.call();
+                    } catch (AuthException ex) {
+                        LOGGER.log(Level.FINE, null, ex);
+                        String checkInput = EnvironmentHandler.getResourceValue("checkInput");
+                        userReport = Optional.of(DialogUtility.createInfoAlert(null, checkInput, checkInput));
+                        retryConnection = true;
+                    } catch (UnknownHostException | ConnectException ex) {
+                        LOGGER.log(Level.WARNING, null, ex);
+                        String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
+                        userReport = Optional.of(
+                                DialogUtility.createStacktraceAlert(null, ex, checkConnection, checkConnection));
+                    } catch (UnsupportedDatabaseException ex) {
+                        LOGGER.log(Level.SEVERE, null, ex);
+                        String noSupportedDatabase = EnvironmentHandler.getResourceValue("noSupportedDatabase");
+                        userReport = Optional.of(DialogUtility.createErrorAlert(null, noSupportedDatabase));
+                    } catch (Exception ex) {
+                        LOGGER.log(Level.SEVERE, "Could not connect due to an unhandled exception.", ex);
+                        String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
+                        userReport = Optional.of(
+                                DialogUtility.createStacktraceAlert(null, ex, unexpectedAbort, unexpectedAbort));
+                    }
+                    Platform.runLater(waitScreen::close);
+                    userReport.ifPresent(DialogUtility::showAndWait);
+                    if (retryConnection) {
+                        login.reset();
+                        connection = getConnection(login, waitScreen)
+                                .orElse(null);
+                    }
+                    return connection;
+                });
     }
 
     /**

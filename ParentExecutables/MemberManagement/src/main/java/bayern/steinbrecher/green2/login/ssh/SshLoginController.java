@@ -16,13 +16,11 @@
  */
 package bayern.steinbrecher.green2.login.ssh;
 
+import bayern.steinbrecher.green2.connection.credentials.SshCredentials;
 import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
-import bayern.steinbrecher.green2.login.LoginKey;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -33,7 +31,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public class SshLoginController extends LoginController {
+public class SshLoginController extends LoginController<SshCredentials> {
 
     @FXML
     private CheckedTextField sshUsernameField;
@@ -57,12 +55,8 @@ public class SshLoginController extends LoginController {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Map<LoginKey, String>> calculateResult() {
-        Map<LoginKey, String> loginInfo = new HashMap<>(LoginKey.values().length);
-        loginInfo.put(LoginKey.DATABASE_USERNAME, databaseUsernameField.getText());
-        loginInfo.put(LoginKey.DATABASE_PASSWORD, databasePasswordField.getText());
-        loginInfo.put(LoginKey.SSH_USERNAME, sshUsernameField.getText());
-        loginInfo.put(LoginKey.SSH_PASSWORD, sshPasswordField.getText());
-        return Optional.of(loginInfo);
+    public Optional<SshCredentials> calculateResult() {
+        return Optional.of(new SshCredentials(databaseUsernameField.getText(), databasePasswordField.getText(),
+                sshUsernameField.getText(), sshPasswordField.getText()));
     }
 }

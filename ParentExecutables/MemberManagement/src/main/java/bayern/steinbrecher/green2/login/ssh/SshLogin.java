@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.login.ssh;
 
+import bayern.steinbrecher.green2.connection.credentials.SshCredentials;
 import bayern.steinbrecher.green2.ViewStartException;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.login.Login;
@@ -29,7 +30,7 @@ import javafx.stage.Stage;
  *
  * @author Stefan Huber
  */
-public class SshLogin extends Login {
+public class SshLogin extends Login<SshCredentials> {
 
     /**
      * {@inheritDoc}

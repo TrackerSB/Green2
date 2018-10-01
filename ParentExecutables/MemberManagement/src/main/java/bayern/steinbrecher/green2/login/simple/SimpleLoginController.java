@@ -16,13 +16,11 @@
  */
 package bayern.steinbrecher.green2.login.simple;
 
+import bayern.steinbrecher.green2.connection.credentials.SimpleCredentials;
 import bayern.steinbrecher.green2.elements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import bayern.steinbrecher.green2.login.LoginController;
-import bayern.steinbrecher.green2.login.LoginKey;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -33,7 +31,7 @@ import javafx.fxml.FXML;
  *
  * @author Stefan Huber
  */
-public class SimpleLoginController extends LoginController {
+public class SimpleLoginController extends LoginController<SimpleCredentials> {
 
     @FXML
     private CheckedTextField databaseUsernameField;
@@ -53,10 +51,7 @@ public class SimpleLoginController extends LoginController {
      * {@inheritDoc}
      */
     @Override
-    protected Optional<Map<LoginKey, String>> calculateResult() {
-        Map<LoginKey, String> loginInfo = new HashMap<>(2);
-        loginInfo.put(LoginKey.DATABASE_USERNAME, databaseUsernameField.getText());
-        loginInfo.put(LoginKey.DATABASE_PASSWORD, databasePasswordField.getText());
-        return Optional.of(loginInfo);
+    protected Optional<SimpleCredentials> calculateResult() {
+        return Optional.of(new SimpleCredentials(databaseUsernameField.getText(), databasePasswordField.getText()));
     }
 }

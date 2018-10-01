@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Stefan Huber
+ * Copyright (C) 2018 Steinbrecher
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,29 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bayern.steinbrecher.green2.login;
+package bayern.steinbrecher.green2.connection.credentials;
 
 /**
- * Represents constants for description of login information such as ssh password or ssh username.
+ * Represents credentials entered in a {@link Login}.
  *
  * @author Stefan Huber
+ * @since 2u14
  */
-public enum LoginKey {
+public interface DBCredentials {
 
-    /**
-     * SSH username.
-     */
-    SSH_USERNAME,
-    /**
-     * SSH password.
-     */
-    SSH_PASSWORD,
-    /**
-     * Database username.
-     */
-    DATABASE_USERNAME,
-    /**
-     * Database password.
-     */
-    DATABASE_PASSWORD
 }
