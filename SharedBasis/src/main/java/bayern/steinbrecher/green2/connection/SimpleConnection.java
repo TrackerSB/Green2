@@ -18,8 +18,6 @@ package bayern.steinbrecher.green2.connection;
 
 import bayern.steinbrecher.green2.connection.credentials.SimpleCredentials;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.data.ProfileSettings;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -56,6 +54,7 @@ public final class SimpleConnection extends DBConnection {
     /**
      * Constructs a new database connection.
      *
+     * @param dbms The type of the database to connect to.
      * @param databaseHost The address of the database host.
      * @param databasePort The port of the database.
      * @param databaseName The name of the database to connect to.
@@ -63,15 +62,15 @@ public final class SimpleConnection extends DBConnection {
      * @throws UnknownHostException Is thrown if the host is not reachable.
      * @param credentials The database credentials.
      */
-    public SimpleConnection(String databaseHost, int databasePort, String databaseName, SimpleCredentials credentials)
+    public SimpleConnection(SupportedDatabases dbms, String databaseHost, int databasePort, String databaseName,
+            SimpleCredentials credentials)
             throws AuthException, UnknownHostException {
-        super();
+        super(databaseName, dbms);
         String databaseHostPrefix = databaseHost;
         if (databaseHostPrefix.endsWith("/")) {
             databaseHostPrefix = databaseHostPrefix.substring(0, databaseHostPrefix.length() - 1);
         }
         String databaseAddress = databaseHostPrefix + ":" + databasePort + "/";
-        SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
         try {
             connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(dbms) + databaseAddress
                     + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"

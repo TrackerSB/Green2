@@ -25,6 +25,7 @@ import bayern.steinbrecher.green2.connection.SshConnection;
 import bayern.steinbrecher.green2.connection.UnsupportedDatabaseException;
 import bayern.steinbrecher.green2.connection.credentials.SimpleCredentials;
 import bayern.steinbrecher.green2.connection.credentials.SshCredentials;
+import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.data.Profile;
@@ -213,6 +214,7 @@ public class MemberManagement extends Application {
         int databasePort = profile.getOrDefault(
                 ProfileSettings.DATABASE_PORT, profile.get(ProfileSettings.DBMS).getDefaultPort());
         String databaseName = profile.get(ProfileSettings.DATABASE_NAME);
+        SupportedDatabases dbms = profile.get(ProfileSettings.DBMS);
 
         return login.getResult()
                 .map(dbCredentials -> {
@@ -227,8 +229,8 @@ public class MemberManagement extends Application {
                         int sshPort = profile.getOrDefault(ProfileSettings.SSH_PORT, 22);
                         Charset sshCharset = profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
 
-                        createConnection = () -> new SshConnection(
-                                databaseHost, databasePort, databaseHost, sshHost, sshPort, sshCharset, credentials);
+                        createConnection = () -> new SshConnection(dbms, databaseHost, databasePort, databaseHost,
+                                sshHost, sshPort, sshCharset, credentials);
 
                     } else {
                         assert dbCredentials.getClass() == SimpleCredentials.class :
@@ -236,7 +238,8 @@ public class MemberManagement extends Application {
                                 + "but it got no SimpleCredentials.";
                         SimpleCredentials credentials = (SimpleCredentials) dbCredentials;
                         createConnection
-                                = () -> new SimpleConnection(databaseHost, databasePort, databaseName, credentials);
+                                = () -> new SimpleConnection(
+                                        dbms, databaseHost, databasePort, databaseName, credentials);
                     }
 
                     Optional<Alert> userReport = Optional.empty();

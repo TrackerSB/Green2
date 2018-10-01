@@ -18,8 +18,6 @@ package bayern.steinbrecher.green2.connection;
 
 import bayern.steinbrecher.green2.connection.credentials.SshCredentials;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
-import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.utility.IOStreamUtility;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -61,6 +59,7 @@ public final class SshConnection extends DBConnection {
      * The charset used by ssh response.
      */
     private final Charset charset;
+    private final SupportedDatabases dbms;
 
     static {
         //Configurations which are applied to all sessions.
@@ -83,6 +82,7 @@ public final class SshConnection extends DBConnection {
     /**
      * Constructs a new database connection over SSH.
      *
+     * @param dbms The type of the database to connect to.
      * @param databaseHost The address of the database host (without protocol).
      * @param databasePort The port of the database.
      * @param databaseName The name of the database to connect to.
@@ -95,17 +95,18 @@ public final class SshConnection extends DBConnection {
      * @throws UnsupportedDatabaseException Thrown only if no supported database was found.
      * @see SupportedDatabases
      */
-    public SshConnection(String databaseHost, int databasePort, String databaseName, String sshHost, int sshPort,
-            Charset sshCharset, SshCredentials credentials)
+    public SshConnection(SupportedDatabases dbms, String databaseHost, int databasePort, String databaseName,
+            String sshHost, int sshPort, Charset sshCharset, SshCredentials credentials)
             throws AuthException, UnknownHostException, UnsupportedDatabaseException {
-        super();
+        super(databaseName, dbms);
+        this.dbms = dbms;
         this.sshSession = createSshSession(credentials, sshHost, sshPort);
         this.charset = sshCharset;
 
         //NOTE The echo command is needed for handling UTF8 chars on non UTF8 terminals.
-        sqlCommands.put(SupportedDatabases.MY_SQL, query -> "echo -e '" + escapeSingleQuotes(replaceNonAscii(query))
+        sqlCommands.put(dbms, query -> "echo -e '" + escapeSingleQuotes(replaceNonAscii(query))
                 + "' | "
-                + COMMANDS.get(SupportedDatabases.MY_SQL)
+                + COMMANDS.get(dbms)
                 + " --default-character-set=utf8"
                 + " -u" + credentials.getDbUsername()
                 + " -p" + credentials.getDbPassword()
@@ -117,7 +118,6 @@ public final class SshConnection extends DBConnection {
             this.sshSession.connect();
 
             String result;
-            SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
             try {
                 result = execCommand(
                         "command -v " + COMMANDS.get(dbms) + " >/dev/null 2>&1 || { echo \"Not installed\"; }");
@@ -227,7 +227,6 @@ public final class SshConnection extends DBConnection {
     }
 
     private String generateQueryCommand(String sqlCode) {
-        SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
         return sqlCommands.get(dbms).apply(sqlCode);
     }
 

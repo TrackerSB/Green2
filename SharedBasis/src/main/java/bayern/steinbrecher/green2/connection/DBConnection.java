@@ -23,8 +23,6 @@ import bayern.steinbrecher.green2.connection.scheme.SimpleColumnPattern;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.data.Profile;
-import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.PopulatingMap;
@@ -44,8 +42,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.util.Pair;
@@ -58,48 +54,47 @@ import javafx.util.Pair;
 public abstract class DBConnection implements AutoCloseable {
 
     private static final Logger LOGGER = Logger.getLogger(DBConnection.class.getName());
+    private final String databaseName;
+    private final SupportedDatabases dbms;
     /**
      * Caches the names of all really existing columns on every supported table in {@link Tables}. The cache is
      * refreshed whenever the currently loaded profile changes.
      */
-    private final Map<Tables<?, ?>, List<Pair<String, Class<?>>>> columnsCache = new PopulatingMap<>(table -> {
-        if (table == null) {
-            throw new IllegalArgumentException("Can not generate query controls for table null.");
-        }
-        List<Pair<String, Class<?>>> entry;
-        Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
-        try {
-            List<List<String>> result = execQuery(table.generateQuery(Queries.GET_COLUMN_NAMES_AND_TYPES,
-                    profileInfo.getValue(), profileInfo.getKey()));
-            entry = result.stream()
-                    .skip(1) //Skip headings
-                    .map(list -> {
-                        return profileInfo.getValue()
-                                .getType(list.get(1))
-                                .map(ct -> new Pair<String, Class<?>>(list.get(0), ct));
-                    })
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            entry = new ArrayList<>();
-        }
-        return entry;
-    });
+    private final Map<Tables<?, ?>, List<Pair<String, Class<?>>>> columnsCache;
     private final Set<String> tablesCache = new HashSet<>();
-    //TODO Any solution to decouple Profile from DBConnection?
-    private final ObjectProperty<Optional<Pair<String, SupportedDatabases>>> nameAndTypeOfDbmsCache
-            = new SimpleObjectProperty<>(Optional.empty());
 
     /**
-     * Creates a connection using the currently loaded profile.
+     * Creates a connection containing basic functionality independent from the way connecting to a database itself.
+     *
+     * @param databaseName The name of the database to connect to.
+     * @param dbms The type of the database to connect to.
      */
-    public DBConnection() {
-        EnvironmentHandler.loadedProfileProperty().addListener(change -> {
-            columnsCache.clear();
-            tablesCache.clear();
-            nameAndTypeOfDbmsCache.set(Optional.empty());
+    public DBConnection(String databaseName, SupportedDatabases dbms) {
+        this.databaseName = databaseName;
+        this.dbms = dbms;
+
+        columnsCache = new PopulatingMap<>(table -> {
+            if (table == null) {
+                throw new IllegalArgumentException("Can not generate query controls for table null.");
+            }
+            List<Pair<String, Class<?>>> entry;
+            try {
+                List<List<String>> result
+                        = execQuery(table.generateQuery(Queries.GET_COLUMN_NAMES_AND_TYPES, dbms, databaseName));
+                entry = result.stream()
+                        .skip(1) //Skip headings
+                        .map(list -> {
+                            return dbms.getType(list.get(1))
+                                    .map(ct -> new Pair<String, Class<?>>(list.get(0), ct));
+                        })
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList());
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+                entry = new ArrayList<>();
+            }
+            return entry;
         });
     }
 
@@ -126,26 +121,13 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public abstract void execUpdate(String sqlCode) throws SQLException;
 
-    private Pair<String, SupportedDatabases> getNameAndTypeOfDatabase() {
-        synchronized (nameAndTypeOfDbmsCache) {
-            if (!nameAndTypeOfDbmsCache.get().isPresent()) {
-                Profile profile = EnvironmentHandler.getProfile();
-                nameAndTypeOfDbmsCache.set(Optional.of(
-                        new Pair<>(profile.get(ProfileSettings.DATABASE_NAME), profile.get(ProfileSettings.DBMS))));
-            }
-        }
-        return nameAndTypeOfDbmsCache.get().get();
-    }
-
     private void populateTablesCache() {
         synchronized (tablesCache) {
             if (tablesCache.isEmpty()) {
-                Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
                 List<List<String>> result;
                 try {
-                    result = execQuery(
-                            Tables.MEMBER.generateQuery( //NOTE The concrete table does not matter.
-                                    Queries.GET_TABLE_NAMES, profileInfo.getValue(), profileInfo.getKey()));
+                    result = execQuery( //NOTE The concrete table does not matter.
+                            Tables.MEMBER.generateQuery(Queries.GET_TABLE_NAMES, dbms, databaseName));
                     tablesCache.addAll(result.stream()
                             //Skip column name
                             .skip(1)
@@ -192,9 +174,7 @@ public abstract class DBConnection implements AutoCloseable {
             if (resultButton.isPresent() && resultButton.get() == ButtonType.YES) {
                 for (Tables<?, ?> table : missingTables) {
                     try {
-                        Pair<String, SupportedDatabases> profileInfo = getNameAndTypeOfDatabase();
-                        execUpdate(table.generateQuery(
-                                Queries.CREATE_TABLE, profileInfo.getValue(), profileInfo.getKey()));
+                        execUpdate(table.generateQuery(Queries.CREATE_TABLE, dbms, databaseName));
                     } catch (SQLException ex) {
                         throw new SchemeCreationException("Could not create table " + table.getRealTableName(), ex);
                     }
@@ -255,12 +235,14 @@ public abstract class DBConnection implements AutoCloseable {
             LOGGER.log(Level.WARNING, "Generating search query without selecting any existing column.");
             searchQuery = Optional.empty();
         } else {
-            SupportedDatabases dbms = getNameAndTypeOfDatabase().getValue();
             StringBuilder sqlString = new StringBuilder("SELECT ")
-                    .append(existingColumns.stream()
-                            .map(dbms::quoteIdentifier)
-                            .collect(Collectors.joining(", "))
-                            + " FROM " + dbms.quoteIdentifier(table.getRealTableName()));
+                    .append(
+                            existingColumns.stream()
+                                    .map(dbms::quoteIdentifier)
+                                    .collect(Collectors.joining(", "))
+                    )
+                    .append(" FROM ")
+                    .append(dbms.quoteIdentifier(table.getRealTableName()));
             /*
              * NOTE condtions.stream() would work on empty condtions list too, but this if spares the computation of
              * nonExistingColumnsPattern.
