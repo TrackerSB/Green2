@@ -18,7 +18,7 @@ package bayern.steinbrecher.green2.membermanagement;
 
 import bayern.steinbrecher.green2.connection.AuthException;
 import bayern.steinbrecher.green2.connection.DBConnection;
-import bayern.steinbrecher.green2.connection.DefaultConnection;
+import bayern.steinbrecher.green2.connection.SimpleConnection;
 import bayern.steinbrecher.green2.connection.InvalidSchemeException;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
 import bayern.steinbrecher.green2.connection.SshConnection;
@@ -264,7 +264,7 @@ public class MemberManagement extends Application {
                     con = Optional.of(new SshConnection(sshHost, sshUsername, sshPassword, databaseHost, databasePort,
                             databaseUsername, databasePassword, databaseName, sshCharset));
                 } else {
-                    con = Optional.of(new DefaultConnection(
+                    con = Optional.of(new SimpleConnection(
                             databaseHost, databasePort, databaseUsername, databasePassword, databaseName));
                 }
             } catch (UnknownHostException | AuthException ex) {

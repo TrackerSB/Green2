@@ -37,9 +37,9 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public final class DefaultConnection extends DBConnection {
+public final class SimpleConnection extends DBConnection {
 
-    private static final Logger LOGGER = Logger.getLogger(DefaultConnection.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SimpleConnection.class.getName());
     /**
      * The protocols of the supported databases.
      */
@@ -62,7 +62,7 @@ public final class DefaultConnection extends DBConnection {
      * @throws AuthException Is thrown if some username, password or address is wrong.
      * @throws UnknownHostException Is thrown if the host is not reachable.
      */
-    public DefaultConnection(String databaseHost, int databasePort, String databaseUsername, String databasePasswd,
+    public SimpleConnection(String databaseHost, int databasePort, String databaseUsername, String databasePasswd,
             String databaseName)
             throws AuthException, UnknownHostException {
         super();
