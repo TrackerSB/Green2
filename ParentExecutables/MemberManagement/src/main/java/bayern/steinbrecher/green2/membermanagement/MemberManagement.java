@@ -229,7 +229,7 @@ public class MemberManagement extends Application {
                         int sshPort = profile.getOrDefault(ProfileSettings.SSH_PORT, 22);
                         Charset sshCharset = profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
 
-                        createConnection = () -> new SshConnection(dbms, databaseHost, databasePort, databaseHost,
+                        createConnection = () -> new SshConnection(dbms, databaseHost, databasePort, databaseName,
                                 sshHost, sshPort, sshCharset, credentials);
 
                     } else {
