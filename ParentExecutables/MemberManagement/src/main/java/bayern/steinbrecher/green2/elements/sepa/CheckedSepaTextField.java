@@ -104,7 +104,8 @@ public class CheckedSepaTextField extends CheckedTextField {
     public CheckedSepaTextField(int maxColumnCount, String text) {
         super(maxColumnCount, text);
         unsupportedSymbols.bind(Bindings.createBooleanBinding(() -> {
-            return textProperty().get().chars()
+            String input = textProperty().get();
+            return input != null && input.chars()
                     .parallel()
                     .anyMatch(codepoint -> {
                         return INVALID_CHAR_REGIONS.stream()
