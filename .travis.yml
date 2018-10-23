@@ -1,17 +1,12 @@
 language: java
+jdk:
+    - openjdk11
 
 install: true
 
 script: "cd Aggregation; mvn test -B"
 
-jdk:
-  - oraclejdk10
-
 sudo: false
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
 
 notifications:
   email:
