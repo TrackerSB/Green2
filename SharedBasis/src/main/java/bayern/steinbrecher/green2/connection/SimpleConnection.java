@@ -60,11 +60,13 @@ public final class SimpleConnection extends DBConnection {
      * @param databaseName The name of the database to connect to.
      * @throws AuthException Is thrown if some username, password or address is wrong.
      * @throws UnknownHostException Is thrown if the host is not reachable.
+     * @throws DatabaseNotFoundException Thrown only if the database host is reachable but the database could not be
+     * found.
      * @param credentials The database credentials.
      */
     public SimpleConnection(SupportedDatabases dbms, String databaseHost, int databasePort, String databaseName,
             SimpleCredentials credentials)
-            throws AuthException, UnknownHostException {
+            throws AuthException, UnknownHostException, DatabaseNotFoundException {
         super(databaseName, dbms);
         String databaseHostPrefix = databaseHost;
         if (databaseHostPrefix.endsWith("/")) {
@@ -80,7 +82,7 @@ public final class SimpleConnection extends DBConnection {
             throw new UnknownHostException(ex.getMessage()); //NOPMD - UnknownHostException does not accept a cause.
         } catch (SQLSyntaxErrorException ex) {
             if (ex.getMessage().toLowerCase().contains("unknown database")) {
-                throw new IllegalStateException("The database " + databaseName + " was not found.", ex);
+                throw new DatabaseNotFoundException("The database " + databaseName + " was not found.", ex);
             } else {
                 throw new Error("The internal implementation generates invalid SQL.", ex);
             }

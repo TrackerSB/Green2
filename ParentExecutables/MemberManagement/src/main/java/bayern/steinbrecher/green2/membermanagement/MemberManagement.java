@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.membermanagement;
 
 import bayern.steinbrecher.green2.connection.AuthException;
 import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.DatabaseNotFoundException;
 import bayern.steinbrecher.green2.connection.SimpleConnection;
 import bayern.steinbrecher.green2.connection.InvalidSchemeException;
 import bayern.steinbrecher.green2.connection.SchemeCreationException;
@@ -260,6 +261,11 @@ public class MemberManagement extends Application {
                         LOGGER.log(Level.SEVERE, null, ex);
                         String noSupportedDatabase = EnvironmentHandler.getResourceValue("noSupportedDatabase");
                         userReport = Optional.of(DialogUtility.createErrorAlert(null, noSupportedDatabase));
+                    } catch (DatabaseNotFoundException ex) {
+                        LOGGER.log(Level.SEVERE, "Could not find database \""
+                                + databaseName + "\" on host \"" + databaseHost + "\".", ex);
+                        String databaseNotFound = EnvironmentHandler.getResourceValue("databaseNotFound");
+                        userReport = Optional.of(DialogUtility.createErrorAlert(null, databaseNotFound));
                     } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, "Could not connect due to an unhandled exception.", ex);
                         String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
