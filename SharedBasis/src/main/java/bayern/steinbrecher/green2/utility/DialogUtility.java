@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -143,6 +144,9 @@ public final class DialogUtility {
     @SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
     @SuppressWarnings({"fallthrough", "PMD.MissingBreakInSwitch"})
     public static Alert createAlert(Alert.AlertType alertType, Window owner, String... args) {
+        for (String arg : args) {
+            Objects.requireNonNull(arg);
+        }
         Alert alert = addStyleAndIcon(initOwner(getAlert(() -> new Alert(alertType)), owner));
         int parameterCount = args.length > NUMBER_USED_PARAMETERS ? NUMBER_USED_PARAMETERS : args.length;
         if (parameterCount > NUMBER_USED_PARAMETERS) {
@@ -152,26 +156,19 @@ public final class DialogUtility {
         //CHECKSTYLE.OFF: MagicNumber - The JavaDoc explicitely describes these three possible parameters
         switch (parameterCount) {
             case 3:
-                if (args[2] != null) {
-                    alert.setHeaderText(args[2]);
-                }
+                alert.setHeaderText(args[2]);
             //fall-through
             case 2:
-                if (args[1] != null) {
-                    alert.setTitle(args[1]);
-                }
+                alert.setTitle(args[1]);
             //fall-through
             case 1:
-                if (args[0] != null) {
-                    alert.setContentText(args[0]);
-                }
+                alert.setContentText(args[0]);
             //fall-through
             case 0:
                 //No op
                 break;
             default:
-                throw new IllegalArgumentException(
-                        "This number of parameters can not be handled. How could that happen? Scary!");
+                throw new IllegalArgumentException("At most three parameters can be passed. (content, title, header)");
         }
         //CHECKSTYLE.ON: MagicNumber
         return alert;
