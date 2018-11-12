@@ -11,6 +11,7 @@ UPDATED.TXT
 Launcher/SingleJarLauncher/*
 **/target/*
 **/nbbuild.xml
+**/nb-configuration.xml
 
 
 ##Linux cpp files
