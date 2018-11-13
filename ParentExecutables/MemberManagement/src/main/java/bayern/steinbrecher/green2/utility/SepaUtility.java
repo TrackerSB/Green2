@@ -142,8 +142,9 @@ public final class SepaUtility {
      * @see #BIC_PATTERN
      */
     public static boolean isValidBic(String bic) {
-        return BIC_PATTERN.matcher(bic)
-                .matches();
+        return bic != null
+                && BIC_PATTERN.matcher(bic)
+                        .matches();
     }
 
     /**
@@ -153,9 +154,15 @@ public final class SepaUtility {
      * @return {@code true} only if the given creditor id is valid.
      */
     public static boolean isValidCreditorId(String creditorId) {
-        String trimmedCreditorId = creditorId.replaceAll(" ", "");
-        return trimmedCreditorId.contains(SEPA_BUSINESS_CODE)
-                && isValidIban(trimmedCreditorId.replace(SEPA_BUSINESS_CODE, ""));
+        boolean isValid;
+        if (creditorId == null) {
+            isValid = false;
+        } else {
+            String trimmedCreditorId = creditorId.replaceAll(" ", "");
+            isValid = trimmedCreditorId.contains(SEPA_BUSINESS_CODE)
+                    && isValidIban(trimmedCreditorId.replace(SEPA_BUSINESS_CODE, ""));
+        }
+        return isValid;
     }
 
     /**
@@ -165,7 +172,9 @@ public final class SepaUtility {
      * @return {@code true} only if the message id is valid.
      */
     public static boolean isValidMessageId(String messageId) {
-        return MESSAGE_ID_PATTERN.matcher(messageId).matches() && messageId.length() <= MAX_CHAR_MESSAGE_ID;
+        return messageId != null
+                && MESSAGE_ID_PATTERN.matcher(messageId).matches()
+                && messageId.length() <= MAX_CHAR_MESSAGE_ID;
     }
 
     /**
