@@ -614,7 +614,7 @@ public class MainMenuController extends Controller {
             justification = "It is called by an appropriate fxml file")
     @SuppressWarnings("unused")
     private void generateUniversalSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(member.get(), false, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(currentMember.get(), false, SequenceType.RCUR));
     }
 
     private List<String> checkIbans() throws InterruptedException, ExecutionException {
