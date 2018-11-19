@@ -29,7 +29,6 @@ import bayern.steinbrecher.green2.utility.BindingUtility;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
@@ -50,7 +49,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -70,7 +68,10 @@ import javafx.scene.Node;
 import javafx.scene.layout.Priority;
 import bayern.steinbrecher.green2.elements.CheckedControl;
 import bayern.steinbrecher.green2.elements.CheckableControlBase;
+import bayern.steinbrecher.green2.elements.buttons.HelpButton;
 import bayern.steinbrecher.green2.elements.report.ReportEntry;
+import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
+import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
 
 /**
  * Represents the controller of the dialog for querying member.
@@ -271,7 +272,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      * @param <T> The type of the column to query.
      */
     private abstract static class CheckedConditionField<T> extends HBox
-            implements CheckedControl, Initializable, Observable {
+            implements CheckedControl, Observable {
 
         private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
         private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
@@ -285,32 +286,37 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          */
         CheckedConditionField(Pair<String, Class<T>> column) {
             super();
+            initialize();
             realColumnName = column.getKey();
-            loadFXML();
+            getChildren().addAll(generateChildren());
         }
 
         /**
-         * Returns the name of the fxml file to load, which represents this input field.
+         * Returns the actual children representing the {@link CheckedConditionField}. NOTE: All nodes should to be
+         * initialized within this method since it may be called before any class variables of the implementing subclass
+         * is initialized.
          *
-         * @return The name of the fxml file to load, which represents this input field.
+         * @return The actual children representing the {@link CheckedConditionField}.
+         * @see #generateChildren()
          */
-        protected abstract String getFxmlFileName();
+        protected abstract List<Node> generateChildrenImpl();
 
-        private void loadFXML() {
-            FXMLLoader fxmlLoader = new FXMLLoader(
-                    CheckedConditionField.class.getResource(getFxmlFileName()), EnvironmentHandler.RESOURCE_BUNDLE);
-            try {
-                fxmlLoader.setRoot(this);
-                fxmlLoader.setController(this);
-                fxmlLoader.load();
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, "Could not load CheckedConditionField", ex);
+        /**
+         * Generates the children representing this {@link CheckedConditionField}.
+         *
+         * @return The list of nodes representing this {@link CheckedConditionField}. It consists of exactly 3 children.
+         */
+        private List<Node> generateChildren() {
+            List<Node> children = generateChildrenImpl();
+            if (children.size() != 3) {
+                LOGGER.log(Level.WARNING, "The CheckedConditionField does not consist of 3 elements. "
+                        + "The layout may not be nice.");
             }
+            return children;
         }
 
         /**
-         * This method may be overridden in order to add further calls to
-         * {@link #initialize(java.net.URL, java.util.ResourceBundle)}.
+         * This method may be overridden in order to add further calls to {@link #initialize()}.
          */
         @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
         protected void initializeImpl() {
@@ -318,10 +324,10 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         /**
-         * {@inheritDoc}
+         * Initializes properties, bindings and should be used for instanziating class variables representing nodes.
+         * This method is the first call within {@link #CheckedConditionField(javafx.util.Pair)}.
          */
-        @Override
-        public final void initialize(URL location, ResourceBundle resources) {
+        public final void initialize() {
             ccBase.checkedProperty().bind(emptyProperty().not());
             initializeImpl();
         }
@@ -470,7 +476,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      */
     private static class BooleanConditionField extends CheckedConditionField<Boolean> {
 
-        @FXML
         private CheckBox checkbox;
 
         BooleanConditionField(Pair<String, Class<Boolean>> column) {
@@ -479,12 +484,15 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         @Override
         protected void initializeImpl() {
+            checkbox = new CheckBox();
+            checkbox.setAllowIndeterminate(true);
+            checkbox.setIndeterminate(true);
             bindEmptyProperty(checkbox.indeterminateProperty());
         }
 
         @Override
-        protected String getFxmlFileName() {
-            return "BooleanConditionField.fxml";
+        protected List<Node> generateChildrenImpl() {
+            return List.of(new HBox(), new HBox(), checkbox);
         }
 
         @Override
@@ -516,9 +524,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      */
     private static class StringConditionField extends CheckedConditionField<String> {
 
-        @FXML
         private CheckedTextField inputField;
-        @FXML
+        private BiMap<Pair<String, String>, String> valueDisplayMap;
         private ComboBox<Pair<String, String>> compareMode;
 
         StringConditionField(Pair<String, Class<String>> column) {
@@ -527,22 +534,25 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         @Override
         protected void initializeImpl() {
-            GridPane.setHgrow(inputField, Priority.ALWAYS);
-            bindEmptyProperty(inputField.emptyProperty());
-            addReports(inputField);
+            inputField = new CheckedTextField();
             inputField.checkedProperty().bind(checkedProperty());
-            final BiMap<Pair<String, String>, String> valueDisplayMap = HashBiMap.create(Map.of(
+            valueDisplayMap = HashBiMap.create(Map.of(
                     new Pair<>("", ""), EnvironmentHandler.getResourceValue("exactlyMatches"),
                     new Pair<>("%", "%"), EnvironmentHandler.getResourceValue("contains")
             ));
+            compareMode = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
             compareMode.setConverter(createStringConverter(valueDisplayMap));
-            compareMode.setItems(FXCollections.observableArrayList(valueDisplayMap.keySet()));
             compareMode.getSelectionModel().select(new Pair<>("%", "%"));
+
+            GridPane.setHgrow(inputField, Priority.ALWAYS);
+            bindEmptyProperty(inputField.emptyProperty());
+            addReports(inputField);
         }
 
         @Override
-        protected String getFxmlFileName() {
-            return "StringConditionField.fxml";
+        protected List<Node> generateChildrenImpl() {
+            return List.of(
+                    new HelpButton(EnvironmentHandler.getResourceValue("sqlWildcardsHelp")), compareMode, inputField);
         }
 
         @Override
@@ -571,25 +581,26 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      */
     private abstract static class SpinnerConditionField<T extends Number> extends CheckedConditionField<T> {
 
-        @FXML
         private CheckedSpinner<T> spinner;
-        @FXML
         private ComboBox<String> compareSymbol;
 
         SpinnerConditionField(Pair<String, Class<T>> column) {
             super(column);
         }
 
+        protected abstract CheckedSpinner<T> getSpinner();
+
         @Override
         protected void initializeImpl() {
-            GridPane.setHgrow(spinner, Priority.ALWAYS);
-            bindEmptyProperty(spinner.getEditor().textProperty().isEmpty());
-            addReports(spinner);
+            spinner = getSpinner();
             spinner.checkedProperty().bind(checkedProperty());
             spinner.setEditable(true);
             spinner.getEditor().setText("");
-            compareSymbol.setItems(FXCollections.observableArrayList("<", "<=", "=", ">=", ">"));
+            compareSymbol = new ComboBox<>(FXCollections.observableArrayList("<", "<=", "=", ">=", ">"));
             compareSymbol.getSelectionModel().select("=");
+            GridPane.setHgrow(spinner, Priority.ALWAYS);
+            bindEmptyProperty(spinner.getEditor().textProperty().isEmpty());
+            addReports(spinner);
         }
 
         /**
@@ -599,6 +610,11 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * @return The representation which can be used within the condition
          */
         protected abstract String convert(T value);
+
+        @Override
+        protected List<Node> generateChildrenImpl() {
+            return List.of(new HBox(), compareSymbol, spinner);
+        }
 
         @Override
         protected Optional<String> getConditionImpl() {
@@ -633,8 +649,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        protected String getFxmlFileName() {
-            return "IntegerConditionField.fxml";
+        protected CheckedSpinner<Integer> getSpinner() {
+            return new CheckedIntegerSpinner(0, 1);
         }
     }
 
@@ -653,8 +669,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        protected String getFxmlFileName() {
-            return "DoubleConditionField.fxml";
+        protected CheckedSpinner<Double> getSpinner() {
+            return new CheckedDoubleSpinner(0, 1);
         }
     }
 
@@ -663,9 +679,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      */
     private static class LocalDateConditionField extends CheckedConditionField<LocalDate> {
 
-        @FXML
+        private BiMap<String, String> valueDisplayMap;
         private ComboBox<String> compareMode;
-        @FXML
         private CheckedDatePicker datePicker;
 
         LocalDateConditionField(Pair<String, Class<LocalDate>> column) {
@@ -674,22 +689,24 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         @Override
         protected void initializeImpl() {
-            bindEmptyProperty(datePicker.emptyProperty());
-            addReports(datePicker);
-            datePicker.checkedProperty().bind(checkedProperty());
-            final BiMap<String, String> valueDisplayMap = HashBiMap.create(Map.of(
+            valueDisplayMap = HashBiMap.create(Map.of(
                     "<", EnvironmentHandler.getResourceValue("beforeDate"),
                     "=", EnvironmentHandler.getResourceValue("atDate"),
                     ">", EnvironmentHandler.getResourceValue("afterDate")
             ));
+            compareMode = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
             compareMode.setConverter(createStringConverter(valueDisplayMap));
-            compareMode.setItems(FXCollections.observableArrayList(valueDisplayMap.keySet()));
             compareMode.getSelectionModel().select("=");
+            datePicker = new CheckedDatePicker();
+            datePicker.checkedProperty().bind(checkedProperty());
+
+            bindEmptyProperty(datePicker.emptyProperty());
+            addReports(datePicker);
         }
 
         @Override
-        protected String getFxmlFileName() {
-            return "LocalDateConditionField.fxml";
+        protected List<Node> generateChildrenImpl() {
+            return List.of();
         }
 
         @Override
