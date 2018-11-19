@@ -706,7 +706,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         @Override
         protected List<Node> generateChildrenImpl() {
-            return List.of();
+            return List.of(new HBox(), compareMode, datePicker);
         }
 
         @Override
