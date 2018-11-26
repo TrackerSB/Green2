@@ -74,15 +74,19 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -116,7 +120,6 @@ public class MainMenuController extends Controller {
     private DBConnection dbConnection;
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
             = new SimpleObjectProperty<>(Optional.empty());
-    private final BooleanProperty honoringsAvailable = new SimpleBooleanProperty(this, "honoringsAvailable");
     private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new SupplyingMap<>(year -> {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -148,6 +151,7 @@ public class MainMenuController extends Controller {
     private CheckedIntegerSpinner yearSpinner3;
     @FXML
     private javafx.scene.control.Menu honorings;
+    private final ListProperty<MenuItem> addedHonorings = new SimpleListProperty<>(FXCollections.observableArrayList());
     @FXML
     private javafx.scene.control.Menu licensesMenu;
     @FXML
@@ -194,26 +198,6 @@ public class MainMenuController extends Controller {
         }, dataLastUpdatedProperty()));
     }
 
-    private void bindHonoringsAvailable() {
-        member.availableProperty()
-                .addListener((obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        Platform.runLater(() -> {
-                            try {
-                                honoringsAvailable.set(!member.get()
-                                        .get()
-                                        .stream()
-                                        .map(Member::getHonorings)
-                                        .allMatch(Map::isEmpty));
-                            } catch (InterruptedException | ExecutionException ex) {
-                                LOGGER.log(Level.SEVERE, null, ex);
-                                honoringsAvailable.set(false);
-                            }
-                        });
-                    }
-                });
-    }
-
     private void showHonorings(int yearsOfMembership) {
         if (yearSpinner.isValid()) {
             List<List<String>> result = new ArrayList<>();
@@ -252,6 +236,9 @@ public class MainMenuController extends Controller {
         member.availableProperty()
                 .addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
+                        honorings.getItems().removeAll(addedHonorings);
+                        //TODO Is the following command guaranteed to run before new items are added?
+                        Platform.runLater(addedHonorings::clear);
                         try {
                             member.get()
                                     .get()
@@ -270,6 +257,7 @@ public class MainMenuController extends Controller {
                                         Platform.runLater(() -> {
                                             honorings.getItems()
                                                     .add(membershipItem);
+                                            addedHonorings.add(membershipItem);
                                         });
                                     });
                         } catch (InterruptedException | ExecutionException ex) {
@@ -305,7 +293,6 @@ public class MainMenuController extends Controller {
 
         bindYearSpinnerTo();
         bindAvailabilityInformations();
-        bindHonoringsAvailable();
 
         //Bind activateBirthdayFeatures
         activateBirthdayFeatures.bind(Bindings.createBooleanBinding(
@@ -824,9 +811,9 @@ public class MainMenuController extends Controller {
      * @deprecated The visibility of the method may be changed to package private or even to private when FXML is able
      * to access these.
      */
-    @Deprecated
-    public ReadOnlyBooleanProperty honoringsAvailableProperty() {
-        return honoringsAvailable;
+    @Deprecated(forRemoval = false, since = "2u14")
+    public BooleanBinding honoringsAvailableProperty() {
+        return addedHonorings.emptyProperty().not();
     }
 
     /**
