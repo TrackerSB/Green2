@@ -49,7 +49,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -59,7 +58,6 @@ import javafx.util.Pair;
 import javafx.util.StringConverter;
 import bayern.steinbrecher.green2.elements.textfields.CheckedTextField;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.ListChangeListener;
@@ -72,6 +70,9 @@ import bayern.steinbrecher.green2.elements.buttons.HelpButton;
 import bayern.steinbrecher.green2.elements.report.ReportEntry;
 import bayern.steinbrecher.green2.elements.spinner.CheckedDoubleSpinner;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
+import java.util.HashSet;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import java.util.Set;
 
 /**
  * Represents the controller of the dialog for querying member.
@@ -129,26 +130,30 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             throw new IllegalStateException(
                     "The query dialog can not be opened since it can not show any column to query.");
         } else {
+            Set<Integer> conditionFieldLengths = new HashSet<>();
             for (int rowCounter = 0; rowCounter < sortedColumns.size(); rowCounter++) {
                 Pair<String, Class<?>> column = sortedColumns.get(rowCounter);
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
-                    queryInput.addRow(rowCounter, new Label(column.getKey())); //NOPMD - Each iteration defines a unique label.
+                    conditionField.get()
+                            .addListener(invLis -> isLastQueryUptodate = false);
                     conditionFields.add(conditionField.get());
                     ObservableList<Node> children = conditionField.get()
                             .getChildren();
                     Node[] conditionFieldChildren = children.toArray(new Node[children.size()]); //NOPMD
-                    //CHECKSTYLE.OFF: MagicNumber - Having exactly 3 elements is important for the visual layout.
-                    if (conditionFieldChildren.length != 3) { //NOPMD - Only triples are currently layouted nicely.
-                        //CHECKSTYLE.ON: MagicNumber
-                        LOGGER.log(Level.WARNING, "An input field of the query dialog has not exactly 3 children. "
-                                + "It may cause displacement of elements.");
-                    }
+                    conditionFieldLengths.add(conditionFieldChildren.length);
                     queryInput.addRow(rowCounter, conditionFieldChildren);
                 } else {
                     LOGGER.log(Level.WARNING, "The type {0} of column {1} is not supported by the query dialog.",
                             new Object[]{column.getValue(), column.getKey()});
                 }
+            }
+            if (conditionFieldLengths.size() > 1) {
+                String lengths = conditionFieldLengths.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
+                LOGGER.log(Level.INFO, "The condition fields of the query dialog do not have the same length. "
+                        + "The lengths include: {0}", lengths);
             }
         }
         isLastQueryUptodate = false;
@@ -200,18 +205,25 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     }
 
     private synchronized void updateLastQueryResult() {
+        System.out.println("updateLastQueryResult");
         if (!isLastQueryUptodate) {
+            System.out.println("Try to update");
             List<String> conditions = conditionFields.stream()
                     .map(CheckedConditionField::getCondition)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());
+            List<String> columns = conditionFields.stream()
+                    .filter(CheckedConditionField::isSelected)
+                    .map(CheckedConditionField::getRealColumnName)
+                    .collect(Collectors.toList());
             Optional<String> searchQuery = dbConnectionProperty().get()
-                    .generateSearchQuery(Tables.MEMBER, new ArrayList<>(), conditions);
+                    .generateSearchQuery(Tables.MEMBER, columns, conditions);
             searchQuery.ifPresent(query -> {
                 try {
                     lastQueryResult.set(Optional.of(dbConnectionProperty().get().execQuery(query)));
                     isLastQueryUptodate = true;
+                    System.out.println("updated");
                 } catch (SQLException ex) {
                     LOGGER.log(Level.SEVERE, "The query \"" + query + "\" failed.", ex);
                 }
@@ -278,6 +290,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
         private final String realColumnName;
+        private final CheckBox selectColumn;
+        private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper(this, "selected", true);
 
         /**
          * Creates a new {@link CheckedConditionField} for the given column and its appropriate type.
@@ -288,6 +302,11 @@ public class QueryController extends WizardableController<Optional<List<List<Str
             super();
             initialize();
             realColumnName = column.getKey();
+            selectColumn = new CheckBox();
+            selectColumn.setSelected(true);
+            selected.bind(selectColumn.selectedProperty());
+            getChildren().add(selectColumn);
+            getChildren().add(new Label(realColumnName));
             getChildren().addAll(generateChildren());
         }
 
@@ -297,23 +316,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * is initialized.
          *
          * @return The actual children representing the {@link CheckedConditionField}.
-         * @see #generateChildren()
          */
-        protected abstract List<Node> generateChildrenImpl();
-
-        /**
-         * Generates the children representing this {@link CheckedConditionField}.
-         *
-         * @return The list of nodes representing this {@link CheckedConditionField}. It consists of exactly 3 children.
-         */
-        private List<Node> generateChildren() {
-            List<Node> children = generateChildrenImpl();
-            if (children.size() != 3) {
-                LOGGER.log(Level.WARNING, "The CheckedConditionField does not consist of 3 elements. "
-                        + "The layout may not be nice.");
-            }
-            return children;
-        }
+        protected abstract List<Node> generateChildren();
 
         /**
          * This method may be overridden in order to add further calls to {@link #initialize()}.
@@ -395,6 +399,32 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         /**
+         * Adds listener additionally to {@link #addListener(javafx.beans.InvalidationListener)}.
+         *
+         * @param listener The listener to add.
+         */
+        protected abstract void addListenerImpl(InvalidationListener listener);
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public final void addListener(InvalidationListener listener) {
+            selectColumn.selectedProperty()
+                    .addListener(listener);
+            addListenerImpl(listener);
+        }
+
+        /**
+         * Returns the column name this {@link CheckedConditionField} represents.
+         *
+         * @return The column name this {@link CheckedConditionField} represents.
+         */
+        public String getRealColumnName() {
+            return realColumnName;
+        }
+
+        /**
          * {@inheritDoc}
          */
         @Override
@@ -424,6 +454,24 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         @Override
         public boolean isChecked() {
             return ccBase.isChecked();
+        }
+
+        /**
+         * Returns the property holding whether this column has to be shown in the output result.
+         *
+         * @return The property holding whether this column has to be shown in the output result.
+         */
+        public ReadOnlyBooleanProperty selectedProperty() {
+            return selected.getReadOnlyProperty();
+        }
+
+        /**
+         * Checks whether this column has to be shown in the output result.
+         *
+         * @return {@code true} only if if this column has to be shown in the output result.
+         */
+        public boolean isSelected() {
+            return selectedProperty().get();
         }
 
         /**
@@ -491,7 +539,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        protected List<Node> generateChildrenImpl() {
+        protected List<Node> generateChildren() {
             return List.of(new HBox(), new HBox(), checkbox);
         }
 
@@ -507,7 +555,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        public void addListener(InvalidationListener listener) {
+        public void addListenerImpl(InvalidationListener listener) {
             checkbox.selectedProperty().addListener(listener);
             checkbox.indeterminateProperty().addListener(listener);
         }
@@ -550,7 +598,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        protected List<Node> generateChildrenImpl() {
+        protected List<Node> generateChildren() {
             return List.of(
                     new HelpButton(EnvironmentHandler.getResourceValue("sqlWildcardsHelp")), compareMode, inputField);
         }
@@ -563,7 +611,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        public void addListener(InvalidationListener listener) {
+        public void addListenerImpl(InvalidationListener listener) {
             compareMode.valueProperty().addListener(listener);
             inputField.textProperty().addListener(listener);
         }
@@ -612,7 +660,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         protected abstract String convert(T value);
 
         @Override
-        protected List<Node> generateChildrenImpl() {
+        protected List<Node> generateChildren() {
             return List.of(new HBox(), compareSymbol, spinner);
         }
 
@@ -622,7 +670,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        public void addListener(InvalidationListener listener) {
+        public void addListenerImpl(InvalidationListener listener) {
             spinner.valueProperty().addListener(listener);
             compareSymbol.valueProperty().addListener(listener);
         }
@@ -705,7 +753,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        protected List<Node> generateChildrenImpl() {
+        protected List<Node> generateChildren() {
             return List.of(new HBox(), compareMode, datePicker);
         }
 
@@ -716,7 +764,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         @Override
-        public void addListener(InvalidationListener listener) {
+        public void addListenerImpl(InvalidationListener listener) {
             compareMode.valueProperty().addListener(listener);
             datePicker.valueProperty().addListener(listener);
         }
