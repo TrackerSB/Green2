@@ -205,9 +205,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
     }
 
     private synchronized void updateLastQueryResult() {
-        System.out.println("updateLastQueryResult");
         if (!isLastQueryUptodate) {
-            System.out.println("Try to update");
             List<String> conditions = conditionFields.stream()
                     .map(CheckedConditionField::getCondition)
                     .filter(Optional::isPresent)
@@ -223,7 +221,6 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                 try {
                     lastQueryResult.set(Optional.of(dbConnectionProperty().get().execQuery(query)));
                     isLastQueryUptodate = true;
-                    System.out.println("updated");
                 } catch (SQLException ex) {
                     LOGGER.log(Level.SEVERE, "The query \"" + query + "\" failed.", ex);
                 }
