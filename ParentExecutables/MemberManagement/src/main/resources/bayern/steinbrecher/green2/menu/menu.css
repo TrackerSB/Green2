@@ -22,7 +22,11 @@
     -fx-graphic: url("/bayern/steinbrecher/green2/icons/check.png");
 }
 
-#licensesMenu .menu-item > .label {
+#honorings .menu-item > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/diploma.png");
+}
+
+#licensesMenu .menu-item > .label, #licensesMenu > .label {
     -fx-graphic: url("/bayern/steinbrecher/green2/icons/investment.png");
 }
 
@@ -36,6 +40,14 @@
 
 #addressesMenu .menu-item > .label {
     -fx-graphic: url("/bayern/steinbrecher/green2/icons/worldwide.png");
+}
+
+#version > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/app.png")
+}
+
+#checkData > .label {
+    -fx-graphic: url("/bayern/steinbrecher/green2/icons/database.png")
 }
 
 #queryDialogMenuItem > .label {

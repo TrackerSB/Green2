@@ -100,7 +100,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <MenuItem fx:id="queryDialogMenuItem"
                           onAction="#openQueryDialog"
                           text="%queryData"/>
-                <MenuItem onAction="#checkData"
+                <MenuItem fx:id="checkData"
+                          onAction="#checkData"
                           text="%checkData"
                           accelerator="Alt+P"/>
             </Menu>
@@ -110,7 +111,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           onAction="#showCredits"/>
                 <Menu fx:id="licensesMenu"
                       text="%licenses"/>
-                <MenuItem text="%version"
+                <MenuItem fx:id="version"
+                          text="%version"
                           onAction="#showVersion"/>
             </Menu>
         </MenuBar>
