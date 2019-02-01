@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -131,7 +130,7 @@ public abstract class DBConnection implements AutoCloseable {
                     tablesCache.addAll(result.stream()
                             //Skip column name
                             .skip(1)
-                            .map(list -> list.get(0).toLowerCase(Locale.ROOT))
+                            .map(list -> list.get(0))
                             .collect(Collectors.toList()));
                 } catch (SQLException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
@@ -149,7 +148,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean tableExists(Tables<?, ?> table) {
         populateTablesCache();
-        return tablesCache.contains(table.getRealTableName().toLowerCase(Locale.ROOT));
+        return tablesCache.contains(table.getRealTableName());
     }
 
     /**
