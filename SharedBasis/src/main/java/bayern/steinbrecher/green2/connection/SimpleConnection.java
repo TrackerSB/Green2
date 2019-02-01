@@ -75,7 +75,7 @@ public final class SimpleConnection extends DBConnection {
         String databaseAddress = databaseHostPrefix + ":" + databasePort + "/";
         try {
             connection = DriverManager.getConnection(DRIVER_PROTOCOLS.get(dbms) + databaseAddress
-                    + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=convertToNull"
+                    + databaseName + "?verifyServerCertificate=false&useSSL=true&zeroDateTimeBehavior=CONVERT_TO_NULL"
                     + "&serverTimezone=UTC",
                     credentials.getUsername(), credentials.getPassword());
         } catch (CommunicationsException ex) {
