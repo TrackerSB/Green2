@@ -63,7 +63,7 @@ public final class SshConnection extends DBConnection {
 
     static {
         //Configurations which are applied to all sessions.
-        //NOTE Config values must be separated with comma WITHOUT with space
+        //NOTE Config values must be separated with comma but WITHOUT space
         JSch.setConfig("kex", "diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1,"
                 + "diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,"
                 + "ecdh-sha2-nistp384,ecdh-sha2-nistp521");
