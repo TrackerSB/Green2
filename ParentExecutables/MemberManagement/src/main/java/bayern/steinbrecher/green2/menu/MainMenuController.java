@@ -97,6 +97,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 /**
  * Controller for Menu.fxml.
@@ -114,8 +115,8 @@ public class MainMenuController extends Controller {
     private final Map<String, Callable<List<String>>> checkFunctions = Map.of(
             "iban", () -> checkIbans(),
             "bic", () -> checkBics(),
-            "birthdays", () -> checkDates(m -> m.getPerson().getBirthday()),
-            "columnMandatSigned", () -> checkDates(m -> m.getAccountHolder().getMandateSigned()),
+            "birthdays", () -> checkBirthdays(),
+            "columnMandatSigned", () -> checkMandateSigned(),
             "contributions", () -> checkContributions()
     );
     private DBConnection dbConnection;
@@ -234,14 +235,14 @@ public class MainMenuController extends Controller {
     }
 
     private void generateHonoringsMenu() {
-        member.availableProperty()
+        currentMember.availableProperty()
                 .addListener((obs, oldVal, newVal) -> {
                     if (newVal) {
                         honorings.getItems().removeAll(addedHonorings);
                         //TODO Is the following command guaranteed to run before new items are added?
                         Platform.runLater(addedHonorings::clear);
                         try {
-                            member.get()
+                            currentMember.get()
                                     .get()
                                     .stream()
                                     .map(Member::getHonorings)
@@ -607,7 +608,7 @@ public class MainMenuController extends Controller {
 
     private List<String> checkIbans() throws InterruptedException, ExecutionException {
         String noIban = EnvironmentHandler.getResourceValue("noIban");
-        return member.get().get().parallelStream()
+        return currentMember.get().get().parallelStream()
                 .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
                 .map(m -> {
                     String iban = m.getAccountHolder().getIban();
@@ -618,7 +619,7 @@ public class MainMenuController extends Controller {
 
     private List<String> checkBics() throws InterruptedException, ExecutionException {
         String noBic = EnvironmentHandler.getResourceValue("noBic");
-        return member.get().get().parallelStream()
+        return currentMember.get().get().parallelStream()
                 .filter(m -> !SepaUtility.isValidBic(m.getAccountHolder().getBic()))
                 .map(m -> {
                     String bic = m.getAccountHolder().getBic();
@@ -627,18 +628,31 @@ public class MainMenuController extends Controller {
                 .collect(Collectors.toList());
     }
 
-    private List<String> checkDates(Function<Member, LocalDate> dateFunction)
+    private List<String> checkDates(CompletableFutureProperty<Set<Member>> memberToCheck,
+            Function<Member, LocalDate> dateFunction)
             throws ExecutionException, InterruptedException {
-        return member.get().get().parallelStream()
-                .filter(m -> dateFunction.apply(m) == null)
-                .map(m -> m.toString() + ": \"" + dateFunction.apply(m) + "\"")
+        return memberToCheck.get().get().parallelStream()
+                .map(m -> new Pair<>(m.toString(), dateFunction.apply(m)))
+                .filter(p -> p.getValue() == null)
+                .map(
+                        p -> p.getKey()
+                        + ": \"" + DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(p.getValue()) + "\""
+                )
                 .collect(Collectors.toList());
+    }
+
+    private List<String> checkBirthdays() throws InterruptedException, ExecutionException {
+        return checkDates(member, m -> m.getPerson().getBirthday());
+    }
+
+    private List<String> checkMandateSigned() throws InterruptedException, ExecutionException {
+        return checkDates(currentMember, m -> m.getAccountHolder().getMandateSigned());
     }
 
     private List<String> checkContributions() throws InterruptedException, ExecutionException {
         List<String> invalidContributions;
         if (isContributionColumnEnabled()) {
-            invalidContributions = member.get().get().parallelStream()
+            invalidContributions = currentMember.get().get().parallelStream()
                     .filter(m -> {
                         Optional<Double> contribution = m.getContribution();
                         return !contribution.isPresent() || contribution.get() < 0
