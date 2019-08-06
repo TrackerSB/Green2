@@ -185,7 +185,7 @@ public final class CollectorUtility {
              */
             @Override
             public Optional<String> getValue() {
-                return Optional.of(EnvironmentHandler.VERSION);
+                return Optional.of(AppInfo.VERSION);
             }
         };
 

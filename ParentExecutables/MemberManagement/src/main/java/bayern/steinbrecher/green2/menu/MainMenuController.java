@@ -19,6 +19,7 @@ package bayern.steinbrecher.green2.menu;
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.contribution.Contribution;
+import bayern.steinbrecher.green2.data.AppInfo;
 import bayern.steinbrecher.green2.data.ProfileSettings;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.spinner.CheckedIntegerSpinner;
@@ -737,8 +738,13 @@ public class MainMenuController extends Controller {
             justification = "It is called by an appropriate fxml file")
     @SuppressWarnings("unused")
     private void showVersion() {
+        String compDateTime = AppInfo.getCompilationDate()
+                .map(cpt -> DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).format(cpt))
+                .map(cpt -> "\n" + EnvironmentHandler.getResourceValue("compiledOn", cpt))
+                .orElse("");
+        String versionInfo = AppInfo.VERSION + " (" + AppInfo.UPDATE_NAME + ")" + compDateTime;
         String version = EnvironmentHandler.getResourceValue("version");
-        Alert alert = DialogUtility.createInfoAlert(getStage(), EnvironmentHandler.VERSION, version, version, version);
+        Alert alert = DialogUtility.createInfoAlert(getStage(), versionInfo, version, version, version);
         Platform.runLater(() -> alert.show());
     }
 

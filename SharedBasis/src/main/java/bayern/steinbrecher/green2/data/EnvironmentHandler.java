@@ -48,10 +48,6 @@ public final class EnvironmentHandler {
 
     private static final Logger LOGGER = Logger.getLogger(EnvironmentHandler.class.getName());
     /**
-     * Containing the version of this current program.
-     */
-    public static final String VERSION = "2u14";
-    /**
      * Containing translations for the system default language.
      */
     public static final ResourceBundle RESOURCE_BUNDLE

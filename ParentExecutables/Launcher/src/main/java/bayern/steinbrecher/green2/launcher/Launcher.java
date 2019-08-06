@@ -16,6 +16,7 @@
  */
 package bayern.steinbrecher.green2.launcher;
 
+import bayern.steinbrecher.green2.data.AppInfo;
 import bayern.steinbrecher.green2.data.CollectorUtility;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.elements.ChoiceDialog;
@@ -98,7 +99,7 @@ public final class Launcher extends Application {
         if (optOnlineVersion.isPresent()) {
             String onlineVersion = optOnlineVersion.get();
             if (isInstalled) {
-                if (EnvironmentHandler.VERSION.equalsIgnoreCase(onlineVersion)) {
+                if (AppInfo.VERSION.equalsIgnoreCase(onlineVersion)) {
                     Programs.MEMBER_MANAGEMENT.call();
                 } else {
                     Optional<Boolean> installUpdates = ChoiceDialog.askForUpdate();
