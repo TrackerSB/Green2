@@ -104,15 +104,15 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         //TODO How to avoid isAssignableFrom(...)?
         //TODO How to avoid explicit cast?
         Class<?> columnType = column.getColumnType();
-        if (columnType.isAssignableFrom(Boolean.class)) {
+        if (Boolean.class.isAssignableFrom(columnType)) {
             conditionField = new BooleanConditionField((Column<Boolean>) column);
-        } else if (columnType.isAssignableFrom(String.class)) {
+        } else if (String.class.isAssignableFrom(columnType)) {
             conditionField = new StringConditionField((Column<String>) column);
-        } else if (columnType.isAssignableFrom(Integer.class)) {
+        } else if (Integer.class.isAssignableFrom(columnType)) {
             conditionField = new IntegerConditionField((Column<Integer>) column);
-        } else if (columnType.isAssignableFrom(Double.class)) {
+        } else if (Double.class.isAssignableFrom(columnType)) {
             conditionField = new DoubleConditionField((Column<Double>) column);
-        } else if (columnType.isAssignableFrom(LocalDate.class)) {
+        } else if (LocalDate.class.isAssignableFrom(columnType)) {
             conditionField = new LocalDateConditionField((Column<LocalDate>) column);
         } else {
             conditionField = null;
