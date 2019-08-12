@@ -280,8 +280,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      *
      * @param <T> The type of the column to query.
      */
-    private abstract static class CheckedConditionField<T> extends HBox
-            implements CheckedControl, Observable {
+    private abstract static class CheckedConditionField<T> extends HBox implements CheckedControl, Observable {
 
         private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
         private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
