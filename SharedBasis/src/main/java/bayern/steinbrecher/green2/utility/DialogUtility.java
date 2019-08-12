@@ -183,7 +183,7 @@ public final class DialogUtility {
      * @return The created {@link Alert}.
      * @see #createAlert(Alert.AlertType, Window, String...)
      */
-    public static Alert createStacktraceAlert(Window owner, Exception cause, String... args) {
+    public static Alert createStacktraceAlert(Window owner, Throwable cause, String... args) {
         Alert alert = createAlert(Alert.AlertType.ERROR, owner, args);
 
         Label stacktraceLabel = new Label(EnvironmentHandler.getResourceValue("stacktraceLabel"));

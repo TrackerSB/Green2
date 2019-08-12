@@ -176,6 +176,8 @@ public class MemberManagement extends Application {
                             });
                         } else {
                             LOGGER.log(Level.SEVERE, null, throwable);
+                            DialogUtility.createStacktraceAlert(null, throwable, "Application could not start.")
+                                    .showAndWait();
                             Platform.exit();
                         }
                     });
