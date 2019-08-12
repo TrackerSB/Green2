@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.query;
 
 import bayern.steinbrecher.green2.WizardableController;
+import bayern.steinbrecher.green2.connection.Column;
 import bayern.steinbrecher.green2.connection.DBConnection;
 import bayern.steinbrecher.green2.connection.scheme.ColumnParser;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
@@ -98,21 +99,21 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
     //TODO Is there any way to connect these questionmarks?
     @SuppressWarnings("unchecked")
-    private Optional<CheckedConditionField<?>> createConditionField(Pair<String, Class<?>> column) {
+    private Optional<CheckedConditionField<?>> createConditionField(Column<?> column) {
         CheckedConditionField<?> conditionField;
         //TODO How to avoid isAssignableFrom(...)?
         //TODO How to avoid explicit cast?
-        Class<?> columnType = column.getValue();
+        Class<?> columnType = column.getColumnType();
         if (columnType.isAssignableFrom(Boolean.class)) {
-            conditionField = new BooleanConditionField(new Pair<>(column.getKey(), (Class<Boolean>) columnType));
+            conditionField = new BooleanConditionField((Column<Boolean>) column);
         } else if (columnType.isAssignableFrom(String.class)) {
-            conditionField = new StringConditionField(new Pair<>(column.getKey(), (Class<String>) columnType));
+            conditionField = new StringConditionField((Column<String>) column);
         } else if (columnType.isAssignableFrom(Integer.class)) {
-            conditionField = new IntegerConditionField(new Pair<>(column.getKey(), (Class<Integer>) columnType));
+            conditionField = new IntegerConditionField((Column<Integer>) column);
         } else if (columnType.isAssignableFrom(Double.class)) {
-            conditionField = new DoubleConditionField(new Pair<>(column.getKey(), (Class<Double>) columnType));
+            conditionField = new DoubleConditionField((Column<Double>) column);
         } else if (columnType.isAssignableFrom(LocalDate.class)) {
-            conditionField = new LocalDateConditionField(new Pair<>(column.getKey(), (Class<LocalDate>) columnType));
+            conditionField = new LocalDateConditionField((Column<LocalDate>) column);
         } else {
             conditionField = null;
         }
@@ -123,8 +124,8 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         queryInput.getChildren().clear();
         conditionFields.clear();
 
-        List<Pair<String, Class<?>>> sortedColumns = connection.getAllColumns(table).stream()
-                .sorted((c1, c2) -> c1.getKey().compareToIgnoreCase(c2.getKey()))
+        List<Column<?>> sortedColumns = connection.getAllColumns(table).stream()
+                .sorted((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()))
                 .collect(Collectors.toList());
         if (sortedColumns.isEmpty()) {
             throw new IllegalStateException(
@@ -132,7 +133,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         } else {
             Set<Integer> conditionFieldLengths = new HashSet<>();
             for (int rowCounter = 0; rowCounter < sortedColumns.size(); rowCounter++) {
-                Pair<String, Class<?>> column = sortedColumns.get(rowCounter);
+                Column<?> column = sortedColumns.get(rowCounter);
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
                     conditionField.get()
@@ -145,7 +146,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                     queryInput.addRow(rowCounter, conditionFieldChildren);
                 } else {
                     LOGGER.log(Level.WARNING, "The type {0} of column {1} is not supported by the query dialog.",
-                            new Object[]{column.getValue(), column.getKey()});
+                            new Object[]{column.getColumnType(), column.getName()});
                 }
             }
             if (conditionFieldLengths.size() > 1) {
@@ -285,7 +286,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         private static final Logger LOGGER = Logger.getLogger(CheckedConditionField.class.getName());
         private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
-        private final String realColumnName;
+        private final Column<T> column;
         private final CheckBox selectColumn;
         private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper(this, "selected", true);
 
@@ -294,15 +295,15 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          *
          * @param column The column to create an input field for.
          */
-        CheckedConditionField(Pair<String, Class<T>> column) {
+        CheckedConditionField(Column<T> column) {
             super();
             initialize();
-            realColumnName = column.getKey();
+            this.column = column;
             selectColumn = new CheckBox();
             selectColumn.setSelected(true);
             selected.bind(selectColumn.selectedProperty());
             getChildren().add(selectColumn);
-            getChildren().add(new Label(realColumnName));
+            getChildren().add(new Label(column.getName()));
             getChildren().addAll(generateChildren());
         }
 
@@ -356,7 +357,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                 SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
                 condition = getConditionImpl();
                 if (condition.isPresent()) {
-                    condition = Optional.of(dbms.quoteIdentifier(realColumnName) + " " + condition.get());
+                    condition = Optional.of(dbms.quoteIdentifier(getRealColumnName()) + " " + condition.get());
                 }
             } else {
                 condition = Optional.empty();
@@ -417,7 +418,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
          * @return The column name this {@link CheckedConditionField} represents.
          */
         public String getRealColumnName() {
-            return realColumnName;
+            return column.getName();
         }
 
         /**
@@ -522,7 +523,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
 
         private CheckBox checkbox;
 
-        BooleanConditionField(Pair<String, Class<Boolean>> column) {
+        BooleanConditionField(Column<Boolean> column) {
             super(column);
         }
 
@@ -572,7 +573,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         private BiMap<Pair<String, String>, String> valueDisplayMap;
         private ComboBox<Pair<String, String>> compareMode;
 
-        StringConditionField(Pair<String, Class<String>> column) {
+        StringConditionField(Column<String> column) {
             super(column);
         }
 
@@ -628,7 +629,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         private CheckedSpinner<T> spinner;
         private ComboBox<String> compareSymbol;
 
-        SpinnerConditionField(Pair<String, Class<T>> column) {
+        SpinnerConditionField(Column<T> column) {
             super(column);
         }
 
@@ -683,7 +684,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      */
     private static class IntegerConditionField extends SpinnerConditionField<Integer> {
 
-        IntegerConditionField(Pair<String, Class<Integer>> column) {
+        IntegerConditionField(Column<Integer> column) {
             super(column);
         }
 
@@ -703,7 +704,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
      */
     private static class DoubleConditionField extends SpinnerConditionField<Double> {
 
-        DoubleConditionField(Pair<String, Class<Double>> column) {
+        DoubleConditionField(Column<Double> column) {
             super(column);
         }
 
@@ -727,7 +728,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         private ComboBox<String> compareMode;
         private CheckedDatePicker datePicker;
 
-        LocalDateConditionField(Pair<String, Class<LocalDate>> column) {
+        LocalDateConditionField(Column<LocalDate> column) {
             super(column);
         }
 

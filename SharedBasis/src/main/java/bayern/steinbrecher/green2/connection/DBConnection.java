@@ -56,10 +56,10 @@ public abstract class DBConnection implements AutoCloseable {
     private final String databaseName;
     private final SupportedDatabases dbms;
     /**
-     * Caches the names of all really existing columns on every supported table in {@link Tables}. The cache is
-     * refreshed whenever the currently loaded profile changes.
+     * Caches the all really existing columns on every supported table in {@link Tables}. The cache is refreshed
+     * whenever the currently loaded profile changes.
      */
-    private final Map<Tables<?, ?>, List<Pair<String, Class<?>>>> columnsCache;
+    private final Map<Tables<?, ?>, List<Column<?>>> columnsCache;
     private final Set<String> tablesCache = new HashSet<>();
 
     /**
@@ -76,7 +76,7 @@ public abstract class DBConnection implements AutoCloseable {
             if (table == null) {
                 throw new IllegalArgumentException("Can not generate query controls for table null.");
             }
-            List<Pair<String, Class<?>>> entry;
+            List<Column<?>> entry;
             try {
                 List<List<String>> result
                         = execQuery(table.generateQuery(Queries.GET_COLUMN_NAMES_AND_TYPES, dbms, databaseName));
@@ -84,7 +84,7 @@ public abstract class DBConnection implements AutoCloseable {
                         .skip(1) //Skip headings
                         .map(list -> {
                             return dbms.getType(list.get(1))
-                                    .map(ct -> new Pair<String, Class<?>>(list.get(0), ct));
+                                    .map(ct -> new Column<>(list.get(0), ct));
                         })
                         .filter(Optional::isPresent)
                         .map(Optional::get)
@@ -216,7 +216,7 @@ public abstract class DBConnection implements AutoCloseable {
         List<String> notExistingColumns = new ArrayList<>();
         if (columnsToSelect.isEmpty()) {
             existingColumns = columnsCache.get(table).stream()
-                    .map(Pair::getKey)
+                    .map(Column::getName)
                     .collect(Collectors.toList());
         } else {
             existingColumns = new ArrayList<>();
@@ -288,7 +288,7 @@ public abstract class DBConnection implements AutoCloseable {
                     } else if (pattern instanceof RegexColumnPattern) {
                         columnNames = getAllColumns(table)
                                 .stream()
-                                .map(Pair::getKey)
+                                .map(Column::getName)
                                 .filter(existingColumn -> pattern.matches(existingColumn))
                                 .collect(Collectors.toSet());
                     } else {
@@ -405,7 +405,7 @@ public abstract class DBConnection implements AutoCloseable {
      */
     public boolean columnExists(Tables<?, ?> table, String columnName) {
         return columnsCache.get(table).stream()
-                .map(Pair::getKey)
+                .map(Column::getName)
                 .filter(c -> c.equalsIgnoreCase(columnName))
                 .findAny()
                 .isPresent();
@@ -431,7 +431,7 @@ public abstract class DBConnection implements AutoCloseable {
      * @return A {@link List} of all existing columns (not only that ones declared in the scheme).
      * @see Tables#getAllColumns()
      */
-    public List<Pair<String, Class<?>>> getAllColumns(Tables<?, ?> table) {
+    public List<Column<?>> getAllColumns(Tables<?, ?> table) {
         return columnsCache.get(table);
     }
 
