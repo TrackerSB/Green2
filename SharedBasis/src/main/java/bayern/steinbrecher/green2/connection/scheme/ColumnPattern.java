@@ -45,7 +45,7 @@ public class ColumnPattern<T, U> {
         if (columnNamePattern.charAt(0) != '^' || !columnNamePattern.endsWith("$")) {
             LOGGER.log(Level.WARNING, "The pattern \"{0}\" is not encapsulated in \"^\" and \"$\".", columnNamePattern);
         }
-        this.columnNamePattern = Pattern.compile(columnNamePattern);
+        this.columnNamePattern = Pattern.compile(columnNamePattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         this.parser = parser;
     }
 
