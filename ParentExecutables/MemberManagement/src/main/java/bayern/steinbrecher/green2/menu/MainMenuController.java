@@ -18,6 +18,7 @@ package bayern.steinbrecher.green2.menu;
 
 import bayern.steinbrecher.green2.Controller;
 import bayern.steinbrecher.green2.connection.DBConnection;
+import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.contribution.Contribution;
 import bayern.steinbrecher.green2.data.AppInfo;
 import bayern.steinbrecher.green2.data.ProfileSettings;
@@ -526,8 +527,8 @@ public class MainMenuController extends Controller {
 
     @FXML
     private void queryData() {
-        member.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllMember()));
-        nicknames.set(CompletableFuture.supplyAsync(() -> dbConnection.getAllNicknames()));
+        member.set(CompletableFuture.supplyAsync(() -> dbConnection.getTableContent(Tables.MEMBER)));
+        nicknames.set(CompletableFuture.supplyAsync(() -> dbConnection.getTableContent(Tables.NICKNAMES)));
         CompletableFuture.allOf(member.get(), nicknames.get())
                 .whenCompleteAsync((result, throwable) -> {
                     LocalDateTime datetime;

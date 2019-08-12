@@ -16,14 +16,11 @@
  */
 package bayern.steinbrecher.green2.connection;
 
-import bayern.steinbrecher.green2.connection.scheme.ColumnPattern;
 import bayern.steinbrecher.green2.connection.scheme.Queries;
-import bayern.steinbrecher.green2.connection.scheme.RegexColumnPattern;
 import bayern.steinbrecher.green2.connection.scheme.SimpleColumnPattern;
 import bayern.steinbrecher.green2.connection.scheme.SupportedDatabases;
 import bayern.steinbrecher.green2.connection.scheme.Tables;
 import bayern.steinbrecher.green2.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.people.Member;
 import bayern.steinbrecher.green2.utility.DialogUtility;
 import bayern.steinbrecher.green2.utility.PopulatingMap;
 import java.sql.SQLException;
@@ -39,11 +36,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.util.Pair;
 
 /**
  * Represents a database connection.
@@ -184,81 +179,42 @@ public abstract class DBConnection implements AutoCloseable {
         return !tablesAreMissing || tablesCreated;
     }
 
-    //TODO Is this method still needed?
-    private void throwIfInvalid() {
-        String missingColumnsString = getMissingColumnsString();
-        if (!missingColumnsString.isEmpty()) {
-            throw new IllegalStateException("The connection refers tables which are missing required columns:\n"
-                    + missingColumnsString);
-        }
-    }
-
     /**
-     * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
+     * Returns a {@link String} containing a statement with SELECT, FROM and WHERE, but with no semicolon and no
      * trailing space at the end. The select statement contains only columns existing and associated with {@code table}.
      * The where clause excludes conditions references a column contained in {@code columnsToSelect} which do not exist.
-     * NOTE: Other non existing columns are not excluded from the where clause yet.
      *
      * @param table The table to select from.
-     * @param columnsToSelect The columns to select when they exist. If it is empty all available columns are queried.
+     * @param columnsToSelect The columns to select if they exist. If it is empty all available columns are queried.
      * @param conditions The conditions every row has to satisfy. NOTE Occurrences of identifiers with conditions are
      * not automatically quoted by this method.
-     * @return The statement selecting all existing columns of {@code columnsToSelect} satisfying all
-     * {@code conditions}. Returns {@link Optional#empty()} if {@code columnsToSelect} contains no column which exists
-     * in the scheme accessible through {@code connection}.
-     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.scheme.Tables, java.util.Collection)
+     * @return The statement selecting all columns given in {@code columnsToSelect} satisfying all {@code conditions}.
+     * Returns {@link Optional#empty()} if {@code columnsToSelect} contains no column.
      */
-    //FIXME The method does not tell which columns and condtions were excluded.
-    public Optional<String> generateSearchQuery(Tables<?, ?> table, Collection<String> columnsToSelect,
-            Collection<String> conditions) {
-        throwIfInvalid();
-        List<String> existingColumns;
-        List<String> notExistingColumns = new ArrayList<>();
-        if (columnsToSelect.isEmpty()) {
-            existingColumns = columnsCache.get(table).stream()
-                    .map(Column::getName)
-                    .collect(Collectors.toList());
-        } else {
-            existingColumns = new ArrayList<>();
-            columnsToSelect.stream().forEach((String cn) -> {
-                if (columnExists(table, cn)) {
-                    existingColumns.add(cn);
-                } else {
-                    notExistingColumns.add(cn);
-                }
-            });
-        }
-
+    // FIXME The method does not tell which condtions were excluded.
+    public Optional<String> generateSearchQueryFromColumns(Tables<?, ?> table, Collection<Column<?>> columnsToSelect,
+            Optional<Collection<String>> conditions) {
         Optional<String> searchQuery;
-        if (existingColumns.isEmpty()) {
+        if (columnsToSelect.isEmpty()) {
             LOGGER.log(Level.WARNING, "Generating search query without selecting any existing column.");
             searchQuery = Optional.empty();
         } else {
             StringBuilder sqlString = new StringBuilder("SELECT ")
                     .append(
-                            existingColumns.stream()
+                            columnsToSelect.stream()
+                                    .map(Column::getName)
                                     .map(dbms::quoteIdentifier)
                                     .collect(Collectors.joining(", "))
                     )
                     .append(" FROM ")
                     .append(dbms.quoteIdentifier(table.getRealTableName()));
-            /*
-             * NOTE condtions.stream() would work on empty condtions list too, but this if spares the computation of
-             * nonExistingColumnsPattern.
-             */
-            if (!conditions.isEmpty()) {
-                List<Pattern> notExistingColumnsPattern = notExistingColumns.stream()
-                        //Used regex: (?:^|.*\W)columnName(?:\W.*|$)
-                        //Tested at: http://www.regexplanet.com/advanced/java/index.html
-                        .map(cn -> Pattern.compile("(?:^|.*\\\\W)" + cn + "(?:\\\\W.*|$)", Pattern.CASE_INSENSITIVE))
-                        .collect(Collectors.toList());
-                String conditionString = conditions.stream()
-                        .filter(c -> notExistingColumnsPattern.stream().noneMatch(p -> p.matcher(c).matches()))
+            if (conditions.isPresent() && !conditions.get().isEmpty()) {
+                String conditionString = conditions.get()
+                        .stream()
+                        // FIXME This method does not check whether all the column identifiers in any conditions exist.
                         .collect(Collectors.joining(" AND "));
-                if (!conditionString.isEmpty()) {
-                    sqlString.append(" WHERE ")
-                            .append(conditionString);
-                }
+                sqlString.append(" WHERE ")
+                        .append(conditionString);
             }
             searchQuery = Optional.of(sqlString.toString());
         }
@@ -266,40 +222,31 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Returns a {@link String} containing a statement with SELECT and FROM but without WHERE, with no semicolon and no
-     * trailing space at the end.The select statement contains only columns existing and associated with {@code table}.
+     * Returns an object representing all current entries of the given table.
      *
-     * @param <U> The type of an entry of the table.
-     * @param table The table to select from.
-     * @param patternsToSelect The columns to select when they exist. If it is empty all available columns are queried.
-     * @return The statement selecting all existing columns of {@code patternsToSelect}. Returns
-     * {@link Optional#empty()} if {@code patternsToSelect} contains no column which exists in the scheme accessible
-     * through {@code connection}.
-     * @see #generateSearchQuery(bayern.steinbrecher.green2.connection.scheme.Tables, java.util.Collection,
-     * java.util.Collection)
+     * @param <T> The type that represents the whole content of the given table.
+     * @param table The table to query all its data from.
+     * @return The table to request all data from.
      */
-    public <U> Optional<String> generateSearchQuery(Tables<?, U> table,
-            Collection<ColumnPattern<?, U>> patternsToSelect) {
-        List<String> columnNamesToSelect = patternsToSelect.stream()
-                .flatMap(pattern -> {
-                    Set<String> columnNames;
-                    if (pattern instanceof SimpleColumnPattern) {
-                        columnNames = Set.of(((SimpleColumnPattern<?, U>) pattern).getRealColumnName());
-                    } else if (pattern instanceof RegexColumnPattern) {
-                        columnNames = getAllColumns(table)
-                                .stream()
-                                .map(Column::getName)
-                                .filter(existingColumn -> pattern.matches(existingColumn))
-                                .collect(Collectors.toSet());
-                    } else {
-                        LOGGER.log(Level.WARNING, "Can''t handle column patterns of type {0}.",
-                                pattern == null ? "null" : pattern.getClass());
-                        columnNames = Set.of();
-                    }
-                    return columnNames.stream();
-                })
-                .collect(Collectors.toList());
-        return generateSearchQuery(table, columnNamesToSelect, new ArrayList<>());
+    public <T> T getTableContent(Tables<T, ?> table) {
+        if (hasValidSchemes()) {
+            T tableContent;
+            Optional<String> searchQuery
+                    = generateSearchQueryFromColumns(table, columnsCache.get(table), Optional.empty());
+            if (searchQuery.isPresent()) {
+                try {
+                    tableContent = table.generateRepresentations(execQuery(searchQuery.get()));
+                } catch (SQLException ex) {
+                    throw new Error("Generated SQL-Code invalid", ex); //NOPMD - Indicates bug in hardcoded SQL.
+                }
+            } else {
+                throw new Error("The cache of the columns of the table " + table.getRealTableName()
+                        + " contains no columns that are part of the actual table.");
+            }
+            return tableContent;
+        } else {
+            throw new IllegalStateException("The data base has an invalid scheme.");
+        }
     }
 
     /**
@@ -322,9 +269,10 @@ public abstract class DBConnection implements AutoCloseable {
     public Optional<Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>>> getMissingColumns() {
         Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>> missingColumns = new HashMap<>();
         for (Tables<?, ?> table : Tables.values()) {
+            List<Column<?>> cachedColumns = columnsCache.get(table);
             List<SimpleColumnPattern<?, ?>> currentMissingColumns = table.getRequiredColumns()
                     .stream()
-                    .filter(scp -> !columnExists(table, scp))
+                    .filter(scp -> cachedColumns.stream().noneMatch(column -> scp.matches(column.getName())))
                     .collect(Collectors.toList());
             if (!currentMissingColumns.isEmpty()) {
                 missingColumns.put(table, currentMissingColumns);
@@ -334,13 +282,13 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
-     * Creates a {@link String} out of the result of {@link #getMissingColumns()}.
+     * Generates a {@link String} listing all required but missing columns of all tables.
      *
-     * @param missingColumns The required columns missing.
-     * @return
+     * @return A {@link String} listing all required but missing columns of all tables.
+     * @see #getMissingColumns()
      */
-    private static String generateMissingColumnsString(
-            Optional<Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>>> missingColumns) {
+    public String getMissingColumnsString() {
+        Optional<Map<Tables<?, ?>, List<SimpleColumnPattern<?, ?>>>> missingColumns = getMissingColumns();
         String missingColumnsString;
         if (missingColumns.isPresent()) {
             missingColumnsString = missingColumns.get().entrySet().parallelStream()
@@ -354,73 +302,6 @@ public abstract class DBConnection implements AutoCloseable {
             missingColumnsString = "";
         }
         return missingColumnsString;
-    }
-
-    /**
-     * Generates a {@link String} listing all required but missing columns of all tables.
-     *
-     * @return A {@link String} listing all required but missing columns of all tables.
-     * @see #getMissingColumns()
-     */
-    public String getMissingColumnsString() {
-        return generateMissingColumnsString(getMissingColumns());
-    }
-
-    /**
-     * Returns a list of all member accessible with this connection. The list contains all columns returned by
-     * {@link Tables#getAllColumns()} called on {@link Tables#MEMBER}.
-     *
-     * @return The list with the member.
-     */
-    public Set<Member> getAllMember() {
-        try {
-            return Tables.MEMBER.generateRepresentations(
-                    execQuery(generateSearchQuery(Tables.MEMBER, Tables.MEMBER.getAllColumns()).get()));
-        } catch (SQLException ex) {
-            throw new Error("Hardcoded SQL-Code invalid", ex); //NOPMD - Indicates bug in hardcoded SQL.
-        }
-    }
-
-    /**
-     * Queries the nickname table of the specified connection.
-     *
-     * @return A map from first names to nicknames.
-     */
-    public Map<String, String> getAllNicknames() {
-        try {
-            return Tables.NICKNAMES.generateRepresentations(
-                    execQuery(generateSearchQuery(Tables.NICKNAMES, Tables.NICKNAMES.getAllColumns()).get()));
-        } catch (SQLException ex) {
-            throw new Error("Hardcoded SQL-Code invalid", ex); //NOPMD - Indicates bug in hardcoded SQL.
-        }
-    }
-
-    /**
-     * Checks whether the given table of the configured database contains a specific column and the column is
-     * accessible.
-     *
-     * @param table The name of the table to search for the column.
-     * @param columnName The column name to search for.
-     * @return {@code true} only if the given table contains the given column and it is accessible.
-     */
-    public boolean columnExists(Tables<?, ?> table, String columnName) {
-        return columnsCache.get(table).stream()
-                .map(Column::getName)
-                .filter(c -> c.equalsIgnoreCase(columnName))
-                .findAny()
-                .isPresent();
-    }
-
-    /**
-     * Checks whether the given table of the configured database contains a specific column. The column must be
-     * associated with {@code table} and has to be accessible.
-     *
-     * @param table The table to search the column for.
-     * @param column The column for whose {@link SimpleColumnPattern#getRealColumnName()} to search for.
-     * @return {@code true} only if the given table contains the given column.
-     */
-    public boolean columnExists(Tables<?, ?> table, SimpleColumnPattern<?, ?> column) {
-        return columnExists(table, column.getRealColumnName());
     }
 
     /**

@@ -212,12 +212,12 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());
-            List<String> columns = conditionFields.stream()
+            List<Column<?>> columns = conditionFields.stream()
                     .filter(CheckedConditionField::isSelected)
-                    .map(CheckedConditionField::getRealColumnName)
+                    .map(CheckedConditionField::getColumn)
                     .collect(Collectors.toList());
             Optional<String> searchQuery = dbConnectionProperty().get()
-                    .generateSearchQuery(Tables.MEMBER, columns, conditions);
+                    .generateSearchQueryFromColumns(Tables.MEMBER, columns, Optional.of(conditions));
             searchQuery.ifPresent(query -> {
                 try {
                     lastQueryResult.set(Optional.of(dbConnectionProperty().get().execQuery(query)));
@@ -357,7 +357,7 @@ public class QueryController extends WizardableController<Optional<List<List<Str
                 SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
                 condition = getConditionImpl();
                 if (condition.isPresent()) {
-                    condition = Optional.of(dbms.quoteIdentifier(getRealColumnName()) + " " + condition.get());
+                    condition = Optional.of(dbms.quoteIdentifier(getColumn().getName()) + " " + condition.get());
                 }
             } else {
                 condition = Optional.empty();
@@ -413,12 +413,12 @@ public class QueryController extends WizardableController<Optional<List<List<Str
         }
 
         /**
-         * Returns the column name this {@link CheckedConditionField} represents.
+         * Returns the column this field represents.
          *
-         * @return The column name this {@link CheckedConditionField} represents.
+         * @return The column this field represents.
          */
-        public String getRealColumnName() {
-            return column.getName();
+        public Column<T> getColumn() {
+            return column;
         }
 
         /**
