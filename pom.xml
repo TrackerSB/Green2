@@ -19,10 +19,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>13</maven.compiler.release>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
         <project.relativeTo.rootDir>..</project.relativeTo.rootDir>
-        <netbeans.hint.jdkPlatform>JDK_11</netbeans.hint.jdkPlatform>
+        <netbeans.hint.jdkPlatform>@@DEFAULT@@</netbeans.hint.jdkPlatform>
     </properties>
 
     <repositories>
