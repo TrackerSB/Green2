@@ -273,6 +273,9 @@ public final class /* enum */ Tables<T, U> {
     public String generateQuery(Queries query, SupportedDatabases dbms, String databaseName) {
         String statement;
         switch (query) {
+            case CHECK_DBMS_EXISTS:
+                statement = dbms.getTemplate(Queries.CHECK_DBMS_EXISTS, databaseName);
+                break;
             case CREATE_TABLE:
                 statement = generateCreateStatement(dbms);
                 break;

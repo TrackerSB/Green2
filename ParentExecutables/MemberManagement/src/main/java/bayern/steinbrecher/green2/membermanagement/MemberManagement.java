@@ -133,6 +133,16 @@ public class MemberManagement extends Application {
                                 .orElseThrow(() -> new IllegalStateException("Could not create a connection"));
                         return dbConnection;
                     })
+                    //Check existence of databas
+                    .thenRunAsync(() -> {
+                        if(!dbConnection.databaseExists()){
+                            String databaseNotExistent = EnvironmentHandler.getResourceValue("couldntFindDatabase");
+                            Platform.runLater(
+                                    () -> DialogUtility.createErrorAlert(null, databaseNotExistent, databaseNotExistent)
+                                            .show());
+                            throw new IllegalStateException(databaseNotExistent);
+                        }
+                    })
                     //Check existence of tables
                     .thenRunAsync(() -> {
                         try {

@@ -135,6 +135,22 @@ public abstract class DBConnection implements AutoCloseable {
     }
 
     /**
+     * Checks if the connected database exists.
+     *
+     * @return {@code true} only if the connected database exists.
+     */
+    public boolean databaseExists() {
+        List<List<String>> result;
+        try {
+            result = execQuery(Tables.MEMBER.generateQuery(Queries.CHECK_DBMS_EXISTS, dbms, databaseName));
+            return result.isEmpty() || result.get(0).isEmpty();
+        } catch(SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    /**
      * Checks whether the given table exists. It DOES NOT check whether it has all needed columns and is configured
      * right.
      *

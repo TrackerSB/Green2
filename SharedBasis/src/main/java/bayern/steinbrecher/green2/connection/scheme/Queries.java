@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Stefan Huber
+ * Copyright (C) 2020 Stefan Huber
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,12 @@ package bayern.steinbrecher.green2.connection.scheme;
  * @author Stefan Huber
  */
 public enum Queries {
+    /**
+     * Checks whether a database exists.<br>
+     * Variables_<br>
+     * 0: database name
+     */
+    CHECK_DBMS_EXISTS,
     /**
      * Creates a table with all given columns.
      */
