@@ -21,6 +21,7 @@ import java.util.Optional;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -56,7 +57,11 @@ public class ChoiceDialog extends Application {
             stage.close();
         });
 
-        VBox vbox = new VBox(message, new HBox(yesButton, noButton));
+        Hyperlink hyperlink = new Hyperlink("https://github.com/TrackerSB/Green2/releases/latest");
+        hyperlink.setOnAction(aevt -> {
+            getHostServices().showDocument("https://github.com/TrackerSB/Green2/releases/latest");
+        });
+        VBox vbox = new VBox(message, hyperlink, new HBox(yesButton, noButton));
         vbox.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
 
         stage.setScene(new Scene(vbox));
