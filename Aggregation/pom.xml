@@ -15,7 +15,6 @@
 
     <modules>
         <module>..</module> <!-- parent -->
-        <module>../Wizard</module>
     </modules>
     <name>Aggregation</name>
     <description>Represents the collection of all top level parents and projects without any parent.</description>
