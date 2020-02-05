@@ -24,10 +24,6 @@
         Represents the parent of part applications which can be executed including their shared settings.
     </description>
 
-    <properties>
-        <project.relativeTo.rootDir>../..</project.relativeTo.rootDir>
-    </properties>
-
     <build>
         <pluginManagement>
             <plugins>

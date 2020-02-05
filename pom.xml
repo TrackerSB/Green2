@@ -21,7 +21,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>13</maven.compiler.release>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
-        <project.relativeTo.rootDir>..</project.relativeTo.rootDir>
         <netbeans.hint.jdkPlatform>@@DEFAULT@@</netbeans.hint.jdkPlatform>
     </properties>
 
@@ -157,7 +156,7 @@
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <targetJdk>${maven.compiler.target}</targetJdk>
                     <rulesets>
-                        <ruleset>${project.relativeTo.rootDir}/ruleset.xml</ruleset>
+                        <ruleset>${basedir}/ruleset.xml</ruleset>
                     </rulesets>
                     <skipEmptyReport>false</skipEmptyReport>
                 </configuration>
