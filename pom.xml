@@ -81,7 +81,7 @@
                 <version>2.22.0</version>
                 <configuration>
                     <additionalClasspathElements>
-                        <additionalClasspathElement>${java.home}/lib/jfxrt.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${java.home}/lib/jfxrt.jar</additionalClasspathElement> <!-- TODO Still required? -->
                     </additionalClasspathElements>
                 </configuration>
             </plugin>
