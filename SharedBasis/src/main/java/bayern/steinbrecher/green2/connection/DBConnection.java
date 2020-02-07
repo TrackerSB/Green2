@@ -341,4 +341,13 @@ public abstract class DBConnection implements AutoCloseable {
         populateTablesCache();
         return tablesCache;
     }
+
+    /**
+     * Returns the name of the database as used in SQL statements.
+     *
+     * @return The name of the database as used in SQL statements.
+     */
+    public String getDatabaseName() {
+        return databaseName;
+    }
 }

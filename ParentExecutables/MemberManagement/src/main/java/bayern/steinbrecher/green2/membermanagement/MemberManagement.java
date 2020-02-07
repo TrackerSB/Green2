@@ -135,8 +135,9 @@ public class MemberManagement extends Application {
                     })
                     //Check existence of databas
                     .thenRunAsync(() -> {
-                        if(!dbConnection.databaseExists()){
-                            String databaseNotExistent = EnvironmentHandler.getResourceValue("couldntFindDatabase");
+                        if (!dbConnection.databaseExists()) {
+                            String databaseNotExistent = EnvironmentHandler.getResourceValue(
+                                    "couldntFindDatabase", dbConnection.getDatabaseName());
                             Platform.runLater(
                                     () -> DialogUtility.createErrorAlert(null, databaseNotExistent, databaseNotExistent)
                                             .show());
