@@ -143,7 +143,7 @@ public abstract class DBConnection implements AutoCloseable {
         List<List<String>> result;
         try {
             result = execQuery(Tables.MEMBER.generateQuery(Queries.CHECK_DBMS_EXISTS, dbms, databaseName));
-            return result.isEmpty() || result.get(0).isEmpty();
+            return !result.isEmpty() && !result.get(0).isEmpty();
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             return false;

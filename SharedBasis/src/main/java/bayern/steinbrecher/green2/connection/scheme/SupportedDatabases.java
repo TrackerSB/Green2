@@ -57,9 +57,9 @@ public enum SupportedDatabases {
              * NOTE To make a query work with MessageFormat placeholder like {0} which have to be quoted with single
              * quotes in the resulting String have to be quoted by doubled single quotes.
              */
-            Map.of(Queries.CHECK_DBMS_EXISTS, "SELECT `scheme_name` "
+            Map.of(Queries.CHECK_DBMS_EXISTS, "SELECT `schema_name` "
                     + "FROM `information_schema`.`schemata` "
-                    + "WHERE `scheme_name` = ''{0}'';",
+                    + "WHERE `schema_name` = ''{0}'';",
                     Queries.CREATE_TABLE, "CREATE TABLE {0} ({1});",
                     Queries.GET_COLUMN_NAMES_AND_TYPES, "SELECT `column_name`, `data_type` "
                     + "FROM `information_schema`.`columns` "
