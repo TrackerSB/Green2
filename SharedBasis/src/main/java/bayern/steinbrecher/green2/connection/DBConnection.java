@@ -144,7 +144,7 @@ public abstract class DBConnection implements AutoCloseable {
         try {
             result = execQuery(Tables.MEMBER.generateQuery(Queries.CHECK_DBMS_EXISTS, dbms, databaseName));
             return result.isEmpty() || result.get(0).isEmpty();
-        } catch(SQLException ex) {
+        } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             return false;
         }
