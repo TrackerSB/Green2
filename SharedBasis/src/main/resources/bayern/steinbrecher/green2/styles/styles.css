@@ -26,8 +26,9 @@
     -fx-main-color: forestgreen; /*#228B22*/
     -fx-main-color-light: derive(-fx-main-color, 30%);
     -fx-main-error-color: red;
-    -fx-main-radius: 3px;
-    -fx-main-font-size: 12px;
+    /* FIXME Works only for colors */
+/*    -fx-main-radius: 3px;
+    -fx-main-font-size: 12px;*/
 }
 
 .root {
@@ -44,7 +45,7 @@
 }
 
 .dialog-pane {
-    -fx-padding: 0px;
+    -fx-padding: 0;
 }
 
 .scroll-pane {
@@ -57,10 +58,6 @@
 
 .progress-bar {
     -fx-accent: -fx-main-color;
-}
-
-VBox, HBox {
-    -fx-spacing: 10px;
 }
 
 .titled-pane > *.content{
@@ -138,11 +135,6 @@ VBox, HBox {
 /*******************************************
 //Menu
 *******************************************/
-.menu-bar {
-    -fx-padding-bottom: 5px;
-    -fx-margin-bottom: 10px;
-}
-
 .menu-item:showing, .menu:showing {
     -fx-background-color: -fx-main-color;
 }

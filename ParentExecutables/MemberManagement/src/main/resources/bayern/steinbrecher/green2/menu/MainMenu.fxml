@@ -116,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           onAction="#showVersion"/>
             </Menu>
         </MenuBar>
-        <HBox>
+        <HBox fx:id="updateQueryBox">
             <Label fx:id="dataLastUpdatedLabel"
                    text="%noData" />
             <Button onAction="#queryData"
