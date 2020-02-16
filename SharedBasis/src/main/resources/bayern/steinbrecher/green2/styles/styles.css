@@ -27,8 +27,8 @@
     -fx-main-color-light: derive(-fx-main-color, 30%);
     -fx-main-error-color: red;
     /* FIXME Works only for colors */
-/*    -fx-main-radius: 3px;
-    -fx-main-font-size: 12px;*/
+    /* -fx-main-radius: 3px; */
+    /* -fx-main-font-size: 12px; */
 }
 
 .root {
