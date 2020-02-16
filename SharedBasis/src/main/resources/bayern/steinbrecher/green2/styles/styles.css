@@ -95,6 +95,10 @@
     -fx-border-radius: 12px;
 }
 
+.color-picker {
+    -fx-color-label-visible: false;
+}
+
 /*******************************************
 //Invalid and warning classes
 *******************************************/
