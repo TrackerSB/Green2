@@ -27,12 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ListView fx:id="optionsListView"
               maxHeight="300"
               focusTraversable="false"/>
-    <HBox>
-        <Label text="${controller.selectedCount}"/>
-        <Label text="%outOf"/>
-        <Label text="${controller.totalCount}"/>
-        <Label text="%chosen"/>
-    </HBox>
+    <Label fx:id="outOf" />
     <ButtonBar>
         <buttons>
             <Button disable="${controller.allSelected}"

@@ -17,6 +17,7 @@
 package bayern.steinbrecher.green2.selection;
 
 import bayern.steinbrecher.green2.WizardableController;
+import bayern.steinbrecher.green2.data.EnvironmentHandler;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.net.URL;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -55,6 +57,8 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
     private final ReadOnlyBooleanWrapper nothingSelected = new ReadOnlyBooleanWrapper(this, "nothingSelected");
     private final ReadOnlyBooleanWrapper allSelected = new ReadOnlyBooleanWrapper(this, "allSelected");
     @FXML
+    private Label outOf;
+    @FXML
     private ListView<CheckBox> optionsListView; //TODO Use ListView<T>
     private final ChangeListener<Boolean> selectionChange
             = (obs, oldVal, newVal) -> selectedCount.set(selectedCount.get() + (newVal ? 1 : -1));
@@ -64,6 +68,10 @@ public class SelectionController<T extends Comparable<T>> extends WizardableCont
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        outOf.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> EnvironmentHandler.getResourceValue("chosenOutOf", getSelectedCount(), getTotalCount()),
+                        selectedCount, totalCount));
         nothingSelected.bind(selectedCount.lessThanOrEqualTo(0));
         allSelected.bind(selectedCount.greaterThanOrEqualTo(totalCount));
         bindValidProperty(nothingSelected.not());
