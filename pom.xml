@@ -22,6 +22,7 @@
         <maven.compiler.release>13</maven.compiler.release>
         <netbeans.hint.license>gpl30</netbeans.hint.license>
         <netbeans.hint.jdkPlatform>@@DEFAULT@@</netbeans.hint.jdkPlatform>
+        <main.basedir>${basedir}</main.basedir>
     </properties>
 
     <repositories>
@@ -156,7 +157,7 @@
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <targetJdk>${maven.compiler.target}</targetJdk>
                     <rulesets>
-                        <ruleset>${basedir}/ruleset.xml</ruleset>
+                        <ruleset>${main.basedir}/ruleset.xml</ruleset>
                     </rulesets>
                     <skipEmptyReport>false</skipEmptyReport>
                 </configuration>

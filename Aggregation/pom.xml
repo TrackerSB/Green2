@@ -19,6 +19,10 @@
     <name>Aggregation</name>
     <description>Represents the collection of all top level parents and projects without any parent.</description>
 
+    <properties>
+        <main.basedir>${basedir}/..</main.basedir>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
