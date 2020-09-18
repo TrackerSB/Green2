@@ -33,7 +33,7 @@ public final class EnvironmentHandler {
      * Containing translations for the system default language.
      */
     public static final ResourceBundle RESOURCE_BUNDLE
-            = ResourceBundle.getBundle("bayern.steinbrecher.green2.data.language.language");
+            = ResourceBundle.getBundle("bayern.steinbrecher.green2.sharedBasis.data.language.language");
     /**
      * The path of the file containing all styles.
      */
