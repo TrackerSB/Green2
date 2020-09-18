@@ -1,0 +1,8 @@
+rootProject.name = 'Green2'
+include ":Programs"
+include ":Programs:MemberManagement"
+include ":Programs:Launcher"
+include ":Programs:Uninstaller"
+include ":Programs:ConfigurationDialog"
+include ":SharedBasis"
+

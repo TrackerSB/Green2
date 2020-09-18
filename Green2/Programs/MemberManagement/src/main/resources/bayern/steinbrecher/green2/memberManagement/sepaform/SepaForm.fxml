@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import bayern.steinbrecher.checkedElements.buttons.HelpButton?>
+<?import bayern.steinbrecher.checkedElements.CheckedDatePicker?>
+<?import bayern.steinbrecher.checkedElements.textfields.sepa.BicTextField?>
+<?import bayern.steinbrecher.checkedElements.textfields.sepa.CheckedSepaTextField?>
+<?import bayern.steinbrecher.checkedElements.textfields.sepa.CreditorIdTextField?>
+<?import bayern.steinbrecher.checkedElements.textfields.sepa.IbanTextField?>
+<?import bayern.steinbrecher.checkedElements.textfields.sepa.MessageIdTextField?>
+<?import bayern.steinbrecher.checkedElements.textfields.sepa.SepaNameField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="bayern.steinbrecher.green2.memberManagement.sepaform.SepaFormController">
+    <Label text="%nameOfCreator"
+           labelFor="${creatorTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="0"/>
+    <HelpButton fx:id="creatorHelpButton"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="0"/>
+    <SepaNameField fx:id="creatorTextField"
+                   promptText="%nameOfCreator"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="0"/>
+    <Label text="%accountHolder"
+           labelFor="${creditorTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="1"/>
+    <HelpButton helpMessage="%helpCreditor"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="1"/>
+    <SepaNameField fx:id="creditorTextField"
+                   promptText="%accountHolder"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="1"/>
+    <Label text="%iban"
+           labelFor="${ibanTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="2"/>
+    <HelpButton helpMessage="%helpIban"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="2"/>
+    <IbanTextField fx:id="ibanTextField"
+                   promptText="%iban"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="2"/>
+    <Label text="%bic"
+           labelFor="${bicTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="3"/>
+    <HelpButton helpMessage="%helpBic"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="3"/>
+    <BicTextField fx:id="bicTextField"
+                  promptText="%bic"
+                  GridPane.columnIndex="2"
+                  GridPane.rowIndex="3"/>
+    <Label text="%creditorId"
+           labelFor="${creditorIdTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="4"/>
+    <HelpButton helpMessage="%helpCreditorId"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="4"/>
+    <CreditorIdTextField fx:id="creditorIdTextField"
+                         promptText="%creditorId"
+                         GridPane.columnIndex="2"
+                         GridPane.rowIndex="4"/>
+    <Label text="%purpose"
+           labelFor="${purposeTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="5"/>
+    <CheckedSepaTextField fx:id="purposeTextField"
+                          promptText="%purpose"
+                          GridPane.columnIndex="2"
+                          GridPane.rowIndex="5"/>
+    <Label text="%executionDate"
+           labelFor="${executionDatePicker}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="6"/>
+    <HelpButton helpMessage="%helpExecutionDate"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="6"/>
+    <CheckedDatePicker fx:id="executionDatePicker"
+                       promptText="%executionDate"
+                       forceFuture="true"
+                       GridPane.columnIndex="2"
+                       GridPane.rowIndex="6"/>
+    <Label text="%messageId"
+           labelFor="${messageIdTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="7"/>
+    <HelpButton fx:id="messageIdHelpButton"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="7"/>
+    <HBox spacing="5"
+          GridPane.columnIndex="2"
+          GridPane.rowIndex="7">
+        <MessageIdTextField fx:id="messageIdTextField"
+                            promptText="%messageId"/>
+        <Button text="%generate"
+                onAction="#generateMessageId"/>
+    </HBox>
+    <Label text="%pmtInfId"
+           labelFor="${pmtInfIdTextField}"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="8"/>
+    <HelpButton fx:id="pmtInfIdHelpButton"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="8"/>
+    <CheckedSepaTextField fx:id="pmtInfIdTextField"
+                          promptText="%pmtInfId"
+                          GridPane.columnIndex="2"
+                          GridPane.rowIndex="8"/>
+</GridPane>

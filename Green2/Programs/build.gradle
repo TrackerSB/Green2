@@ -1,0 +1,16 @@
+plugins {
+    id "org.openjfx.javafxplugin" version "0.0.9" apply false
+}
+
+allprojects {
+    group "bayern.steinbrecher.Green2.Programs"
+}
+
+subprojects {
+    apply plugin: "application"
+    apply plugin: "org.openjfx.javafxplugin"
+
+    javafx {
+        version = "14"
+    }
+}

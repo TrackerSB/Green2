@@ -1,0 +1,23 @@
+allprojects {
+    group "bayern.steinbrecher.Green2"
+    version "2u14-SNAPSHOT"
+
+    apply plugin: "java"
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+    }
+
+    java {
+        modularity.inferModulePath = true
+    }
+
+    compileJava.options.encoding = 'UTF-8'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}

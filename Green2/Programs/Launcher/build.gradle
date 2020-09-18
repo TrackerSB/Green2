@@ -1,0 +1,17 @@
+application {
+    mainClassName = "bayern.steinbrecher.green2.programs.launcher.Launcher"
+}
+
+dependencies {
+    implementation project(":SharedBasis")
+    implementation "bayern.steinbrecher:CheckedElements:0.2"
+    implementation "bayern.steinbrecher:JavaUtility:0.5"
+    implementation "bayern.steinbrecher:Wizard:1.29"
+}
+
+javafx {
+    modules = [
+            "javafx.controls",
+            "javafx.fxml"
+    ]
+}

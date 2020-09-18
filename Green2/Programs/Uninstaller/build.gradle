@@ -1,0 +1,16 @@
+application {
+    mainClassName = "bayern.steinbrecher.green2.uninstaller.Uninstaller"
+}
+
+dependencies {
+    implementation project(":SharedBasis")
+    implementation "bayern.steinbrecher:Wizard:1.29"
+}
+
+javafx {
+    modules = [
+            "javafx.controls",
+            "javafx.fxml",
+            "javafx.graphics"
+    ]
+}

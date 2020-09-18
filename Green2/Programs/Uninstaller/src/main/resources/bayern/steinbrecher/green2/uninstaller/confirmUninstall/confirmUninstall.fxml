@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.CheckBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.uninstaller.confirmUninstall.ConfirmUninstallController">
+    <Label text="%confirmUninstallHint" wrapText="true"/>
+    <CheckBox fx:id="confirmUninstall" text="%confirmUninstall"/>
+</VBox>

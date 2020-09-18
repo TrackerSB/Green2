@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import bayern.steinbrecher.checkedElements.textfields.CheckedPasswordField?>
+<?import bayern.steinbrecher.checkedElements.textfields.NameField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="bayern.steinbrecher.green2.memberManagement.login.ssh.SshLoginController">
+    <!-- This checkbox needs to be out of order because of referencing its id -->
+    <CheckBox fx:id="allowEmptyFieldsCheckbox"
+              text="%allowEmptyFields"
+              GridPane.rowIndex="4"
+              GridPane.columnIndex="1"/>
+
+    <Label text="%sshUsername"
+           labelFor="${sshUsernameField}"
+           GridPane.rowIndex="0"
+           GridPane.columnIndex="0"/>
+    <NameField fx:id="sshUsernameField"
+               promptText="%sshUsername"
+               checked="${!allowEmptyFieldsCheckbox.selected}"
+               GridPane.rowIndex="0"
+               GridPane.columnIndex="1"/>
+    <Label text="%sshPassword"
+           labelFor="${sshPasswordField}"
+           GridPane.rowIndex="1"
+           GridPane.columnIndex="0"/>
+    <CheckedPasswordField fx:id="sshPasswordField"
+                          promptText="%sshPassword"
+                          checked="${!allowEmptyFieldsCheckbox.selected}"
+                          GridPane.rowIndex="1"
+                          GridPane.columnIndex="1"/>
+    <Label text="%databaseUsername"
+           labelFor="${databaseUsernameField}"
+           GridPane.rowIndex="2"
+           GridPane.columnIndex="0"/>
+    <NameField fx:id="databaseUsernameField"
+               promptText="%databaseUsername"
+               checked="${!allowEmptyFieldsCheckbox.selected}"
+               GridPane.rowIndex="2"
+               GridPane.columnIndex="1"/>
+    <Label text="%databasePassword"
+           labelFor="${databasePasswordField}"
+           GridPane.rowIndex="3"
+           GridPane.columnIndex="0"/>
+    <CheckedPasswordField fx:id="databasePasswordField"
+                          promptText="%databasePassword"
+                          checked="${!allowEmptyFieldsCheckbox.selected}"
+                          GridPane.rowIndex="3"
+                          GridPane.columnIndex="1"/>
+
+    <Button defaultButton="true"
+            text="%login"
+            disable="${!controller.valid}"
+            onAction="#login"
+            GridPane.rowIndex="4"
+            GridPane.columnIndex="0"/>
+</GridPane>

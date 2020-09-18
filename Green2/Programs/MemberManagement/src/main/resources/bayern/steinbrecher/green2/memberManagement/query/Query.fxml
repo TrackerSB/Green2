@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.memberManagement.query.QueryController">
+    <HBox>
+        <Label text="%table"/>
+        <ComboBox fx:id="tableSelection"/>
+    </HBox>
+    <GridPane fx:id="queryInput" />
+</VBox>

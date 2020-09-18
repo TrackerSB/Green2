@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="bayern.steinbrecher.green2.memberManagement.menu.MainMenuController">
+    <stylesheets>
+        <URL value="@menu.css"/>
+    </stylesheets>
+
+    <VBox>
+        <MenuBar>
+            <Menu fx:id="sepaMenu" text="%allAboutSepa">
+                <MenuItem text="%contributions"
+                          onAction="#generateContributionSepa"
+                          accelerator="Alt+M"/>
+                <MenuItem onAction="#generateUniversalSepa"
+                          text="%arbitrarySepaDirectDebit"/>
+            </Menu>
+            <Menu fx:id="addressesMenu"
+                  text="%serialLetters">
+                <CustomMenuItem hideOnClick="false"
+                                visible="${controller.activateBirthdayFeatures}">
+                    <content>
+                        <CheckedIntegerSpinner fx:id="yearSpinner"
+                                               min="0"
+                                               max="5000"
+                                               amountToStepBy="1"
+                                               editable="true"/>
+                    </content>
+                </CustomMenuItem>
+                <MenuItem onAction="#generateAddressesAll"
+                          text="%ofAllMember"
+                          accelerator="Alt+A"/>
+                <MenuItem fx:id="generateAddressesBirthdayItem"
+                          onAction="#generateAddressesBirthday"
+                          disable="${!yearSpinner.valid}"
+                          visible="${controller.activateBirthdayFeatures}"/>
+            </Menu>
+            <Menu fx:id="birthdayMenu"
+                  text="%birthdays"
+                  visible="${controller.activateBirthdayFeatures}">
+                <CustomMenuItem hideOnClick="false"
+                                visible="${controller.activateBirthdayFeatures}">
+                    <content>
+                        <CheckedIntegerSpinner fx:id="yearSpinner2"
+                                               min="0"
+                                               max="5000"
+                                               amountToStepBy="1"
+                                               editable="true"/>
+                    </content>
+                </CustomMenuItem>
+                <MenuItem fx:id="generateBirthdayInfosItem"
+                          onAction="#generateBirthdayInfos"
+                          disable="${!yearSpinner.valid}"
+                          accelerator="Alt+G"/>
+            </Menu>
+            <Menu fx:id="honorings"
+                  text="%honorings"
+                  visible="${controller.honoringsAvailable}">
+                <CustomMenuItem hideOnClick="false"
+                                visible="${controller.honoringsAvailable}">
+                    <content>
+                        <CheckedIntegerSpinner fx:id="yearSpinner3"
+                                               min="0"
+                                               max="5000"
+                                               amountToStepBy="1"
+                                               editable="true"/>
+                    </content>
+                </CustomMenuItem>
+            </Menu>
+            <Menu text="%data">
+                <MenuItem fx:id="queryDialogMenuItem"
+                          onAction="#openQueryDialog"
+                          text="%queryData"/>
+                <MenuItem fx:id="checkData"
+                          onAction="#checkData"
+                          text="%checkData"
+                          accelerator="Alt+P"/>
+            </Menu>
+            <Menu text="%about">
+                <MenuItem fx:id="creditsMenuItem"
+                          text="%credits"
+                          onAction="#showCredits"/>
+                <Menu fx:id="licensesMenu"
+                      text="%licenses"/>
+                <MenuItem fx:id="version"
+                          text="%version"
+                          onAction="#showVersion"/>
+            </Menu>
+        </MenuBar>
+        <HBox fx:id="updateQueryBox">
+            <Label fx:id="dataLastUpdatedLabel"
+                   text="%noData" />
+            <Button onAction="#queryData"
+                    text="%update"
+                    disable="${!controller.allDataAvailable}" />
+        </HBox>
+    </VBox>
+    <Rectangle fx:id="overlayBackground"
+               visible="${!controller.allDataAvailable}" />
+    <Label fx:id="overlayText"
+           text="%dataGetsLoaded"
+           visible="${!controller.allDataAvailable}" />
+</StackPane>

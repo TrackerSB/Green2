@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.memberManagement.selection.SelectionController">
+    <ListView fx:id="optionsListView"
+              maxHeight="300"
+              focusTraversable="false"/>
+    <Label fx:id="outOf" />
+    <ButtonBar>
+        <buttons>
+            <Button disable="${controller.allSelected}"
+                    text="%selectAll"
+                    onAction="#selectAllOptions"
+                    ButtonBar.buttonData="OTHER"/>
+            <Button disable="${controller.nothingSelected}"
+                    text="%selectNothing"
+                    onAction="#selectNoOption"
+                    ButtonBar.buttonData="OTHER"/>
+        </buttons>
+    </ButtonBar>
+</VBox>

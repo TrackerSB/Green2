@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.memberManagement.contribution.ContributionController">
+    <ScrollPane>
+        <VBox>
+            <Label text="%contributionInEuro"
+                   labelFor="${contributionFieldsBox}"/>
+            <VBox fx:id="contributionFieldsBox" />
+        </VBox>
+    </ScrollPane>
+    <HBox>
+        <Button text="%add"
+                onAction="#addContributionField" />
+    </HBox>
+</VBox>

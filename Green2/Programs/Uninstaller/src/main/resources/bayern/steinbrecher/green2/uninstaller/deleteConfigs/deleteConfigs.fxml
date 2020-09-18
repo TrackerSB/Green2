@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.uninstaller.deleteConfigs.DeleteConfigsController">
+    <Label text="%deleteConfigsHint" wrapText="true"/>
+    <CheckBox fx:id="deleteConfigsCheckbox" text="%deleteConfigs"/>
+</VBox>

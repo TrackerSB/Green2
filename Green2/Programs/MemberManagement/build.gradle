@@ -1,0 +1,20 @@
+application {
+    mainClassName = "bayern.steinbrecher.green2.programs.memberManagement.MemberManagement"
+}
+
+dependencies {
+    implementation project(":SharedBasis")
+    implementation "bayern.steinbrecher:CheckedElements:0.2"
+    implementation "bayern.steinbrecher:DBConnector:0.3"
+    implementation "bayern.steinbrecher:JavaUtility:0.5"
+    implementation "bayern.steinbrecher:Wizard:1.29"
+    implementation "com.google.guava:guava:29.0-jre"
+}
+
+javafx {
+    modules = [
+            "javafx.controls",
+            "javafx.fxml",
+            "javafx.graphics"
+    ]
+}
