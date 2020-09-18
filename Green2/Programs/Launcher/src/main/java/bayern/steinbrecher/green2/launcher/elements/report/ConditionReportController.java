@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.launcher.elements.report;
+package bayern.steinbrecher.green2.launcher.elements.report;
 
 import bayern.steinbrecher.checkedElements.CheckedTableView;
 import bayern.steinbrecher.checkedElements.report.ReportEntry;

@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.launcher.data;
+package bayern.steinbrecher.green2.launcher.data;
 
 import bayern.steinbrecher.green2.sharedBasis.data.AppInfo;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;

@@ -1,5 +1,5 @@
 application {
-    mainClassName = "bayern.steinbrecher.green2.programs.memberManagement.MemberManagement"
+    mainClassName = "bayern.steinbrecher.green2.memberManagement.MemberManagement"
 }
 
 dependencies {
@@ -9,6 +9,7 @@ dependencies {
     implementation "bayern.steinbrecher:JavaUtility:0.5"
     implementation "bayern.steinbrecher:Wizard:1.29"
     implementation "com.google.guava:guava:29.0-jre"
+    implementation "com.google.errorprone:error_prone_annotation:2.4.0"
 }
 
 javafx {

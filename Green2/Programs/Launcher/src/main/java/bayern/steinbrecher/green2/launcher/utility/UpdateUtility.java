@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.launcher.utility;
+package bayern.steinbrecher.green2.launcher.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

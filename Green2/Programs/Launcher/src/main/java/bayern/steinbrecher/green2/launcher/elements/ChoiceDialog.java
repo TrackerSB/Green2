@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.launcher.elements;
+package bayern.steinbrecher.green2.launcher.elements;
 
 import java.util.Optional;
 

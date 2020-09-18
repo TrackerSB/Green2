@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.launcher.progress;
+package bayern.steinbrecher.green2.launcher.progress;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;

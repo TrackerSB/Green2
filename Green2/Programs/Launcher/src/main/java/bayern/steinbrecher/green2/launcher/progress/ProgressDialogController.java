@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.launcher.progress;
+package bayern.steinbrecher.green2.launcher.progress;
 
 import bayern.steinbrecher.wizard.WizardPageController;
 import javafx.beans.property.ReadOnlyDoubleProperty;

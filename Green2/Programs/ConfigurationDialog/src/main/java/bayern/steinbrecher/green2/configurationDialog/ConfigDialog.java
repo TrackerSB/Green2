@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.configurationDialog;
+package bayern.steinbrecher.green2.configurationDialog;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;

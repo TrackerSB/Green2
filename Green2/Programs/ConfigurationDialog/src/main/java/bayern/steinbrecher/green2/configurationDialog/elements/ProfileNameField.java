@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.configurationDialog.elements;
+package bayern.steinbrecher.green2.configurationDialog.elements;
 
 import bayern.steinbrecher.checkedElements.report.ReportEntry;
 import bayern.steinbrecher.checkedElements.report.ReportType;

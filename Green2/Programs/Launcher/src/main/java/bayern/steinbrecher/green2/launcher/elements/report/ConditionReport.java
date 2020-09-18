@@ -1,4 +1,4 @@
-package bayern.steinbrecher.green2.programs.launcher.elements.report;
+package bayern.steinbrecher.green2.launcher.elements.report;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPage;

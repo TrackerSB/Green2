@@ -1,12 +1,12 @@
-package bayern.steinbrecher.green2.programs.launcher;
+package bayern.steinbrecher.green2.launcher;
 
-import bayern.steinbrecher.green2.programs.launcher.data.CollectorUtility;
-import bayern.steinbrecher.green2.programs.launcher.elements.ChoiceDialog;
-import bayern.steinbrecher.green2.programs.launcher.elements.report.ConditionReport;
-import bayern.steinbrecher.green2.programs.launcher.progress.ProgressDialog;
-import bayern.steinbrecher.green2.programs.launcher.utility.PathUtility;
-import bayern.steinbrecher.green2.programs.launcher.utility.UpdateUtility;
-import bayern.steinbrecher.green2.programs.launcher.utility.ZipUtility;
+import bayern.steinbrecher.green2.launcher.data.CollectorUtility;
+import bayern.steinbrecher.green2.launcher.elements.ChoiceDialog;
+import bayern.steinbrecher.green2.launcher.elements.report.ConditionReport;
+import bayern.steinbrecher.green2.launcher.progress.ProgressDialog;
+import bayern.steinbrecher.green2.launcher.utility.PathUtility;
+import bayern.steinbrecher.green2.launcher.utility.UpdateUtility;
+import bayern.steinbrecher.green2.launcher.utility.ZipUtility;
 import bayern.steinbrecher.green2.sharedBasis.data.AppInfo;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
