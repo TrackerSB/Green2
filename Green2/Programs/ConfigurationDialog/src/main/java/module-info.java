@@ -1,4 +1,4 @@
-module bayern.steinbrecher.green2.programs.ConfigurationDialog {
+module bayern.steinbrecher.green2.ConfigurationDialog {
     exports bayern.steinbrecher.green2.configurationDialog;
 
     requires bayern.steinbrecher.green2.SharedBasis;
@@ -11,6 +11,4 @@ module bayern.steinbrecher.green2.programs.ConfigurationDialog {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
-
-    requires transitive error.prone.annotation;
 }

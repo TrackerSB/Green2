@@ -1,4 +1,4 @@
-module bayern.steinbrecher.green2.programs.Uninstaller {
+module bayern.steinbrecher.green2.Uninstaller {
     exports bayern.steinbrecher.green2.uninstaller;
 
     requires bayern.steinbrecher.GenericWizard;
@@ -8,4 +8,6 @@ module bayern.steinbrecher.green2.programs.Uninstaller {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+
+    opens bayern.steinbrecher.green2.uninstaller.deleteConfigs to bayern.steinbrecher.GenericWizard, javafx.fxml;
 }

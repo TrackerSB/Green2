@@ -1,4 +1,4 @@
-module bayern.steinbrecher.green2.programs.MemberManagement {
+module bayern.steinbrecher.green2.MemberManagement {
     exports bayern.steinbrecher.green2.memberManagement;
 
     requires bayern.steinbrecher.CheckedElements;
@@ -15,6 +15,4 @@ module bayern.steinbrecher.green2.programs.MemberManagement {
     requires javafx.fxml;
     requires javafx.graphics;
     requires org.jetbrains.annotations;
-
-    requires transitive error.prone.annotation;
 }

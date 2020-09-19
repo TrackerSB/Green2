@@ -1,14 +1,13 @@
 application {
-    mainClassName = "bayern.steinbrecher.green2.configurationDialog.ConfigurationDialog"
+    mainClassName = "bayern.steinbrecher.green2.configurationDialog.ConfigDialog"
 }
 
 dependencies {
     implementation project(":SharedBasis")
-    implementation "bayern.steinbrecher:CheckedElements:0.2"
+    implementation "bayern.steinbrecher:CheckedElements:0.4"
     implementation "bayern.steinbrecher:DBConnector:0.3"
     implementation "bayern.steinbrecher:JavaUtility:0.5"
-    implementation "bayern.steinbrecher:Wizard:1.29"
-    implementation "com.google.errorprone:error_prone_annotation:2.4.0"
+    implementation "bayern.steinbrecher:Wizard:1.30"
 }
 
 javafx {

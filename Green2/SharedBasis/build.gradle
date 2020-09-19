@@ -6,7 +6,6 @@ plugins {
 dependencies {
     implementation "bayern.steinbrecher:DBConnector:0.3"
     implementation "bayern.steinbrecher:JavaUtility:0.5"
-    implementation "com.google.errorprone:error_prone_annotations:2.4.0"
 }
 
 javafx {

@@ -1,4 +1,4 @@
-module bayern.steinbrecher.green2.programs.Launcher {
+module bayern.steinbrecher.green2.Launcher {
     exports bayern.steinbrecher.green2.launcher;
 
     requires bayern.steinbrecher.CheckedElements;
@@ -10,6 +10,4 @@ module bayern.steinbrecher.green2.programs.Launcher {
     requires java.xml;
     requires javafx.controls;
     requires javafx.fxml;
-
-    requires transitive error.prone.annotation;
 }
