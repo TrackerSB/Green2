@@ -34,7 +34,6 @@ public final class Uninstaller extends Application {
 
         EmbeddedWizardPage<Optional<Void>> confirmUninstallPage = new ConfirmUninstall()
                 .generateEmbeddableWizardPage();
-        confirmUninstallPage.setFinishAndNext(true, null);
 
         Map<String, EmbeddedWizardPage<?>> pages = new HashMap<>();
         pages.put(EmbeddedWizardPage.FIRST_PAGE_KEY, deleteConfigsPage);
