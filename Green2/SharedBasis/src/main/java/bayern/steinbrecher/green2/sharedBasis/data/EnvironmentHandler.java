@@ -333,7 +333,7 @@ public final class EnvironmentHandler {
         /**
          * Creates an {@link Image} with no specified bound box.
          *
-         * @param filename The filename of the image relative to {@link LogoSetConstants#BASIC_ICON_DIR_PATH}.
+         * @param filename The filename of the image relative to {@link LocationConstants#BASIC_ICON_DIR_PATH}.
          */
         LogoSet(String filename) {
             image = new Image(LocationConstants.BASIC_ICON_DIR_PATH + filename);
@@ -342,7 +342,7 @@ public final class EnvironmentHandler {
         /**
          * Creates an {@link Image} with a specified bound box.
          *
-         * @param filename The filename of the image relative to {@link LogoSetConstants#BASIC_ICON_DIR_PATH}.
+         * @param filename The filename of the image relative to {@link LocationConstants#BASIC_ICON_DIR_PATH}.
          * @param requestedHeight The requested height of the bound box.
          * @param requestedWidth The requested width of the bound box.
          */
@@ -452,7 +452,7 @@ public final class EnvironmentHandler {
         /**
          * Creates a new icon/image with specified size whose width and height are equal.
          *
-         * @param filename The filename of the image relative to {@link #BASIC_ICON_DIR_PATH}.
+         * @param filename The filename of the image relative to {@link LocationConstants#BASIC_ICON_DIR_PATH}.
          * @param big {@code true} indicates to use the size specified by {@link #BIG_SIZE}. Otherwise
          * {@link #SMALL_SIZE is used}.
          */
