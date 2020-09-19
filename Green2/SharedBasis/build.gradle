@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation "bayern.steinbrecher:DBConnector:0.3"
-    implementation "bayern.steinbrecher:JavaUtility:0.5"
+    implementation "bayern.steinbrecher:JavaUtility:0.7"
 }
 
 javafx {
