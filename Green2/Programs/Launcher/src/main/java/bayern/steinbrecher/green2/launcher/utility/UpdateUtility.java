@@ -1,6 +1,7 @@
 package bayern.steinbrecher.green2.launcher.utility;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -41,8 +42,6 @@ import org.xml.sax.SAXException;
 public final class UpdateUtility {
 
     private static final Logger LOGGER = Logger.getLogger(UpdateUtility.class.getName());
-    private static final FileAttribute<Set<PosixFilePermission>> ALL_PERMISSIONS
-            = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
     private static final String UPDATE_CONDITIONS_PATH
             = PathUtility.PROGRAMFOLDER_PATH_ONLINE + "/updateConditions.xml";
 
@@ -79,8 +78,12 @@ public final class UpdateUtility {
     private static Callable<Boolean> createTest(String source) {
         Callable<Boolean> test;
         try {
-            Path tempDir = Files.createTempDirectory("green2UpdateCondition_", ALL_PERMISSIONS);
-            tempDir.toFile().deleteOnExit();
+            Path tempDir = Files.createTempDirectory("green2UpdateCondition_");
+            File tempDirFile = tempDir.toFile();
+            tempDirFile.setReadable(true);
+            tempDirFile.setWritable(true);
+            tempDirFile.setExecutable(true);
+            tempDirFile.deleteOnExit();
             Path tempFile = Paths.get(tempDir.toString(), "test", "Test.java");
             tempFile.getParent().toFile().mkdirs();
             tempFile.toFile().createNewFile();
