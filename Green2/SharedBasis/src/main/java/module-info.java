@@ -6,7 +6,6 @@ module bayern.steinbrecher.green2.SharedBasis {
 
     requires bayern.steinbrecher.DBConnector;
     requires bayern.steinbrecher.Utility;
-    requires com.google.errorprone.annotations;
     requires java.logging;
     requires java.prefs;
     requires java.xml;
