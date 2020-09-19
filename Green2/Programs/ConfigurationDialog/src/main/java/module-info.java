@@ -10,4 +10,7 @@ module bayern.steinbrecher.green2.ConfigurationDialog {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+
+    opens bayern.steinbrecher.green2.configurationDialog to javafx.fxml;
+    opens bayern.steinbrecher.green2.configurationDialog.elements to javafx.fxml;
 }

@@ -4,7 +4,7 @@ application {
 
 dependencies {
     implementation project(":SharedBasis")
-    implementation "bayern.steinbrecher:CheckedElements:0.4"
+    implementation "bayern.steinbrecher:CheckedElements:0.9"
     implementation "bayern.steinbrecher:JavaUtility:0.7"
     implementation "bayern.steinbrecher:Wizard:1.30"
 }
