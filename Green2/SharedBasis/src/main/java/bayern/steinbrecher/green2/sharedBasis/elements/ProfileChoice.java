@@ -108,11 +108,11 @@ public class ProfileChoice extends Application {
             Alert confirmation
                     = DialogUtility.createConfirmationAlert(Alert.AlertType.CONFIRMATION, message);
             DialogPane dialogPane = confirmation.getDialogPane();
-            ((Button) dialogPane.lookupButton(ButtonType.YES)).setDefaultButton(false);
-            ((Button) dialogPane.lookupButton(ButtonType.NO)).setDefaultButton(true);
+            ((Button) dialogPane.lookupButton(ButtonType.OK)).setDefaultButton(false);
+            ((Button) dialogPane.lookupButton(ButtonType.CANCEL)).setDefaultButton(true);
             DialogUtility.showAndWait(confirmation)
                     .ifPresent(buttonType -> {
-                        if (buttonType == ButtonType.YES) {
+                        if (buttonType == ButtonType.OK) {
                             int rowIndexOfDeletedRow = -1;
                             for (Node cell : profilePane.getChildren()) {
                                 if (cell instanceof Label && ((Label) cell).getText().equals(profileName)) {
