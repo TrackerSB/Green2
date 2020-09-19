@@ -35,7 +35,7 @@ public class ConfigDialog extends Application {
                         getClass().getResource("ConfigDialog.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
                 Parent root = fxmlLoader.load();
                 root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET,
-                        "/bayern/steinbrecher/green2/styles/configDialog.css");
+                        "/bayern/steinbrecher/green2/configurationDialog/styles/configDialog.css");
                 ((ConfigDialogController) fxmlLoader.getController())
                         .setStage(stage);
 
