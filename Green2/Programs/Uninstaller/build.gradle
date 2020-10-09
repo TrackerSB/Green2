@@ -4,7 +4,7 @@ application {
 
 dependencies {
     implementation project(":SharedBasis")
-    implementation "bayern.steinbrecher:Wizard:1.30"
+    implementation "bayern.steinbrecher:Wizard:1.36"
 }
 
 javafx {

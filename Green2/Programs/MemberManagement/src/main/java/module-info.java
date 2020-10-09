@@ -15,4 +15,7 @@ module bayern.steinbrecher.green2.MemberManagement {
     requires javafx.fxml;
     requires javafx.graphics;
     requires org.jetbrains.annotations;
+
+    opens bayern.steinbrecher.green2.memberManagement.login.simple to bayern.steinbrecher.GenericWizard, javafx.fxml;
+    opens bayern.steinbrecher.green2.memberManagement.login.ssh to bayern.steinbrecher.GenericWizard, javafx.fxml;
 }

@@ -1,6 +1,6 @@
 package bayern.steinbrecher.green2.sharedBasis.data;
 
-import bayern.steinbrecher.dbConnector.SupportedDatabases;
+import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

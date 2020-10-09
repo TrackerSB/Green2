@@ -9,14 +9,14 @@ import bayern.steinbrecher.checkedElements.spinner.CheckedDoubleSpinner;
 import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.checkedElements.spinner.CheckedSpinner;
 import bayern.steinbrecher.checkedElements.textfields.CheckedTextField;
-import bayern.steinbrecher.dbConnector.SupportedDatabases;
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.dbConnector.DBConnection.Column;
+import bayern.steinbrecher.dbConnector.query.GenerationFailedException;
+import bayern.steinbrecher.dbConnector.query.QueryCondition;
 import bayern.steinbrecher.dbConnector.query.QueryGenerator;
-import bayern.steinbrecher.dbConnector.scheme.ColumnParser;
+import bayern.steinbrecher.dbConnector.query.QueryOperator;
 import bayern.steinbrecher.dbConnector.scheme.TableScheme;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.javaUtility.BindingUtility;
 import bayern.steinbrecher.wizard.WizardPageController;
@@ -44,7 +44,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.util.Pair;
 import javafx.util.StringConverter;
 
 import java.sql.SQLException;
@@ -88,16 +87,19 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         //TODO How to avoid isAssignableFrom(...)?
         //TODO How to avoid explicit cast?
         Class<?> columnType = column.getColumnType();
+        QueryGenerator queryGenerator = getDbConnection()
+                .getDbms()
+                .getQueryGenerator();
         if (Boolean.class.isAssignableFrom(columnType)) {
-            conditionField = new BooleanConditionField((Column<Boolean>) column);
+            conditionField = new BooleanConditionField((Column<Boolean>) column, queryGenerator);
         } else if (String.class.isAssignableFrom(columnType)) {
-            conditionField = new StringConditionField((Column<String>) column);
+            conditionField = new StringConditionField((Column<String>) column, queryGenerator);
         } else if (Integer.class.isAssignableFrom(columnType)) {
-            conditionField = new IntegerConditionField((Column<Integer>) column);
+            conditionField = new IntegerConditionField((Column<Integer>) column, queryGenerator);
         } else if (Double.class.isAssignableFrom(columnType)) {
-            conditionField = new DoubleConditionField((Column<Double>) column);
+            conditionField = new DoubleConditionField((Column<Double>) column, queryGenerator);
         } else if (LocalDate.class.isAssignableFrom(columnType)) {
-            conditionField = new LocalDateConditionField((Column<LocalDate>) column);
+            conditionField = new LocalDateConditionField((Column<LocalDate>) column, queryGenerator);
         } else {
             conditionField = null;
         }
@@ -142,7 +144,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             }
         }
         isLastQueryUptodate = false;
-        updateLastQueryResult();
+        calculateResult(); // Ensure that the cached query result is initialized
     }
 
     @FXML
@@ -186,9 +188,9 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         });
     }
 
-    private synchronized void updateLastQueryResult() {
+    private synchronized void updateLastQueryResult() throws GenerationFailedException, SQLException {
         if (!isLastQueryUptodate) {
-            List<String> conditions = conditionFields.stream()
+            List<QueryCondition<?>> conditions = conditionFields.stream()
                     .map(CheckedConditionField::getCondition)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
@@ -197,17 +199,14 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                     .filter(CheckedConditionField::isSelected)
                     .map(CheckedConditionField::getColumn)
                     .collect(Collectors.toList());
-            Optional<String> searchQuery = QueryGenerator.generateSearchQueryFromColumns(
-                    getDbConnection().getDbms(), getDbConnection().getDatabaseName(), Tables.MEMBER,
-                    columns, conditions);
-            searchQuery.ifPresent(query -> {
-                try {
-                    lastQueryResult.set(Optional.of(getDbConnection().execQuery(query)));
-                    isLastQueryUptodate = true;
-                } catch (SQLException ex) {
-                    LOGGER.log(Level.SEVERE, "The query \"" + query + "\" failed.", ex);
-                }
-            });
+            String searchQuery = getDbConnection()
+                    .getDbms()
+                    .getQueryGenerator()
+                    .generateSearchQueryStatement(
+                            getDbConnection().getDatabaseName(),
+                            getDbConnection().getTable(Tables.MEMBER).orElseThrow(), columns, conditions);
+            lastQueryResult.set(Optional.of(getDbConnection().execQuery(searchQuery)));
+            isLastQueryUptodate = true;
         }
     }
 
@@ -216,7 +215,11 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     @Override
     protected Optional<List<List<String>>> calculateResult() {
-        updateLastQueryResult();
+        try {
+            updateLastQueryResult();
+        } catch (GenerationFailedException | SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Failed to update cached query result", ex);
+        }
         return lastQueryResult.get();
     }
 
@@ -257,6 +260,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
         private final Column<T> column;
+        private final QueryGenerator queryGenerator;
         private final CheckBox selectColumn;
         private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper(this, "selected", true);
 
@@ -265,10 +269,11 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
          *
          * @param column The column to create an input field for.
          */
-        CheckedConditionField(Column<T> column) {
+        CheckedConditionField(Column<T> column, QueryGenerator queryGenerator) {
             super();
             initialize();
             this.column = column;
+            this.queryGenerator = queryGenerator;
             selectColumn = new CheckBox();
             selectColumn.setSelected(true);
             selected.bind(selectColumn.selectedProperty());
@@ -296,7 +301,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
 
         /**
          * Initializes properties, bindings and should be used for instanziating class variables representing nodes.
-         * This method is the first call within {@link #CheckedConditionField(Column)}.
+         * This method is the first call within {@link #CheckedConditionField(Column, QueryGenerator)}.
          */
         public final void initialize() {
             ccBase.checkedProperty().bind(emptyProperty().not());
@@ -304,33 +309,17 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         /**
-         * Returns the condition part itself. E.g. "LIKE 'some text'" or "&lt;= 0". The column name is added by
-         * {@link #getCondition()} as well as a check for validity of the input.
-         *
-         * @return The condition part like "LIKE 'some text'" or "&lt;= 0". Returns {@link Optional#empty()} only if the
-         * condition could not be constructed.
+         * @since 2u14
          */
-        protected abstract Optional<String> getConditionImpl();
+        protected abstract Optional<QueryCondition<T>> getConditionImpl();
 
         /**
-         * Returns the condition represented by this input field. E.g. "someColumn LIKE 'some text'" or "someOtherColumn
-         * &lt;= 0"
-         *
-         * @return A representation of a condition suitable for the database of this profile. Returns
-         * {@link Optional#empty()} only if the input is not valid or the condition could not be constructed.
-         * @see ProfileSettings#DBMS
-         * @see SupportedDatabases
+         * @since 2u14
          */
-        public final Optional<String> getCondition() {
-            Optional<String> condition;
+        public final Optional<QueryCondition<T>> getCondition() {
+            Optional<QueryCondition<T>> condition;
             if (isValid() && !isEmpty()) {
-                SupportedDatabases dbms = EnvironmentHandler.getProfile().get(ProfileSettings.DBMS);
                 condition = getConditionImpl();
-                if (condition.isPresent()) {
-                    condition = Optional.of(
-                            dbms.getIdentifierQuoteSymbol() + getColumn().getName() + dbms.getIdentifierQuoteSymbol()
-                                    + " " + condition.get());
-                }
             } else {
                 condition = Optional.empty();
             }
@@ -346,7 +335,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
          * @return The {@link StringConverter} representing the 1:1 mapping.
          */
         protected static <T> StringConverter<T> createStringConverter(BiMap<T, String> valueDisplayMap) {
-            return new StringConverter<T>() {
+            return new StringConverter<>() {
                 @Override
                 public String toString(T value) {
                     if (valueDisplayMap.containsKey(value)) {
@@ -391,6 +380,13 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
          */
         public Column<T> getColumn() {
             return column;
+        }
+
+        /**
+         * @since 2u14
+         */
+        protected QueryGenerator getQueryGenerator() {
+            return queryGenerator;
         }
 
         /**
@@ -489,14 +485,14 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
     }
 
     /**
-     * Represents a {@link CheckedConditionField} for querying columns of type {@code BOOLEAN}.
+     * Represents a {@link CheckedConditionField} for querying columns of type {@link Boolean}.
      */
     private static class BooleanConditionField extends CheckedConditionField<Boolean> {
 
         private CheckBox checkbox;
 
-        BooleanConditionField(Column<Boolean> column) {
-            super(column);
+        BooleanConditionField(Column<Boolean> column, QueryGenerator queryGenerator) {
+            super(column, queryGenerator);
         }
 
         @Override
@@ -513,12 +509,14 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        protected Optional<String> getConditionImpl() {
-            String condition;
+        protected Optional<QueryCondition<Boolean>> getConditionImpl() {
+            QueryCondition<Boolean> condition;
             if (checkbox.isIndeterminate()) {
                 condition = null;
+            } else if (checkbox.isSelected()) {
+                condition = QueryOperator.IS_TRUE.generateCondition(getQueryGenerator(), getColumn());
             } else {
-                condition = " = " + ColumnParser.BOOLEAN_COLUMN_PARSER.toString(checkbox.isSelected());
+                condition = QueryOperator.IS_FALSE.generateCondition(getQueryGenerator(), getColumn());
             }
             return Optional.ofNullable(condition);
         }
@@ -541,25 +539,27 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     private static class StringConditionField extends CheckedConditionField<String> {
 
+        private static final BiMap<QueryOperator<String>, String> valueDisplayMap = HashBiMap.create(Map.of(
+                QueryOperator.LIKE, EnvironmentHandler.getResourceValue("exactlyMatches"),
+                QueryOperator.CONTAINS, EnvironmentHandler.getResourceValue("contains")
+        ));
+        private static final StringConverter<QueryOperator<String>> compareModeConverter
+                = createStringConverter(valueDisplayMap);
         private CheckedTextField inputField;
-        private BiMap<Pair<String, String>, String> valueDisplayMap;
-        private ComboBox<Pair<String, String>> compareMode;
+        private ComboBox<QueryOperator<String>> compareMode;
 
-        StringConditionField(Column<String> column) {
-            super(column);
+        StringConditionField(Column<String> column, QueryGenerator queryGenerator) {
+            super(column, queryGenerator);
         }
 
         @Override
         protected void initializeImpl() {
             inputField = new CheckedTextField();
             inputField.checkedProperty().bind(checkedProperty());
-            valueDisplayMap = HashBiMap.create(Map.of(
-                    new Pair<>("", ""), EnvironmentHandler.getResourceValue("exactlyMatches"),
-                    new Pair<>("%", "%"), EnvironmentHandler.getResourceValue("contains")
-            ));
             compareMode = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
-            compareMode.setConverter(createStringConverter(valueDisplayMap));
-            compareMode.getSelectionModel().select(new Pair<>("%", "%"));
+            compareMode.setConverter(compareModeConverter);
+            compareMode.getSelectionModel()
+                    .select(QueryOperator.CONTAINS);
 
             GridPane.setHgrow(inputField, Priority.ALWAYS);
             bindEmptyProperty(inputField.emptyProperty());
@@ -573,10 +573,10 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        protected Optional<String> getConditionImpl() {
-            Pair<String, String> mode = compareMode.getValue();
-            return Optional.of("LIKE " + ColumnParser.STRING_COLUMN_PARSER.toString(mode.getKey()
-                    + inputField.getText() + mode.getValue()));
+        protected Optional<QueryCondition<String>> getConditionImpl() {
+            return Optional.of(
+                    compareMode.getValue()
+                            .generateCondition(getQueryGenerator(), getColumn(), inputField.getText()));
         }
 
         @Override
@@ -598,35 +598,32 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     private abstract static class SpinnerConditionField<T extends Number> extends CheckedConditionField<T> {
 
-        private CheckedSpinner<T> spinner;
-        private ComboBox<String> compareSymbol;
+        private final BiMap<QueryOperator<T>, String> valueDisplayMap;
+        private final CheckedSpinner<T> spinner;
+        private ComboBox<QueryOperator<T>> compareSymbol;
 
-        SpinnerConditionField(Column<T> column) {
-            super(column);
+        SpinnerConditionField(Column<T> column, QueryGenerator queryGenerator,
+                              BiMap<QueryOperator<T>, String> valueDisplayMap, CheckedSpinner<T> spinner) {
+            super(column, queryGenerator);
+            this.valueDisplayMap = valueDisplayMap;
+            this.spinner = spinner;
         }
-
-        protected abstract CheckedSpinner<T> getSpinner();
 
         @Override
         protected void initializeImpl() {
-            spinner = getSpinner();
-            spinner.checkedProperty().bind(checkedProperty());
+            spinner.checkedProperty()
+                    .bind(checkedProperty());
             spinner.setEditable(true);
-            spinner.getEditor().setText("");
-            compareSymbol = new ComboBox<>(FXCollections.observableArrayList("<", "<=", "=", ">=", ">"));
-            compareSymbol.getSelectionModel().select("=");
+            spinner.getEditor()
+                    .setText("");
+            compareSymbol = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
+            compareSymbol.setConverter(createStringConverter(valueDisplayMap));
+            compareSymbol.getSelectionModel()
+                    .selectFirst();
             GridPane.setHgrow(spinner, Priority.ALWAYS);
             bindEmptyProperty(spinner.getEditor().textProperty().isEmpty());
             addReports(spinner);
         }
-
-        /**
-         * Converts a value to its {@link String} representation which can be used within the condition.
-         *
-         * @param value The value to get a representation usable within the condition.
-         * @return The representation which can be used within the condition
-         */
-        protected abstract String convert(T value);
 
         @Override
         protected List<Node> generateChildren() {
@@ -634,8 +631,11 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        protected Optional<String> getConditionImpl() {
-            return Optional.of(compareSymbol.getValue() + " " + convert(spinner.getValue()));
+        protected Optional<QueryCondition<T>> getConditionImpl() {
+            return Optional.of(
+                    compareSymbol.getValue()
+                            .generateCondition(getQueryGenerator(), getColumn(), spinner.getValue())
+            );
         }
 
         @Override
@@ -656,18 +656,16 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     private static class IntegerConditionField extends SpinnerConditionField<Integer> {
 
-        IntegerConditionField(Column<Integer> column) {
-            super(column);
-        }
-
-        @Override
-        protected String convert(Integer value) {
-            return ColumnParser.INTEGER_COLUMN_PARSER.toString(value);
-        }
-
-        @Override
-        protected CheckedSpinner<Integer> getSpinner() {
-            return new CheckedIntegerSpinner(0, 1);
+        IntegerConditionField(Column<Integer> column, QueryGenerator queryGenerator) {
+            super(column, queryGenerator,
+                    HashBiMap.create(Map.of(
+                            QueryOperator.IS_EQUAL_I, "=",
+                            QueryOperator.IS_SMALLER_I, "<",
+                            QueryOperator.IS_SMALLER_EQUAL_I, "<=",
+                            QueryOperator.IS_GREATER_EQUAL_I, ">=",
+                            QueryOperator.IS_GREATER_I, ">"
+                    )),
+                    new CheckedIntegerSpinner(0, 1));
         }
     }
 
@@ -676,18 +674,16 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     private static class DoubleConditionField extends SpinnerConditionField<Double> {
 
-        DoubleConditionField(Column<Double> column) {
-            super(column);
-        }
-
-        @Override
-        protected String convert(Double value) {
-            return ColumnParser.DOUBLE_COLUMN_PARSER.toString(value);
-        }
-
-        @Override
-        protected CheckedSpinner<Double> getSpinner() {
-            return new CheckedDoubleSpinner(0, 1);
+        DoubleConditionField(Column<Double> column, QueryGenerator queryGenerator) {
+            super(column, queryGenerator,
+                    HashBiMap.create(Map.of(
+                            QueryOperator.IS_EQUAL_D, "=",
+                            QueryOperator.IS_SMALLER_D, "<",
+                            QueryOperator.IS_SMALLER_EQUAL_D, "<=",
+                            QueryOperator.IS_GREATER_EQUAL_D, ">=",
+                            QueryOperator.IS_GREATER_D, ">"
+                    )),
+                    new CheckedDoubleSpinner(0, 1));
         }
     }
 
@@ -696,26 +692,29 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     private static class LocalDateConditionField extends CheckedConditionField<LocalDate> {
 
-        private BiMap<String, String> valueDisplayMap;
-        private ComboBox<String> compareMode;
+        private static final BiMap<QueryOperator<LocalDate>, String> valueDisplayMap = HashBiMap.create(Map.of(
+                QueryOperator.IS_BEFORE_DATE, EnvironmentHandler.getResourceValue("beforeDate"),
+                QueryOperator.IS_AT_DATE, EnvironmentHandler.getResourceValue("atDate"),
+                QueryOperator.IS_AFTER_DATE, EnvironmentHandler.getResourceValue("afterDate")
+        ));
+        private static final StringConverter<QueryOperator<LocalDate>> compareModeConverter
+                = createStringConverter(valueDisplayMap);
+        private ComboBox<QueryOperator<LocalDate>> compareMode;
         private CheckedDatePicker datePicker;
 
-        LocalDateConditionField(Column<LocalDate> column) {
-            super(column);
+        LocalDateConditionField(Column<LocalDate> column, QueryGenerator queryGenerator) {
+            super(column, queryGenerator);
         }
 
         @Override
         protected void initializeImpl() {
-            valueDisplayMap = HashBiMap.create(Map.of(
-                    "<", EnvironmentHandler.getResourceValue("beforeDate"),
-                    "=", EnvironmentHandler.getResourceValue("atDate"),
-                    ">", EnvironmentHandler.getResourceValue("afterDate")
-            ));
             compareMode = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
-            compareMode.setConverter(createStringConverter(valueDisplayMap));
-            compareMode.getSelectionModel().select("=");
+            compareMode.setConverter(compareModeConverter);
+            compareMode.getSelectionModel()
+                    .select(QueryOperator.IS_AT_DATE);
             datePicker = new CheckedDatePicker();
-            datePicker.checkedProperty().bind(checkedProperty());
+            datePicker.checkedProperty()
+                    .bind(checkedProperty());
 
             bindEmptyProperty(datePicker.emptyProperty());
             addReports(datePicker);
@@ -727,9 +726,11 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        protected Optional<String> getConditionImpl() {
-            return Optional.of(compareMode.getValue() + " "
-                    + ColumnParser.LOCALDATE_COLUMN_PARSER.toString(datePicker.getValue()));
+        protected Optional<QueryCondition<LocalDate>> getConditionImpl() {
+            return Optional.of(
+                    compareMode.getValue()
+                            .generateCondition(getQueryGenerator(), getColumn(), datePicker.getValue())
+            );
         }
 
         @Override

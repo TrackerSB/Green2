@@ -4,7 +4,7 @@ import bayern.steinbrecher.checkedElements.CheckedComboBox;
 import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.checkedElements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.checkedElements.textfields.CheckedTextField;
-import bayern.steinbrecher.dbConnector.SupportedDatabases;
+import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
 import bayern.steinbrecher.green2.configurationDialog.elements.ProfileNameField;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;

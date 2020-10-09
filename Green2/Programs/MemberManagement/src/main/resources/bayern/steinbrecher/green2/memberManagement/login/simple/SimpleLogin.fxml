@@ -32,11 +32,4 @@
                           checked="${!allowEmptyFieldsCheckbox.selected}"
                           GridPane.rowIndex="2"
                           GridPane.columnIndex="1"/>
-
-    <Button defaultButton="true"
-            text="Login"
-            onAction="#login"
-            disable="${!controller.valid}"
-            GridPane.rowIndex="3"
-            GridPane.columnIndex="0"/>
 </GridPane>

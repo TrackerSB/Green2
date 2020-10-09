@@ -1,6 +1,5 @@
 package bayern.steinbrecher.green2.memberManagement;
 
-import bayern.steinbrecher.dbConnector.SupportedDatabases;
 import bayern.steinbrecher.dbConnector.AuthException;
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.dbConnector.DatabaseNotFoundException;
@@ -10,6 +9,8 @@ import bayern.steinbrecher.dbConnector.SshConnection;
 import bayern.steinbrecher.dbConnector.UnsupportedDatabaseException;
 import bayern.steinbrecher.dbConnector.credentials.SimpleCredentials;
 import bayern.steinbrecher.dbConnector.credentials.SshCredentials;
+import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
+import bayern.steinbrecher.dbConnector.scheme.SimpleColumnPattern;
 import bayern.steinbrecher.green2.memberManagement.elements.Splashscreen;
 import bayern.steinbrecher.green2.memberManagement.elements.WaitScreen;
 import bayern.steinbrecher.green2.memberManagement.login.Login;
@@ -43,9 +44,11 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Represents the entry of the hole application.
@@ -117,14 +120,24 @@ public class MemberManagement extends Application {
                     waitScreen.show();
                 }
             });
-            loginStage.setScene(new Scene(login.generateEmbeddableWizardPage().getRoot()));
+            loginStage.setScene(new Scene(login.generateStandalonePage(loginStage, null)));
             loginStage.show();
 
             CompletableFuture.supplyAsync(
                     () -> {
-                        dbConnection = getConnection(login, waitScreen)
-                                .orElseThrow(() -> new IllegalStateException("Could not create a connection"));
-                        return dbConnection;
+                        CompletableFuture<DBConnection> waitForLoginClose = new CompletableFuture<>();
+                        loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
+                            if (!newVal) {
+                                dbConnection = getConnection(login, waitScreen)
+                                        .orElseThrow(() -> new IllegalStateException("Could not create a connection"));
+                                waitForLoginClose.complete(dbConnection);
+                            }
+                        });
+                        try {
+                            return waitForLoginClose.get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            throw new CompletionException(ex);
+                        }
                     })
                     //Check existence of database
                     .thenRunAsync(() -> {
@@ -164,8 +177,12 @@ public class MemberManagement extends Application {
                     //Check whether every table has all its required columns
                     .thenRunAsync(() -> {
                         Tables.SCHEMES.forEach(tableScheme -> {
-                            Optional<String> missingColumnsString = dbConnection.getMissingColumnsString(tableScheme);
-                            if (missingColumnsString.isPresent()) {
+                            String missingColumnsString
+                                    = dbConnection.getMissingColumns(tableScheme)
+                                    .stream()
+                                    .map(SimpleColumnPattern::getRealColumnName)
+                                    .collect(Collectors.joining(", "));
+                            if (missingColumnsString.isBlank()) {
                                 String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
                                 String message = invalidScheme + "\n" + missingColumnsString;
                                 Platform.runLater(() -> {

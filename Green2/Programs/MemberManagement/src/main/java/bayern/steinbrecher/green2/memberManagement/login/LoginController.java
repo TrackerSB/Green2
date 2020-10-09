@@ -3,8 +3,7 @@ package bayern.steinbrecher.green2.memberManagement.login;
 import bayern.steinbrecher.checkedElements.textfields.CheckedTextField;
 import bayern.steinbrecher.dbConnector.credentials.DBCredentials;
 import bayern.steinbrecher.javaUtility.BindingUtility;
-import bayern.steinbrecher.wizard.WizardPageController;
-import javafx.fxml.FXML;
+import bayern.steinbrecher.wizard.StandaloneWizardPageController;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.Optional;
  * @author Stefan Huber
  * @param <C> The type of the login credentials.
  */
-public abstract class LoginController<C extends DBCredentials> extends WizardPageController<Optional<C>> {
+public abstract class LoginController<C extends DBCredentials> extends StandaloneWizardPageController<Optional<C>> {
 
     /**
      * Adds all given textfields into {@code textInputFields} and sets up the properties {@code anyInputMissing},

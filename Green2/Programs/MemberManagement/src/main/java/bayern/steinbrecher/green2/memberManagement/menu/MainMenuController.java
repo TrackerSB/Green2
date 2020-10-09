@@ -2,6 +2,8 @@ package bayern.steinbrecher.green2.memberManagement.menu;
 
 import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.dbConnector.DBConnection;
+import bayern.steinbrecher.dbConnector.query.GenerationFailedException;
+import bayern.steinbrecher.dbConnector.scheme.TableScheme;
 import bayern.steinbrecher.green2.memberManagement.contribution.Contribution;
 import bayern.steinbrecher.green2.memberManagement.generator.AddressGenerator;
 import bayern.steinbrecher.green2.memberManagement.generator.BirthdayGenerator;
@@ -80,6 +82,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
@@ -540,10 +543,21 @@ public class MainMenuController extends WizardPageController<Optional<Void>> {
         }
     }
 
+    private <T> CompletableFuture<T> getSupplyTableContentFuture(TableScheme<T, ?> scheme) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return dbConnection.getTableContent(scheme);
+            } catch (GenerationFailedException ex) {
+                throw new CompletionException(
+                        String.format("Could not get table content of '%s'", scheme.getTableName()), ex);
+            }
+        });
+    }
+
     @FXML
     private void queryData() {
-        member.set(CompletableFuture.supplyAsync(() -> dbConnection.getTableContent(Tables.MEMBER)));
-        nicknames.set(CompletableFuture.supplyAsync(() -> dbConnection.getTableContent(Tables.NICKNAMES)));
+        member.set(getSupplyTableContentFuture(Tables.MEMBER));
+        nicknames.set(getSupplyTableContentFuture(Tables.NICKNAMES));
         CompletableFuture.allOf(member.get(), nicknames.get())
                 .whenCompleteAsync((result, throwable) -> {
                     LocalDateTime datetime;
