@@ -13,6 +13,7 @@ import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.dbConnector.DBConnection.Column;
 import bayern.steinbrecher.dbConnector.query.GenerationFailedException;
 import bayern.steinbrecher.dbConnector.query.QueryCondition;
+import bayern.steinbrecher.dbConnector.query.QueryFailedException;
 import bayern.steinbrecher.dbConnector.query.QueryGenerator;
 import bayern.steinbrecher.dbConnector.query.QueryOperator;
 import bayern.steinbrecher.dbConnector.scheme.TableScheme;
@@ -106,7 +107,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         return Optional.ofNullable(conditionField);
     }
 
-    private void generateQueryInterface(DBConnection connection, TableScheme<?, ?> table) {
+    private void generateQueryInterface(DBConnection connection, TableScheme<?, ?> table) throws QueryFailedException {
         queryInput.getChildren().clear();
         conditionFields.clear();
 
@@ -156,11 +157,21 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                     .setValue(items);
             tableSelection.getSelectionModel()
                     .select(Tables.MEMBER);
-            generateQueryInterface(newVal, tableSelection.getSelectionModel().getSelectedItem());
+            try {
+                generateQueryInterface(newVal, tableSelection.getSelectionModel().getSelectedItem());
+            } catch (QueryFailedException ex) {
+                LOGGER.log(Level.SEVERE, "Could not generate query interface", ex);
+            }
         });
         tableSelection.getSelectionModel()
                 .selectedItemProperty()
-                .addListener((obs, oldVal, newVal) -> generateQueryInterface(getDbConnection(), newVal));
+                .addListener((obs, oldVal, newVal) -> {
+                    try {
+                        generateQueryInterface(getDbConnection(), newVal);
+                    } catch (QueryFailedException ex) {
+                        LOGGER.log(Level.SEVERE, "Could not generate query interface", ex);
+                    }
+                });
         isAnyTableSelected.bind(
                 tableSelection.getSelectionModel()
                         .selectedItemProperty()
@@ -188,7 +199,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         });
     }
 
-    private synchronized void updateLastQueryResult() throws GenerationFailedException, SQLException {
+    private synchronized void updateLastQueryResult() throws GenerationFailedException, QueryFailedException {
         if (!isLastQueryUptodate) {
             List<QueryCondition<?>> conditions = conditionFields.stream()
                     .map(CheckedConditionField::getCondition)
@@ -217,7 +228,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
     protected Optional<List<List<String>>> calculateResult() {
         try {
             updateLastQueryResult();
-        } catch (GenerationFailedException | SQLException ex) {
+        } catch (GenerationFailedException | QueryFailedException ex) {
             LOGGER.log(Level.SEVERE, "Failed to update cached query result", ex);
         }
         return lastQueryResult.get();

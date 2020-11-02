@@ -3,6 +3,7 @@ package bayern.steinbrecher.green2.memberManagement.menu;
 import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.dbConnector.query.GenerationFailedException;
+import bayern.steinbrecher.dbConnector.query.QueryFailedException;
 import bayern.steinbrecher.dbConnector.scheme.TableScheme;
 import bayern.steinbrecher.green2.memberManagement.contribution.Contribution;
 import bayern.steinbrecher.green2.memberManagement.generator.AddressGenerator;
@@ -547,7 +548,7 @@ public class MainMenuController extends WizardPageController<Optional<Void>> {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return dbConnection.getTableContent(scheme);
-            } catch (GenerationFailedException ex) {
+            } catch (GenerationFailedException | QueryFailedException ex) {
                 throw new CompletionException(
                         String.format("Could not get table content of '%s'", scheme.getTableName()), ex);
             }

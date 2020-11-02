@@ -3,12 +3,12 @@ package bayern.steinbrecher.green2.memberManagement;
 import bayern.steinbrecher.dbConnector.AuthException;
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.dbConnector.DatabaseNotFoundException;
-import bayern.steinbrecher.dbConnector.SchemeCreationException;
 import bayern.steinbrecher.dbConnector.SimpleConnection;
 import bayern.steinbrecher.dbConnector.SshConnection;
 import bayern.steinbrecher.dbConnector.UnsupportedDatabaseException;
 import bayern.steinbrecher.dbConnector.credentials.SimpleCredentials;
 import bayern.steinbrecher.dbConnector.credentials.SshCredentials;
+import bayern.steinbrecher.dbConnector.query.QueryFailedException;
 import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
 import bayern.steinbrecher.dbConnector.scheme.SimpleColumnPattern;
 import bayern.steinbrecher.green2.memberManagement.elements.Splashscreen;
@@ -141,18 +141,22 @@ public class MemberManagement extends Application {
                     })
                     //Check existence of database
                     .thenRunAsync(() -> {
-                        if (!dbConnection.databaseExists()) {
-                            String databaseNotExistent = EnvironmentHandler.getResourceValue(
-                                    "couldntFindDatabase", dbConnection.getDatabaseName());
-                            Platform.runLater(() -> {
-                                try {
-                                    DialogUtility.createErrorAlert(databaseNotExistent, databaseNotExistent)
-                                            .show();
-                                } catch (DialogCreationException ex) {
-                                    LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
-                                }
-                            });
-                            throw new IllegalStateException(databaseNotExistent);
+                        try {
+                            if (!dbConnection.databaseExists()) {
+                                String databaseNotExistent = EnvironmentHandler.getResourceValue(
+                                        "couldntFindDatabase", dbConnection.getDatabaseName());
+                                Platform.runLater(() -> {
+                                    try {
+                                        DialogUtility.createErrorAlert(databaseNotExistent, databaseNotExistent)
+                                                .show();
+                                    } catch (DialogCreationException ex) {
+                                        LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
+                                    }
+                                });
+                                throw new IllegalStateException(databaseNotExistent);
+                            }
+                        } catch (QueryFailedException ex) {
+                            throw new CompletionException(ex);
                         }
                     })
                     //Check existence of tables and create them if missing
@@ -160,7 +164,7 @@ public class MemberManagement extends Application {
                         Tables.SCHEMES.forEach(scheme -> {
                             try {
                                 dbConnection.createTableIfNotExists(scheme);
-                            } catch (SchemeCreationException ex) {
+                            } catch (QueryFailedException ex) {
                                 String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
                                 Platform.runLater(() -> {
                                     try {
@@ -177,11 +181,15 @@ public class MemberManagement extends Application {
                     //Check whether every table has all its required columns
                     .thenRunAsync(() -> {
                         Tables.SCHEMES.forEach(tableScheme -> {
-                            String missingColumnsString
-                                    = dbConnection.getMissingColumns(tableScheme)
-                                    .stream()
-                                    .map(SimpleColumnPattern::getRealColumnName)
-                                    .collect(Collectors.joining(", "));
+                            String missingColumnsString;
+                            try {
+                                missingColumnsString = dbConnection.getMissingColumns(tableScheme)
+                                .stream()
+                                .map(SimpleColumnPattern::getRealColumnName)
+                                .collect(Collectors.joining(", "));
+                            } catch (QueryFailedException ex) {
+                                throw new CompletionException(ex);
+                            }
                             if (missingColumnsString.isBlank()) {
                                 String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
                                 String message = invalidScheme + "\n" + missingColumnsString;
