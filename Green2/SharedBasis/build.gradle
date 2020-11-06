@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation "bayern.steinbrecher:DBConnector:0.10"
+    implementation "bayern.steinbrecher:DBConnector:0.12"
     implementation "bayern.steinbrecher:JavaUtility:0.7"
 }
 
