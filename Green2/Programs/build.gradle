@@ -1,7 +1,3 @@
-plugins {
-    id "org.openjfx.javafxplugin" version "0.0.9" apply false
-}
-
 allprojects {
     group "bayern.steinbrecher.Green2.Programs"
 }
