@@ -9,5 +9,6 @@ module bayern.steinbrecher.green2.Uninstaller {
     requires javafx.fxml;
     requires javafx.graphics;
 
+    opens bayern.steinbrecher.green2.uninstaller.confirmUninstall to bayern.steinbrecher.GenericWizard, javafx.fxml;
     opens bayern.steinbrecher.green2.uninstaller.deleteConfigs to bayern.steinbrecher.GenericWizard, javafx.fxml;
 }

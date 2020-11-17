@@ -12,4 +12,9 @@ module bayern.steinbrecher.green2.SharedBasis {
     requires javafx.base;
     requires javafx.controls;
     requires javafx.graphics;
+
+    // FIXME Opens to whom?
+    opens bayern.steinbrecher.green2.sharedBasis.data.language;
+    opens bayern.steinbrecher.green2.sharedBasis.icons;
+    opens bayern.steinbrecher.green2.sharedBasis.styles;
 }

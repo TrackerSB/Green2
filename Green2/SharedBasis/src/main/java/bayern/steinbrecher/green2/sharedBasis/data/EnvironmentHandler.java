@@ -461,7 +461,7 @@ public final class EnvironmentHandler {
         ImageSet(String filename, boolean big) {
             int size = big ? BIG_SIZE : SMALL_SIZE;
             image = new Image(
-                    getClass().getResource(LocationConstants.BASIC_ICON_DIR_PATH + filename).getPath(),
+                    getClass().getResource(LocationConstants.BASIC_ICON_DIR_PATH + filename).toExternalForm(),
                     size, size, true, true);
         }
 

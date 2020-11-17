@@ -23,6 +23,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
+import bayern.steinbrecher.green2.sharedBasis.utility.StageUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
@@ -31,6 +32,7 @@ import javafx.fxml.LoadException;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -121,6 +123,7 @@ public class MemberManagement extends Application {
                 }
             });
             loginStage.setScene(new Scene(login.generateStandalonePage(loginStage, null)));
+            StageUtility.prepareStage(loginStage);
             loginStage.show();
 
             CompletableFuture.supplyAsync(

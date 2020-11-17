@@ -10,4 +10,6 @@ module bayern.steinbrecher.green2.Launcher {
     requires java.xml;
     requires javafx.controls;
     requires javafx.fxml;
+
+    opens bayern.steinbrecher.green2.launcher.progress to bayern.steinbrecher.GenericWizard, javafx.fxml;
 }

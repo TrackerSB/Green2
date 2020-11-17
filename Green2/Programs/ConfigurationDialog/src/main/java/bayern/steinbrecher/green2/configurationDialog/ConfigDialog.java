@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import bayern.steinbrecher.green2.sharedBasis.utility.StageUtility;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -52,6 +53,7 @@ public class ConfigDialog extends Application {
                 stage.setResizable(false);
                 stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 stage.setScene(new Scene(root));
+                StageUtility.prepareStage(stage);
                 stage.show();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);

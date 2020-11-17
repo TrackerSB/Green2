@@ -121,6 +121,18 @@
     -fx-font-weight: bold;
 }
 
+.checked-textfield { /* Glyphicon settings */
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 15px;
+    -fx-background-position: 5px center;
+    -fx-padding: 4px 8px 4px 25px;
+    -fx-background-image: url("/bayern/steinbrecher/green2/sharedBasis/icons/next.png");
+}
+
+.checked-password-field {
+    -fx-background-image: url("/bayern/steinbrecher/green2/sharedBasis/icons/locked.png");
+}
+
 /*******************************************
 //Wizard
 *******************************************/
