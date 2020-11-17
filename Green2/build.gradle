@@ -1,5 +1,6 @@
 plugins {
-    id "org.openjfx.javafxplugin" version "0.0.9" apply false
+    // NOTE version 0.0.9 yields an execution error
+    id "org.openjfx.javafxplugin" version "0.0.8" apply false
 }
 
 allprojects {
