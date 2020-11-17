@@ -19,7 +19,6 @@
             <option value="$PROJECT_DIR$/SharedBasis" />
           </set>
         </option>
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>
