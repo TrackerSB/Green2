@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import bayern.steinbrecher.green2.sharedBasis.utility.StageUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
@@ -79,7 +80,7 @@ public class ProfileChoice extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
-        primaryStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+        StageUtility.prepareStage(primaryStage);
 
         primaryStage.showAndWait();
 

@@ -2,17 +2,16 @@ package bayern.steinbrecher.green2.configurationDialog;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import bayern.steinbrecher.green2.sharedBasis.utility.StageUtility;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a dialog for configuring Green2.
@@ -35,8 +34,13 @@ public class ConfigDialog extends Application {
                 FXMLLoader fxmlLoader = new FXMLLoader(
                         getClass().getResource("ConfigDialog.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
                 Parent root = fxmlLoader.load();
-                root.getStylesheets().addAll(EnvironmentHandler.DEFAULT_STYLESHEET,
-                        "/bayern/steinbrecher/green2/configurationDialog/styles/configDialog.css");
+                root.getStylesheets()
+                        .addAll(
+                                EnvironmentHandler.DEFAULT_STYLESHEET,
+                                getClass()
+                                        .getResource("/bayern/steinbrecher/green2/configurationDialog/configDialog.css")
+                                        .toExternalForm()
+                        );
                 ((ConfigDialogController) fxmlLoader.getController())
                         .setStage(stage);
 
@@ -51,7 +55,6 @@ public class ConfigDialog extends Application {
                     }
                 });
                 stage.setResizable(false);
-                stage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 stage.setScene(new Scene(root));
                 StageUtility.prepareStage(stage);
                 stage.show();

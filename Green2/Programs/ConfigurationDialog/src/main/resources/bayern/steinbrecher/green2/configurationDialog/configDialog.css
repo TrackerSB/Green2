@@ -1,0 +1,14 @@
+/*
+    Author     : Stefan Huber
+*/
+
+/*******************************************
+//Glyph icons
+*******************************************/
+#saveSettings {
+    -fx-graphic: url("save.png");
+}
+
+#saveAndContinue {
+    -fx-graphic: url("fast-forward.png");
+}
