@@ -39,7 +39,7 @@ public final class EnvironmentHandler {
      */
     public static final String DEFAULT_STYLESHEET = EnvironmentHandler.class
             .getResource(LocationConstants.RESOURCE_BASE_PATH + "styles/styles.css")
-            .getPath();
+            .toExternalForm();
     /**
      * The name of the folder containing the licenses of Green2.
      */

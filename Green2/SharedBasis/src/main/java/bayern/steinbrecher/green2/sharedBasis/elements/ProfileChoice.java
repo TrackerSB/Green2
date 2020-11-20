@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import bayern.steinbrecher.green2.sharedBasis.utility.StageUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
@@ -80,7 +80,7 @@ public class ProfileChoice extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
-        StageUtility.prepareStage(primaryStage);
+        StyleUtility.prepare(primaryStage);
 
         primaryStage.showAndWait();
 
@@ -185,8 +185,7 @@ public class ProfileChoice extends Application {
 
             ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(initialProfile, availableProfiles);
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
-            dialogPane.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-            ((Stage) dialogPane.getScene().getWindow()).getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
+            StyleUtility.prepare(dialogPane);
             Platform.runLater(() -> dialogPane.lookupButton(ButtonType.OK).requestFocus());
 
             Optional<String> profileName = choiceDialog.showAndWait();

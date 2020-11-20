@@ -2,7 +2,7 @@ package bayern.steinbrecher.green2.configurationDialog;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
-import bayern.steinbrecher.green2.sharedBasis.utility.StageUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -56,7 +56,7 @@ public class ConfigDialog extends Application {
                 });
                 stage.setResizable(false);
                 stage.setScene(new Scene(root));
-                StageUtility.prepareStage(stage);
+                StyleUtility.prepare(stage);
                 stage.show();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
