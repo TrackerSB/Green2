@@ -1,7 +1,6 @@
 package bayern.steinbrecher.green2.sharedBasis.utility;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler.LogoSet;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -24,6 +23,6 @@ public final class StyleUtility {
         ((Stage) pane.getScene()
                 .getWindow())
                 .getIcons()
-                .add(LogoSet.LOGO.get());
+                .add(EnvironmentHandler.LogoSet.LOGO.get());
     }
 }
