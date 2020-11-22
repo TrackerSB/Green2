@@ -192,7 +192,7 @@ public class MemberManagement extends Application {
                             } catch (QueryFailedException ex) {
                                 throw new CompletionException(ex);
                             }
-                            if (missingColumnsString.isBlank()) {
+                            if (!missingColumnsString.isBlank()) {
                                 String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
                                 String message = invalidScheme + "\n" + missingColumnsString;
                                 Platform.runLater(() -> {
@@ -234,8 +234,9 @@ public class MemberManagement extends Application {
                         } else {
                             LOGGER.log(Level.SEVERE, null, throwable);
                             try {
-                                DialogUtility.createStacktraceAlert(throwable, "Application could not start.")
-                                        .showAndWait();
+                                Alert stacktraceAlert = DialogUtility.createStacktraceAlert(
+                                        throwable, "Application could not start.");
+                                DialogUtility.showAndWait(stacktraceAlert);
                             } catch (DialogCreationException ex) {
                                 LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
                             }

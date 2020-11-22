@@ -7,8 +7,8 @@ allprojects {
 }
 
 dependencies {
-    implementation "bayern.steinbrecher:DBConnector:0.12"
-    implementation "bayern.steinbrecher:JavaUtility:0.7"
+    implementation "bayern.steinbrecher:DBConnector:0.14.3-SNAPSHOT"
+    implementation "bayern.steinbrecher:JavaUtility:0.9"
 }
 
 javafx {
