@@ -13,9 +13,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 /**
@@ -82,7 +84,21 @@ public class WaitScreenController extends StandaloneWizardPageController<Optiona
                     });
         });
 
-        overallTransition.play();
+        Consumer<Stage> connectAnimationBehavior = stage -> {
+            stage.showingProperty()
+                    .addListener((obs, wasShowing, isShowing) -> {
+                        if (isShowing) {
+                            overallTransition.play();
+                        } else {
+                            overallTransition.pause();
+                        }
+                    });
+        };
+        stageProperty()
+                .addListener((stageObs, oldStage, newStage) -> connectAnimationBehavior.accept(newStage));
+        if (getStage() != null) {
+            connectAnimationBehavior.accept(getStage());
+        }
     }
 
     private static Polygon createPolygon(Point2D center, double radius) {
@@ -95,7 +111,7 @@ public class WaitScreenController extends StandaloneWizardPageController<Optiona
         return new Polygon(coo);
     }
 
-    private static Animation createPartialAnimation(Polygon polygon){
+    private static Animation createPartialAnimation(Polygon polygon) {
         RotateTransition rotate = new RotateTransition(DURATION_ANIMATION, polygon);
         rotate.setByAngle(ANGLE / 2);
         FadeTransition fadeIn = new FadeTransition(DURATION_ANIMATION_HALF, polygon);
