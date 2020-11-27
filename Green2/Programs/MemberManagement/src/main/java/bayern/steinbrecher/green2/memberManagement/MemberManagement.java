@@ -33,7 +33,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -98,9 +100,11 @@ public class MemberManagement extends Application {
             //Show splashscreen
             Splashscreen.showSplashscreen(SPLASHSCREEN_MILLIS, new Stage());
 
-            //Show waitscreen
-            WaitScreen waitScreen = new WaitScreen();
-            waitScreen.start(new Stage());
+            Stage waitScreenStage = new Stage();
+            new WaitScreen()
+                    .generateStandalonePage(waitScreenStage, null);
+            waitScreenStage.initModality(Modality.APPLICATION_MODAL);
+            waitScreenStage.initStyle(StageStyle.TRANSPARENT);
 
             //Show login
             Login<?> login;
@@ -114,11 +118,11 @@ public class MemberManagement extends Application {
             loginStage.setOnCloseRequest(event -> userAborted.set(true));
             loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
-                    waitScreen.close();
+                    waitScreenStage.hide();
                 } else if (userAborted.get()) {
                     Platform.exit();
                 } else {
-                    waitScreen.show();
+                    waitScreenStage.show();
                 }
             });
             loginStage.setScene(new Scene(login.generateStandalonePage(loginStage, null)));
@@ -130,7 +134,7 @@ public class MemberManagement extends Application {
                         CompletableFuture<DBConnection> waitForLoginClose = new CompletableFuture<>();
                         loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
                             if (!newVal) {
-                                dbConnection = getConnection(login, waitScreen)
+                                dbConnection = getConnection(login, waitScreenStage)
                                         .orElseThrow(() -> new IllegalStateException("Could not create a connection"));
                                 waitForLoginClose.complete(dbConnection);
                             }
@@ -186,9 +190,9 @@ public class MemberManagement extends Application {
                             String missingColumnsString;
                             try {
                                 missingColumnsString = dbConnection.getMissingColumns(tableScheme)
-                                .stream()
-                                .map(SimpleColumnPattern::getRealColumnName)
-                                .collect(Collectors.joining(", "));
+                                        .stream()
+                                        .map(SimpleColumnPattern::getRealColumnName)
+                                        .collect(Collectors.joining(", "));
                             } catch (QueryFailedException ex) {
                                 throw new CompletionException(ex);
                             }
@@ -212,7 +216,7 @@ public class MemberManagement extends Application {
                         if (throwable == null) {
                             menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
                                 if (newVal) {
-                                    waitScreen.close();
+                                    waitScreenStage.close();
                                 } else {
                                     Platform.exit();
                                 }
@@ -272,13 +276,8 @@ public class MemberManagement extends Application {
     /**
      * Asks the user for the needed logindata as long as the inserted data is not correct or the user aborts. This
      * method should NOT be called by JavaFX Application Thread..
-     *
-     * @param login      The loginframe used to ask the user.
-     * @param waitScreen The waitscreen to show when trying to connect to the server.
-     * @return {@link Optional#empty()} only if the connection could not be established. E.g. the user closed the window
-     * or the configured connection is not reachable.
      */
-    private Optional<? extends DBConnection> getConnection(Login<?> login, WaitScreen waitScreen) {
+    private Optional<? extends DBConnection> getConnection(Login<?> login, Stage waitScreenStage) {
         String databaseHost = profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
         int databasePort = profile.getOrDefault(
                 ProfileSettings.DATABASE_PORT, profile.get(ProfileSettings.DBMS).getDefaultPort());
@@ -344,11 +343,11 @@ public class MemberManagement extends Application {
                     } catch (DialogCreationException ex) {
                         LOGGER.log(Level.WARNING, "Could not show error to user", ex);
                     }
-                    Platform.runLater(waitScreen::close);
+                    Platform.runLater(waitScreenStage::close);
                     userReport.ifPresent(DialogUtility::showAndWait);
                     if (retryConnection) {
                         // login.reset(); // FIXME Required?
-                        connection = getConnection(login, waitScreen)
+                        connection = getConnection(login, waitScreenStage)
                                 .orElse(null);
                     }
                     return connection;

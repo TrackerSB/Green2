@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="bayern.steinbrecher.green2.memberManagement.elements.WaitScreenController"
+           fx:id="root"
+           style="-fx-background-color: rgba(0,0,0,0)">
+</StackPane>
