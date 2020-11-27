@@ -237,7 +237,7 @@ public final class EnvironmentHandler {
                     .map(path -> new File(path.toUri()))
                     .collect(Collectors.toList());
         } catch (IOException ex) {
-            LOGGER.log(Level.WARNING, null, ex);
+            LOGGER.log(Level.WARNING, "Could not find licenses. Skip menu entry.", ex);
             licences = new ArrayList<>();
         }
         return licences;
