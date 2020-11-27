@@ -124,8 +124,8 @@ public class MemberManagement extends Application {
             Stage waitScreenStage = new Stage();
             new WaitScreen()
                     .generateStandalonePage(waitScreenStage, null);
-            waitScreenStage.initModality(Modality.APPLICATION_MODAL);
-            waitScreenStage.initStyle(StageStyle.TRANSPARENT);
+            // waitScreenStage.initModality(Modality.APPLICATION_MODAL);
+            // waitScreenStage.initStyle(StageStyle.TRANSPARENT);
 
             //Show login
             Login<?> login;
