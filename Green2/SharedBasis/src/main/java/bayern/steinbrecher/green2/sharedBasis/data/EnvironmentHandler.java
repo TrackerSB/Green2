@@ -289,18 +289,6 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Contains constants specific for {@link LogoSet}.
-     */
-    private static final class LogoSetConstants {
-
-        public static final int SPLASHSCREEN_PREFFERED_WIDTH = 800;
-
-        private LogoSetConstants() {
-            throw new UnsupportedOperationException("Construction of an object is prohibited.");
-        }
-    }
-
-    /**
      * Contains constants describing paths within this jar.
      */
     private static final class LocationConstants {
@@ -320,15 +308,7 @@ public final class EnvironmentHandler {
         /**
          * The Green2 logo.
          */
-        LOGO("logo.png"),
-        /**
-         * The splashscreen of the english version of Green2.
-         */
-        SPLASHSCREEN_EN("splashscreen_en.png", LogoSetConstants.SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE),
-        /**
-         * The splashscreen of the german version of Green2.
-         */
-        SPLASHSCREEN_DE("splashscreen_de.png", LogoSetConstants.SPLASHSCREEN_PREFFERED_WIDTH, Double.MAX_VALUE);
+        LOGO("logo.png");
 
         private final Image image;
 

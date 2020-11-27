@@ -11,7 +11,7 @@ import bayern.steinbrecher.dbConnector.credentials.SshCredentials;
 import bayern.steinbrecher.dbConnector.query.QueryFailedException;
 import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
 import bayern.steinbrecher.dbConnector.scheme.SimpleColumnPattern;
-import bayern.steinbrecher.green2.memberManagement.elements.Splashscreen;
+import bayern.steinbrecher.green2.memberManagement.elements.SplashScreen;
 import bayern.steinbrecher.green2.memberManagement.elements.WaitScreen;
 import bayern.steinbrecher.green2.memberManagement.login.Login;
 import bayern.steinbrecher.green2.memberManagement.login.simple.SimpleLogin;
@@ -98,7 +98,28 @@ public class MemberManagement extends Application {
             Platform.setImplicitExit(false);
 
             //Show splashscreen
-            Splashscreen.showSplashscreen(SPLASHSCREEN_MILLIS, new Stage());
+            Stage splashScreenStage = new Stage();
+            new SplashScreen()
+                    .generateStandalonePage(splashScreenStage, null);
+            // splashScreenStage.initModality(Modality.APPLICATION_MODAL);
+            // splashScreenStage.initStyle(StageStyle.TRANSPARENT);
+            splashScreenStage.showingProperty()
+                    .addListener((obs, wasShowing, isShowing) -> {
+                        if (isShowing) {
+                            Runnable closeTask = () -> {
+                                try {
+                                    Thread.sleep(SPLASHSCREEN_MILLIS);
+                                } catch (InterruptedException ex) {
+                                    LOGGER.log(Level.WARNING,
+                                            "The visualization of the splash screen has been interrupted", ex);
+                                }
+                                Platform.runLater(splashScreenStage::close);
+                            };
+                            new Thread(closeTask)
+                                    .start();
+                        }
+                    });
+            splashScreenStage.showAndWait();
 
             Stage waitScreenStage = new Stage();
             new WaitScreen()
