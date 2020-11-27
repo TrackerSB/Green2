@@ -3,6 +3,5 @@
 <?import javafx.scene.layout.StackPane?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="bayern.steinbrecher.green2.memberManagement.elements.SplashScreenController"
-           fx:id="root"
-           style="-fx-background-color: rgba(0,0,0,0)">
+           fx:id="root">
 </StackPane>

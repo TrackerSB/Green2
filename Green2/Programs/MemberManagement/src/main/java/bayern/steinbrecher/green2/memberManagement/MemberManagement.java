@@ -6,11 +6,13 @@ import bayern.steinbrecher.dbConnector.DatabaseNotFoundException;
 import bayern.steinbrecher.dbConnector.SimpleConnection;
 import bayern.steinbrecher.dbConnector.SshConnection;
 import bayern.steinbrecher.dbConnector.UnsupportedDatabaseException;
+import bayern.steinbrecher.dbConnector.credentials.DBCredentials;
 import bayern.steinbrecher.dbConnector.credentials.SimpleCredentials;
 import bayern.steinbrecher.dbConnector.credentials.SshCredentials;
 import bayern.steinbrecher.dbConnector.query.QueryFailedException;
 import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
 import bayern.steinbrecher.dbConnector.scheme.SimpleColumnPattern;
+import bayern.steinbrecher.dbConnector.scheme.TableScheme;
 import bayern.steinbrecher.green2.memberManagement.elements.SplashScreen;
 import bayern.steinbrecher.green2.memberManagement.elements.WaitScreen;
 import bayern.steinbrecher.green2.memberManagement.login.Login;
@@ -27,259 +29,312 @@ import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
+import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.fxml.LoadException;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Represents the entry of the hole application.
- *
  * @author Stefan Huber
  */
 public class MemberManagement extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(MemberManagement.class.getName());
-    private static final long SPLASHSCREEN_MILLIS = 2500;
-    private Profile profile;
-    private Stage menuStage;
-    private DBConnection dbConnection;
+    private static final long SPLASHSCREEN_DISPLAY_DURATION = 2500; // [ms]
+    private Profile loadedProfile = null;
+    private DBConnection dbConnection = null;
 
-    /**
-     * Default constructor.
-     */
     public MemberManagement() {
         super();
+    }
+
+    private static void dumpFeatureSupport() {
+        String state = Platform.isSupported(ConditionalFeature.TRANSPARENT_WINDOW) ? "supported" : "not supported";
+        LOGGER.log(Level.INFO, "Transparent windows: " + state);
+    }
+
+    private static Optional<Profile> askUserForProfile() {
+        Optional<Profile> profile;
         List<String> availableProfiles = Profile.getAvailableProfiles();
         if (availableProfiles.isEmpty()) {
             Programs.CONFIGURATION_DIALOG.call();
-            throw new IllegalStateException("The are no profiles which can be loaded.");
+            LOGGER.log(Level.INFO, "The are no profiles which can be loaded. Requested config dialog.");
+            profile = Optional.empty();
         } else if (availableProfiles.size() == 1) { //NOPMD - Do not ask user when there is no choice for selection.
-            profile = EnvironmentHandler.loadProfile(availableProfiles.get(0), false);
+            profile = Optional.of(EnvironmentHandler.loadProfile(availableProfiles.get(0), false));
         } else {
-            Optional<Profile> requestedProfile = ProfileChoice.askForProfile(false);
-            if (requestedProfile.isPresent()) {
-                profile = EnvironmentHandler.loadProfile(requestedProfile.get());
+            profile = ProfileChoice.askForProfile(false)
+                    .map(EnvironmentHandler::loadProfile);
+        }
+        return profile;
+    }
+
+    private static void showSplashScreen() {
+        Stage splashScreenStage = new Stage();
+        try {
+            new SplashScreen()
+                    .embedStandaloneWizardPage(splashScreenStage, null);
+        } catch (LoadException ex) {
+            LOGGER.log(Level.WARNING, "Could not show splash screen to user. It is skipped.", ex);
+            return;
+        }
+        splashScreenStage.initModality(Modality.APPLICATION_MODAL);
+        splashScreenStage.initStyle(StageStyle.TRANSPARENT);
+        splashScreenStage.showingProperty()
+                .addListener((obs, wasShowing, isShowing) -> {
+                    if (isShowing) {
+                        Runnable closeTask = () -> {
+                            try {
+                                Thread.sleep(SPLASHSCREEN_DISPLAY_DURATION);
+                            } catch (InterruptedException ex) {
+                                LOGGER.log(Level.WARNING,
+                                        "The visualization of the splash screen has been interrupted", ex);
+                            }
+                            Platform.runLater(splashScreenStage::close);
+                        };
+                        new Thread(closeTask)
+                                .start();
+                    }
+                });
+        splashScreenStage.showAndWait();
+    }
+
+    private static void showWaitScreenWhile(ObservableBooleanValue isFinishedObservable) {
+        var waitScreenStage = new Stage();
+        try {
+            new WaitScreen()
+                    .embedStandaloneWizardPage(waitScreenStage, null);
+        } catch (LoadException ex) {
+            LOGGER.log(Level.WARNING, "Could not show wait screen. It is skipped.", ex);
+            return;
+        }
+        waitScreenStage.initModality(Modality.APPLICATION_MODAL);
+        waitScreenStage.initStyle(StageStyle.TRANSPARENT);
+        ChangeListener<Boolean> isFinishedListener = (obs, wasFinished, isFinished) -> {
+            if (isFinished) {
+                Platform.runLater(waitScreenStage::close);
             } else {
-                Platform.exit();
+                Platform.runLater(waitScreenStage::show);
             }
+        };
+        isFinishedObservable.addListener(isFinishedListener);
+        isFinishedListener.changed(null, null, waitScreenStage.isShowing());
+    }
+
+    private Login<? extends DBCredentials> prepareLogin(Stage loginStage) throws LoadException {
+        assert loadedProfile != null : "The preparation of the login requires a profile to be loaded first";
+
+        Login<? extends DBCredentials> login;
+        if (loadedProfile.get(ProfileSettings.USE_SSH)) {
+            login = new SshLogin();
+        } else {
+            login = new SimpleLogin();
+        }
+        try {
+            login.embedStandaloneWizardPage(loginStage, null);
+        } catch (LoadException ex) {
+            throw new LoadException("Could not generate login dialog", ex);
+        }
+        StyleUtility.prepare(loginStage);
+        return login;
+    }
+
+    private Optional<DBConnection> establishDBConnection(DBCredentials credentials) {
+        assert loadedProfile != null : "Establishing a connection requires a profile to be loaded first";
+
+        SupportedDatabases dbms = loadedProfile.get(ProfileSettings.DBMS);
+        String databaseHost = loadedProfile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
+        int databasePort = loadedProfile.getOrDefault(ProfileSettings.DATABASE_PORT, dbms.getDefaultPort());
+        String databaseName = loadedProfile.get(ProfileSettings.DATABASE_NAME);
+        DBConnection dbConnection = null;
+
+        Alert failureReport = null;
+        try {
+            try {
+                if (credentials instanceof SimpleCredentials) {
+                    dbConnection = new SimpleConnection(
+                            dbms, databaseHost, databasePort, databaseName, (SimpleCredentials) credentials);
+                } else if (credentials instanceof SshCredentials) {
+                    String sshHost = loadedProfile.getOrDefault(ProfileSettings.SSH_HOST, "localhost");
+                    int sshPort = loadedProfile.getOrDefault(ProfileSettings.SSH_PORT, 22);
+                    Charset sshCharset = loadedProfile
+                            .getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
+                    dbConnection = new SshConnection(dbms, databaseHost, databasePort, databaseName, sshHost, sshPort,
+                            sshCharset, (SshCredentials) credentials);
+                } else {
+                    throw new UnsupportedOperationException(
+                            "Credentials of type " + credentials.getClass().getCanonicalName() + " are not supported.");
+                }
+            } catch (AuthException ex) {
+                LOGGER.log(Level.INFO, null, ex);
+                String checkInput = EnvironmentHandler.getResourceValue("checkInput");
+                failureReport = DialogUtility.createInfoAlert(checkInput, checkInput);
+            } catch (UnknownHostException ex) {
+                LOGGER.log(Level.INFO, null, ex);
+                String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
+                failureReport = DialogUtility.createInfoAlert(checkConnection, checkConnection);
+            } catch (UnsupportedDatabaseException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+                String noSupportedDatabase = EnvironmentHandler.getResourceValue("noSupportedDatabase");
+                failureReport = DialogUtility.createErrorAlert(noSupportedDatabase, noSupportedDatabase);
+            } catch (DatabaseNotFoundException ex) {
+                LOGGER.log(Level.SEVERE, "Could not find database on host.", ex);
+                String databaseNotFound = EnvironmentHandler.getResourceValue("databaseNotFound");
+                failureReport = DialogUtility.createErrorAlert(databaseNotFound, databaseNotFound);
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Could not connect due to an unhandled exception.", ex);
+                String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
+                failureReport = DialogUtility.createStacktraceAlert(ex, unexpectedAbort, unexpectedAbort);
+            }
+        } catch (DialogCreationException ex) {
+            LOGGER.log(Level.WARNING, "Could not show error to user", ex);
+        }
+        if (failureReport != null) {
+            DialogUtility.showAndWait(failureReport);
+        }
+        return Optional.ofNullable(dbConnection);
+    }
+
+    private boolean validateDBConnection() {
+        assert dbConnection != null : "Cannot validate non existing database connection";
+
+        Alert failureReport = null;
+        try {
+            try {
+                if (!dbConnection.databaseExists()) {
+                    LOGGER.log(Level.WARNING, "The database to connect to does not exist");
+                    String databaseNotExistent = EnvironmentHandler.getResourceValue(
+                            "couldntFindDatabase", dbConnection.getDatabaseName());
+                    failureReport = DialogUtility.createErrorAlert(databaseNotExistent, databaseNotExistent);
+                } else {
+                    Map<TableScheme<?, ?>, Set<SimpleColumnPattern<?, ?>>> missingColumns = new HashMap<>();
+                    for (TableScheme<?, ?> scheme : Tables.SCHEMES) {
+                        dbConnection.createTableIfNotExists(scheme);
+                        Set<SimpleColumnPattern<?, ?>> currentMissingColumns = dbConnection.getMissingColumns(scheme);
+                        if (!currentMissingColumns.isEmpty()) {
+                            missingColumns.put(scheme, currentMissingColumns);
+                        }
+                    }
+                    if (!missingColumns.isEmpty()) {
+                        String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
+                        String missingColumnsListingMessage = missingColumns.entrySet()
+                                .stream()
+                                .map(entry -> {
+                                    String missingColumnsListing = entry.getValue()
+                                            .stream()
+                                            .map(SimpleColumnPattern::getRealColumnName)
+                                            .collect(Collectors.joining(", "));
+                                    return entry.getKey() + ": " + missingColumnsListing;
+                                })
+                                .collect(Collectors.joining("\n"));
+                        failureReport = DialogUtility.createErrorAlert(invalidScheme, missingColumnsListingMessage);
+                    }
+                }
+            } catch (QueryFailedException ex) {
+                LOGGER.log(Level.SEVERE, "Could not validate database connection", ex);
+                String validationFailed = EnvironmentHandler.getResourceValue("validationFailed");
+                failureReport = DialogUtility.createErrorAlert(validationFailed, validationFailed);
+            }
+        } catch (DialogCreationException ex) {
+            LOGGER.log(Level.WARNING, "Could not show error to user", ex);
+        }
+        if (failureReport == null) {
+            return true;
+        } else {
+            DialogUtility.showAndWait(failureReport);
+            return false;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    private boolean validateCredentials(DBCredentials credentials) {
+        Optional<DBConnection> optDbConnection = establishDBConnection(credentials);
+        if (optDbConnection.isPresent()) {
+            dbConnection = optDbConnection.get();
+            return validateDBConnection();
+        } else {
+            return false;
+        }
+    }
+
+    private void showMainMenu(Stage menuStage) {
+        assert dbConnection != null : "Cannot open main menu without established database connection";
+
+        try {
+            new MainMenu(dbConnection)
+                    .embedStandaloneWizardPage(menuStage, null);
+        } catch (LoadException ex) {
+            throw new RuntimeException("Could not create main menu", ex);
+        }
+        menuStage.show();
+    }
+
     @Override
     public void start(Stage primaryStage) throws LoadException {
-        menuStage = primaryStage;
+        dumpFeatureSupport();
 
-        if (profile.isAllConfigurationsSet()) {
-            Platform.setImplicitExit(false);
+        Optional<Profile> optLoadedProfile = askUserForProfile();
+        if (optLoadedProfile.isPresent()) {
+            loadedProfile = optLoadedProfile.get();
+            if (loadedProfile.isAllConfigurationsSet()) {
+                showSplashScreen();
 
-            //Show splashscreen
-            Stage splashScreenStage = new Stage();
-            new SplashScreen()
-                    .generateStandalonePage(splashScreenStage, null);
-            // splashScreenStage.initModality(Modality.APPLICATION_MODAL);
-            // splashScreenStage.initStyle(StageStyle.TRANSPARENT);
-            splashScreenStage.showingProperty()
-                    .addListener((obs, wasShowing, isShowing) -> {
-                        if (isShowing) {
-                            Runnable closeTask = () -> {
-                                try {
-                                    Thread.sleep(SPLASHSCREEN_MILLIS);
-                                } catch (InterruptedException ex) {
-                                    LOGGER.log(Level.WARNING,
-                                            "The visualization of the splash screen has been interrupted", ex);
-                                }
-                                Platform.runLater(splashScreenStage::close);
-                            };
-                            new Thread(closeTask)
-                                    .start();
-                        }
-                    });
-            splashScreenStage.showAndWait();
+                Stage loginStage = new Stage();
+                Login<? extends DBCredentials> login = prepareLogin(loginStage);
+                showWaitScreenWhile(loginStage.showingProperty().not());
+                loginStage.show();
 
-            Stage waitScreenStage = new Stage();
-            new WaitScreen()
-                    .generateStandalonePage(waitScreenStage, null);
-            // waitScreenStage.initModality(Modality.APPLICATION_MODAL);
-            // waitScreenStage.initStyle(StageStyle.TRANSPARENT);
-
-            //Show login
-            Login<?> login;
-            if (profile.getOrDefault(ProfileSettings.USE_SSH, true)) {
-                login = new SshLogin();
-            } else {
-                login = new SimpleLogin();
-            }
-            Stage loginStage = new Stage();
-            AtomicBoolean userAborted = new AtomicBoolean(false);
-            loginStage.setOnCloseRequest(event -> userAborted.set(true));
-            loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal) {
-                    waitScreenStage.hide();
-                } else if (userAborted.get()) {
-                    Platform.exit();
-                } else {
-                    waitScreenStage.show();
-                }
-            });
-            loginStage.setScene(new Scene(login.generateStandalonePage(loginStage, null)));
-            StyleUtility.prepare(loginStage);
-            loginStage.show();
-
-            CompletableFuture.supplyAsync(
-                    () -> {
-                        CompletableFuture<DBConnection> waitForLoginClose = new CompletableFuture<>();
-                        loginStage.showingProperty().addListener((obs, oldVal, newVal) -> {
-                            if (!newVal) {
-                                dbConnection = getConnection(login, waitScreenStage)
-                                        .orElseThrow(() -> new IllegalStateException("Could not create a connection"));
-                                waitForLoginClose.complete(dbConnection);
-                            }
-                        });
-                        try {
-                            return waitForLoginClose.get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            throw new CompletionException(ex);
-                        }
-                    })
-                    //Check existence of database
-                    .thenRunAsync(() -> {
-                        try {
-                            if (!dbConnection.databaseExists()) {
-                                String databaseNotExistent = EnvironmentHandler.getResourceValue(
-                                        "couldntFindDatabase", dbConnection.getDatabaseName());
-                                Platform.runLater(() -> {
-                                    try {
-                                        DialogUtility.createErrorAlert(databaseNotExistent, databaseNotExistent)
-                                                .show();
-                                    } catch (DialogCreationException ex) {
-                                        LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
-                                    }
-                                });
-                                throw new IllegalStateException(databaseNotExistent);
-                            }
-                        } catch (QueryFailedException ex) {
-                            throw new CompletionException(ex);
-                        }
-                    })
-                    //Check existence of tables and create them if missing
-                    .thenRunAsync(() -> {
-                        Tables.SCHEMES.forEach(scheme -> {
-                            try {
-                                dbConnection.createTableIfNotExists(scheme);
-                            } catch (QueryFailedException ex) {
-                                String couldntCreateScheme = EnvironmentHandler.getResourceValue("couldntCreateScheme");
-                                Platform.runLater(() -> {
-                                    try {
-                                        DialogUtility.createErrorAlert(couldntCreateScheme, couldntCreateScheme)
-                                                .show();
-                                    } catch (DialogCreationException exx) {
-                                        LOGGER.log(Level.SEVERE, "Could not create error dialog for user", exx);
-                                    }
-                                });
-                                throw new CompletionException("Some tables are missing and could not be created", ex);
-                            }
-                        });
-                    })
-                    //Check whether every table has all its required columns
-                    .thenRunAsync(() -> {
-                        Tables.SCHEMES.forEach(tableScheme -> {
-                            String missingColumnsString;
-                            try {
-                                missingColumnsString = dbConnection.getMissingColumns(tableScheme)
-                                        .stream()
-                                        .map(SimpleColumnPattern::getRealColumnName)
-                                        .collect(Collectors.joining(", "));
-                            } catch (QueryFailedException ex) {
-                                throw new CompletionException(ex);
-                            }
-                            if (!missingColumnsString.isBlank()) {
-                                String invalidScheme = EnvironmentHandler.getResourceValue("invalidScheme");
-                                String message = invalidScheme + "\n" + missingColumnsString;
-                                Platform.runLater(() -> {
-                                    try {
-                                        DialogUtility.createErrorAlert(message, invalidScheme)
-                                                .show();
-                                    } catch (DialogCreationException ex) {
-                                        LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
-                                    }
-                                });
-                                throw new CompletionException(new IllegalStateException(message));
-                            }
-                        });
-                    })
-                    //Handle error occured at any stage
-                    .whenCompleteAsync((voidResult, throwable) -> {
-                        if (throwable == null) {
-                            menuStage.showingProperty().addListener((obs, oldVal, newVal) -> {
-                                if (newVal) {
-                                    waitScreenStage.close();
+                loginStage.showingProperty().addListener((obs, wasShowing, isShowing) -> {
+                    if (!isShowing) {
+                        if (login.isValid()) {
+                            Optional<? extends DBCredentials> credentials = login.getResult();
+                            if (credentials.isPresent()) {
+                                boolean credentialsAreValid = validateCredentials(credentials.get());
+                                if (credentialsAreValid) {
+                                    showMainMenu(primaryStage);
                                 } else {
-                                    Platform.exit();
+                                    Platform.runLater(loginStage::show);
+                                }
+                            } else {
+                                LOGGER.log(Level.WARNING, "The login did not provide credentials");
+                                Platform.exit();
+                            }
+                        } else {
+                            LOGGER.log(Level.INFO, "The login dialog classifies the input as invalid. "
+                                    + "Show login dialog again.");
+                            Platform.runLater(loginStage::show);
+                        }
+                    }
+                });
+            } else {
+                String badConfigs = EnvironmentHandler.getResourceValue("badConfigs", loadedProfile.getProfileName());
+                try {
+                    DialogUtility.showAndWait(DialogUtility.createErrorAlert(badConfigs, badConfigs))
+                            .ifPresent(buttontype -> {
+                                if (buttontype == ButtonType.OK) {
+                                    Programs.CONFIGURATION_DIALOG.call();
                                 }
                             });
-
-                            try {
-                                Pane mainMenu = new MainMenu(dbConnection)
-                                        .generateEmbeddableWizardPage()
-                                        .getRoot();
-                                menuStage.setScene(new Scene(mainMenu));
-                                menuStage.setTitle(EnvironmentHandler.getResourceValue("chooseProgram"));
-                                menuStage.setResizable(false);
-                            } catch (LoadException ex) {
-                                LOGGER.log(Level.SEVERE, "Could not create main menu", ex);
-                            }
-                            Platform.runLater(() -> {
-                                menuStage.show();
-                            });
-                        } else {
-                            LOGGER.log(Level.SEVERE, null, throwable);
-                            try {
-                                Alert stacktraceAlert = DialogUtility.createStacktraceAlert(
-                                        throwable, "Application could not start.");
-                                DialogUtility.showAndWait(stacktraceAlert);
-                            } catch (DialogCreationException ex) {
-                                LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
-                            }
-                            Platform.exit();
-                        }
-                    });
-        } else {
-            String badConfigs = MessageFormat.format(
-                    EnvironmentHandler.getResourceValue("badConfigs"), profile.getProfileName());
-            try {
-                DialogUtility.showAndWait(DialogUtility.createErrorAlert(badConfigs, badConfigs))
-                        .ifPresent(buttontype -> {
-                            if (buttontype == ButtonType.OK) {
-                                Programs.CONFIGURATION_DIALOG.call();
-                            }
-                        });
-            } catch (DialogCreationException ex) {
-                LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
+                } catch (DialogCreationException ex) {
+                    LOGGER.log(Level.SEVERE, "Could not create error dialog for user", ex);
+                }
             }
         }
     }
@@ -294,92 +349,6 @@ public class MemberManagement extends Application {
         }
     }
 
-    /**
-     * Asks the user for the needed logindata as long as the inserted data is not correct or the user aborts. This
-     * method should NOT be called by JavaFX Application Thread..
-     */
-    private Optional<? extends DBConnection> getConnection(Login<?> login, Stage waitScreenStage) {
-        String databaseHost = profile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
-        int databasePort = profile.getOrDefault(
-                ProfileSettings.DATABASE_PORT, profile.get(ProfileSettings.DBMS).getDefaultPort());
-        String databaseName = profile.get(ProfileSettings.DATABASE_NAME);
-        SupportedDatabases dbms = profile.get(ProfileSettings.DBMS);
-
-        return login.getResult()
-                .map(dbCredentials -> {
-                    DBConnection connection = null;
-                    Callable<DBConnection> createConnection;
-                    if (profile.getOrDefault(ProfileSettings.USE_SSH, false)) {
-                        assert dbCredentials.getClass() == SshCredentials.class :
-                                "Profile is configured to use SSH, but there were no SshCredentials requested.";
-                        SshCredentials credentials = (SshCredentials) dbCredentials;
-
-                        String sshHost = profile.getOrDefault(ProfileSettings.SSH_HOST, "localhost");
-                        int sshPort = profile.getOrDefault(ProfileSettings.SSH_PORT, 22);
-                        Charset sshCharset = profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8);
-
-                        createConnection = () -> new SshConnection(dbms, databaseHost, databasePort, databaseName,
-                                sshHost, sshPort, sshCharset, credentials);
-
-                    } else {
-                        assert dbCredentials.getClass() == SimpleCredentials.class :
-                                "Profile is configured to directly connect to a database, "
-                                        + "but it got no SimpleCredentials.";
-                        SimpleCredentials credentials = (SimpleCredentials) dbCredentials;
-                        createConnection
-                                = () -> new SimpleConnection(
-                                dbms, databaseHost, databasePort, databaseName, credentials);
-                    }
-
-                    Optional<Alert> userReport = Optional.empty();
-                    boolean retryConnection = false;
-                    try {
-                        try {
-                            connection = createConnection.call();
-                        } catch (AuthException ex) {
-                            LOGGER.log(Level.FINE, null, ex);
-                            String checkInput = EnvironmentHandler.getResourceValue("checkInput");
-                            userReport = Optional.of(DialogUtility.createInfoAlert(checkInput, checkInput));
-                            retryConnection = true;
-                        } catch (UnknownHostException | ConnectException ex) {
-                            LOGGER.log(Level.WARNING, null, ex);
-                            String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
-                            userReport = Optional.of(
-                                    DialogUtility.createStacktraceAlert(ex, checkConnection, checkConnection));
-                        } catch (UnsupportedDatabaseException ex) {
-                            LOGGER.log(Level.SEVERE, null, ex);
-                            String noSupportedDatabase = EnvironmentHandler.getResourceValue("noSupportedDatabase");
-                            userReport = Optional.of(DialogUtility.createErrorAlert(noSupportedDatabase));
-                        } catch (DatabaseNotFoundException ex) {
-                            LOGGER.log(Level.SEVERE, "Could not find database \""
-                                    + databaseName + "\" on host \"" + databaseHost + "\".", ex);
-                            String databaseNotFound = EnvironmentHandler.getResourceValue("databaseNotFound");
-                            userReport = Optional.of(DialogUtility.createErrorAlert(databaseNotFound));
-                        } catch (Exception ex) {
-                            LOGGER.log(Level.SEVERE, "Could not connect due to an unhandled exception.", ex);
-                            String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
-                            userReport = Optional.of(
-                                    DialogUtility.createStacktraceAlert(ex, unexpectedAbort, unexpectedAbort));
-                        }
-                    } catch (DialogCreationException ex) {
-                        LOGGER.log(Level.WARNING, "Could not show error to user", ex);
-                    }
-                    Platform.runLater(waitScreenStage::close);
-                    userReport.ifPresent(DialogUtility::showAndWait);
-                    if (retryConnection) {
-                        // login.reset(); // FIXME Required?
-                        connection = getConnection(login, waitScreenStage)
-                                .orElse(null);
-                    }
-                    return connection;
-                });
-    }
-
-    /**
-     * The main method.
-     *
-     * @param args The command line arguments.
-     */
     public static void main(String[] args) {
         launch(args);
     }

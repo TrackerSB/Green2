@@ -2,7 +2,7 @@ package bayern.steinbrecher.green2.memberManagement.menu;
 
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.wizard.WizardPage;
+import bayern.steinbrecher.wizard.StandaloneWizardPage;
 
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public class MainMenu extends WizardPage<Optional<Void>, MainMenuController> {
+public class MainMenu extends StandaloneWizardPage<Optional<Void>, MainMenuController> {
 
     private final DBConnection dbConnection;
 

@@ -27,8 +27,8 @@ import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.javaUtility.SepaUtility;
 import bayern.steinbrecher.javaUtility.SupplyingMap;
 import bayern.steinbrecher.wizard.EmbeddedWizardPage;
+import bayern.steinbrecher.wizard.StandaloneWizardPageController;
 import bayern.steinbrecher.wizard.Wizard;
-import bayern.steinbrecher.wizard.WizardPageController;
 import bayern.steinbrecher.wizard.WizardState;
 import bayern.steinbrecher.wizard.pages.Selection;
 import com.google.common.collect.BiMap;
@@ -86,6 +86,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,7 +99,7 @@ import java.util.stream.IntStream;
  *
  * @author Stefan Huber
  */
-public class MainMenuController extends WizardPageController<Optional<Void>> {
+public class MainMenuController extends StandaloneWizardPageController<Optional<Void>> {
 
     private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
@@ -916,9 +918,11 @@ public class MainMenuController extends WizardPageController<Optional<Void>> {
             available.set(false);
             CompletableFuture.runAsync(() -> {
                 try {
-                    newValue.get();
+                    newValue.get(10, TimeUnit.SECONDS);
                 } catch (InterruptedException | ExecutionException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
+                } catch (TimeoutException ex) {
+                    LOGGER.log(Level.SEVERE, "Could not wait for availability change", ex);
                 }
             })
                     .thenRunAsync(() -> available.set(true));
