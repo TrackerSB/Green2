@@ -31,6 +31,7 @@ import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.fxml.LoadException;
@@ -117,7 +118,7 @@ public class MemberManagement extends Application {
         splashScreenStage.showAndWait();
     }
 
-    private static void showWaitScreenWhile(ObservableBooleanValue isFinishedObservable) {
+    private static void showWaitScreenWhile(ObservableBooleanValue showWhile) {
         var waitScreenStage = new Stage();
         try {
             new WaitScreen()
@@ -128,15 +129,14 @@ public class MemberManagement extends Application {
         }
         waitScreenStage.initModality(Modality.APPLICATION_MODAL);
         waitScreenStage.initStyle(StageStyle.TRANSPARENT);
-        ChangeListener<Boolean> isFinishedListener = (obs, wasFinished, isFinished) -> {
-            if (isFinished) {
-                Platform.runLater(waitScreenStage::close);
+        ChangeListener<Boolean> showWhileListener = (obs, hadToBeShown, hasToBeShown) -> {
+            if (hasToBeShown) {
+                waitScreenStage.show();
             } else {
-                Platform.runLater(waitScreenStage::show);
+                waitScreenStage.hide();
             }
         };
-        isFinishedObservable.addListener(isFinishedListener);
-        isFinishedListener.changed(null, null, waitScreenStage.isShowing());
+        showWhile.addListener(showWhileListener);
     }
 
     private Login<? extends DBCredentials> prepareLogin(Stage loginStage) throws LoadException {
@@ -298,7 +298,9 @@ public class MemberManagement extends Application {
 
                 Stage loginStage = new Stage();
                 Login<? extends DBCredentials> login = prepareLogin(loginStage);
-                showWaitScreenWhile(loginStage.showingProperty().not());
+                BooleanBinding noStageIsVisible = loginStage.showingProperty().not()
+                        .and(primaryStage.showingProperty().not());
+                showWaitScreenWhile(noStageIsVisible);
                 loginStage.show();
 
                 loginStage.showingProperty().addListener((obs, wasShowing, isShowing) -> {
@@ -306,12 +308,14 @@ public class MemberManagement extends Application {
                         if (login.isValid()) {
                             Optional<? extends DBCredentials> credentials = login.getResult();
                             if (credentials.isPresent()) {
-                                boolean credentialsAreValid = validateCredentials(credentials.get());
-                                if (credentialsAreValid) {
-                                    showMainMenu(primaryStage);
-                                } else {
-                                    Platform.runLater(loginStage::show);
-                                }
+                                new Thread(() -> {
+                                    boolean credentialsAreValid = validateCredentials(credentials.get());
+                                    if (credentialsAreValid) {
+                                        Platform.runLater(() -> showMainMenu(primaryStage));
+                                    } else {
+                                        Platform.runLater(loginStage::show);
+                                    }
+                                }).start();
                             } else {
                                 LOGGER.log(Level.WARNING, "The login did not provide credentials");
                                 Platform.exit();

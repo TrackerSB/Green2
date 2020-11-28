@@ -13,11 +13,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 /**
@@ -25,6 +24,7 @@ import java.util.stream.IntStream;
  * @since 2u14
  */
 public class WaitScreenController extends StandaloneWizardPageController<Optional<Void>> {
+    private static final Logger LOGGER = Logger.getLogger(WaitScreenController.class.getName());
     private static final int CORNER_COUNT = 6;
     private static final double ANGLE = 360.0 / CORNER_COUNT;
     private static final Rotate ROTATION = new Rotate(ANGLE);
@@ -63,7 +63,7 @@ public class WaitScreenController extends StandaloneWizardPageController<Optiona
                     .parallel()
                     .forEach(column -> {
                         double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
-                        Polygon polygon = createPolygon(new Point2D(xCoo, yCoo), RADIUS);
+                        Polygon polygon = createPolygon(new Point2D(xCoo, yCoo));
                         polygon.setOpacity(START_OPACITY);
                         polygon.setFill(Color.FORESTGREEN);
 
@@ -84,27 +84,23 @@ public class WaitScreenController extends StandaloneWizardPageController<Optiona
                     });
         });
 
-        Consumer<Stage> connectAnimationBehavior = stage -> {
-            stage.showingProperty()
-                    .addListener((obs, wasShowing, isShowing) -> {
-                        if (isShowing) {
-                            overallTransition.play();
-                        } else {
-                            overallTransition.pause();
-                        }
-                    });
-        };
-        stageProperty()
-                .addListener((stageObs, oldStage, newStage) -> connectAnimationBehavior.accept(newStage));
-        if (getStage() != null) {
-            connectAnimationBehavior.accept(getStage());
-        }
+        stageProperty().addListener((stageObs, oldStage, newStage) -> {
+            if (newStage != null) {
+                newStage.showingProperty().addListener((obs, wasShowing, isShowing) -> {
+                    if (isShowing) {
+                        overallTransition.play();
+                    } else {
+                        overallTransition.pause();
+                    }
+                });
+            }
+        });
     }
 
-    private static Polygon createPolygon(Point2D center, double radius) {
+    private static Polygon createPolygon(Point2D center) {
         double[] coo = new double[DIRECTION_VECTORS.length * 2];
         for (int i = 0; i < DIRECTION_VECTORS.length; i++) {
-            Point2D vector = center.add(DIRECTION_VECTORS[i].multiply(radius));
+            Point2D vector = center.add(DIRECTION_VECTORS[i].multiply(RADIUS));
             coo[2 * i] = vector.getX();
             coo[2 * i + 1] = vector.getY();
         }
