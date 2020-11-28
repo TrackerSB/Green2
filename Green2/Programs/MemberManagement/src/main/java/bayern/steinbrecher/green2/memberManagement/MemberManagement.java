@@ -97,6 +97,7 @@ public class MemberManagement extends Application {
             LOGGER.log(Level.WARNING, "Could not show splash screen to user. It is skipped.", ex);
             return;
         }
+        StyleUtility.prepare(splashScreenStage);
         splashScreenStage.initModality(Modality.APPLICATION_MODAL);
         splashScreenStage.initStyle(StageStyle.TRANSPARENT);
         splashScreenStage.showingProperty()
@@ -127,6 +128,7 @@ public class MemberManagement extends Application {
             LOGGER.log(Level.WARNING, "Could not show wait screen. It is skipped.", ex);
             return;
         }
+        StyleUtility.prepare(waitScreenStage);
         waitScreenStage.initModality(Modality.APPLICATION_MODAL);
         waitScreenStage.initStyle(StageStyle.TRANSPARENT);
         ChangeListener<Boolean> showWhileListener = (obs, hadToBeShown, hasToBeShown) -> {
