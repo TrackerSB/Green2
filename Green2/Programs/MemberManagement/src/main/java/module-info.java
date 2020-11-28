@@ -20,4 +20,5 @@ module bayern.steinbrecher.green2.MemberManagement {
     opens bayern.steinbrecher.green2.memberManagement.login.simple to bayern.steinbrecher.GenericWizard, javafx.fxml;
     opens bayern.steinbrecher.green2.memberManagement.login.ssh to bayern.steinbrecher.GenericWizard, javafx.fxml;
     opens bayern.steinbrecher.green2.memberManagement.menu to bayern.steinbrecher.GenericWizard, javafx.fxml;
+    opens bayern.steinbrecher.green2.memberManagement.query to bayern.steinbrecher.GenericWizard, javafx.fxml;
 }

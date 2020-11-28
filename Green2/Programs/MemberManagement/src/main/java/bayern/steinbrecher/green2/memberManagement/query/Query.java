@@ -22,7 +22,7 @@ public class Query extends WizardPage<Optional<List<List<String>>>, QueryControl
      * @param dbConnection The connection to use for queries.
      */
     public Query(DBConnection dbConnection) {
-        super("Query.fxml", EnvironmentHandler.RESOURCE_BUNDLE);
+        super("query.fxml", EnvironmentHandler.RESOURCE_BUNDLE);
         this.dbConnection = dbConnection;
     }
 
