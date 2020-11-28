@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.people.Member;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.javaUtility.SepaUtility;
@@ -789,8 +790,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String versionInfo = AppInfo.VERSION + " (" + AppInfo.UPDATE_NAME + ")" + compDateTime;
         String version = EnvironmentHandler.getResourceValue("version");
         try {
-            Alert alert = DialogUtility.createInfoAlert(versionInfo, version, version, version);
-            Platform.runLater(() -> alert.show());
+            Alert alert = DialogUtility.createInfoAlert(versionInfo, version, version);
+            StyleUtility.prepare(alert.getDialogPane());
+            Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show version information graphically to user", ex);
         }
