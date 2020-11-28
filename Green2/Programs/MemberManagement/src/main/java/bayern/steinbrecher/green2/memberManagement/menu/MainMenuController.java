@@ -768,9 +768,10 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @SuppressWarnings("unused")
     private void showCredits() {
         String credits = EnvironmentHandler.getResourceValue("credits");
+        String creditsContent = EnvironmentHandler.getResourceValue("creditsContent");
         try {
-            Alert alert = DialogUtility.createMessageAlert(
-                    EnvironmentHandler.getResourceValue("creditsContent"), null, credits, credits);
+            Alert alert = DialogUtility.createMessageAlert(creditsContent, credits, credits);
+            StyleUtility.prepare(alert.getDialogPane());
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show credits graphically to user", ex);
