@@ -285,6 +285,7 @@ public class MemberManagement extends Application {
         } catch (LoadException ex) {
             throw new RuntimeException("Could not create main menu", ex);
         }
+        StyleUtility.prepare(menuStage);
         menuStage.show();
     }
 

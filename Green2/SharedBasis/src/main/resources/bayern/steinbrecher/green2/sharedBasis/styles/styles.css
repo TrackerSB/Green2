@@ -18,7 +18,6 @@
 .root {
     -fx-background-color: white;
     -fx-focus-color: -fx-main-color;
-    -fx-padding: 10px;
     -fx-default-button: -fx-focus-color;
     -fx-font-size: 12px;
 }

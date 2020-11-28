@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner?>
-<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Label?>
@@ -11,12 +11,11 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.Text?>
-
+<?import java.net.URL?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="bayern.steinbrecher.green2.memberManagement.menu.MainMenuController">
     <stylesheets>
-        <URL value="@menu.css"/>
+        <URL value="@mainMenu.css"/>
     </stylesheets>
 
     <VBox>
@@ -102,15 +101,15 @@
         </MenuBar>
         <HBox fx:id="updateQueryBox">
             <Label fx:id="dataLastUpdatedLabel"
-                   text="%noData" />
+                   text="%noData"/>
             <Button onAction="#queryData"
                     text="%update"
-                    disable="${!controller.allDataAvailable}" />
+                    disable="${!controller.allDataAvailable}"/>
         </HBox>
     </VBox>
     <Rectangle fx:id="overlayBackground"
-               visible="${!controller.allDataAvailable}" />
+               visible="${!controller.allDataAvailable}"/>
     <Label fx:id="overlayText"
            text="%dataGetsLoaded"
-           visible="${!controller.allDataAvailable}" />
+           visible="${!controller.allDataAvailable}"/>
 </StackPane>
