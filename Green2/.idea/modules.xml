@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/ConfigurationDialog/Green2.Programs.ConfigurationDialog.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/ConfigurationDialog/Green2.Programs.ConfigurationDialog.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/ConfigurationDialog/Green2.Programs.ConfigurationDialog.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/ConfigurationDialog/Green2.Programs.ConfigurationDialog.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/Launcher/Green2.Programs.Launcher.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/Launcher/Green2.Programs.Launcher.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/Launcher/Green2.Programs.Launcher.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/Launcher/Green2.Programs.Launcher.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/MemberManagement/Green2.Programs.MemberManagement.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/MemberManagement/Green2.Programs.MemberManagement.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/MemberManagement/Green2.Programs.MemberManagement.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/MemberManagement/Green2.Programs.MemberManagement.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/Uninstaller/Green2.Programs.Uninstaller.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/Uninstaller/Green2.Programs.Uninstaller.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Programs/Uninstaller/Green2.Programs.Uninstaller.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Programs/Uninstaller/Green2.Programs.Uninstaller.test.iml" />
+    </modules>
+  </component>
+</project>
