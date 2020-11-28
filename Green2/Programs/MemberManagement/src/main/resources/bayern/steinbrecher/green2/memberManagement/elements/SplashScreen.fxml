@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.StackPane?>
-<StackPane xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="bayern.steinbrecher.green2.memberManagement.elements.SplashScreenController"
-           fx:id="root">
-</StackPane>
+<?import javafx.scene.layout.Pane?>
+<Pane xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bayern.steinbrecher.green2.memberManagement.elements.SplashScreenController"
+      fx:id="root">
+</Pane>
