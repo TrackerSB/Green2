@@ -210,6 +210,7 @@ public class MemberManagement extends Application {
             LOGGER.log(Level.WARNING, "Could not show error to user", ex);
         }
         if (failureReport != null) {
+            StyleUtility.prepare(failureReport.getDialogPane());
             DialogUtility.showAndWait(failureReport);
         }
         return Optional.ofNullable(dbConnection);
@@ -261,6 +262,7 @@ public class MemberManagement extends Application {
         if (failureReport == null) {
             return true;
         } else {
+            StyleUtility.prepare(failureReport.getDialogPane());
             DialogUtility.showAndWait(failureReport);
             return false;
         }
@@ -333,7 +335,9 @@ public class MemberManagement extends Application {
             } else {
                 String badConfigs = EnvironmentHandler.getResourceValue("badConfigs", loadedProfile.getProfileName());
                 try {
-                    DialogUtility.showAndWait(DialogUtility.createErrorAlert(badConfigs, badConfigs))
+                    Alert failureReport = DialogUtility.createErrorAlert(badConfigs, badConfigs);
+                    StyleUtility.prepare(failureReport.getDialogPane());
+                    DialogUtility.showAndWait(failureReport)
                             .ifPresent(buttontype -> {
                                 if (buttontype == ButtonType.OK) {
                                     Programs.CONFIGURATION_DIALOG.call();
