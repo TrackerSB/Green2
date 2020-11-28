@@ -108,26 +108,27 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
      * functions generating checks.
      */
     private final Map<String, Callable<List<String>>> checkFunctions = Map.of(
-            "iban", () -> checkIbans(),
-            "bic", () -> checkBics(),
-            "birthdays", () -> checkBirthdays(),
-            "columnMandatSigned", () -> checkMandateSigned(),
-            "contributions", () -> checkContributions()
+            "iban", this::checkIbans,
+            "bic", this::checkBics,
+            "birthdays", this::checkBirthdays,
+            "columnMandatSigned", this::checkMandateSigned,
+            "contributions", this::checkContributions
     );
     private Stage stage;
     private DBConnection dbConnection;
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
             = new SimpleObjectProperty<>(Optional.empty());
-    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday = new SupplyingMap<>(year -> {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return getBirthdayMember(year);
-            } catch (InterruptedException | ExecutionException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                return null;
-            }
-        });
-    });
+    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday =
+            new SupplyingMap<>(year -> CompletableFuture.supplyAsync(
+                    () -> {
+                        try {
+                            return getBirthdayMember(year);
+                        } catch (InterruptedException | ExecutionException ex) {
+                            LOGGER.log(Level.SEVERE, null, ex);
+                            return null;
+                        }
+                    }
+            ));
     private final CompletableFutureProperty<Set<Member>> member = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Set<Member>> currentMember = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Set<Member>> currentMemberNonContributionfree
@@ -217,7 +218,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                                         m.getPerson().getPrename(),
                                         m.getPerson().getLastname(),
                                         m.getMemberSince().toString(),
-                                        m.isActive().map(b -> b.toString()).orElse("")))
+                                        m.isActive().map(Object::toString).orElse("")))
                         .collect(Collectors.toList())
                 );
             } catch (InterruptedException | ExecutionException ex) {
@@ -272,7 +273,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     }
 
     private void generateLicensesMenu() {
-        EnvironmentHandler.getLicenses().stream().forEach(license -> {
+        EnvironmentHandler.getLicenses().forEach(license -> {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
                 try {
@@ -400,7 +401,6 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 .anyMatch(m -> m.getContribution().isPresent());
     }
 
-    @SuppressWarnings("unchecked")
     private void generateSepa(Future<Set<Member>> memberToSelectFuture, boolean useMemberContributions,
                               SequenceType sequenceType) {
         try {
@@ -474,7 +474,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                                                 Alert alert = DialogUtility.createErrorAlert(message + "\n"
                                                         + EnvironmentHandler
                                                         .getResourceValue("haveBadAccountInformation"));
-                                                Platform.runLater(() -> alert.show());
+                                                Platform.runLater(alert::show);
                                             } catch (DialogCreationException ex) {
                                                 LOGGER.log(
                                                         Level.WARNING,
@@ -574,7 +574,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 });
         currentMember.set(member.get().thenApply(
                 ml -> ml.parallelStream()
-                        .filter(m -> !m.getLeavingDate().isPresent())
+                        .filter(m -> m.getLeavingDate().isEmpty())
                         .collect(Collectors.toSet())));
         currentMemberNonContributionfree.set(currentMember.get().thenApplyAsync(
                 ml -> ml.parallelStream()
@@ -693,7 +693,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             invalidContributions = currentMember.get().get().parallelStream()
                     .filter(m -> {
                         Optional<Double> contribution = m.getContribution();
-                        return !contribution.isPresent() || contribution.get() < 0
+                        return contribution.isEmpty() || contribution.get() < 0
                                 || contribution.get() == 0 && !m.isContributionfree();
                     })
                     .map(m -> m.toString() + ": " + m.getContribution())
@@ -709,7 +709,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private void checkData(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
             Map<String, List<String>> reports = new HashMap<>();
-            checkFunctions.entrySet().stream()
+            checkFunctions.entrySet()
                     .forEach(entry -> {
                         List<String> messages;
                         try {
@@ -731,7 +731,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @FXML
     @SuppressWarnings("unused")
     private void generateAddressesAll(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateAddressesAll());
+        callOnDisabled(aevt, this::generateAddressesAll);
     }
 
     @FXML
@@ -773,7 +773,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         try {
             Alert alert = DialogUtility.createMessageAlert(
                     EnvironmentHandler.getResourceValue("creditsContent"), null, credits, credits);
-            Platform.runLater(() -> alert.show());
+            Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show credits graphically to user", ex);
         }
