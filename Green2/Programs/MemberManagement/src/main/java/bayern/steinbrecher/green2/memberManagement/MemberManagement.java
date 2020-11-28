@@ -31,9 +31,6 @@ import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.fxml.LoadException;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -117,28 +114,6 @@ public class MemberManagement extends Application {
                     }
                 });
         splashScreenStage.showAndWait();
-    }
-
-    private static void showWaitScreenWhile(ObservableBooleanValue showWhile) {
-        var waitScreenStage = new Stage();
-        try {
-            new WaitScreen()
-                    .embedStandaloneWizardPage(waitScreenStage, null);
-        } catch (LoadException ex) {
-            LOGGER.log(Level.WARNING, "Could not show wait screen. It is skipped.", ex);
-            return;
-        }
-        StyleUtility.prepare(waitScreenStage);
-        waitScreenStage.initModality(Modality.APPLICATION_MODAL);
-        waitScreenStage.initStyle(StageStyle.TRANSPARENT);
-        ChangeListener<Boolean> showWhileListener = (obs, hadToBeShown, hasToBeShown) -> {
-            if (hasToBeShown) {
-                waitScreenStage.show();
-            } else {
-                waitScreenStage.hide();
-            }
-        };
-        showWhile.addListener(showWhileListener);
     }
 
     private Login<? extends DBCredentials> prepareLogin(Stage loginStage) throws LoadException {
@@ -301,22 +276,38 @@ public class MemberManagement extends Application {
             if (loadedProfile.isAllConfigurationsSet()) {
                 showSplashScreen();
 
+                Stage waitScreenStage = new Stage();
+                try {
+                    new WaitScreen()
+                            .embedStandaloneWizardPage(waitScreenStage, null);
+                } catch (LoadException ex) {
+                    LOGGER.log(Level.WARNING, "Could not show wait screen. It is skipped.", ex);
+                    return;
+                }
+                StyleUtility.prepare(waitScreenStage);
+                waitScreenStage.initModality(Modality.APPLICATION_MODAL);
+                waitScreenStage.initStyle(StageStyle.TRANSPARENT);
+
                 Stage loginStage = new Stage();
                 Login<? extends DBCredentials> login = prepareLogin(loginStage);
-                BooleanBinding noStageIsVisible = loginStage.showingProperty().not()
-                        .and(primaryStage.showingProperty().not());
-                showWaitScreenWhile(noStageIsVisible);
                 loginStage.show();
 
+
                 loginStage.showingProperty().addListener((obs, wasShowing, isShowing) -> {
-                    if (!isShowing) {
+                    if (isShowing) {
+                        waitScreenStage.hide();
+                    } else {
+                        waitScreenStage.show();
                         if (login.isValid()) {
                             Optional<? extends DBCredentials> credentials = login.getResult();
                             if (credentials.isPresent()) {
                                 new Thread(() -> {
                                     boolean credentialsAreValid = validateCredentials(credentials.get());
                                     if (credentialsAreValid) {
-                                        Platform.runLater(() -> showMainMenu(primaryStage));
+                                        Platform.runLater(() -> {
+                                            showMainMenu(primaryStage);
+                                            waitScreenStage.close();
+                                        });
                                     } else {
                                         Platform.runLater(loginStage::show);
                                     }
