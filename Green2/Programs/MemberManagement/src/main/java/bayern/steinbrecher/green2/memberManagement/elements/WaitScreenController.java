@@ -16,7 +16,6 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 /**
@@ -24,7 +23,6 @@ import java.util.stream.IntStream;
  * @since 2u14
  */
 public class WaitScreenController extends StandaloneWizardPageController<Optional<Void>> {
-    private static final Logger LOGGER = Logger.getLogger(WaitScreenController.class.getName());
     private static final int CORNER_COUNT = 6;
     private static final double ANGLE = 360.0 / CORNER_COUNT;
     private static final Rotate ROTATION = new Rotate(ANGLE);
@@ -59,29 +57,27 @@ public class WaitScreenController extends StandaloneWizardPageController<Optiona
             double yCoo = row * DIAMETER + RADIUS
                     - 1.5 * row * RADIUS / CORNER_COUNT;
             //CHECKSTYLE.ON: MagicNumber
-            IntStream.range(0, HORIZONTAL_COUNT - shorten)
-                    .parallel()
-                    .forEach(column -> {
-                        double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
-                        Polygon polygon = createPolygon(new Point2D(xCoo, yCoo));
-                        polygon.setOpacity(START_OPACITY);
-                        polygon.setFill(Color.FORESTGREEN);
+            IntStream.range(0, HORIZONTAL_COUNT - shorten).parallel().forEach(column -> {
+                double xCoo = column * DIAMETER + (shorten + 1) * RADIUS;
+                Polygon polygon = createPolygon(new Point2D(xCoo, yCoo));
+                polygon.setOpacity(START_OPACITY);
+                polygon.setFill(Color.FORESTGREEN);
 
-                        Animation wave1 = createPartialAnimation(polygon);
-                        PauseTransition pause1 = new PauseTransition(DURATION_PAUSE);
-                        Animation wave2 = createPartialAnimation(polygon);
-                        PauseTransition pause2 = new PauseTransition(DURATION_PAUSE);
-                        SequentialTransition sequence = new SequentialTransition(wave1, pause1, wave2, pause2);
-                        sequence.setDelay(Duration.millis((column + row) * DELAY));
-                        sequence.setCycleCount(Animation.INDEFINITE);
+                Animation wave1 = createPartialAnimation(polygon);
+                PauseTransition pause1 = new PauseTransition(DURATION_PAUSE);
+                Animation wave2 = createPartialAnimation(polygon);
+                PauseTransition pause2 = new PauseTransition(DURATION_PAUSE);
+                SequentialTransition sequence = new SequentialTransition(wave1, pause1, wave2, pause2);
+                sequence.setDelay(Duration.millis((column + row) * DELAY));
+                sequence.setCycleCount(Animation.INDEFINITE);
 
-                        synchronized (root) {
-                            root.getChildren().add(polygon);
-                        }
-                        synchronized (overallTransition) {
-                            overallTransition.getChildren().add(sequence);
-                        }
-                    });
+                synchronized (root) {
+                    root.getChildren().add(polygon);
+                }
+                synchronized (overallTransition) {
+                    overallTransition.getChildren().add(sequence);
+                }
+            });
         });
 
         stageProperty().addListener((stageObs, oldStage, newStage) -> {
