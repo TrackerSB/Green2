@@ -38,7 +38,7 @@ public final class EnvironmentHandler {
      * The path of the file containing all styles.
      */
     public static final String DEFAULT_STYLESHEET = EnvironmentHandler.class
-            .getResource(LocationConstants.RESOURCE_BASE_PATH + "styles/styles.css")
+            .getResource("/bayern/steinbrecher/green2/sharedBasis/styles/styles.css")
             .toExternalForm();
     /**
      * The name of the folder containing the licenses of Green2.
@@ -289,61 +289,6 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Contains constants describing paths within this jar.
-     */
-    private static final class LocationConstants {
-
-        public static final String RESOURCE_BASE_PATH = "/bayern/steinbrecher/green2/sharedBasis/";
-        public static final String BASIC_ICON_DIR_PATH = RESOURCE_BASE_PATH + "icons/";
-
-        private LocationConstants() {
-            throw new UnsupportedOperationException("Construction of an object is prohibited.");
-        }
-    }
-
-    /**
-     * Contains logos and splashscreens.
-     */
-    public enum LogoSet {
-        /**
-         * The Green2 logo.
-         */
-        LOGO("logo.png");
-
-        private final Image image;
-
-        /**
-         * Creates an {@link Image} with no specified bound box.
-         *
-         * @param filename The filename of the image relative to {@link LocationConstants#BASIC_ICON_DIR_PATH}.
-         */
-        LogoSet(String filename) {
-            image = new Image(getClass().getResource(LocationConstants.BASIC_ICON_DIR_PATH + filename).getPath());
-        }
-
-        /**
-         * Creates an {@link Image} with a specified bound box.
-         *
-         * @param filename The filename of the image relative to {@link LocationConstants#BASIC_ICON_DIR_PATH}.
-         * @param requestedHeight The requested height of the bound box.
-         * @param requestedWidth The requested width of the bound box.
-         */
-        LogoSet(String filename, double requestedWidth, double requestedHeight) {
-            image = new Image(getClass().getResource(LocationConstants.BASIC_ICON_DIR_PATH + filename).getPath(),
-                    requestedWidth, requestedHeight, true, true);
-        }
-
-        /**
-         * Returns the image this enum represents.
-         *
-         * @return The image this enum represents.
-         */
-        public Image get() {
-            return image;
-        }
-    }
-
-    /**
      * Contains enums representing pictures and icons used in Green2.
      */
     public enum ImageSet {
@@ -429,19 +374,13 @@ public final class EnvironmentHandler {
          * Width/height when requiring a small version of an image.
          */
         public static final int SMALL_SIZE = 15;
+        private static final String BASIC_ICON_DIR_PATH = "/bayern/steinbrecher/green2/sharedBasis/icons/";
         private final Image image;
 
-        /**
-         * Creates a new icon/image with specified size whose width and height are equal.
-         *
-         * @param filename The filename of the image relative to {@link LocationConstants#BASIC_ICON_DIR_PATH}.
-         * @param big {@code true} indicates to use the size specified by {@link #BIG_SIZE}. Otherwise
-         * {@link #SMALL_SIZE is used}.
-         */
         ImageSet(String filename, boolean big) {
             int size = big ? BIG_SIZE : SMALL_SIZE;
             image = new Image(
-                    getClass().getResource(LocationConstants.BASIC_ICON_DIR_PATH + filename).toExternalForm(),
+                    getClass().getResource(BASIC_ICON_DIR_PATH + filename).toExternalForm(),
                     size, size, true, true);
         }
 

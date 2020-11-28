@@ -494,10 +494,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 wizardStage.initOwner(stage);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
-                wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 Scene wizardScene = new Scene(wizard.getRoot());
-                wizardScene.getStylesheets()
-                        .add(EnvironmentHandler.DEFAULT_STYLESHEET);
+                StyleUtility.prepare(wizardStage);
                 wizardStage.setScene(wizardScene);
                 wizardStage.showAndWait();
             }
@@ -614,9 +612,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 wizardStage.initOwner(stage);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
                 wizardStage.setResizable(true);
-                wizardStage.getIcons().add(EnvironmentHandler.LogoSet.LOGO.get());
                 Scene wizardScene = new Scene(queryWizard.getRoot());
-                wizardScene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
+                StyleUtility.prepare(wizardStage);
                 wizardStage.setScene(wizardScene);
                 wizardStage.showAndWait();
             } catch (IOException ex) {
