@@ -26,7 +26,6 @@ import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.javaUtility.SepaUtility;
-import bayern.steinbrecher.javaUtility.SupplyingMap;
 import bayern.steinbrecher.wizard.EmbeddedWizardPage;
 import bayern.steinbrecher.wizard.StandaloneWizardPageController;
 import bayern.steinbrecher.wizard.Wizard;
@@ -62,6 +61,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -80,6 +80,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -87,13 +88,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Controller for Menu.fxml.
@@ -104,36 +103,11 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
 
     private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
-    /**
-     * Maps resource keys ({@link EnvironmentHandler#getResourceValue(java.lang.String, java.lang.Object...)} to
-     * functions generating checks.
-     */
-    private final Map<String, Callable<List<String>>> checkFunctions = Map.of(
-            "iban", this::checkIbans,
-            "bic", this::checkBics,
-            "birthdays", this::checkBirthdays,
-            "columnMandatSigned", this::checkMandateSigned,
-            "contributions", this::checkContributions
-    );
     private Stage stage;
     private DBConnection dbConnection;
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
             = new SimpleObjectProperty<>(Optional.empty());
-    private final Map<Integer, CompletableFuture<List<Member>>> memberBirthday =
-            new SupplyingMap<>(year -> CompletableFuture.supplyAsync(
-                    () -> {
-                        try {
-                            return getBirthdayMember(year);
-                        } catch (InterruptedException | ExecutionException ex) {
-                            LOGGER.log(Level.SEVERE, null, ex);
-                            return null;
-                        }
-                    }
-            ));
     private final CompletableFutureProperty<Set<Member>> member = new CompletableFutureProperty<>();
-    private final CompletableFutureProperty<Set<Member>> currentMember = new CompletableFutureProperty<>();
-    private final CompletableFutureProperty<Set<Member>> currentMemberNonContributionfree
-            = new CompletableFutureProperty<>();
     private final CompletableFutureProperty<Map<String, String>> nicknames = new CompletableFutureProperty<>();
     private final BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
     private final BooleanProperty activateBirthdayFeatures
@@ -150,7 +124,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @FXML
     private CheckedIntegerSpinner yearSpinner3;
     @FXML
-    private javafx.scene.control.Menu honorings;
+    private javafx.scene.control.Menu honoringsMenu;
     private final ListProperty<MenuItem> addedHonorings = new SimpleListProperty<>(FXCollections.observableArrayList());
     @FXML
     private javafx.scene.control.Menu licensesMenu;
@@ -177,8 +151,6 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
 
     private void bindAvailabilityInformations() {
         allDataAvailable.bind(member.availableProperty()
-                .and(currentMember.availableProperty())
-                .and(currentMemberNonContributionfree.availableProperty())
                 .and(nicknames.availableProperty()));
         dataLastUpdatedLabel.textProperty().bind(Bindings.createStringBinding(() -> {
             Optional<LocalDateTime> dataLastUpdatedOptional = getDataLastUpdated();
@@ -208,23 +180,17 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                     EnvironmentHandler.getResourceValue("memberSince"),
                     EnvironmentHandler.getResourceValue("isActive")
             ));
-            try {
-                result.addAll(currentMember.get()
-                        .get()
-                        .stream()
-                        .filter(m -> !m.getHonorings().getOrDefault(yearsOfMembership, Boolean.FALSE))
-                        .filter(m -> yearSpinner.getValue() - m.getMemberSince().getYear() >= yearsOfMembership)
-                        .map(
-                                m -> List.of(Integer.toString(m.getMembershipnumber()),
-                                        m.getPerson().getPrename(),
-                                        m.getPerson().getLastname(),
-                                        m.getMemberSince().toString(),
-                                        m.isActive().map(Object::toString).orElse("")))
-                        .collect(Collectors.toList())
-                );
-            } catch (InterruptedException | ExecutionException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
+            result.addAll(streamCurrentMember()
+                    .filter(m -> !m.getHonorings().getOrDefault(yearsOfMembership, Boolean.FALSE))
+                    .filter(m -> yearSpinner.getValue() - m.getMemberSince().getYear() >= yearsOfMembership)
+                    .map(
+                            m -> List.of(Integer.toString(m.getMembershipnumber()),
+                                    m.getPerson().getPrename(),
+                                    m.getPerson().getLastname(),
+                                    m.getMemberSince().toString(),
+                                    m.isActive().map(Object::toString).orElse("")))
+                    .collect(Collectors.toList())
+            );
             try {
                 Pane resultDialog = new ResultDialog(result)
                         .generateEmbeddableWizardPage()
@@ -239,38 +205,29 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     }
 
     private void generateHonoringsMenu() {
-        currentMember.availableProperty()
-                .addListener((obs, oldVal, newVal) -> {
-                    if (newVal) {
-                        honorings.getItems().removeAll(addedHonorings);
-                        //TODO Is the following command guaranteed to run before new items are added?
-                        Platform.runLater(addedHonorings::clear);
-                        try {
-                            currentMember.get()
-                                    .get()
-                                    .stream()
-                                    .map(Member::getHonorings)
-                                    .flatMap(h -> h.keySet().stream())
-                                    .distinct()
-                                    .sorted()
-                                    .forEach(year -> {
-                                        String membershipTitle
-                                                = EnvironmentHandler.getResourceValue("yearsMembership", year);
-                                        MenuItem membershipItem = new MenuItem(membershipTitle);
-                                        membershipItem.setOnAction(aevt -> showHonorings(year));
-                                        membershipItem.disableProperty()
-                                                .bind(yearSpinner.validProperty().not());
-                                        Platform.runLater(() -> {
-                                            honorings.getItems()
-                                                    .add(membershipItem);
-                                            addedHonorings.add(membershipItem);
-                                        });
-                                    });
-                        } catch (InterruptedException | ExecutionException ex) {
-                            LOGGER.log(Level.SEVERE, null, ex);
-                        }
-                    }
-                });
+        member.availableProperty().addListener((obs, wereAvailable, areAvailable) -> {
+            honoringsMenu.getItems().removeAll(addedHonorings);
+            //TODO Is the following command guaranteed to run before new items are added?
+            Platform.runLater(addedHonorings::clear);
+
+            streamCurrentMember()
+                    .map(Member::getHonorings)
+                    .flatMap(h -> h.keySet().stream())
+                    .distinct()
+                    .sorted()
+                    .forEach(year -> {
+                        String membershipTitle = EnvironmentHandler.getResourceValue("yearsMembership", year);
+                        MenuItem membershipItem = new MenuItem(membershipTitle);
+                        membershipItem.setOnAction(aevt -> showHonorings(year));
+                        membershipItem.disableProperty()
+                                .bind(yearSpinner.validProperty().not());
+                        Platform.runLater(() -> {
+                            honoringsMenu.getItems()
+                                    .add(membershipItem);
+                            addedHonorings.add(membershipItem);
+                        });
+                    });
+        });
     }
 
     private void generateLicensesMenu() {
@@ -318,20 +275,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
      *
      * @param dbConnection The connection to use for querying data.
      */
-    public void setDbConnection(DBConnection dbConnection) {
-        if (dbConnection == null) {
-            throw new IllegalArgumentException("The connection must not be null.");
-        }
-        this.dbConnection = dbConnection;
+    public void setDbConnection(@NotNull DBConnection dbConnection) {
+        this.dbConnection = Objects.requireNonNull(dbConnection, "The connection must not be null.");
         queryData();
-    }
-
-    private List<Member> getBirthdayMember(int year) throws InterruptedException, ExecutionException {
-        return currentMember.get()
-                .get()
-                .parallelStream()
-                .filter(m -> BirthdayGenerator.getsNotified(m, year))
-                .collect(Collectors.toList());
     }
 
     private void showNoMemberForOutputDialog() {
@@ -357,7 +303,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
      */
     public void generateAddressesAll() {
         try {
-            Set<Member> memberList = this.currentMember.get().get();
+            Set<Member> memberList = streamCurrentMember().collect(Collectors.toSet());
             if (memberList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
@@ -379,7 +325,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
      */
     public void generateAddressesBirthday(int year) {
         try {
-            List<Member> memberBirthdayList = memberBirthday.get(year).get();
+            Set<Member> memberBirthdayList = streamBirthdayMembers(year)
+                    .collect(Collectors.toSet());
             if (memberBirthdayList.isEmpty()) {
                 showNoMemberForOutputDialog();
             } else {
@@ -402,10 +349,10 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 .anyMatch(m -> m.getContribution().isPresent());
     }
 
-    private void generateSepa(Future<Set<Member>> memberToSelectFuture, boolean useMemberContributions,
+    private void generateSepa(Stream<Member> memberToSelectFuture, boolean useMemberContributions,
                               SequenceType sequenceType) {
         try {
-            Set<Member> memberToSelect = memberToSelectFuture.get();
+            Set<Member> memberToSelect = memberToSelectFuture.collect(Collectors.toSet());
 
             if (memberToSelect.isEmpty()) {
                 showNoMemberForOutputDialog();
@@ -560,30 +507,14 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private void queryData() {
         member.set(getSupplyTableContentFuture(Tables.MEMBER));
         nicknames.set(getSupplyTableContentFuture(Tables.NICKNAMES));
-        CompletableFuture.allOf(member.get(), nicknames.get())
-                .whenCompleteAsync((result, throwable) -> {
-                    LocalDateTime datetime;
-                    if (throwable == null) {
-                        datetime = LocalDateTime.now();
-                    } else {
-                        LOGGER.log(Level.SEVERE, "Retrieving the data failed.", throwable);
-                        datetime = null; //NOPMD - Make sure datetime is initialized.
+        allDataAvailableProperty()
+                .addListener((obs, allWereAvailable, allAreAvailable) -> {
+                    if (allAreAvailable) {
+                        Platform.runLater(() -> {
+                            dataLastUpdated.set(Optional.of(LocalDateTime.now()));
+                        });
                     }
-                    Platform.runLater(() -> dataLastUpdated.set(Optional.ofNullable(datetime)));
                 });
-        currentMember.set(member.get().thenApply(
-                ml -> ml.parallelStream()
-                        .filter(m -> m.getLeavingDate().isEmpty())
-                        .collect(Collectors.toSet())));
-        currentMemberNonContributionfree.set(currentMember.get().thenApplyAsync(
-                ml -> ml.parallelStream()
-                        .filter(m -> !m.isContributionfree())
-                        .collect(Collectors.toSet())));
-
-        //Precalculate memberBirthday for commonly used years
-        int currentYear = LocalDate.now().getYear();
-        IntStream.rangeClosed(currentYear - 1, currentYear + 1)
-                .forEach(memberBirthday::get);
     }
 
     @FXML
@@ -632,18 +563,18 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @FXML
     @SuppressWarnings("unused")
     private void generateContributionSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(currentMemberNonContributionfree.get(), true, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(streamNonContributionFree(), true, SequenceType.RCUR));
     }
 
     @FXML
     @SuppressWarnings("unused")
     private void generateUniversalSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(currentMember.get(), false, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(streamCurrentMember(), false, SequenceType.RCUR));
     }
 
     private List<String> checkIbans() throws InterruptedException, ExecutionException {
         String noIban = EnvironmentHandler.getResourceValue("noIban");
-        return currentMember.get().get().parallelStream()
+        return streamCurrentMember()
                 .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
                 .map(m -> {
                     String iban = m.getAccountHolder().getIban();
@@ -654,7 +585,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
 
     private List<String> checkBics() throws InterruptedException, ExecutionException {
         String noBic = EnvironmentHandler.getResourceValue("noBic");
-        return currentMember.get().get().parallelStream()
+        return streamCurrentMember()
                 .filter(m -> !SepaUtility.isValidBic(m.getAccountHolder().getBic()))
                 .map(m -> {
                     String bic = m.getAccountHolder().getBic();
@@ -663,32 +594,28 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 .collect(Collectors.toList());
     }
 
-    private List<String> checkDates(CompletableFutureProperty<Set<Member>> memberToCheck,
-                                    Function<Member, LocalDate> dateFunction)
-            throws ExecutionException, InterruptedException {
-        return memberToCheck.get().get().parallelStream()
-                .map(m -> new Pair<>(m.toString(), dateFunction.apply(m)))
+    private List<String> checkDates(Stream<Member> memberToCheck, Function<Member, LocalDate> dateFunction) {
+        return memberToCheck.map(m -> new Pair<>(m.toString(), dateFunction.apply(m)))
                 .filter(p -> p.getValue() == null)
-                .map(
-                        p -> p.getKey()
-                                + ": \"" + DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(p.getValue())
-                                + "\""
+                .map(p -> p.getKey()
+                        + ": \"" + DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(p.getValue())
+                        + "\""
                 )
                 .collect(Collectors.toList());
     }
 
     private List<String> checkBirthdays() throws InterruptedException, ExecutionException {
-        return checkDates(member, m -> m.getPerson().getBirthday());
+        return checkDates(member.get().get().stream(), m -> m.getPerson().getBirthday());
     }
 
     private List<String> checkMandateSigned() throws InterruptedException, ExecutionException {
-        return checkDates(currentMember, m -> m.getAccountHolder().getMandateSigned());
+        return checkDates(streamCurrentMember(), m -> m.getAccountHolder().getMandateSigned());
     }
 
     private List<String> checkContributions() throws InterruptedException, ExecutionException {
         List<String> invalidContributions;
         if (isContributionColumnEnabled()) {
-            invalidContributions = currentMember.get().get().parallelStream()
+            invalidContributions = streamCurrentMember()
                     .filter(m -> {
                         Optional<Double> contribution = m.getContribution();
                         return contribution.isEmpty() || contribution.get() < 0
@@ -705,19 +632,29 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @FXML
     @SuppressWarnings("unused")
     private void checkData(ActionEvent aevt) {
+        /**
+         * Maps resource keys ({@link EnvironmentHandler#getResourceValue(java.lang.String, java.lang.Object...)} to
+         * functions generating checks.
+         */
+        Map<String, Callable<List<String>>> checkFunctions = Map.of(
+                "iban", this::checkIbans,
+                "bic", this::checkBics,
+                "birthdays", this::checkBirthdays,
+                "columnMandatSigned", this::checkMandateSigned,
+                "contributions", this::checkContributions
+        );
         callOnDisabled(aevt, () -> {
             Map<String, List<String>> reports = new HashMap<>();
-            checkFunctions.entrySet()
-                    .forEach(entry -> {
-                        List<String> messages;
-                        try {
-                            messages = entry.getValue().call();
-                        } catch (Exception ex) { //NOPMD - Make sure the checks are not abborted.
-                            LOGGER.log(Level.SEVERE, null, ex);
-                            messages = Arrays.asList(ex.getLocalizedMessage().split("\n"));
-                        }
-                        reports.put(EnvironmentHandler.getResourceValue(entry.getKey()), messages);
-                    });
+            checkFunctions.forEach((key, value) -> {
+                List<String> messages;
+                try {
+                    messages = value.call();
+                } catch (Exception ex) { //NOPMD - Make sure the checks are not aborted.
+                    LOGGER.log(Level.SEVERE, null, ex);
+                    messages = Arrays.asList(ex.getLocalizedMessage().split("\n"));
+                }
+                reports.put(EnvironmentHandler.getResourceValue(key), messages);
+            });
 
             Stage reportsStage = new Stage();
             reportsStage.setTitle(EnvironmentHandler.getResourceValue("checkData"));
@@ -747,7 +684,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             callOnDisabled(aevt, () -> {
                 Integer year = yearSpinner.getValue();
                 try {
-                    List<Member> birthdayList = memberBirthday.get(year).get();
+                    List<Member> birthdayList = streamBirthdayMembers(year)
+                            .collect(Collectors.toList());
                     if (birthdayList.isEmpty()) {
                         showNoMemberForOutputDialog();
                     } else {
@@ -757,7 +695,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                                     BirthdayGenerator.createGroupedOutput(birthdayList, year), path.get(), true);
                         }
                     }
-                } catch (InterruptedException | ExecutionException | IOException ex) {
+                } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, "Could not generate birthday infos.", ex);
                 }
             });
@@ -882,6 +820,28 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         return honoringsAvailableProperty().get();
     }
 
+    private Stream<Member> streamCurrentMember() {
+        try {
+            return member.get()
+                    .get()
+                    .stream()
+                    .filter(m -> m.getLeavingDate().isEmpty());
+        } catch (InterruptedException | ExecutionException ex) {
+            LOGGER.log(Level.SEVERE, "Failed to query current members. Return empty list.", ex);
+            return Stream.of();
+        }
+    }
+
+    private Stream<Member> streamNonContributionFree() {
+        return streamCurrentMember()
+                .filter(m -> !m.isContributionfree());
+    }
+
+    private Stream<Member> streamBirthdayMembers(int year) {
+        return streamCurrentMember()
+                .filter(m -> BirthdayGenerator.getsNotified(m, year));
+    }
+
     @Override
     protected Optional<Void> calculateResult() {
         return Optional.empty();
@@ -918,14 +878,12 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             available.set(false);
             CompletableFuture.runAsync(() -> {
                 try {
-                    newValue.get(10, TimeUnit.SECONDS);
+                    newValue.get();
+                    available.set(true);
                 } catch (InterruptedException | ExecutionException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
-                } catch (TimeoutException ex) {
-                    LOGGER.log(Level.SEVERE, "Could not wait for availability change", ex);
                 }
-            })
-                    .thenRunAsync(() -> available.set(true));
+            });
         }
 
         /**

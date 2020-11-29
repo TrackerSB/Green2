@@ -65,7 +65,7 @@
                           disable="${!yearSpinner.valid}"
                           accelerator="Alt+G"/>
             </Menu>
-            <Menu fx:id="honorings"
+            <Menu fx:id="honoringsMenu"
                   text="%honorings"
                   visible="${controller.honoringsAvailable}">
                 <CustomMenuItem hideOnClick="false"
