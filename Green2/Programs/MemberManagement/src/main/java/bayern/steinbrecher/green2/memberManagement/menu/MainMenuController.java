@@ -52,6 +52,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.LoadException;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -59,7 +60,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -657,8 +660,13 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             });
 
             Stage reportsStage = new Stage();
+            reportsStage.initOwner(getStage());
+            reportsStage.initModality(Modality.APPLICATION_MODAL);
+            reportsStage.initStyle(StageStyle.UTILITY);
             reportsStage.setTitle(EnvironmentHandler.getResourceValue("checkData"));
-            CheckReportDialogUtility.createCheckReportDialog(reportsStage, reports);
+            Parent checkReportDialog = CheckReportDialogUtility.createCheckReportDialog(reports);
+            reportsStage.setScene(new Scene(checkReportDialog));
+            StyleUtility.prepare(reportsStage);
             reportsStage.showAndWait();
         });
     }
