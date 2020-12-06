@@ -544,12 +544,20 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 });
                 Stage wizardStage = new Stage();
                 wizardStage.initOwner(stage);
+                wizardStage.initModality(Modality.WINDOW_MODAL);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
                 wizardStage.setResizable(true);
                 Scene wizardScene = new Scene(queryWizard.getRoot());
-                StyleUtility.prepare(wizardStage);
                 wizardStage.setScene(wizardScene);
-                wizardStage.showAndWait();
+                StyleUtility.prepare(wizardStage);
+                queryWizard.stateProperty()
+                        .addListener((obs, previousState, currentState) -> {
+                            if (currentState == WizardState.ABORTED
+                                    || currentState == WizardState.FINISHED) {
+                                wizardStage.close();
+                            }
+                        });
+                wizardStage.show();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
                 try {

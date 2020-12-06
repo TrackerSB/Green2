@@ -5,9 +5,9 @@ run {
 dependencies {
     implementation project(":SharedBasis")
     implementation "bayern.steinbrecher:CheckedElements:0.11.3-SNAPSHOT"
-    implementation "bayern.steinbrecher:DBConnector:0.14.13-SNAPSHOT"
-    implementation "bayern.steinbrecher:JavaUtility:0.15"
-    implementation "bayern.steinbrecher:Wizard:1.38"
+    implementation "bayern.steinbrecher:DBConnector:0.14.15-SNAPSHOT"
+    implementation "bayern.steinbrecher:JavaUtility:0.16"
+    implementation "bayern.steinbrecher:Wizard:1.44"
 }
 
 javafx {
