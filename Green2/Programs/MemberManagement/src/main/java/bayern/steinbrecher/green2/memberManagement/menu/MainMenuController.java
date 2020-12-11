@@ -445,8 +445,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
                 Scene wizardScene = new Scene(wizard.getRoot());
-                StyleUtility.prepare(wizardStage);
                 wizardStage.setScene(wizardScene);
+                StyleUtility.prepare(wizardStage);
                 wizardStage.showAndWait();
             }
         } catch (InterruptedException | ExecutionException | IOException ex) {
