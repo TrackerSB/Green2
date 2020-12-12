@@ -441,6 +441,13 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                     }
                 });
                 Stage wizardStage = new Stage();
+                wizard.stateProperty()
+                        .addListener((obs, previousState, currentState) -> {
+                            if (currentState == WizardState.FINISHED
+                                    || currentState == WizardState.ABORTED) {
+                                wizardStage.close();
+                            }
+                        });
                 wizardStage.initOwner(stage);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
