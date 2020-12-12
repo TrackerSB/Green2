@@ -2,17 +2,7 @@ package bayern.steinbrecher.green2.sharedBasis.elements;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;
-
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
@@ -28,6 +18,15 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a dialog for choosing the profile to use.
@@ -76,12 +75,10 @@ public class ProfileChoice extends Application {
         });
 
         Scene scene = new Scene(new VBox(choiceLabel, profilePane, create));
-        scene.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
-        primaryStage.setScene(scene);
+        primaryStage.setScene(PreparationUtility.addStyle(scene));
         primaryStage.setResizable(false);
         primaryStage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
-        StyleUtility.prepare(primaryStage);
-
+        PreparationUtility.addLogo(primaryStage);
         primaryStage.showAndWait();
 
         if (created) {
@@ -183,9 +180,9 @@ public class ProfileChoice extends Application {
                 initialProfile = null;
             }
 
-            ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(initialProfile, availableProfiles);
+            ChoiceDialog<String> choiceDialog = PreparationUtility.addLogo(PreparationUtility.addStyle(
+                    new ChoiceDialog<>(initialProfile, availableProfiles)));
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
-            StyleUtility.prepare(dialogPane);
             Platform.runLater(() -> dialogPane.lookupButton(ButtonType.OK).requestFocus());
 
             Optional<String> profileName = choiceDialog.showAndWait();

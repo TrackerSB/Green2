@@ -1,7 +1,7 @@
 package bayern.steinbrecher.green2.uninstaller;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
 import bayern.steinbrecher.green2.uninstaller.confirmUninstall.ConfirmUninstall;
 import bayern.steinbrecher.green2.uninstaller.deleteConfigs.DeleteConfigs;
 import bayern.steinbrecher.wizard.EmbeddedWizardPage;
@@ -51,11 +51,11 @@ public final class Uninstaller extends Application {
             }
         });
 
-        primaryStage.setScene(new Scene(wizard.getRoot()));
-        StyleUtility.prepare(primaryStage);
+        primaryStage.setScene(PreparationUtility.addStyle(new Scene(wizard.getRoot())));
         primaryStage.setResizable(false);
         primaryStage.setTitle(EnvironmentHandler.getResourceValue("uninstall"));
-        primaryStage.show();
+        PreparationUtility.addLogo(primaryStage)
+                .show();
     }
 
     private String getPreferencesBasePath() {

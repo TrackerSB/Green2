@@ -22,7 +22,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.people.Member;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
-import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.javaUtility.SepaUtility;
@@ -451,10 +451,10 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 wizardStage.initOwner(stage);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
-                Scene wizardScene = new Scene(wizard.getRoot());
+                Scene wizardScene = PreparationUtility.addStyle(new Scene(wizard.getRoot()));
                 wizardStage.setScene(wizardScene);
-                StyleUtility.prepare(wizardStage);
-                wizardStage.showAndWait();
+                PreparationUtility.addLogo(wizardStage)
+                        .showAndWait();
             }
         } catch (InterruptedException | ExecutionException | IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -554,9 +554,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 wizardStage.initModality(Modality.WINDOW_MODAL);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
                 wizardStage.setResizable(true);
-                Scene wizardScene = new Scene(queryWizard.getRoot());
+                Scene wizardScene = PreparationUtility.addStyle(new Scene(queryWizard.getRoot()));
                 wizardStage.setScene(wizardScene);
-                StyleUtility.prepare(wizardStage);
                 queryWizard.stateProperty()
                         .addListener((obs, previousState, currentState) -> {
                             if (currentState == WizardState.ABORTED
@@ -564,7 +563,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                                 wizardStage.close();
                             }
                         });
-                wizardStage.show();
+                PreparationUtility.addLogo(wizardStage)
+                        .show();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
                 try {
@@ -680,9 +680,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             reportsStage.initStyle(StageStyle.UTILITY);
             reportsStage.setTitle(EnvironmentHandler.getResourceValue("checkData"));
             Parent checkReportDialog = CheckReportDialogUtility.createCheckReportDialog(reports);
-            reportsStage.setScene(new Scene(checkReportDialog));
-            StyleUtility.prepare(reportsStage);
-            reportsStage.showAndWait();
+            reportsStage.setScene(PreparationUtility.addStyle(new Scene(checkReportDialog)));
+            PreparationUtility.addLogo(reportsStage)
+                    .showAndWait();
         });
     }
 
@@ -732,7 +732,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String creditsContent = EnvironmentHandler.getResourceValue("creditsContent");
         try {
             Alert alert = DialogUtility.createMessageAlert(creditsContent, credits, credits);
-            StyleUtility.prepare(alert.getDialogPane());
+            PreparationUtility.addLogo(PreparationUtility.addStyle(alert));
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show credits graphically to user", ex);
@@ -750,7 +750,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String version = EnvironmentHandler.getResourceValue("version");
         try {
             Alert alert = DialogUtility.createInfoAlert(versionInfo, version, version);
-            StyleUtility.prepare(alert.getDialogPane());
+            PreparationUtility.addLogo(PreparationUtility.addStyle(alert));
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show version information graphically to user", ex);

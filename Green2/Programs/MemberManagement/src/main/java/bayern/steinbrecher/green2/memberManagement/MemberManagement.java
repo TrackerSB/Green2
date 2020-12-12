@@ -24,8 +24,8 @@ import bayern.steinbrecher.green2.sharedBasis.data.Profile;
 import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
+import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
-import bayern.steinbrecher.green2.sharedBasis.utility.StyleUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
@@ -86,15 +86,15 @@ public class MemberManagement extends Application {
     }
 
     private static void showSplashScreen() {
-        Stage splashScreenStage = new Stage();
+        Stage splashScreenStage = PreparationUtility.getPreparedStage();
         try {
             new SplashScreen()
                     .embedStandaloneWizardPage(splashScreenStage, null);
+            PreparationUtility.addStyle(splashScreenStage.getScene());
         } catch (LoadException ex) {
             LOGGER.log(Level.WARNING, "Could not show splash screen to user. It is skipped.", ex);
             return;
         }
-        StyleUtility.prepare(splashScreenStage);
         splashScreenStage.initModality(Modality.APPLICATION_MODAL);
         splashScreenStage.initStyle(StageStyle.TRANSPARENT);
         splashScreenStage.showingProperty()
@@ -130,7 +130,7 @@ public class MemberManagement extends Application {
         } catch (LoadException ex) {
             throw new LoadException("Could not generate login dialog", ex);
         }
-        StyleUtility.prepare(loginStage);
+        PreparationUtility.addStyle(loginStage.getScene());
         return login;
     }
 
@@ -185,8 +185,7 @@ public class MemberManagement extends Application {
             LOGGER.log(Level.WARNING, "Could not show error to user", ex);
         }
         if (failureReport != null) {
-            StyleUtility.prepare(failureReport.getDialogPane());
-            DialogUtility.showAndWait(failureReport);
+            DialogUtility.showAndWait(PreparationUtility.addLogo(PreparationUtility.addStyle(failureReport)));
         }
         return Optional.ofNullable(dbConnection);
     }
@@ -237,8 +236,7 @@ public class MemberManagement extends Application {
         if (failureReport == null) {
             return true;
         } else {
-            StyleUtility.prepare(failureReport.getDialogPane());
-            DialogUtility.showAndWait(failureReport);
+            DialogUtility.showAndWait(PreparationUtility.addLogo(PreparationUtility.addStyle(failureReport)));
             return false;
         }
     }
@@ -262,7 +260,7 @@ public class MemberManagement extends Application {
         } catch (LoadException ex) {
             throw new RuntimeException("Could not create main menu", ex);
         }
-        StyleUtility.prepare(menuStage);
+        PreparationUtility.addStyle(menuStage.getScene());
         menuStage.show();
     }
 
@@ -276,7 +274,7 @@ public class MemberManagement extends Application {
             if (loadedProfile.isAllConfigurationsSet()) {
                 showSplashScreen();
 
-                Stage waitScreenStage = new Stage();
+                Stage waitScreenStage = PreparationUtility.getPreparedStage();
                 try {
                     new WaitScreen()
                             .embedStandaloneWizardPage(waitScreenStage, null);
@@ -284,7 +282,7 @@ public class MemberManagement extends Application {
                     LOGGER.log(Level.WARNING, "Could not show wait screen. It is skipped.", ex);
                     return;
                 }
-                StyleUtility.prepare(waitScreenStage);
+                PreparationUtility.addStyle(waitScreenStage.getScene());
                 waitScreenStage.initModality(Modality.APPLICATION_MODAL);
                 waitScreenStage.initStyle(StageStyle.TRANSPARENT);
 
@@ -326,8 +324,8 @@ public class MemberManagement extends Application {
             } else {
                 String badConfigs = EnvironmentHandler.getResourceValue("badConfigs", loadedProfile.getProfileName());
                 try {
-                    Alert failureReport = DialogUtility.createErrorAlert(badConfigs, badConfigs);
-                    StyleUtility.prepare(failureReport.getDialogPane());
+                    Alert failureReport = PreparationUtility.addLogo(PreparationUtility.addStyle(
+                            DialogUtility.createErrorAlert(badConfigs, badConfigs)));
                     DialogUtility.showAndWait(failureReport)
                             .ifPresent(buttontype -> {
                                 if (buttontype == ButtonType.OK) {
