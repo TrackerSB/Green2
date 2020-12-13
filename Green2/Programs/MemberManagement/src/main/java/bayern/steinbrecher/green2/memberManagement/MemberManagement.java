@@ -303,7 +303,7 @@ public class MemberManagement extends Application {
                                     boolean credentialsAreValid = validateCredentials(credentials.get());
                                     if (credentialsAreValid) {
                                         Platform.runLater(() -> {
-                                            showMainMenu(primaryStage);
+                                            showMainMenu(PreparationUtility.addLogo(primaryStage));
                                             waitScreenStage.close();
                                         });
                                     } else {
