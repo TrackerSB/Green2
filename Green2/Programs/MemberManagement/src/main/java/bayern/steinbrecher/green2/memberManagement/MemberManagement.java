@@ -89,7 +89,7 @@ public class MemberManagement extends Application {
         Stage splashScreenStage = PreparationUtility.getPreparedStage();
         try {
             new SplashScreen()
-                    .embedStandaloneWizardPage(splashScreenStage, null);
+                    .embedStandaloneWizardPage(splashScreenStage, EnvironmentHandler.getResourceValue("skip"));
             PreparationUtility.addStyle(splashScreenStage.getScene());
         } catch (LoadException ex) {
             LOGGER.log(Level.WARNING, "Could not show splash screen to user. It is skipped.", ex);
@@ -126,7 +126,7 @@ public class MemberManagement extends Application {
             login = new SimpleLogin();
         }
         try {
-            login.embedStandaloneWizardPage(loginStage, null);
+            login.embedStandaloneWizardPage(loginStage, EnvironmentHandler.getResourceValue("login"));
         } catch (LoadException ex) {
             throw new LoadException("Could not generate login dialog", ex);
         }
@@ -277,7 +277,7 @@ public class MemberManagement extends Application {
                 Stage waitScreenStage = PreparationUtility.getPreparedStage();
                 try {
                     new WaitScreen()
-                            .embedStandaloneWizardPage(waitScreenStage, null);
+                            .embedStandaloneWizardPage(waitScreenStage, EnvironmentHandler.getResourceValue("cancel"));
                 } catch (LoadException ex) {
                     LOGGER.log(Level.WARNING, "Could not show wait screen. It is skipped.", ex);
                     return;
@@ -286,7 +286,7 @@ public class MemberManagement extends Application {
                 waitScreenStage.initModality(Modality.APPLICATION_MODAL);
                 waitScreenStage.initStyle(StageStyle.TRANSPARENT);
 
-                Stage loginStage = new Stage();
+                Stage loginStage = PreparationUtility.getPreparedStage();
                 Login<? extends DBCredentials> login = prepareLogin(loginStage);
                 loginStage.show();
 
