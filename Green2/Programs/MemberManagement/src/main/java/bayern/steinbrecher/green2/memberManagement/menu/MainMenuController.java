@@ -73,6 +73,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -98,13 +99,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Controller for Menu.fxml.
- *
  * @author Stefan Huber
  */
 public class MainMenuController extends StandaloneWizardPageController<Optional<Void>> {
 
     private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
+    private static final DateTimeFormatter COMPILE_DATE_TIME_FORMATTER
+            = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+            .withZone(ZoneId.systemDefault());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
     private Stage stage;
     private DBConnection dbConnection;
@@ -743,7 +745,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @SuppressWarnings("unused")
     private void showVersion() {
         String compDateTime = AppInfo.getCompilationDate()
-                .map(cpt -> DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).format(cpt))
+                .map(COMPILE_DATE_TIME_FORMATTER::format)
                 .map(cpt -> "\n" + EnvironmentHandler.getResourceValue("compiledOn", cpt))
                 .orElse("");
         String versionInfo = AppInfo.VERSION + " (" + AppInfo.UPDATE_NAME + ")" + compDateTime;

@@ -1,13 +1,16 @@
 package bayern.steinbrecher.green2.sharedBasis.data;
 
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 
 /**
  * @author Stefan Huber
@@ -18,9 +21,6 @@ public final class AppInfo {
     private static final Logger LOGGER = Logger.getLogger(AppInfo.class.getName());
     public static final String APP_NAME = "Grün2";
     public static final String VERSION = "2u14";
-    /**
-     * The name of the update associated with the {@link #VERSION}.
-     */
     public static final String UPDATE_NAME = "The real update";
 
     private AppInfo() {
@@ -35,7 +35,6 @@ public final class AppInfo {
      */
     public static final Optional<LocalDateTime> getCompilationDate() {
         Optional<LocalDateTime> compilationDate;
-        compilationDate = Optional.empty();
         String classPath = AppInfo.class
                 .getResource(AppInfo.class.getSimpleName() + ".class")
                 .toString();
@@ -51,23 +50,23 @@ public final class AppInfo {
                 LOGGER.log(Level.WARNING, "Could not find compilation date.", ex);
             }
         }
-//        String classFileName = AppInfo.class
-//                .getName()
-//                .replace('.', '/')
-//                + ".class";
-//        try {
-//            URLConnection baseConnection = AppInfo.class
-//                    .getClassLoader()
-//                    .getResource(classFileName)
-//                    .openConnection();
-//            JarURLConnection jarConnection = (JarURLConnection) baseConnection;
-//            ZipEntry manifestEntry = jarConnection.getJarFile()
-//                    .getEntry("META-INF/MANIFEST.MF");
-//            compilationDate = Optional.ofNullable(manifestEntry == null ? null : manifestEntry.getTimeLocal());
-//        } catch (IOException ex) {
-//            LOGGER.log(Level.WARNING, "The compilation date could not be determined.", ex);
-//            compilationDate = Optional.empty();
-//        }
+        String classFileName = AppInfo.class
+                .getName()
+                .replace('.', '/')
+                + ".class";
+        try {
+            URLConnection baseConnection = AppInfo.class
+                    .getClassLoader()
+                    .getResource(classFileName)
+                    .openConnection();
+            JarURLConnection jarConnection = (JarURLConnection) baseConnection;
+            ZipEntry manifestEntry = jarConnection.getJarFile()
+                    .getEntry("META-INF/MANIFEST.MF");
+            compilationDate = Optional.ofNullable(manifestEntry == null ? null : manifestEntry.getTimeLocal());
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "The compilation date could not be determined.", ex);
+            compilationDate = Optional.empty();
+        }
         return compilationDate;
     }
 }
