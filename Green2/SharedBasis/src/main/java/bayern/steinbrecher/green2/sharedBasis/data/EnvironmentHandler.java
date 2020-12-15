@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -161,8 +162,9 @@ public final class EnvironmentHandler {
         if (RESOURCE_BUNDLE.containsKey(key)) {
             resourceValue = MessageFormat.format(RESOURCE_BUNDLE.getString(key), params);
         } else {
-            LOGGER.log(Level.INFO, "No resource for \"{0}\" found.", key);
-            resourceValue = key;
+            LOGGER.log(Level.WARNING, "No resource for \"{0}\" found.", key);
+            String paramsList = Arrays.stream(params).map(Object::toString).collect(Collectors.joining(", "));
+            resourceValue = String.format("%s (%s)", key, paramsList);
         }
         return resourceValue;
     }
