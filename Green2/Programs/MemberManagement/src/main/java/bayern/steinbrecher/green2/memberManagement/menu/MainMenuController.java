@@ -240,7 +240,10 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
                 try {
-                    license.setWritable(false, false);
+                    boolean changedWritable = license.setWritable(false, false);
+                    if (!changedWritable) {
+                        LOGGER.log(Level.WARNING, "Could not disable write permission for license files");
+                    }
                     Desktop.getDesktop().open(license);
                 } catch (IOException ex) {
                     LOGGER.log(Level.WARNING, "Could not open license", ex);
@@ -346,11 +349,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         }
     }
 
-    //TODO Where to place this method? How to generlize it for all optional columns?
-    private boolean isContributionColumnEnabled() throws ExecutionException, InterruptedException {
-        return member.get()
-                .get()
-                .stream()
+    //TODO Where to place this method? How to generalize it for all optional columns?
+    private boolean isContributionColumnEnabled() {
+        return streamCurrentMember()
                 .anyMatch(m -> m.getContribution().isPresent());
     }
 
@@ -458,7 +459,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 PreparationUtility.addLogo(wizardStage)
                         .showAndWait();
             }
-        } catch (InterruptedException | ExecutionException | IOException ex) {
+        } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
             try {
@@ -522,9 +523,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         allDataAvailableProperty()
                 .addListener((obs, allWereAvailable, allAreAvailable) -> {
                     if (allAreAvailable) {
-                        Platform.runLater(() -> {
-                            dataLastUpdated.set(Optional.of(LocalDateTime.now()));
-                        });
+                        Platform.runLater(() -> dataLastUpdated.set(Optional.of(LocalDateTime.now())));
                     }
                 });
     }
@@ -592,7 +591,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         callOnDisabled(aevt, () -> generateSepa(streamCurrentMember(), false, SequenceType.RCUR));
     }
 
-    private List<String> checkIbans() throws InterruptedException, ExecutionException {
+    private List<String> checkIbans() {
         String noIban = EnvironmentHandler.getResourceValue("noIban");
         return streamCurrentMember()
                 .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
@@ -603,7 +602,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 .collect(Collectors.toList());
     }
 
-    private List<String> checkBics() throws InterruptedException, ExecutionException {
+    private List<String> checkBics() {
         String noBic = EnvironmentHandler.getResourceValue("noBic");
         return streamCurrentMember()
                 .filter(m -> !SepaUtility.isValidBic(m.getAccountHolder().getBic()))
@@ -624,15 +623,15 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 .collect(Collectors.toList());
     }
 
-    private List<String> checkBirthdays() throws InterruptedException, ExecutionException {
-        return checkDates(member.get().get().stream(), m -> m.getPerson().getBirthday());
+    private List<String> checkBirthdays() {
+        return checkDates(streamCurrentMember(), m -> m.getPerson().getBirthday());
     }
 
-    private List<String> checkMandateSigned() throws InterruptedException, ExecutionException {
+    private List<String> checkMandateSigned() {
         return checkDates(streamCurrentMember(), m -> m.getAccountHolder().getMandateSigned());
     }
 
-    private List<String> checkContributions() throws InterruptedException, ExecutionException {
+    private List<String> checkContributions() {
         List<String> invalidContributions;
         if (isContributionColumnEnabled()) {
             invalidContributions = streamCurrentMember()
@@ -652,7 +651,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @FXML
     @SuppressWarnings("unused")
     private void checkData(ActionEvent aevt) {
-        /**
+        /*
          * Maps resource keys ({@link EnvironmentHandler#getResourceValue(java.lang.String, java.lang.Object...)} to
          * functions generating checks.
          */
