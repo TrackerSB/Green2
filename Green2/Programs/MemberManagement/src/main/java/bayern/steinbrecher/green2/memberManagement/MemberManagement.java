@@ -19,6 +19,7 @@ import bayern.steinbrecher.green2.memberManagement.login.Login;
 import bayern.steinbrecher.green2.memberManagement.login.simple.SimpleLogin;
 import bayern.steinbrecher.green2.memberManagement.login.ssh.SshLogin;
 import bayern.steinbrecher.green2.memberManagement.menu.MainMenu;
+import bayern.steinbrecher.green2.sharedBasis.data.AppInfo;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;
 import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
@@ -260,7 +261,8 @@ public class MemberManagement extends Application {
         } catch (LoadException ex) {
             throw new RuntimeException("Could not create main menu", ex);
         }
-        PreparationUtility.addStyle(menuStage.getScene());
+        PreparationUtility.addStyle(PreparationUtility.addLogo(menuStage).getScene());
+        menuStage.setTitle(String.format("%s (%s \"%s\")", AppInfo.APP_NAME, AppInfo.VERSION, AppInfo.UPDATE_NAME));
         menuStage.show();
     }
 
@@ -303,7 +305,7 @@ public class MemberManagement extends Application {
                                     boolean credentialsAreValid = validateCredentials(credentials.get());
                                     if (credentialsAreValid) {
                                         Platform.runLater(() -> {
-                                            showMainMenu(PreparationUtility.addLogo(primaryStage));
+                                            showMainMenu(primaryStage);
                                             waitScreenStage.close();
                                         });
                                     } else {

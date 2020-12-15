@@ -16,9 +16,7 @@ import java.util.logging.Logger;
 public final class AppInfo {
 
     private static final Logger LOGGER = Logger.getLogger(AppInfo.class.getName());
-    /**
-     * Containing the version of this current program.
-     */
+    public static final String APP_NAME = "Grün2";
     public static final String VERSION = "2u14";
     /**
      * The name of the update associated with the {@link #VERSION}.
