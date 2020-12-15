@@ -747,7 +747,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String compDateTime = AppInfo.getCompilationDate()
                 .map(COMPILE_DATE_TIME_FORMATTER::format)
                 .map(cpt -> "\n" + EnvironmentHandler.getResourceValue("compiledOn", cpt))
-                .orElse("");
+                .orElse(EnvironmentHandler.getResourceValue("unavailable"));
         String versionInfo = AppInfo.VERSION + " (" + AppInfo.UPDATE_NAME + ")" + compDateTime;
         String version = EnvironmentHandler.getResourceValue("version");
         try {
