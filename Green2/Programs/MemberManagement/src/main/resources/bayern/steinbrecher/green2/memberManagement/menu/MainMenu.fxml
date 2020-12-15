@@ -15,7 +15,7 @@
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="bayern.steinbrecher.green2.memberManagement.menu.MainMenuController">
     <stylesheets>
-        <URL value="@mainMenu.css"/>
+        <URL value="@MainMenu.css"/>
     </stylesheets>
 
     <VBox>

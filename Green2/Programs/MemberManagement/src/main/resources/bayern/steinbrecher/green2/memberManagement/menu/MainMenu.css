@@ -1,0 +1,62 @@
+/*
+    Author     : Stefan Huber
+*/
+
+.root {
+    -fx-padding: 0;
+    -fx-min-width: 500px;
+}
+
+#updateQueryBox {
+    -fx-alignment: CENTER;
+    -fx-padding: 10px 0;
+    -fx-spacing: 10px;
+}
+
+#overlayBackground {
+    -fx-background-color: black;
+    -fx-opacity: 0.7;
+}
+
+#overlayText {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+/* Menu Item graphics */
+
+#creditsMenuItem > .label {
+    -fx-graphic: url("../icons/check.png");
+}
+
+#honorings .menu-item > .label {
+    -fx-graphic: url("../icons/diploma.png");
+}
+
+#licensesMenu .menu-item > .label, #licensesMenu > .label {
+    -fx-graphic: url("../icons/investment.png");
+}
+
+#sepaMenu .menu-item > .label {
+    -fx-graphic: url("../icons/money.png");
+}
+
+#birthdayMenu .menu-item > .label {
+    -fx-graphic: url("../icons/gift.png");
+}
+
+#addressesMenu .menu-item > .label {
+    -fx-graphic: url("../icons/worldwide.png");
+}
+
+#version > .label {
+    -fx-graphic: url("../icons/app.png")
+}
+
+#checkData > .label {
+    -fx-graphic: url("../icons/database.png")
+}
+
+#queryDialogMenuItem > .label {
+    -fx-graphic: url("../icons/search.png");
+}
