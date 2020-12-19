@@ -36,12 +36,6 @@ public final class EnvironmentHandler {
     public static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle("bayern.steinbrecher.green2.sharedBasis.data.language.language");
     /**
-     * The path of the file containing all styles.
-     */
-    public static final String DEFAULT_STYLESHEET = EnvironmentHandler.class
-            .getResource("/bayern/steinbrecher/green2/sharedBasis/styles/styles.css")
-            .toExternalForm();
-    /**
      * The name of the folder containing the licenses of Green2.
      */
     private static final String LICENSES_FOLDER_NAME = "licenses";

@@ -11,12 +11,12 @@ import bayern.steinbrecher.green2.sharedBasis.data.AppInfo;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
+import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.wizard.EmbeddedWizardPage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.LoadException;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -90,7 +90,7 @@ public final class Launcher extends Application {
                 if (AppInfo.VERSION.equalsIgnoreCase(onlineVersion)) {
                     Programs.MEMBER_MANAGEMENT.call();
                 } else {
-                    Optional<Boolean> installUpdates = ChoiceDialog.askForUpdate();
+                    Optional<Boolean> installUpdates = ChoiceDialog.askForUpdate(getHostServices());
                     if (installUpdates.isPresent()) {
                         if (installUpdates.get()) {
                             installUpdateProcess = createInstallTask()
@@ -210,12 +210,13 @@ public final class Launcher extends Application {
                 .thenAccept(conditionReport -> {
                     if (conditionReport != null) {
                         Platform.runLater(() -> {
-                            Stage stage = new Stage();
+                            Stage stage = StagePreparer.getDefaultPreparedStage();
                             stage.setTitle(EnvironmentHandler.getResourceValue("conditionReportTitle"));
                             try {
                                 EmbeddedWizardPage<Optional<Boolean>> wizardPage
                                         = conditionReport.generateEmbeddableWizardPage();
-                                stage.setScene(new Scene(wizardPage.getRoot()));
+                                stage.getScene()
+                                        .setRoot(wizardPage.getRoot());
                                 stage.show();
                             } catch (LoadException ex) {
                                 LOGGER.log(Level.SEVERE, "Could not show condition report", ex);
@@ -240,11 +241,12 @@ public final class Launcher extends Application {
                         }
                     });
                     Platform.runLater(() -> {
-                        Stage processDialogStage = new Stage();
+                        Stage processDialogStage = StagePreparer.getDefaultPreparedStage();
                         try {
                             EmbeddedWizardPage<Optional<Void>> wizardPage
                                     = progressDialog.generateEmbeddableWizardPage();
-                            processDialogStage.setScene(new Scene(wizardPage.getRoot()));
+                            processDialogStage.getScene()
+                                    .setRoot(wizardPage.getRoot());
                             processDialogStage.show();
                             downloadProcess.thenRun(() -> {
                                 Platform.runLater(processDialogStage::hide);

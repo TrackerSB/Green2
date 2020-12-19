@@ -20,6 +20,7 @@
     -fx-focus-color: -fx-main-color;
     -fx-default-button: -fx-focus-color;
     -fx-font-size: 12px;
+    -fx-padding: 10px;
 }
 
 .root, .wizard-content, GridPane {

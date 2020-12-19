@@ -2,12 +2,12 @@ package bayern.steinbrecher.green2.sharedBasis.elements;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;
-import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -33,22 +33,15 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class ProfileChoice extends Application {
+public class ProfileChoice implements StagePreparer {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileChoice.class.getName());
     private static final String LAST_PROFILE_KEY = "defaultProfile";
-    private Stage stage;
     private Profile profile;
     private boolean created;
     private final GridPane profilePane = new GridPane();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void start(Stage primaryStage) {
-        this.stage = primaryStage;
-
+    public void embedContentIntoAndWait(Stage stage) {
         Label choiceLabel = new Label(EnvironmentHandler.getResourceValue("chooseProfile"));
 
         int currentRowIndex = 0;
@@ -60,9 +53,15 @@ public class ProfileChoice extends Application {
         for (String profileName : profiles) {
             Label name = new Label(profileName); //NOPMD
             Button edit = new Button(editLabel, EnvironmentHandler.ImageSet.EDIT.getAsImageView()); //NOPMD
-            edit.setOnAction(evt -> editProfile(profileName));
+            edit.setOnAction(evt -> {
+                profile = new Profile(profileName, false);
+                stage.close();
+            });
             Button delete = new Button(deleteLabel, EnvironmentHandler.ImageSet.TRASH.getAsImageView()); //NOPMD
-            delete.setOnAction(evt -> askForDeleteProfile(profileName));
+            delete.setOnAction(evt -> {
+                askForDeleteProfile(profileName);
+                stage.sizeToScene();
+            });
             profilePane.addRow(currentRowIndex, name, edit, delete);
             currentRowIndex++;
         }
@@ -71,15 +70,19 @@ public class ProfileChoice extends Application {
                 EnvironmentHandler.getResourceValue("create"), EnvironmentHandler.ImageSet.ADD.getAsImageView());
         create.setOnAction(evt -> {
             created = true;
-            primaryStage.close();
+            stage.close();
         });
 
-        Scene scene = new Scene(new VBox(choiceLabel, profilePane, create));
-        primaryStage.setScene(PreparationUtility.addStyle(scene));
-        primaryStage.setResizable(false);
-        primaryStage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
-        PreparationUtility.addLogo(primaryStage);
-        primaryStage.showAndWait();
+        Parent root = new VBox(choiceLabel, profilePane, create);
+        if (stage.getScene() == null) {
+            stage.setScene(new Scene(root));
+        } else {
+            stage.getScene()
+                    .setRoot(root);
+        }
+        stage.setResizable(false);
+        stage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
+        stage.showAndWait();
 
         if (created) {
             String newConfigBaseName = EnvironmentHandler.getResourceValue("newConfigname");
@@ -93,11 +96,6 @@ public class ProfileChoice extends Application {
             }
             profile = new Profile(newConfigName, true);
         }
-    }
-
-    private void editProfile(String profileName) {
-        profile = new Profile(profileName, false);
-        stage.close();
     }
 
     private void askForDeleteProfile(String profileName) {
@@ -138,7 +136,6 @@ public class ProfileChoice extends Application {
                                 } catch (IOException ex) {
                                     LOGGER.log(Level.SEVERE, "The profile could not be deleted.", ex);
                                 }
-                                stage.sizeToScene();
                             }
                         }
                     });
@@ -168,7 +165,9 @@ public class ProfileChoice extends Application {
         Optional<Profile> profile;
         if (editable) {
             ProfileChoice choice = new ProfileChoice();
-            choice.start(new Stage());
+            Stage choiceStage = choice.getPreparedStage();
+            choice.embedContentIntoAndWait(choiceStage);
+            choiceStage.showAndWait();
             profile = Optional.ofNullable(choice.profile);
         } else {
             List<String> availableProfiles = Profile.getAvailableProfiles();
@@ -180,8 +179,7 @@ public class ProfileChoice extends Application {
                 initialProfile = null;
             }
 
-            ChoiceDialog<String> choiceDialog = PreparationUtility.addLogo(PreparationUtility.addStyle(
-                    new ChoiceDialog<>(initialProfile, availableProfiles)));
+            ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(initialProfile, availableProfiles);
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
             Platform.runLater(() -> dialogPane.lookupButton(ButtonType.OK).requestFocus());
 

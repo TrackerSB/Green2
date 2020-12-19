@@ -1,9 +1,8 @@
 package bayern.steinbrecher.green2.launcher.elements;
 
-import java.util.Optional;
-
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import javafx.application.Application;
+import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
+import javafx.application.HostServices;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -13,41 +12,38 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.Optional;
+
 /**
  * Represents a dialog showing &bdquo;YES&ldquo; and &bdquo;NO&ldquo;.
  *
  * @author Stefan Huber
  */
-public class ChoiceDialog extends Application {
+public class ChoiceDialog implements StagePreparer {
 
-    private Optional<Boolean> installUpdates = Optional.empty();
+    private Boolean installUpdates = null;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void start(Stage stage) {
+    public void embedContentIntoAndWait(Stage stage, HostServices hostServices) {
         Label message = new Label(EnvironmentHandler.getResourceValue("installUpdates"));
 
         Button yesButton = new Button(EnvironmentHandler.getResourceValue("yes"));
         yesButton.setDefaultButton(true);
         yesButton.setOnAction(evt -> {
-            installUpdates = Optional.of(true);
+            installUpdates = true;
             stage.close();
         });
 
         Button noButton = new Button(EnvironmentHandler.getResourceValue("no"));
         noButton.setOnAction(evt -> {
-            installUpdates = Optional.of(false);
+            installUpdates = false;
             stage.close();
         });
 
         Hyperlink hyperlink = new Hyperlink("https://github.com/TrackerSB/Green2/releases/latest");
         hyperlink.setOnAction(aevt -> {
-            getHostServices().showDocument("https://github.com/TrackerSB/Green2/releases/latest");
+            hostServices.showDocument("https://github.com/TrackerSB/Green2/releases/latest");
         });
         VBox vbox = new VBox(message, hyperlink, new HBox(yesButton, noButton));
-        vbox.getStylesheets().add(EnvironmentHandler.DEFAULT_STYLESHEET);
 
         stage.setScene(new Scene(vbox));
         stage.initStyle(StageStyle.UTILITY);
@@ -62,9 +58,10 @@ public class ChoiceDialog extends Application {
      *
      * @return {@link Optional#empty()} only if the user closed the window without clicking yes or no.
      */
-    public static Optional<Boolean> askForUpdate() {
+    public static Optional<Boolean> askForUpdate(HostServices hostServices) {
         ChoiceDialog choiceDialog = new ChoiceDialog();
-        choiceDialog.start(new Stage());
-        return choiceDialog.installUpdates;
+        Stage choiceDialogStage = choiceDialog.getPreparedStage();
+        choiceDialog.embedContentIntoAndWait(choiceDialogStage, hostServices);
+        return Optional.ofNullable(choiceDialog.installUpdates);
     }
 }

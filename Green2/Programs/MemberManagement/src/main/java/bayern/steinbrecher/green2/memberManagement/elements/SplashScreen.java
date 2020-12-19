@@ -1,6 +1,7 @@
 package bayern.steinbrecher.green2.memberManagement.elements;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.wizard.StandaloneWizardPage;
 
 import java.util.Optional;
@@ -10,7 +11,8 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public class SplashScreen extends StandaloneWizardPage<Optional<Void>, SplashScreenController> {
+public class SplashScreen extends StandaloneWizardPage<Optional<Void>, SplashScreenController>
+        implements StagePreparer {
 
     public SplashScreen() {
         super("SplashScreen.fxml", EnvironmentHandler.RESOURCE_BUNDLE);

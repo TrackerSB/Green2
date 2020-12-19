@@ -22,7 +22,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.people.Member;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
-import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.javaUtility.SepaUtility;
@@ -53,7 +53,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.LoadException;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -200,8 +199,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 Pane resultDialog = new ResultDialog(result)
                         .generateEmbeddableWizardPage()
                         .getRoot();
-                Stage resultStage = new Stage();
-                resultStage.setScene(new Scene(resultDialog));
+                Stage resultStage = StagePreparer.getDefaultPreparedStage();
+                resultStage.getScene()
+                        .setRoot(resultDialog);
                 resultStage.show();
             } catch (LoadException ex) {
                 LOGGER.log(Level.SEVERE, "Could not create result dialog", ex);
@@ -443,7 +443,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                                 });
                     }
                 });
-                Stage wizardStage = new Stage();
+                Stage wizardStage = StagePreparer.getDefaultPreparedStage();
                 wizard.stateProperty()
                         .addListener((obs, previousState, currentState) -> {
                             if (currentState == WizardState.FINISHED
@@ -454,10 +454,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 wizardStage.initOwner(stage);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
                 wizardStage.setResizable(false);
-                Scene wizardScene = PreparationUtility.addStyle(new Scene(wizard.getRoot()));
-                wizardStage.setScene(wizardScene);
-                PreparationUtility.addLogo(wizardStage)
-                        .showAndWait();
+                wizardStage.getScene()
+                        .setRoot(wizard.getRoot());
+                wizardStage.showAndWait();
             }
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
@@ -550,13 +549,13 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                         throw new Error("Could not generate wizard page showing the query result", ex);
                     }
                 });
-                Stage wizardStage = new Stage();
+                Stage wizardStage = StagePreparer.getDefaultPreparedStage();
                 wizardStage.initOwner(stage);
                 wizardStage.initModality(Modality.WINDOW_MODAL);
                 wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
                 wizardStage.setResizable(true);
-                Scene wizardScene = PreparationUtility.addStyle(new Scene(queryWizard.getRoot()));
-                wizardStage.setScene(wizardScene);
+                wizardStage.getScene()
+                        .setRoot(queryWizard.getRoot());
                 queryWizard.stateProperty()
                         .addListener((obs, previousState, currentState) -> {
                             if (currentState == WizardState.ABORTED
@@ -564,8 +563,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                                 wizardStage.close();
                             }
                         });
-                PreparationUtility.addLogo(wizardStage)
-                        .show();
+                wizardStage.show();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
                 try {
@@ -675,15 +673,15 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 reports.put(EnvironmentHandler.getResourceValue(key), messages);
             });
 
-            Stage reportsStage = new Stage();
+            Stage reportsStage = StagePreparer.getDefaultPreparedStage();
             reportsStage.initOwner(getStage());
             reportsStage.initModality(Modality.APPLICATION_MODAL);
             reportsStage.initStyle(StageStyle.UTILITY);
             reportsStage.setTitle(EnvironmentHandler.getResourceValue("checkData"));
             Parent checkReportDialog = CheckReportDialogUtility.createCheckReportDialog(reports);
-            reportsStage.setScene(PreparationUtility.addStyle(new Scene(checkReportDialog)));
-            PreparationUtility.addLogo(reportsStage)
-                    .showAndWait();
+            reportsStage.getScene()
+                    .setRoot(checkReportDialog);
+            reportsStage.showAndWait();
         });
     }
 
@@ -732,8 +730,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String credits = EnvironmentHandler.getResourceValue("credits");
         String creditsContent = EnvironmentHandler.getResourceValue("creditsContent");
         try {
-            Alert alert = DialogUtility.createMessageAlert(creditsContent, credits, credits);
-            PreparationUtility.addLogo(PreparationUtility.addStyle(alert));
+            Alert alert = StagePreparer.prepare(DialogUtility.createMessageAlert(creditsContent, credits, credits));
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show credits graphically to user", ex);
@@ -750,8 +747,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String versionInfo = AppInfo.VERSION + " (" + AppInfo.UPDATE_NAME + ")" + compDateTime;
         String version = EnvironmentHandler.getResourceValue("version");
         try {
-            Alert alert = DialogUtility.createInfoAlert(versionInfo, version, version);
-            PreparationUtility.addLogo(PreparationUtility.addStyle(alert));
+            Alert alert = StagePreparer.prepare(DialogUtility.createInfoAlert(versionInfo, version, version));
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show version information graphically to user", ex);

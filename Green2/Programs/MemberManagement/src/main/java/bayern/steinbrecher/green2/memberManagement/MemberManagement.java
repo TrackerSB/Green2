@@ -25,8 +25,8 @@ import bayern.steinbrecher.green2.sharedBasis.data.Profile;
 import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
-import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
+import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
@@ -87,11 +87,10 @@ public class MemberManagement extends Application {
     }
 
     private static void showSplashScreen() {
-        Stage splashScreenStage = PreparationUtility.getPreparedStage();
+        SplashScreen splashScreen = new SplashScreen();
+        Stage splashScreenStage = splashScreen.getPreparedStage();
         try {
-            new SplashScreen()
-                    .embedStandaloneWizardPage(splashScreenStage, EnvironmentHandler.getResourceValue("skip"));
-            PreparationUtility.addStyle(splashScreenStage.getScene());
+            splashScreen.embedStandaloneWizardPage(splashScreenStage, EnvironmentHandler.getResourceValue("skip"));
         } catch (LoadException ex) {
             LOGGER.log(Level.WARNING, "Could not show splash screen to user. It is skipped.", ex);
             return;
@@ -115,24 +114,6 @@ public class MemberManagement extends Application {
                     }
                 });
         splashScreenStage.showAndWait();
-    }
-
-    private Login<? extends DBCredentials> prepareLogin(Stage loginStage) throws LoadException {
-        assert loadedProfile != null : "The preparation of the login requires a profile to be loaded first";
-
-        Login<? extends DBCredentials> login;
-        if (loadedProfile.get(ProfileSettings.USE_SSH)) {
-            login = new SshLogin();
-        } else {
-            login = new SimpleLogin();
-        }
-        try {
-            login.embedStandaloneWizardPage(loginStage, EnvironmentHandler.getResourceValue("login"));
-        } catch (LoadException ex) {
-            throw new LoadException("Could not generate login dialog", ex);
-        }
-        PreparationUtility.addStyle(loginStage.getScene());
-        return login;
     }
 
     private Optional<DBConnection> establishDBConnection(DBCredentials credentials) {
@@ -186,7 +167,7 @@ public class MemberManagement extends Application {
             LOGGER.log(Level.WARNING, "Could not show error to user", ex);
         }
         if (failureReport != null) {
-            DialogUtility.showAndWait(PreparationUtility.addLogo(PreparationUtility.addStyle(failureReport)));
+            DialogUtility.showAndWait(StagePreparer.prepare(failureReport));
         }
         return Optional.ofNullable(dbConnection);
     }
@@ -237,7 +218,7 @@ public class MemberManagement extends Application {
         if (failureReport == null) {
             return true;
         } else {
-            DialogUtility.showAndWait(PreparationUtility.addLogo(PreparationUtility.addStyle(failureReport)));
+            DialogUtility.showAndWait(StagePreparer.prepare(failureReport));
             return false;
         }
     }
@@ -252,16 +233,16 @@ public class MemberManagement extends Application {
         }
     }
 
-    private void showMainMenu(Stage menuStage) {
+    private void showMainMenu() {
         assert dbConnection != null : "Cannot open main menu without established database connection";
 
+        MainMenu mainMenu = new MainMenu(dbConnection);
+        Stage menuStage = mainMenu.getPreparedStage();
         try {
-            new MainMenu(dbConnection)
-                    .embedStandaloneWizardPage(menuStage, null);
+            mainMenu.embedStandaloneWizardPage(menuStage, null);
         } catch (LoadException ex) {
             throw new RuntimeException("Could not create main menu", ex);
         }
-        PreparationUtility.addStyle(PreparationUtility.addLogo(menuStage).getScene());
         menuStage.setTitle(String.format("%s (%s \"%s\")", AppInfo.APP_NAME, AppInfo.VERSION, AppInfo.UPDATE_NAME));
         menuStage.show();
     }
@@ -276,22 +257,31 @@ public class MemberManagement extends Application {
             if (loadedProfile.isAllConfigurationsSet()) {
                 showSplashScreen();
 
-                Stage waitScreenStage = PreparationUtility.getPreparedStage();
+                WaitScreen waitScreen = new WaitScreen();
+                Stage waitScreenStage = waitScreen.getPreparedStage();
                 try {
-                    new WaitScreen()
-                            .embedStandaloneWizardPage(waitScreenStage, EnvironmentHandler.getResourceValue("cancel"));
+                    waitScreen.embedStandaloneWizardPage(
+                            waitScreenStage, EnvironmentHandler.getResourceValue("cancel"));
                 } catch (LoadException ex) {
                     LOGGER.log(Level.WARNING, "Could not show wait screen. It is skipped.", ex);
                     return;
                 }
-                PreparationUtility.addStyle(waitScreenStage.getScene());
                 waitScreenStage.initModality(Modality.APPLICATION_MODAL);
                 waitScreenStage.initStyle(StageStyle.TRANSPARENT);
 
-                Stage loginStage = PreparationUtility.getPreparedStage();
-                Login<? extends DBCredentials> login = prepareLogin(loginStage);
+                Login<? extends DBCredentials> login;
+                if (loadedProfile.get(ProfileSettings.USE_SSH)) {
+                    login = new SshLogin();
+                } else {
+                    login = new SimpleLogin();
+                }
+                Stage loginStage = login.getPreparedStage();
+                try {
+                    login.embedStandaloneWizardPage(loginStage, EnvironmentHandler.getResourceValue("login"));
+                } catch (LoadException ex) {
+                    throw new LoadException("Could not generate login dialog", ex);
+                }
                 loginStage.show();
-
 
                 loginStage.showingProperty().addListener((obs, wasShowing, isShowing) -> {
                     if (isShowing) {
@@ -305,7 +295,7 @@ public class MemberManagement extends Application {
                                     boolean credentialsAreValid = validateCredentials(credentials.get());
                                     if (credentialsAreValid) {
                                         Platform.runLater(() -> {
-                                            showMainMenu(primaryStage);
+                                            showMainMenu();
                                             waitScreenStage.close();
                                         });
                                     } else {
@@ -326,8 +316,7 @@ public class MemberManagement extends Application {
             } else {
                 String badConfigs = EnvironmentHandler.getResourceValue("badConfigs", loadedProfile.getProfileName());
                 try {
-                    Alert failureReport = PreparationUtility.addLogo(PreparationUtility.addStyle(
-                            DialogUtility.createErrorAlert(badConfigs, badConfigs)));
+                    Alert failureReport = StagePreparer.prepare(DialogUtility.createErrorAlert(badConfigs, badConfigs));
                     DialogUtility.showAndWait(failureReport)
                             .ifPresent(buttontype -> {
                                 if (buttontype == ButtonType.OK) {

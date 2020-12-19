@@ -2,14 +2,15 @@ package bayern.steinbrecher.green2.configurationDialog;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
-import bayern.steinbrecher.green2.sharedBasis.utility.PreparationUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,29 +19,22 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class ConfigDialog extends Application {
+public class ConfigDialog extends Application implements StagePreparer {
 
     private static final Logger LOGGER = Logger.getLogger(ConfigDialog.class.getName());
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void start(Stage stage) {
+    public void start(Stage primaryStage) {
         ProfileChoice.askForProfile(true).ifPresent(profile -> {
+            Stage stage = getPreparedStage();
             try {
                 EnvironmentHandler.loadProfile(profile);
 
                 FXMLLoader fxmlLoader = new FXMLLoader(
                         getClass().getResource("ConfigDialog.fxml"), EnvironmentHandler.RESOURCE_BUNDLE);
                 Parent root = fxmlLoader.load();
-                root.getStylesheets()
-                        .addAll(
-                                EnvironmentHandler.DEFAULT_STYLESHEET,
-                                getClass()
-                                        .getResource("/bayern/steinbrecher/green2/configurationDialog/configDialog.css")
-                                        .toExternalForm()
-                        );
+                stage.getScene()
+                        .setRoot(root);
                 ((ConfigDialogController) fxmlLoader.getController())
                         .setStage(stage);
 
@@ -55,13 +49,21 @@ public class ConfigDialog extends Application {
                     }
                 });
                 stage.setResizable(false);
-                stage.setScene(PreparationUtility.addStyle(new Scene(root)));
-                PreparationUtility.addLogo(stage)
-                        .show();
+                stage.show();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         });
+    }
+
+    @Override
+    public Collection<String> getRegisteredStylesheets() {
+        Collection<String> stylesheets = new ArrayList<>(StagePreparer.super.getRegisteredStylesheets());
+        stylesheets.add(
+                getClass()
+                        .getResource("/bayern/steinbrecher/green2/configurationDialog/configDialog.css")
+                        .toExternalForm());
+        return stylesheets;
     }
 
     /**
