@@ -167,7 +167,6 @@ public class ProfileChoice implements StagePreparer {
             ProfileChoice choice = new ProfileChoice();
             Stage choiceStage = choice.getPreparedStage();
             choice.embedContentIntoAndWait(choiceStage);
-            choiceStage.showAndWait();
             profile = Optional.ofNullable(choice.profile);
         } else {
             List<String> availableProfiles = Profile.getAvailableProfiles();
