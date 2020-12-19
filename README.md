@@ -1,5 +1,5 @@
 ### Technology
-[![Build Status](https://travis-ci.org/TrackerSB/Green2.svg?branch=master)](https://travis-ci.org/TrackerSB/Green2)
+![Java CI with Gradle](https://github.com/TrackerSB/Green2/workflows/Java%20CI%20with%20Gradle/badge.svg)
 ![CodeQL](https://github.com/TrackerSB/Green2/workflows/CodeQL/badge.svg)
 ![Codacy Security Scan](https://github.com/TrackerSB/Green2/workflows/Codacy%20Security%20Scan/badge.svg)
 [![GitHub release](https://img.shields.io/github/release/trackersb/green2.svg)](https://github.com/TrackerSB/Green2)
