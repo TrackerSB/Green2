@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -281,35 +282,41 @@ public class MemberManagement extends Application {
                 } catch (LoadException ex) {
                     throw new LoadException("Could not generate login dialog", ex);
                 }
+                AtomicBoolean loginCanceled = new AtomicBoolean(false);
+                loginStage.setOnCloseRequest(wevt -> {
+                    loginCanceled.set(true);
+                });
                 loginStage.show();
 
                 loginStage.showingProperty().addListener((obs, wasShowing, isShowing) -> {
                     if (isShowing) {
                         waitScreenStage.hide();
                     } else {
-                        waitScreenStage.show();
-                        if (login.isValid()) {
-                            Optional<? extends DBCredentials> credentials = login.getResult();
-                            if (credentials.isPresent()) {
-                                new Thread(() -> {
-                                    boolean credentialsAreValid = validateCredentials(credentials.get());
-                                    if (credentialsAreValid) {
-                                        Platform.runLater(() -> {
-                                            showMainMenu();
-                                            waitScreenStage.close();
-                                        });
-                                    } else {
-                                        Platform.runLater(loginStage::show);
-                                    }
-                                }).start();
+                        if(!loginCanceled.get()) {
+                            waitScreenStage.show();
+                            if (login.isValid()) {
+                                Optional<? extends DBCredentials> credentials = login.getResult();
+                                if (credentials.isPresent()) {
+                                    new Thread(() -> {
+                                        boolean credentialsAreValid = validateCredentials(credentials.get());
+                                        if (credentialsAreValid) {
+                                            Platform.runLater(() -> {
+                                                showMainMenu();
+                                                waitScreenStage.close();
+                                            });
+                                        } else {
+                                            Platform.runLater(loginStage::show);
+                                        }
+                                    }).start();
+                                } else {
+                                    LOGGER.log(Level.WARNING, "The login did not provide credentials");
+                                    Platform.exit();
+                                }
                             } else {
-                                LOGGER.log(Level.WARNING, "The login did not provide credentials");
-                                Platform.exit();
+                                LOGGER.log(Level.INFO, "The login dialog classifies the input as invalid. "
+                                        + "Show login dialog again.");
+                                Platform.runLater(loginStage::show);
                             }
-                        } else {
-                            LOGGER.log(Level.INFO, "The login dialog classifies the input as invalid. "
-                                    + "Show login dialog again.");
-                            Platform.runLater(loginStage::show);
                         }
                     }
                 });
