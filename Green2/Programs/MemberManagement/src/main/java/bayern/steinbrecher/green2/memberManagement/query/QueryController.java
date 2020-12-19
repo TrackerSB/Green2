@@ -49,6 +49,7 @@ import javafx.scene.layout.Priority;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         conditionFields.clear();
 
         List<Column<?>> sortedColumns = connection.getAllColumns(table).stream()
-                .sorted((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()))
+                .sorted(Comparator.comparingInt(Column::getIndex))
                 .collect(Collectors.toList());
         if (sortedColumns.isEmpty()) {
             throw new IllegalStateException(
