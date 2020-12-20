@@ -1,6 +1,9 @@
 package bayern.steinbrecher.green2.sharedBasis.utility;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +23,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 /**
  * Implements methods for writing data into files.
@@ -45,17 +46,18 @@ public final class IOStreamUtility {
      * to any profile. If the profile settings should be updated
      * {@link EnvironmentHandler#askForSavePath(javafx.stage.Stage, String, String, Object...)} should be used.
      *
-     * @param owner The owner of the dialog.
-     * @param filePrefix The name of the file which is prefixed with the current date and may be extended by a number if
-     * it already exists.
-     * @param fileEnding The format of the file. NOTE: Without leading point.
+     * @param owner                The owner of the dialog.
+     * @param filePrefix           The name of the file which is prefixed with the current date and may be extended
+     *                             by a number if
+     *                             it already exists.
+     * @param fileEnding           The format of the file. NOTE: Without leading point.
      * @param initialDirectoryPath The path of the directory to show initially.
      * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.
      * @see EnvironmentHandler#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String,
      * java.lang.Object...)
      */
     public static Optional<File> askForSavePath(Stage owner, String filePrefix, String fileEnding,
-            String initialDirectoryPath) {
+                                                String initialDirectoryPath) {
         String today = LocalDate.now().toString();
         String dateFilePrefix = today + "_" + filePrefix;
         File initialDirectory = new File(initialDirectoryPath);
@@ -85,7 +87,7 @@ public final class IOStreamUtility {
      * Reads the hole content of a given {@link InputStream} decoding with {@link Charset}.
      *
      * @param inputStream The {@link InputStream} to read.
-     * @param charset The charset to use for decoding the {@link InputStream}.
+     * @param charset     The charset to use for decoding the {@link InputStream}.
      * @return The content of the given {@link InputStream}. It never returns {@code null}.
      * @throws IOException Thrown if an {@link IOException} is thrown by {@link InputStream#read()}.
      * @see InputStream#read()
@@ -113,16 +115,12 @@ public final class IOStreamUtility {
      * @param isr The stream to read from.
      * @param osw The stream to write to.
      */
-    public static void transfer(InputStreamReader isr, OutputStreamWriter osw) {
+    public static void transfer(InputStreamReader isr, OutputStreamWriter osw) throws IOException {
         char[] buffer = new char[BUFFER_SIZE];
-        try {
-            int bytesRead = isr.read(buffer);
-            while (bytesRead > 0) {
-                osw.write(buffer, 0, bytesRead);
-                bytesRead = isr.read(buffer);
-            }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        int bytesRead = isr.read(buffer);
+        while (bytesRead > 0) {
+            osw.write(buffer, 0, bytesRead);
+            bytesRead = isr.read(buffer);
         }
     }
 
@@ -130,14 +128,14 @@ public final class IOStreamUtility {
      * Transfers all chars from {@link InputStream} to {@link OutputStream} (e.g. of a file). It loops over
      * {@link InputStream} transferring {@code bytesPerLoop} bytes per loop.
      *
-     * @param inputStream The stream to read from.
+     * @param inputStream  The stream to read from.
      * @param outputStream The stream of the file to write to.
-     * @param size The size of the {@link InputStream}.
+     * @param size         The size of the {@link InputStream}.
      * @param bytesPerLoop The amount of bytes to transfer per loop.
-     * @param callback A method to call on every loop. {@code null} for no callback.
+     * @param callback     A method to call on every loop. {@code null} for no callback.
      */
     public static void transfer(InputStream inputStream, OutputStream outputStream, long size, int bytesPerLoop,
-            Runnable callback) {
+                                Runnable callback) {
         try (ReadableByteChannel inChannel = Channels.newChannel(inputStream)) {
             ByteBuffer buffer = ByteBuffer.allocate(bytesPerLoop);
             for (int offset = 0; offset < size; offset += bytesPerLoop) {
@@ -156,9 +154,9 @@ public final class IOStreamUtility {
      * Overrides the hole content of {@code outputFile} with {@code content}.If {@code pathToFile} doesn't exist it
      * creates one.
      *
-     * @param content The content to be written into the file.
+     * @param content    The content to be written into the file.
      * @param outputFile The file to write in.
-     * @param withBom Only if {@code true} it adds '\uFEFF' to the beginning of the file.
+     * @param withBom    Only if {@code true} it adds '\uFEFF' to the beginning of the file.
      * @throws java.io.IOException Thrown if any I/O error occurs.
      */
     public static void printContent(String content, File outputFile, boolean withBom) throws IOException {

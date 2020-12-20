@@ -2,6 +2,7 @@ package bayern.steinbrecher.green2.sharedBasis.utility;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -32,30 +33,31 @@ public final class URLUtility {
      */
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public static Optional<String> resolveURL(String url) {
-        String resolvedUrl = url;
+        String currentUrl = url;
         try {
             boolean redirected;
             do {
                 redirected = false;
-                HttpURLConnection connection = (HttpURLConnection) new URL(resolvedUrl).openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URL(currentUrl)
+                        .openConnection();
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
                             || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
                             || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
                         redirected = true;
-                        resolvedUrl = connection.getHeaderField("Location");
+                        currentUrl = connection.getHeaderField("Location");
                     } else {
-                        LOGGER.log(Level.WARNING, "\"{0}\" returned code {1}. No action defined for handling.",
-                                new Object[]{resolvedUrl, responseCode});
-                        resolvedUrl = null;
+                        LOGGER.log(Level.WARNING, "\"{0}\" returned HTML code {1} which is unsupported yet",
+                                new Object[]{currentUrl, responseCode});
+                        currentUrl = null;
                     }
                 }
             } while (redirected);
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            resolvedUrl = null;
+            LOGGER.log(Level.WARNING, "Could not resolve URL", ex);
+            currentUrl = null;
         }
-        return Optional.ofNullable(resolvedUrl);
+        return Optional.ofNullable(currentUrl);
     }
 }

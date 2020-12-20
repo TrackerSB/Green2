@@ -26,6 +26,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import bayern.steinbrecher.green2.launcher.Launcher;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.javaUtility.XMLUtility;
 import org.w3c.dom.Document;
@@ -43,7 +44,7 @@ public final class UpdateUtility {
 
     private static final Logger LOGGER = Logger.getLogger(UpdateUtility.class.getName());
     private static final String UPDATE_CONDITIONS_PATH
-            = PathUtility.PROGRAMFOLDER_PATH_ONLINE + "/updateConditions.xml";
+            = Launcher.PROGRAMFOLDER_PATH_ONLINE + "/updateConditions.xml";
 
     private UpdateUtility() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
