@@ -18,7 +18,13 @@ With oWS
     versionFilePath = appDataPath & "\version.txt" 'Still legacy reason
     
     'Delete Registry keys
-    .RegDelete WScript.Arguments(0) & "\"
+    regEntry = WScript.Arguments(0) & "\"
+    .RegRead(regEntry)
+    If Err.Number = 0 Then
+        Err.Clear
+        'FIXME Delete all subkeys
+        .RegDelete regEntry
+    End If
 End With
 
 'Delete folder but configs

@@ -8,6 +8,7 @@ import bayern.steinbrecher.wizard.EmbeddedWizardPage;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardState;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -39,18 +40,28 @@ public final class Uninstaller extends Application {
         pages.put(EmbeddedWizardPage.FIRST_PAGE_KEY, deleteConfigsPage);
         pages.put("confirmUninstall", confirmUninstallPage);
 
+        Stage stage = StagePreparer.getDefaultPreparedStage();
         Wizard wizard = Wizard.create(pages);
         wizard.stateProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal == WizardState.FINISHED) {
-                deleteConfigsPage.getResult()
-                        .ifPresentOrElse(this::uninstall, () -> {
-                            LOGGER.log(Level.SEVERE, "The user made no decision about whether to keep or delete "
-                                    + "config files. Uninstall aborted.");
-                        });
+            switch(newVal){
+            case FINISHED:
+                Optional<Boolean> optResult = deleteConfigsPage.getResult();
+                if(optResult.isPresent()){
+                    uninstall(optResult.get());
+                }else {
+                    LOGGER.log(Level.SEVERE, "The user made no decision about whether to keep or delete "
+                            + "config files. Uninstall aborted.");
+                }
+                // Fallthrough to ABORTED
+            case ABORTED:
+                stage.close();
+                break;
+            default:
+                // no op
+                break;
             }
         });
 
-        Stage stage = StagePreparer.getDefaultPreparedStage();
         stage.getScene()
                 .setRoot(wizard.getRoot());
         stage.setResizable(false);
@@ -89,12 +100,12 @@ public final class Uninstaller extends Application {
         switch (EnvironmentHandler.CURRENT_OS) {
         case LINUX:
             builder = new ProcessBuilder(
-                    "/bin/bash", EnvironmentHandler.APPLICATION_ROOT.resolve("uninstall.sh").toString(),
+                    "/bin/bash", EnvironmentHandler.APPLICATION_ROOT.resolve("bin/uninstall.sh").toString(),
                     getPreferencesBasePath(), deleteConfigsString);
             break;
         case WINDOWS:
             builder = new ProcessBuilder(
-                    "wscript", EnvironmentHandler.APPLICATION_ROOT.resolve("uninstall.vbs").toString(),
+                    "wscript", EnvironmentHandler.APPLICATION_ROOT.resolve("bin/uninstall.vbs").toString(),
                     getPreferencesBasePath(), deleteConfigsString);
             break;
         default:

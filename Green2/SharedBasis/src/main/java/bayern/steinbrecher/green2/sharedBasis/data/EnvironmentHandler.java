@@ -39,7 +39,7 @@ public final class EnvironmentHandler {
      * The name of the folder containing the licenses of Green2.
      */
     private static final String LICENSES_FOLDER_NAME = "licenses";
-    private static final String PREFERENCES_SUBKEY = "bayern/steinbrecher/green2/sharedBasis";
+    private static final String PREFERENCES_SUBKEY = "bayern/steinbrecher/green2";
     /**
      * The node of the user preferences where to put user specific settings of Green2.
      */

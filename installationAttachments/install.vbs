@@ -6,24 +6,32 @@ End If
 
 Set oWS = CreateObject("WScript.Shell")
 With oWS
-    programFilesPath = .ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2\"
-    executablesPath = programFilesPath & "bin"
-    menuEntryFolderPath = .SpecialFolders("AllUsersPrograms") & "\Green2\"
-    configFolderPath = .ExpandEnvironmentStrings("%AppData%") & "\Green2\"
+    programFilesPath = .ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
+    executablesPath = programFilesPath & "\bin"
+    menuEntryFolderPath = .SpecialFolders("AllUsersPrograms") & "\Green2"
+    configFolderPath = .ExpandEnvironmentStrings("%AppData%") & "\Green2"
 End With
 
 'Get the directory of the install script (May not be the current directory)
-downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0) & "..\"
+downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0) & "\.."
 
 Set fso = CreateObject("Scripting.FileSystemObject")
 With fso
     'Delete files which are not needed for Windows
-    .DeleteFile downloadedDir & "bin\*.sh"
-    .DeleteFile downloadedDir & "bin\*.desktop"
+    .DeleteFile downloadedDir & "\bin\*.sh"
+    .DeleteFile downloadedDir & "\bin\*.desktop"
+    .DeleteFile downloadedDir & "\bin\icon.png"
+    .DeleteFile downloadedDir & "\bin\ConfigurationDialog"
+    .DeleteFile downloadedDir & "\bin\Launcher"
+    .DeleteFile downloadedDir & "\bin\MemberManagement"
+    .DeleteFile downloadedDir & "\bin\Uninstaller"
 
     'Delete previous installation
     If .FolderExists(programFilesPath) Then
         .DeleteFolder(programFilesPath)
+    End If
+    If .FolderExists(menuEntryFolderPath) Then
+        .DeleteFolder(menuEntryFolderPath)
     End If
 
     'Create program folder if needed
@@ -32,27 +40,27 @@ With fso
     End If
 
     'Move lib folder
-    libpath = programFilesPath & "lib"
+    libpath = programFilesPath & "\lib"
     If NOT .FolderExists(libpath) Then
         .CreateFolder(libpath)
     End If
-    .CopyFile downloadedDir & "lib\*.*", libpath
-    .DeleteFolder downloadedDir & "lib"
+    .CopyFile downloadedDir & "\lib\*.*", libpath
+    .DeleteFolder downloadedDir & "\lib"
 
     'Move licences folder
-    licencesPath = programFilesPath & "licenses"
+    licencesPath = programFilesPath & "\licenses"
     If NOT .FolderExists(licencesPath) Then
         .CreateFolder(licencesPath)
     End If
-    .CopyFile downloadedDir & "licenses\*.*", licencesPath
-    .DeleteFolder downloadedDir & "licenses"
+    .CopyFile downloadedDir & "\licenses\*.*", licencesPath
+    .DeleteFolder downloadedDir & "\licenses"
 
     'Move executable files (NOTE includes this file itself)
     If NOT .FolderExists(executablesPath) Then
         .CreateFolder(executablesPath)
     End If
-    .CopyFile downloadedDir & "bin\*.*", executablesPath, True
-    .DeleteFolder downloadedDir & "bin"
+    .CopyFile downloadedDir & "\bin\*.*", executablesPath, True
+    .DeleteFolder downloadedDir & "\bin"
 End With
 
 'Create start menu entries
@@ -67,11 +75,11 @@ Sub createLink(linkname, workingDir, fileOfWorkingDir)
     End If
 
     'create the link itself
-    sLinkFile = menuEntryFolderPath & linkname & ".lnk"
+    sLinkFile = menuEntryFolderPath & "\" & linkname & ".lnk"
     With oWS.CreateShortcut(sLinkFile)
-        .TargetPath = workingDir & fileOfWorkingDir
+        .TargetPath = workingDir & "\" & fileOfWorkingDir
         .WorkingDirectory = workingDir
-        .IconLocation = executablesPath & "icon.ico"
+        .IconLocation = executablesPath & "\icon.ico"
         .Save
     End With
 End Sub
