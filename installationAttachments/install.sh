@@ -23,21 +23,14 @@ ProgramFolder="/opt/Green2"
 MenuEntryFolder="/usr/share/applications"
 
 # Remove program folder and shortcuts of previous versions and this version
-$SudoCommand -c "rm -r /opt/Grün2_Mitgliederverwaltung;
-rm -r $ProgramFolder;
-rm -r $MenuEntryFolder/Grün_*;
-
-# Move configurations of previous versions
-mkdir -p $ConfigDir;
-mv $HOME/.Grün2_Mitgliederverwaltung/* $ConfigDir;
-rm -r $HOME/.Grün2_Mitgliederverwaltung;
+$SudoCommand -c "rm -r $ProgramFolder;
 
 # Create program folder
 mkdir -p $ProgramFolder;
-mv -f $TempDir/*.desktop $MenuEntryFolder/;
+mv -f $TempDir/bin/*.desktop $MenuEntryFolder/;
 mv -f $TempDir/* $ProgramFolder/;
-rm $ProgramFolder/*.xml;
-rm $ProgramFolder/*.bat;
-rm $ProgramFolder/*.vbs;"
+rm $ProgramFolder/bin/*.xml;
+rm $ProgramFolder/bin/*.bat;
+rm $ProgramFolder/bin/*.vbs;"
 
 echo "Green2 was installed/updated"

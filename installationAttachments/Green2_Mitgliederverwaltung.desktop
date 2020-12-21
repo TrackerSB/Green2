@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Green2 Membermanagement
-Name[de]=Grün2 Mitgliederverwaltung
-Exec=/usr/bin/xdg-open /opt/Green2/Launcher.jar
-Icon=/opt/Green2/icon.png
+Name=Start Green2
+Name[de]=Grün2 starten
+Exec=/usr/bin/xdg-open /opt/Green2/bin/Launcher
+Icon=/opt/Green2/bin/icon.png
 Categories=Office;Java;

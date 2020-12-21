@@ -30,12 +30,9 @@ rm -r \"/opt/Green2\""
 
 # Delete user preferences
 rm -r "$1"
-echo "HERE"
-echo "$1"
 
 # Possibly delete configurations
 if [[ "$2" == "true" ]]; then
-    echo "HERE 2"
     echo "$2"
-    rm -r "$HOME/.Green2/"
+    rm -r "$HOME/.config/Green2/"
 fi

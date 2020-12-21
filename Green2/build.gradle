@@ -1,13 +1,40 @@
 plugins {
     // NOTE version 0.0.9 yields an execution error
     id "org.openjfx.javafxplugin" version "0.0.8" apply false
+    id "java"
+    id "distribution"
+}
+
+task createDeployableArchive(type: Zip) {
+    /* NOTE Using "allprojects" results in adding duplicates for scripts and libraries as well as adding a pseudo JAR
+     * for :Programs
+     */
+    subprojects {
+        afterEvaluate { // Ensure that all tasks and runtime dependencies are found
+            subprojects.each {
+                // NOTE "startScripts" depends already on "jar"
+                if (it.tasks.findByName("startScripts") != null) {
+                    dependsOn "${it.path}:startScripts"
+                }
+            }
+
+            from(subprojects.collect { "${it.buildDir}/scripts" }) { into "bin" }
+            from(subprojects.collect { "${it.buildDir}/libs" }) { into "lib" }
+            from(subprojects.collect {
+                if (it.configurations.hasProperty("runtimeClasspath")) {
+                    return it.configurations.runtimeClasspath;
+                }
+                return []
+            }) { into "lib" }
+        }
+    }
+    from("${projectDir}/../installationAttachments") {into "bin"}
+    from("${projectDir}/../licenses") {into "licenses"}
 }
 
 allprojects {
     group "bayern.steinbrecher.Green2"
     version "2u14-SNAPSHOT"
-
-    apply plugin: "java"
 
     repositories {
         mavenCentral()

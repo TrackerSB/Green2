@@ -9,9 +9,6 @@ With oWS
     programFilesPath = .ExpandEnvironmentStrings("%ProgramFiles%") & "\Green2"
     menuEntryFolderPath = .SpecialFolders("AllUsersPrograms") & "\Green2"
     configFolderPath = .ExpandEnvironmentStrings("%AppData%") & "\Green2"
-    oldProgramFilesPath = .ExpandEnvironmentStrings("%ProgramFiles%") & "\Grün2_Mitgliederverwaltung"
-    oldMenuEntryFolderPath = .SpecialFolders("AllUsersPrograms") & "\Grün2_Mitgliederverwaltung"
-    oldConfigFolderPath = .ExpandEnvironmentStrings("%AppData%") & "\Grün2_Mitgliederverwaltung"
 End With
 
 'Get the directory of the install script (May not be the current directory)
@@ -20,25 +17,8 @@ downloadedDir = Split(WScript.ScriptFullName, WScript.ScriptName)(0)
 Set fso = CreateObject("Scripting.FileSystemObject")
 With fso
     'Delete files which are not needed for Windows
-    .DeleteFile downloadedDir & "*.sh"
-    .DeleteFile downloadedDir & "*.desktop"
-
-    'Delete start menu entries and program files of previous versions
-    If .FolderExists(oldProgramFilesPath) Then
-        .DeleteFolder oldProgramFilesPath
-    End If
-    If .FolderExists(oldMenuEntryFolderPath) Then
-        .DeleteFolder oldMenuEntryFolderPath
-    End If
-
-    'Move configurations to new folder
-    If .FolderExists(oldConfigFolderPath) Then
-        If NOT .FolderExists(configFolderPath) Then
-            .CreateFolder(configFolderPath)
-        End If
-        .CopyFile oldConfigFolderPath & "\*.*", configFolderPath
-        .DeleteFolder oldConfigFolderPath
-    End If
+    .DeleteFile downloadedDir & "bin\*.sh"
+    .DeleteFile downloadedDir & "bin\*.desktop"
 
     'Create program folder if needed
     If NOT .FolderExists(programFilesPath) Then
