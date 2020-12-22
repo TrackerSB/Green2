@@ -1,6 +1,8 @@
 package bayern.steinbrecher.green2.uninstaller;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.sharedBasis.data.SupportedOS;
+import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.uninstaller.confirmUninstall.ConfirmUninstall;
 import bayern.steinbrecher.green2.uninstaller.deleteConfigs.DeleteConfigs;
@@ -68,7 +70,7 @@ public final class Uninstaller extends Application {
     private String getPreferencesBasePath() {
         //This method is implemented according to http://stackoverflow.com/questions/1320709/preference-api-storage
         String subkey = EnvironmentHandler.PREFERENCES_USER_NODE.absolutePath();
-        String javaUserNodePath = switch (EnvironmentHandler.CURRENT_OS) {
+        String javaUserNodePath = switch (SupportedOS.CURRENT) {
             case LINUX -> System.getProperty("java.util.prefs.userRoot",
                     System.getProperty("user.home") + "/.systemPrefs");
             case WINDOWS -> {
@@ -80,7 +82,6 @@ public final class Uninstaller extends Application {
                     yield "HKEY_CURRENT_USER\\Software\\JavaSoft\\Prefs";
                 }
             }
-            default -> throw new IllegalArgumentException("OS not supported by Uninstaller.");
         };
 
         return javaUserNodePath + subkey;
@@ -88,14 +89,13 @@ public final class Uninstaller extends Application {
 
     private void uninstall(boolean deleteConfigs) {
         String deleteConfigsString = Boolean.toString(deleteConfigs);
-        ProcessBuilder builder = switch (EnvironmentHandler.CURRENT_OS) {
+        ProcessBuilder builder = switch (SupportedOS.CURRENT) {
             case LINUX -> new ProcessBuilder(
-                    "/bin/bash", EnvironmentHandler.APPLICATION_ROOT.resolve("bin/uninstall.sh").toString(),
+                    "/bin/bash", PathUtility.EXECUTABLES_ROOT.resolve("uninstall.sh").toString(),
                     getPreferencesBasePath(), deleteConfigsString);
             case WINDOWS -> new ProcessBuilder(
-                    "wscript", EnvironmentHandler.APPLICATION_ROOT.resolve("bin/uninstall.vbs").toString(),
+                    "wscript", PathUtility.EXECUTABLES_ROOT.resolve("uninstall.vbs").toString(),
                     getPreferencesBasePath(), deleteConfigsString);
-            default -> throw new UnsupportedOperationException("The unstaller does not support the current os.");
         };
         try {
             /*Process process = */

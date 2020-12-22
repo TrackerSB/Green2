@@ -4,8 +4,9 @@ import bayern.steinbrecher.green2.launcher.elements.ChoiceDialog;
 import bayern.steinbrecher.green2.launcher.utility.ZipUtility;
 import bayern.steinbrecher.green2.sharedBasis.data.AppInfo;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
+import bayern.steinbrecher.green2.sharedBasis.data.SupportedOS;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
-import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
+import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.sharedBasis.utility.URLUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
@@ -107,7 +108,7 @@ public final class Launcher extends Application {
 
     private static void installApplication(File extractDir) throws IOException, InterruptedException {
         String dirPath = extractDir.getAbsolutePath();
-        Iterable<List<String>> installCommands = switch (EnvironmentHandler.CURRENT_OS) {
+        Iterable<List<String>> installCommands = switch (SupportedOS.CURRENT) {
             case WINDOWS -> List.of(
                     List.of("powershell", "Start-Process",
                             "\"wscript '" + dirPath + "/install.vbs'\"", "-Verb runAs", "-Wait")
@@ -116,7 +117,6 @@ public final class Launcher extends Application {
                     List.of("chmod", "a+x", dirPath + "/install.sh", dirPath + "/uninstall.sh"),
                     List.of("sh", dirPath + "/install.sh")
             );
-            default -> throw new UnsupportedOperationException("Installation does not support current OS");
         };
 
         for (List<String> command : installCommands) {
@@ -166,7 +166,9 @@ public final class Launcher extends Application {
     }
 
     private static boolean isApplicationInstalled() {
-        return new File(Programs.PROGRAMFOLDER_PATH_LOCAL).exists();
+        return PathUtility.INSTALL_ROOT
+                .toFile()
+                .exists();
     }
 
     /**
@@ -190,7 +192,7 @@ public final class Launcher extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         if (isApplicationInstalled()) {
             Optional<String> optOnlineVersion = readOnlineVersion();
             if (optOnlineVersion.isPresent()) {

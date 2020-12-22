@@ -1,28 +1,26 @@
 package bayern.steinbrecher.green2.sharedBasis.data;
 
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 
 /**
  * @author Stefan Huber
@@ -35,10 +33,6 @@ public final class EnvironmentHandler {
      */
     public static final ResourceBundle RESOURCE_BUNDLE
             = ResourceBundle.getBundle("bayern.steinbrecher.green2.sharedBasis.data.language.language");
-    /**
-     * The name of the folder containing the licenses of Green2.
-     */
-    private static final String LICENSES_FOLDER_NAME = "licenses";
     private static final String PREFERENCES_SUBKEY = "bayern/steinbrecher/green2";
     /**
      * The node of the user preferences where to put user specific settings of Green2.
@@ -46,45 +40,21 @@ public final class EnvironmentHandler {
     public static final Preferences PREFERENCES_USER_NODE = Preferences.userRoot().node(PREFERENCES_SUBKEY);
     private static final String LAST_SAVE_PATH_KEY = "lastSavePath";
     /**
-     * The os currently operating on. (Only supported os can be set)
-     */
-    public static final OS CURRENT_OS
-            = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") ? OS.WINDOWS : OS.LINUX;
-    /**
      * The path to the home directory of the user.
      */
     private static final String HOME_DIR = System.getProperty("user.home").replaceAll("\\\\", "/");
     /**
      * The path where to save files the user wants.
      */
-    private static final String DEFAULT_SAVE_PATH = CURRENT_OS == OS.WINDOWS ? HOME_DIR + "/Desktop" : HOME_DIR;
-    /**
-     * The path of the jar containing this class.
-     */
-    private static final Path CURRENT_JAR_PATH = resolveCurrentJarPath();
-    /**
-     * Saves {@code true} only if this jar is used as library and is not directly included.
-     */
-    public static final boolean IS_USED_AS_LIBRARY = isUsedAsLibrary();
-    /**
-     * The root path of Green2 application. It is the path of the current jar if this class is directly included in
-     * Launcher (Launcher SingleJar version).
-     */
-    public static final Path APPLICATION_ROOT = resolveApplicationRoot();
-    /**
-     * The path of the folder containing the licenses of Green2.
-     */
-    private static final Path LICENSES_PATH = Paths.get(APPLICATION_ROOT.toString(), LICENSES_FOLDER_NAME);
-    /**
-     * The name of the folder which should contain the application.
-     */
-    public static final String APPLICATION_FOLDER_NAME = "Green2";
+    private static final String DEFAULT_SAVE_PATH = (SupportedOS.CURRENT == SupportedOS.WINDOWS)
+            ? HOME_DIR + "/Desktop"
+            : HOME_DIR;
     /**
      * The root of the folder where to put user specific data of the application like profiles or information last time
      * inserted in the SEPA form.
      */
-    public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
-            ? "/AppData/Roaming/" : "/.config/") + APPLICATION_FOLDER_NAME;
+    public static final String APP_DATA_PATH = HOME_DIR + (SupportedOS.CURRENT == SupportedOS.WINDOWS
+            ? "/AppData/Roaming/" : "/.config/") + PathUtility.APPLICATION_FOLDER_NAME;
     private static final Property<Profile> loadedProfile = new SimpleObjectProperty<>();
 
     static {
@@ -98,46 +68,6 @@ public final class EnvironmentHandler {
 
     private EnvironmentHandler() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
-    }
-
-    private static boolean isUsedAsLibrary() {
-        Path root = CURRENT_JAR_PATH;
-        Path rootFileName;
-        do {
-            rootFileName = root.getFileName();
-            root = root.getParent();
-        } while (!(root == null || rootFileName == null || rootFileName.toString().equals(APPLICATION_FOLDER_NAME)));
-
-        return !(root == null || rootFileName == null);
-    }
-
-    private static Path resolveApplicationRoot() {
-        Path applicationRoot;
-        if (IS_USED_AS_LIBRARY) {
-            Path root = CURRENT_JAR_PATH;
-            Path rootFileName;
-            do {
-                root = root.getParent();
-                if (root == null) {
-                    break;
-                } else {
-                    rootFileName = root.getFileName();
-                }
-            } while (!(rootFileName == null || rootFileName.toString().equals(APPLICATION_FOLDER_NAME)));
-            applicationRoot = root;
-        } else {
-            applicationRoot = CURRENT_JAR_PATH.getParent();
-        }
-        return applicationRoot;
-    }
-
-    private static Path resolveCurrentJarPath() {
-        try {
-            return Paths.get(EnvironmentHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-                    .toAbsolutePath();
-        } catch (URISyntaxException ex) {
-            throw new IllegalStateException("Could not resolve location of this jar.", ex);
-        }
     }
 
     private static boolean isLoaded() {
@@ -222,24 +152,6 @@ public final class EnvironmentHandler {
     }
 
     /**
-     * Returns a list of all files of the licenses directory.
-     *
-     * @return The list of all files of the licenses directory.
-     */
-    public static List<File> getLicenses() {
-        List<File> licences;
-        try {
-            licences = Files.list(LICENSES_PATH)
-                    .map(path -> new File(path.toUri()))
-                    .collect(Collectors.toList());
-        } catch (IOException ex) {
-            LOGGER.log(Level.WARNING, "Could not find licenses. Skip menu entry.", ex);
-            licences = new ArrayList<>();
-        }
-        return licences;
-    }
-
-    /**
      * Opens a dialog asking the user to choose a directory based on the directory selected last time which is updated
      * on success.
      *
@@ -268,20 +180,6 @@ public final class EnvironmentHandler {
             }
         });
         return chosenFile;
-    }
-
-    /**
-     * Contains supported operation systems.
-     */
-    public enum OS {
-        /**
-         * Representing Windows operating system.
-         */
-        WINDOWS,
-        /**
-         * Representing any Linux operating system.
-         */
-        LINUX
     }
 
     /**

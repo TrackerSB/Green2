@@ -22,6 +22,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.people.Member;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
@@ -70,6 +71,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -235,8 +237,21 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         });
     }
 
+    public static List<File> getLicenses() {
+        List<File> licences;
+        try {
+            licences = Files.list(PathUtility.LICENSES_PATH)
+                    .map(path -> new File(path.toUri()))
+                    .collect(Collectors.toList());
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Could not find licenses. Skip menu entry.", ex);
+            licences = new ArrayList<>();
+        }
+        return licences;
+    }
+
     private void generateLicensesMenu() {
-        EnvironmentHandler.getLicenses().forEach(license -> {
+        getLicenses().forEach(license -> {
             MenuItem item = new MenuItem(license.getName());
             item.setOnAction(aevt -> {
                 try {
