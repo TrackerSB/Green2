@@ -7,6 +7,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.SupportedOS;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
+import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.sharedBasis.utility.URLUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
@@ -162,7 +163,7 @@ public final class Launcher extends Application {
     }
 
     private static void startMemberManagement() {
-        throw new UnsupportedOperationException("Starting the main application is not implemented yet");
+        Programs.MEMBER_MANAGEMENT.call();
     }
 
     private static boolean isApplicationInstalled() {
