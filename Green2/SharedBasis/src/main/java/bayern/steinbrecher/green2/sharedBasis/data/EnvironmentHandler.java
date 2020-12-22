@@ -85,7 +85,7 @@ public final class EnvironmentHandler {
      */
     public static final String APP_DATA_PATH = HOME_DIR + (CURRENT_OS == OS.WINDOWS
             ? "/AppData/Roaming/" : "/.config/") + APPLICATION_FOLDER_NAME;
-    private static Property<Profile> loadedProfile = new SimpleObjectProperty<>();
+    private static final Property<Profile> loadedProfile = new SimpleObjectProperty<>();
 
     static {
         //Create configDir if not existing
@@ -141,7 +141,7 @@ public final class EnvironmentHandler {
     }
 
     private static boolean isLoaded() {
-        return loadedProfile != null;
+        return loadedProfile.getValue() != null;
     }
 
     /**
@@ -172,7 +172,7 @@ public final class EnvironmentHandler {
      */
     public static List<String> getResourceValues(String key, List<Object[]> params) {
         List<String> values = new ArrayList<>(params.size());
-        params.stream().forEachOrdered(p -> values.add(getResourceValue(key, p)));
+        params.forEach(p -> values.add(getResourceValue(key, p)));
         return values;
     }
 
@@ -281,7 +281,7 @@ public final class EnvironmentHandler {
         /**
          * Representing any Linux operating system.
          */
-        LINUX;
+        LINUX
     }
 
     /**
