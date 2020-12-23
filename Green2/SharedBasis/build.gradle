@@ -9,6 +9,7 @@ allprojects {
 dependencies {
     implementation "bayern.steinbrecher:DBConnector:0.14.1-SNAPSHOT"
     implementation "bayern.steinbrecher:JavaUtility:0.16"
+    compile "bayern.steinbrecher:Wizard:1.49"
 }
 
 javafx {

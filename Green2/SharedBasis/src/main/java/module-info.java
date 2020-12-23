@@ -13,6 +13,8 @@ module bayern.steinbrecher.green2.SharedBasis {
     requires javafx.controls;
     requires javafx.graphics;
 
+    requires static bayern.steinbrecher.GenericWizard;
+
     // FIXME Opens to whom?
     opens bayern.steinbrecher.green2.sharedBasis.data.language;
     opens bayern.steinbrecher.green2.sharedBasis.icons;

@@ -1,5 +1,8 @@
 package bayern.steinbrecher.green2.sharedBasis.utility;
 
+import bayern.steinbrecher.wizard.StandaloneWizardPage;
+import bayern.steinbrecher.wizard.Wizard;
+import bayern.steinbrecher.wizard.WizardPage;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -16,6 +19,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * NOTE This interface should only be implemented by classes that may actually provide {@link Stage}s like classes that
+ * inherit {@link StandaloneWizardPage} or do not inherit at all. If a class e.g. inherits from {@link WizardPage} it
+ * should not implement this interface since the stylesheets returned by {@link #getRegisteredStylesheets()} are not
+ * applied automatically if a {@link WizardPage} is embedded into a {@link Wizard}.
+ *
  * @author Stefan Huber
  * @since 2u14
  */
@@ -66,11 +74,15 @@ public interface StagePreparer {
         } else {
             Platform.runLater(() -> {
                 stageRef.set(new Stage());
-                stageRef.notifyAll();
+                synchronized (stageRef) {
+                    stageRef.notifyAll();
+                }
             });
             while (stageRef.get() == null) {
                 try {
-                    stageRef.wait();
+                    synchronized (stageRef) {
+                        stageRef.wait();
+                    }
                 } catch (InterruptedException ex) {
                     LOGGER.log(Level.INFO, "Waiting for FX main thread to return a stage was interrupted", ex);
                 }
@@ -84,7 +96,7 @@ public interface StagePreparer {
             addLogo(stage);
             Scene scene = new Scene(new Label("The scene is empty"));
             addStyles(scene);
-            stage.setScene(scene);
+            Platform.runLater(() -> stage.setScene(scene));
             return stage;
         }
     }
