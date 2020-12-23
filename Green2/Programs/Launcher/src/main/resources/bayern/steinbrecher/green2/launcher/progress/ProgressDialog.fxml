@@ -24,9 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.launcher.progress.ProgressDialogController">
     <ProgressBar minWidth="200"
-                 progress="${controller.percentage}"/>
+                 progress="${controller.progress}"/>
     <HBox alignment="CENTER">
-        <Label text="${controller.percentageString}"/>
+        <Label text="${controller.progressString}"/>
         <Label text="%downloaded"/>
     </HBox>
 </VBox>

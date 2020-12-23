@@ -1,6 +1,8 @@
 package bayern.steinbrecher.green2.launcher;
 
 import bayern.steinbrecher.green2.launcher.elements.ChoiceDialog;
+import bayern.steinbrecher.green2.launcher.progress.ProgressDialog;
+import bayern.steinbrecher.green2.launcher.utility.ProgressWrapper;
 import bayern.steinbrecher.green2.launcher.utility.ZipUtility;
 import bayern.steinbrecher.green2.sharedBasis.data.AppInfo;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
@@ -22,8 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -62,7 +64,6 @@ public final class Launcher extends Application {
      * charset could not be determined.
      */
     private static final Charset ZIP_CHARSET = retrieveZipCharset();
-    private static final int DOWNLOAD_STEPS = 1000;
 
     private static Charset retrieveZipCharset() {
         Charset zipCharset;
@@ -77,15 +78,27 @@ public final class Launcher extends Application {
 
     private static File downloadApplicationArchive() throws IOException {
         URL downloadSource = new URL(GREEN2_ZIP_URL);
-        ReadableByteChannel downloadSourceChannel = Channels.newChannel(downloadSource.openStream());
+        URLConnection downloadConnection = downloadSource.openConnection();
+        long fileSize = Long.parseLong(downloadConnection.getHeaderField("Content-Length"));
+        ProgressWrapper downloadSourceChannel
+                = new ProgressWrapper(Channels.newChannel(downloadSource.openStream()), fileSize);
 
         File downloadTarget = Files.createTempFile("green2_", ".zip")
                 .toFile();
         downloadTarget.deleteOnExit();
         FileOutputStream downloadTargetStream = new FileOutputStream(downloadTarget);
 
+        ProgressDialog progress = new ProgressDialog();
+        Stage progressStage = StagePreparer.getDefaultPreparedStage();
+        progress.embedStandaloneWizardPage(progressStage, EnvironmentHandler.getResourceValue("hide"));
+        downloadSourceChannel.progressProperty()
+                .addListener((obs, previousProgress, currentProgress) -> {
+                    progress.setProgress(currentProgress.doubleValue());
+                });
+        Platform.runLater(progressStage::show);
         downloadTargetStream.getChannel()
-                .transferFrom(downloadSourceChannel, 0, Long.MAX_VALUE);
+                .transferFrom(downloadSourceChannel.getWrapped(), 0, Long.MAX_VALUE);
+        Platform.runLater(progressStage::close);
         return downloadTarget;
 
         // ProgressDialog progress = new ProgressDialog();
@@ -194,25 +207,27 @@ public final class Launcher extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        if (isApplicationInstalled()) {
-            Optional<String> optOnlineVersion = readOnlineVersion();
-            if (optOnlineVersion.isPresent()) {
-                boolean isInstallationOutdated = !AppInfo.VERSION.equalsIgnoreCase(optOnlineVersion.get());
-                if (isInstallationOutdated) {
-                    Optional<Boolean> userConfirmedUpdate = ChoiceDialog.askForUpdate(getHostServices());
-                    if (userConfirmedUpdate.orElse(false)) {
-                        startUpdateProcess();
+        new Thread(() -> {
+            if (isApplicationInstalled()) {
+                Optional<String> optOnlineVersion = readOnlineVersion();
+                if (optOnlineVersion.isPresent()) {
+                    boolean isInstallationOutdated = !AppInfo.VERSION.equalsIgnoreCase(optOnlineVersion.get());
+                    if (isInstallationOutdated) {
+                        Optional<Boolean> userConfirmedUpdate = ChoiceDialog.askForUpdate(getHostServices());
+                        if (userConfirmedUpdate.orElse(false)) {
+                            startUpdateProcess();
+                        }
                     }
                 }
+            } else {
+                startInstallationProcess();
             }
-        } else {
-            startInstallationProcess();
-        }
 
-        if (isApplicationInstalled()) {
-            startMemberManagement();
-        }
-        Platform.exit();
+            if (isApplicationInstalled()) {
+                startMemberManagement();
+            }
+            Platform.exit();
+        }).start();
     }
 
     public static void main(String[] args) {

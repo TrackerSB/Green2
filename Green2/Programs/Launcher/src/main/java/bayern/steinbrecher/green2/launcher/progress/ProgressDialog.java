@@ -1,17 +1,17 @@
 package bayern.steinbrecher.green2.launcher.progress;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.wizard.WizardPage;
+import bayern.steinbrecher.wizard.StandaloneWizardPage;
 
 import java.util.Optional;
 
 /**
- * A dialog showing progress of any operation.
+ * Visualize progress of some task. The progress is in [0; 1].
  *
  * @author Stefan Huber
  * @since 2u14
  */
-public class ProgressDialog extends WizardPage<Optional<Void>, ProgressDialogController> {
+public class ProgressDialog extends StandaloneWizardPage<Optional<Void>, ProgressDialogController> {
 
     public ProgressDialog() {
         super("ProgressDialog.fxml", EnvironmentHandler.RESOURCE_BUNDLE);
@@ -22,23 +22,11 @@ public class ProgressDialog extends WizardPage<Optional<Void>, ProgressDialogCon
         // stage.initStyle(StageStyle.UTILITY);
     }
 
-    /**
-     * Returns the progress in %.
-     *
-     * @return The progress in %..
-     * @see ProgressDialogController#percentageProperty()
-     */
-    public double getPercentage() {
-        return getController().getPercentage();
+    public double getProgress() {
+        return getController().getProgress();
     }
 
-    /**
-     * Increases the value of the progress by 1.0/{@code steps}.
-     *
-     * @param steps The count of steps 100% is split.
-     * @see ProgressDialogController#percentageProperty()
-     */
-    public void incPercentage(int steps) {
-        getController().incPercentage(steps);
+    public void setProgress(double progress) {
+        getController().setProgress(progress);
     }
 }
