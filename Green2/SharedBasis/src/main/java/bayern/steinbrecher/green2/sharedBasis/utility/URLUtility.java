@@ -2,7 +2,6 @@ package bayern.steinbrecher.green2.sharedBasis.utility;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -17,9 +16,6 @@ public final class URLUtility {
 
     private static final Logger LOGGER = Logger.getLogger(URLUtility.class.getName());
 
-    /**
-     * Prohibit construction of an object.
-     */
     private URLUtility() {
         throw new UnsupportedOperationException("Construction of an object is not allowed.");
     }
@@ -41,7 +37,8 @@ public final class URLUtility {
                 HttpURLConnection connection = (HttpURLConnection) new URL(currentUrl)
                         .openConnection();
                 int responseCode = connection.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
+                if (responseCode != HttpURLConnection.HTTP_OK
+                        && responseCode != HttpURLConnection.HTTP_FORBIDDEN) {
                     if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
                             || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
                             || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
