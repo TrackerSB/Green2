@@ -114,7 +114,7 @@ public final class Launcher extends Application {
 
     private static File unpackApplicationArchive(File downloadedFile) throws IOException {
         assert ZIP_CHARSET != null : "Unpack application archive since its encoding is unknown";
-        File extractDir = Files.createTempDirectory(null).toFile();
+        File extractDir = Files.createTempDirectory("green2_").toFile();
         ZipUtility.unzip(downloadedFile, extractDir, ZIP_CHARSET);
         extractDir.deleteOnExit();
         return extractDir;
