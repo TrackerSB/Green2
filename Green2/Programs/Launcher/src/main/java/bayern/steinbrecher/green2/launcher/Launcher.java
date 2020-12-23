@@ -92,24 +92,13 @@ public final class Launcher extends Application {
         Stage progressStage = StagePreparer.getDefaultPreparedStage();
         progress.embedStandaloneWizardPage(progressStage, EnvironmentHandler.getResourceValue("hide"));
         downloadSourceChannel.progressProperty()
-                .addListener((obs, previousProgress, currentProgress) -> {
-                    progress.setProgress(currentProgress.doubleValue());
-                });
+                .addListener((obs, previousProgress, currentProgress)
+                        -> progress.setProgress(currentProgress.doubleValue()));
         Platform.runLater(progressStage::show);
         downloadTargetStream.getChannel()
                 .transferFrom(downloadSourceChannel.getWrapped(), 0, Long.MAX_VALUE);
         Platform.runLater(progressStage::close);
         return downloadTarget;
-
-        // ProgressDialog progress = new ProgressDialog();
-        // URLConnection downloadConnection = downloadUrl.openConnection();
-        // int fileSize = Integer.parseInt(downloadConnection.getHeaderField("Content-Length"));
-        // int bytesPerLoop = fileSize / DOWNLOAD_STEPS;
-        // IOStreamUtility.transfer(downloadConnection.getInputStream(),
-        //         Files.newOutputStream(tempFile.toPath()), fileSize, bytesPerLoop, () -> {
-        //             Platform.runLater(() -> progress.incPercentage(DOWNLOAD_STEPS));
-        //         });
-        // return tempFile;
     }
 
     private static File unpackApplicationArchive(File downloadedFile) throws IOException {
@@ -207,6 +196,8 @@ public final class Launcher extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        Platform.setImplicitExit(false);
+
         new Thread(() -> {
             if (isApplicationInstalled()) {
                 Optional<String> optOnlineVersion = readOnlineVersion();
