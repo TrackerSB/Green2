@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -80,8 +81,8 @@ public final class Launcher extends Application {
         URL downloadSource = new URL(GREEN2_ZIP_URL);
         URLConnection downloadConnection = downloadSource.openConnection();
         long fileSize = Long.parseLong(downloadConnection.getHeaderField("Content-Length"));
-        ProgressWrapper downloadSourceChannel
-                = new ProgressWrapper(Channels.newChannel(downloadSource.openStream()), fileSize);
+        ProgressWrapper<ReadableByteChannel> downloadSourceChannel
+                = ProgressWrapper.wrap(Channels.newChannel(downloadSource.openStream()), fileSize);
 
         File downloadTarget = Files.createTempFile("green2_", ".zip")
                 .toFile();

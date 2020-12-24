@@ -7,38 +7,20 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
-public final class ProgressWrapper {
-    private final ReadableByteChannel wrapped;
+public final class ProgressWrapper<T> {
+    private final T wrapped;
     private final double maxValue;
-    private final ReadOnlyDoubleWrapper currentValue = new ReadOnlyDoubleWrapper(0);
+    private final ReadOnlyDoubleWrapper currentValue;
     private final ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0);
 
-    public ProgressWrapper(ReadableByteChannel toWrap, double maxValue) {
-        this.wrapped = new ReadableByteChannel() {
-            @Override
-            public int read(ByteBuffer dst) throws IOException {
-                int numReadBytes = toWrap.read(dst);
-                if (numReadBytes > 0) {
-                    currentValue.set(currentValue.get() + numReadBytes);
-                }
-                return numReadBytes;
-            }
-
-            @Override
-            public boolean isOpen() {
-                return toWrap.isOpen();
-            }
-
-            @Override
-            public void close() throws IOException {
-                toWrap.close();
-            }
-        };
+    private ProgressWrapper(T wrapped, double maxValue, ReadOnlyDoubleWrapper currentValue) {
+        this.wrapped = wrapped;
         this.maxValue = maxValue;
+        this.currentValue = currentValue;
         progress.bind(currentValueProperty().divide(maxValue));
     }
 
-    public ReadableByteChannel getWrapped() {
+    public T getWrapped() {
         return wrapped;
     }
 
@@ -60,5 +42,30 @@ public final class ProgressWrapper {
 
     public double getProgress() {
         return progressProperty().get();
+    }
+
+    public static ProgressWrapper<ReadableByteChannel> wrap(ReadableByteChannel toWrap, double maxValue) {
+        ReadOnlyDoubleWrapper currentValue = new ReadOnlyDoubleWrapper(0);
+        ReadableByteChannel wrapped = new ReadableByteChannel() {
+            @Override
+            public int read(ByteBuffer dst) throws IOException {
+                int numReadBytes = toWrap.read(dst);
+                if (numReadBytes > 0) {
+                    currentValue.set(currentValue.get() + numReadBytes);
+                }
+                return numReadBytes;
+            }
+
+            @Override
+            public boolean isOpen() {
+                return toWrap.isOpen();
+            }
+
+            @Override
+            public void close() throws IOException {
+                toWrap.close();
+            }
+        };
+        return new ProgressWrapper<>(wrapped, maxValue, currentValue);
     }
 }
