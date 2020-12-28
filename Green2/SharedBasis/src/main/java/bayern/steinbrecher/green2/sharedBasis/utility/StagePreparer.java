@@ -112,7 +112,7 @@ public interface StagePreparer {
             runLaterBlocking(() -> {
                 stage.setScene(scene);
                 return null;
-            })
+            });
             return stage;
         }
     }
