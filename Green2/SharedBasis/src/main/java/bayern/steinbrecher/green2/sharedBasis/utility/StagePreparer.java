@@ -14,6 +14,7 @@ import javafx.stage.Window;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +59,39 @@ public interface StagePreparer {
                 .addAll(getRegisteredStylesheets());
     }
 
+    private <T> T runLaterBlocking(Callable<T> actions) {
+        AtomicReference<T> resultRef = new AtomicReference<>();
+        Runnable exceptionSafeExecution = () -> {
+            try {
+                resultRef.set(actions.call());
+            } catch (Exception ex) {
+                LOGGER.log(Level.WARNING, "Actions on FXAppThread failed", ex);
+                resultRef.set(null);
+            }
+        };
+        if (Platform.isFxApplicationThread()) {
+            exceptionSafeExecution.run();
+        } else {
+            Platform.runLater(() -> {
+                exceptionSafeExecution.run();
+                synchronized (resultRef) {
+                    resultRef.notifyAll();
+                }
+            });
+            while (resultRef.get() == null) {
+                try {
+                    synchronized (resultRef) {
+                        resultRef.wait();
+                    }
+                } catch (InterruptedException ex) {
+                    LOGGER.log(Level.INFO,
+                            "Waiting for FX main thread to execute the given actions was interrupted", ex);
+                }
+            }
+        }
+        return resultRef.get();
+    }
+
     /**
      * <ul>
      *     <li>Create a {@link Stage}</li>
@@ -68,35 +102,17 @@ public interface StagePreparer {
      * NOTE This method may be called from any thread.
      */
     default Stage getPreparedStage() {
-        AtomicReference<Stage> stageRef = new AtomicReference<>();
-        if (Platform.isFxApplicationThread()) {
-            stageRef.set(new Stage());
-        } else {
-            Platform.runLater(() -> {
-                stageRef.set(new Stage());
-                synchronized (stageRef) {
-                    stageRef.notifyAll();
-                }
-            });
-            while (stageRef.get() == null) {
-                try {
-                    synchronized (stageRef) {
-                        stageRef.wait();
-                    }
-                } catch (InterruptedException ex) {
-                    LOGGER.log(Level.INFO, "Waiting for FX main thread to return a stage was interrupted", ex);
-                }
-            }
-        }
-
-        Stage stage = stageRef.get();
+        Stage stage = runLaterBlocking(Stage::new);
         if (stage == null) {
             throw new IllegalStateException("Couldn't create a stage");
         } else {
             addLogo(stage);
             Scene scene = new Scene(new Label("The scene is empty"));
             addStyles(scene);
-            Platform.runLater(() -> stage.setScene(scene));
+            runLaterBlocking(() -> {
+                stage.setScene(scene);
+                return null;
+            })
             return stage;
         }
     }
