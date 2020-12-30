@@ -1,5 +1,17 @@
 package bayern.steinbrecher.green2.launcher.utility;
 
+import bayern.steinbrecher.green2.launcher.Launcher;
+import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
+import bayern.steinbrecher.javaUtility.XMLUtility;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.tools.ToolProvider;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -11,28 +23,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.tools.ToolProvider;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import bayern.steinbrecher.green2.launcher.Launcher;
-import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
-import bayern.steinbrecher.javaUtility.XMLUtility;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * A class for handling upates and for checking conditions for applying these.

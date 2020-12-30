@@ -1,15 +1,13 @@
 package bayern.steinbrecher.green2.memberManagement.login.simple;
 
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
 import bayern.steinbrecher.checkedElements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.checkedElements.textfields.CheckedTextField;
 import bayern.steinbrecher.dbConnector.credentials.SimpleCredentials;
 import bayern.steinbrecher.green2.memberManagement.login.LoginController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+
+import java.util.Optional;
 
 /**
  * Controller of DefaultLogin.fxml.

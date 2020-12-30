@@ -1,15 +1,13 @@
 package bayern.steinbrecher.green2.memberManagement.login.ssh;
 
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
 import bayern.steinbrecher.checkedElements.textfields.CheckedPasswordField;
 import bayern.steinbrecher.checkedElements.textfields.CheckedTextField;
 import bayern.steinbrecher.dbConnector.credentials.SshCredentials;
 import bayern.steinbrecher.green2.memberManagement.login.LoginController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+
+import java.util.Optional;
 
 /**
  * The controller for SshLogin.fxml.
