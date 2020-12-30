@@ -2,6 +2,7 @@
 ![Java CI with Gradle](https://github.com/TrackerSB/Green2/workflows/Java%20CI%20with%20Gradle/badge.svg)
 ![CodeQL](https://github.com/TrackerSB/Green2/workflows/CodeQL/badge.svg)
 ![Codacy Security Scan](https://github.com/TrackerSB/Green2/workflows/Codacy%20Security%20Scan/badge.svg)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9ca54dc10bd74e1bbd5235d70558d578)](https://www.codacy.com/gh/TrackerSB/Green2/dashboard)
 [![GitHub release](https://img.shields.io/github/release/trackersb/green2.svg)](https://github.com/TrackerSB/Green2)
 [![CSS Version](https://img.shields.io/badge/CSS-3-blue.svg)](https://github.com/TrackerSB/Green2)
 
