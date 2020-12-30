@@ -68,7 +68,7 @@ public final class ZipUtility {
                 if (cachedReaders.containsKey(currentCharset)) {
                     currentReader = cachedReaders.get(currentCharset);
                 } else {
-                    //At most as many inpustreams are created as differenz charsets are needed.
+                    //At most as many input streams are created as different charsets are needed.
                     currentReader = new InputStreamReader(zipEntryStream, currentCharset); //NOPMD
                     cachedReaders.put(currentCharset, currentReader);
                 }
