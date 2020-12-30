@@ -134,7 +134,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                             new Object[]{column.getColumnType(), column.getName()});
                 }
             }
-            if (conditionFieldLengths.size() > 1) {
+            if (conditionFieldLengths.size() > 1) { // NOPMD - Containing more than a single element indicates a problem
                 String lengths = conditionFieldLengths.stream()
                         .map(Object::toString)
                         .collect(Collectors.joining(", "));

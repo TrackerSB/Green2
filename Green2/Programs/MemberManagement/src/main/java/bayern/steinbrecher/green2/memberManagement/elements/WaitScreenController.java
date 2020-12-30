@@ -50,6 +50,7 @@ public class WaitScreenController extends StandaloneWizardPageController<Optiona
     }
 
     @FXML
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void initialize() {
         IntStream.range(0, VERTICAL_COUNT).parallel().forEach(row -> {
             int shorten = (row + 1) % 2;

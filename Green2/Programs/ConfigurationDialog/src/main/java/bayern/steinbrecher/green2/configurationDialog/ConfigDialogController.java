@@ -66,6 +66,7 @@ public class ConfigDialogController extends WizardPageController<Optional<Void>>
     private Profile profile;
 
     @FXML
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void initialize() {
         checkedTextFields.addAll(Arrays.asList(sshHostTextField, databaseHostTextField, databaseNameTextField,
                 birthdayExpressionTextField, profileNameTextField));

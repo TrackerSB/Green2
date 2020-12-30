@@ -105,7 +105,6 @@ public class SelectionGroupController<T extends Comparable<T>, G> extends Wizard
                     item.setGroup(currentGroup.get());
                 }
             }
-            ;
         };
 
         @Override

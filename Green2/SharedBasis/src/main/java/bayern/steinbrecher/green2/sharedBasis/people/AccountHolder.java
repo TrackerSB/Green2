@@ -11,8 +11,11 @@ import java.time.LocalDate;
 @SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public final class AccountHolder {
 
-    private String prename, lastname, title;
-    private String iban, bic;
+    private String prename;
+    private String lastname;
+    private String title;
+    private String iban;
+    private String bic;
     private LocalDate mandateSigned;
     private boolean hasMandateChanged;
 

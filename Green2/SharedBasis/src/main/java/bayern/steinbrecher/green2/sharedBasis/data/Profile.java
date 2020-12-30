@@ -405,7 +405,7 @@ public class Profile {
      *
      * @return The property holding the file containing the originator infos.
      */
-    public ReadOnlyProperty<File> originatorInfoFile() {
+    public ReadOnlyProperty<File> originatorInfoFileProperty() {
         return originatorInfoFile;
     }
 

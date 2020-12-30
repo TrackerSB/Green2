@@ -20,6 +20,7 @@ public class SplashScreenController extends StandaloneWizardPageController<Optio
     private Pane root;
 
     @FXML
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void initialize() {
         ImageView imageView = new ImageView();
         String splashScreenImagePath;

@@ -9,7 +9,10 @@ package bayern.steinbrecher.green2.sharedBasis.people;
 @SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public final class Address {
 
-    private String street, houseNumber, postcode, place;
+    private String street;
+    private String houseNumber;
+    private String postcode;
+    private String place;
 
     private Address() {
         //A completely uninitialized person (Only to be used by the builder).

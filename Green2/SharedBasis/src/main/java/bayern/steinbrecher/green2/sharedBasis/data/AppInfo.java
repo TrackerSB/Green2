@@ -33,27 +33,12 @@ public final class AppInfo {
      *
      * @return The date when this jar was compiled.
      */
-    public static final Optional<LocalDateTime> getCompilationDate() {
-        Optional<LocalDateTime> compilationDate;
-        String classPath = AppInfo.class
-                .getResource(AppInfo.class.getSimpleName() + ".class")
-                .toString();
-        if (classPath.startsWith("jar")) {
-            String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1)
-                    + "/META-INF/MANIFEST.MF";
-            try {
-                Manifest manifest = new Manifest(new URL(manifestPath).openStream());
-                System.out.println(manifest.getEntries());
-            } catch (MalformedURLException ex) {
-                LOGGER.log(Level.SEVERE, "Could not find compilation date.", ex);
-            } catch (IOException ex) {
-                LOGGER.log(Level.WARNING, "Could not find compilation date.", ex);
-            }
-        }
+    public static Optional<LocalDateTime> getCompilationDate() {
         String classFileName = AppInfo.class
                 .getName()
                 .replace('.', '/')
                 + ".class";
+        Optional<LocalDateTime> compilationDate;
         try {
             URLConnection baseConnection = AppInfo.class
                     .getClassLoader()

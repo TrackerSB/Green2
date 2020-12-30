@@ -111,7 +111,7 @@ public class Originator {
                 originatorProps.load(reader);
                 Arrays.stream(getClass().getDeclaredFields())
                         .parallel()
-                        .filter(f -> !f.getName().equalsIgnoreCase("originatorFile"))
+                        .filter(f -> !"originatorFile".equalsIgnoreCase(f.getName()))
                         .forEach(f -> {
                             try {
                                 String property = originatorProps.getProperty(f.getName());

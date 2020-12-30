@@ -50,7 +50,8 @@ public final class Uninstaller extends Application {
                     LOGGER.log(Level.SEVERE, "The user made no decision about whether to keep or delete "
                             + "config files. Uninstall aborted.");
                 }
-                // Fallthrough to ABORTED
+                stage.close();
+                break;
             case ABORTED:
                 stage.close();
                 break;
@@ -68,15 +69,15 @@ public final class Uninstaller extends Application {
     }
 
     private String getPreferencesBasePath() {
-        //This method is implemented according to http://stackoverflow.com/questions/1320709/preference-api-storage
+        // This method is implemented according to http://stackoverflow.com/questions/1320709/preference-api-storage
         String subkey = EnvironmentHandler.PREFERENCES_USER_NODE.absolutePath();
         String javaUserNodePath = switch (SupportedOS.CURRENT) {
             case LINUX -> System.getProperty("java.util.prefs.userRoot",
                     System.getProperty("user.home") + "/.systemPrefs");
             case WINDOWS -> {
-                subkey = subkey.replace('/', '\\');
-                if ("32".equals(System.getProperty("sun.arch.data.model")) //NOPMD
-                        && "64".equals(System.getProperty("os.arch"))) { //NOPMD
+                subkey = subkey.replace('/', '\\'); // NOPMD - false positive "value assigned never used"
+                if ("32".equals(System.getProperty("sun.arch.data.model")) // NOPMD
+                        && "64".equals(System.getProperty("os.arch"))) { // NOPMD
                     yield "HKEY_CURRENT_USER\\Software\\Wow6432Node\\JavaSoft\\Prefs";
                 } else {
                     yield "HKEY_CURRENT_USER\\Software\\JavaSoft\\Prefs";

@@ -11,6 +11,7 @@ public class ConfirmUninstallController extends WizardPageController<Optional<Vo
     private CheckBox confirmUninstall;
 
     @FXML
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void initialize() {
         bindValidProperty(confirmUninstall.selectedProperty());
     }

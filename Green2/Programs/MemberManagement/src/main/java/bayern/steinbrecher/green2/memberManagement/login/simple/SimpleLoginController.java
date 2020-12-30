@@ -27,9 +27,6 @@ public class SimpleLoginController extends LoginController<SimpleCredentials> {
         Platform.runLater(() -> databaseUsernameField.requestFocus());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Optional<SimpleCredentials> calculateResult() {
         return Optional.of(new SimpleCredentials(databaseUsernameField.getText(), databasePasswordField.getText()));

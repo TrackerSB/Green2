@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -20,6 +22,7 @@ import java.util.zip.ZipInputStream;
  * @author Stefan Huber
  */
 public final class ZipUtility {
+    private static final Logger LOGGER = Logger.getLogger(ZipUtility.class.getName());
 
     /**
      * The charset used when unzipping binary files.
@@ -31,10 +34,10 @@ public final class ZipUtility {
      */
     public static final Map<String, Charset> SPECIAL_CHARSETS
             = Map.of("jar", BINARY_CHARSET,
-                    "ico", BINARY_CHARSET,
-                    "png", BINARY_CHARSET,
-                    "vbs", Charset.forName("Windows-1252"),
-                    "pdf", BINARY_CHARSET);
+            "ico", BINARY_CHARSET,
+            "png", BINARY_CHARSET,
+            "vbs", Charset.forName("Windows-1252"),
+            "pdf", BINARY_CHARSET);
 
     private ZipUtility() {
         throw new UnsupportedOperationException("Construction of an object not allowed.");
@@ -44,17 +47,19 @@ public final class ZipUtility {
      * Unzips the given file into the given folder.
      *
      * @param zippedFile The file to unzip.
-     * @param outputDir The directory where to put the unzipped files.
-     * @param charset The charset of the zip and its files. NOTE: For some files like vbs, jar, ico, png and pdf always
-     * a special charset is taken which may defer from the given one in order to guarantee the correctness of the
-     * unzipped files.
+     * @param outputDir  The directory where to put the unzipped files.
+     * @param charset    The charset of the zip and its files. NOTE: For some files like vbs, jar, ico, png and pdf
+     *                   always
+     *                   a special charset is taken which may defer from the given one in order to guarantee the
+     *                   correctness of the
+     *                   unzipped files.
      * @throws IOException Thrown only if no temporary directory could be created.
      * @see #SPECIAL_CHARSETS
      */
     public static void unzip(File zippedFile, File outputDir, Charset charset) throws IOException {
         String outDirPath = outputDir.getAbsolutePath();
         try (ZipInputStream zipEntryStream = new ZipInputStream(Files.newInputStream(zippedFile.toPath()), charset)) {
-            //Cache InputStreamReader for charsets needed for unzipping using the correct encoding.
+            // Cache InputStreamReader for charsets needed for unzipping using the correct encoding.
             Map<Charset, InputStreamReader> cachedReaders = new HashMap<>();
 
             ZipEntry zipEntry = zipEntryStream.getNextEntry();
@@ -88,6 +93,15 @@ public final class ZipUtility {
                 }
                 zipEntry = zipEntryStream.getNextEntry();
             }
+
+            cachedReaders.values()
+                    .forEach(inputStreamReader -> {
+                        try {
+                            inputStreamReader.close();
+                        } catch (IOException ex) {
+                            LOGGER.log(Level.WARNING, "Could not close input stream for ZIP entries", ex);
+                        }
+                    });
         }
     }
 }

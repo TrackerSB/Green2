@@ -21,7 +21,7 @@ import java.util.Optional;
  */
 public class ChoiceDialog implements StagePreparer {
 
-    private Boolean installUpdates = null;
+    private Boolean installUpdates;
 
     public void embedContentIntoAndWait(Stage stage, HostServices hostServices) {
         Label message = new Label(EnvironmentHandler.getResourceValue("installUpdates"));

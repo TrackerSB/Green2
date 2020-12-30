@@ -25,9 +25,13 @@ public class ProgressDialogController extends StandaloneWizardPageController<Opt
     public void initialize() {
         progress.addListener((obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
+                String formattedPercentValue;
                 //CHECKSTYLE.OFF: MagicNumber - Multiplication with 100 is needed for having output as percentage.
-                progressString.set(FORMAT.format(Math.min(newVal.doubleValue(), 1) * 100) + "% ");
+                synchronized (FORMAT) {
+                    formattedPercentValue = FORMAT.format(Math.max(0, Math.min(newVal.doubleValue(), 1)) * 100);
+                }
                 //CHECKSTYLE.ON: MagicNumber
+                progressString.set(formattedPercentValue + "% ");
             });
         });
     }

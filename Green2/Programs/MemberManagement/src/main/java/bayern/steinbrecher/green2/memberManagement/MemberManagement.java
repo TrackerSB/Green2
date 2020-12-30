@@ -59,8 +59,8 @@ public class MemberManagement extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(MemberManagement.class.getName());
     private static final long SPLASHSCREEN_DISPLAY_DURATION = 2500; // [ms]
-    private Profile loadedProfile = null;
-    private DBConnection dbConnection = null;
+    private Profile loadedProfile;
+    private DBConnection dbConnection;
 
     public MemberManagement() {
         super();
