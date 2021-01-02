@@ -4,7 +4,7 @@ import bayern.steinbrecher.checkedElements.CheckedComboBox;
 import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner;
 import bayern.steinbrecher.checkedElements.textfields.CheckedRegexTextField;
 import bayern.steinbrecher.checkedElements.textfields.CheckedTextField;
-import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
+import bayern.steinbrecher.dbConnector.query.SupportedDBMS;
 import bayern.steinbrecher.green2.configurationDialog.elements.ProfileNameField;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;
@@ -54,7 +54,7 @@ public class ConfigDialogController extends WizardPageController<Optional<Void>>
     @FXML
     private ProfileNameField profileNameTextField;
     @FXML
-    private CheckedComboBox<SupportedDatabases> dbmsComboBox;
+    private CheckedComboBox<SupportedDBMS> dbmsComboBox;
     @FXML
     private CheckBox birthdayFeaturesCheckbox;
     @FXML
@@ -94,14 +94,15 @@ public class ConfigDialogController extends WizardPageController<Optional<Void>>
         //CHECKSTYLE.ON: MagicNumber
         databaseHostTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_HOST, ""));
         databasePort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.DATABASE_PORT,
-                profile.getOrDefault(ProfileSettings.DBMS, SupportedDatabases.MY_SQL).getDefaultPort()));
+                profile.getOrDefault(ProfileSettings.DBMS, SupportedDBMS.MY_SQL).getDefaultPort()));
         databaseNameTextField.setText(profile.getOrDefault(ProfileSettings.DATABASE_NAME, ""));
         birthdayExpressionTextField.setText(profile.getOrDefault(ProfileSettings.BIRTHDAY_EXPRESSION, ""));
         profileNameTextField.setText(profile.getProfileName());
         sepaWithBomCheckBox.setSelected(profile.getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
         sshCharsetTextField.setText(
                 profile.getOrDefault(ProfileSettings.SSH_CHARSET, StandardCharsets.UTF_8).name());
-        dbmsComboBox.setItems(FXCollections.observableList(Arrays.asList(SupportedDatabases.values())));
+        // Copy DBMSs in order to avoid access to an immutable list
+        dbmsComboBox.setItems(FXCollections.observableList(new ArrayList<>(SupportedDBMS.DBMSs)));
         dbmsComboBox.getSelectionModel().select(profile.getOrDefault(ProfileSettings.DBMS, null));
         birthdayFeaturesCheckbox.setSelected(profile.getOrDefault(ProfileSettings.ACTIVATE_BIRTHDAY_FEATURES, true));
     }

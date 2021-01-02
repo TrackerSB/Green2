@@ -1,16 +1,16 @@
 package bayern.steinbrecher.green2.memberManagement;
 
 import bayern.steinbrecher.dbConnector.AuthException;
+import bayern.steinbrecher.dbConnector.ConnectionFailedException;
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.dbConnector.DatabaseNotFoundException;
 import bayern.steinbrecher.dbConnector.SimpleConnection;
 import bayern.steinbrecher.dbConnector.SshConnection;
-import bayern.steinbrecher.dbConnector.UnsupportedDatabaseException;
 import bayern.steinbrecher.dbConnector.credentials.DBCredentials;
 import bayern.steinbrecher.dbConnector.credentials.SimpleCredentials;
 import bayern.steinbrecher.dbConnector.credentials.SshCredentials;
 import bayern.steinbrecher.dbConnector.query.QueryFailedException;
-import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
+import bayern.steinbrecher.dbConnector.query.SupportedDBMS;
 import bayern.steinbrecher.dbConnector.scheme.SimpleColumnPattern;
 import bayern.steinbrecher.dbConnector.scheme.TableScheme;
 import bayern.steinbrecher.green2.memberManagement.elements.SplashScreen;
@@ -39,7 +39,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -120,7 +119,7 @@ public class MemberManagement extends Application {
     private Optional<DBConnection> establishDBConnection(DBCredentials credentials) {
         assert loadedProfile != null : "Establishing a connection requires a profile to be loaded first";
 
-        SupportedDatabases dbms = loadedProfile.get(ProfileSettings.DBMS);
+        SupportedDBMS dbms = loadedProfile.get(ProfileSettings.DBMS);
         String databaseHost = loadedProfile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
         int databasePort = loadedProfile.getOrDefault(ProfileSettings.DATABASE_PORT, dbms.getDefaultPort());
         String databaseName = loadedProfile.get(ProfileSettings.DATABASE_NAME);
@@ -147,14 +146,10 @@ public class MemberManagement extends Application {
                 LOGGER.log(Level.INFO, null, ex);
                 String checkInput = EnvironmentHandler.getResourceValue("checkInput");
                 failureReport = DialogUtility.createInfoAlert(checkInput, checkInput);
-            } catch (UnknownHostException ex) {
+            } catch (ConnectionFailedException ex) {
                 LOGGER.log(Level.INFO, null, ex);
                 String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
                 failureReport = DialogUtility.createInfoAlert(checkConnection, checkConnection);
-            } catch (UnsupportedDatabaseException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                String noSupportedDatabase = EnvironmentHandler.getResourceValue("noSupportedDatabase");
-                failureReport = DialogUtility.createErrorAlert(noSupportedDatabase, noSupportedDatabase);
             } catch (DatabaseNotFoundException ex) {
                 LOGGER.log(Level.SEVERE, "Could not find database on host.", ex);
                 String databaseNotFound = EnvironmentHandler.getResourceValue("databaseNotFound");

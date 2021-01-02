@@ -1,6 +1,6 @@
 package bayern.steinbrecher.green2.sharedBasis.data;
 
-import bayern.steinbrecher.dbConnector.query.SupportedDatabases;
+import bayern.steinbrecher.dbConnector.query.SupportedDBMS;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -64,7 +64,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
     /**
      * The type of the SQL database. (e.g. MySQL).
      */
-    public static final ProfileSettings<SupportedDatabases> DBMS = new SupportedDatabaseSetting();
+    public static final ProfileSettings<SupportedDBMS> DBMS = new SupportedDatabaseSetting();
     /**
      * Indicates whether to activate the features relating to the birthday of member.
      */
@@ -282,25 +282,25 @@ public abstract class /*enum*/ ProfileSettings<T> {
     }
 
     /**
-     * A setting holding a dbms of {@link SupportedDatabases}.
+     * A setting holding a dbms of {@link SupportedDBMS}.
      */
-    private static class SupportedDatabaseSetting extends ProfileSettings<SupportedDatabases> {
+    private static class SupportedDatabaseSetting extends ProfileSettings<SupportedDBMS> {
 
         @Override
-        public String toString(SupportedDatabases value) {
-            return value.name();
+        public String toString(SupportedDBMS value) {
+            return value.getShellCommand();
         }
 
         @Override
-        public boolean isValid(SupportedDatabases value) {
+        public boolean isValid(SupportedDBMS value) {
             return true; //NOTE: An enum of a class can only be constructed if and only if it already exists.
         }
 
         @Override
-        protected Optional<SupportedDatabases> parseImpl(String value) {
-            SupportedDatabases supportedDbms = null;
-            for (SupportedDatabases dbms : SupportedDatabases.values()) {
-                if (dbms.name().equalsIgnoreCase(value)) {
+        protected Optional<SupportedDBMS> parseImpl(String value) {
+            SupportedDBMS supportedDbms = null;
+            for (SupportedDBMS dbms : SupportedDBMS.DBMSs) {
+                if (dbms.getShellCommand().equalsIgnoreCase(value)) {
                     supportedDbms = dbms;
                     break;
                 }
