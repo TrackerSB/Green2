@@ -278,9 +278,7 @@ public class MemberManagement extends Application {
                     throw new LoadException("Could not generate login dialog", ex);
                 }
                 AtomicBoolean loginCanceled = new AtomicBoolean(false);
-                loginStage.setOnCloseRequest(wevt -> {
-                    loginCanceled.set(true);
-                });
+                loginStage.setOnCloseRequest(wevt -> loginCanceled.set(true));
                 loginStage.show();
 
                 loginStage.showingProperty().addListener((obs, wasShowing, isShowing) -> {
