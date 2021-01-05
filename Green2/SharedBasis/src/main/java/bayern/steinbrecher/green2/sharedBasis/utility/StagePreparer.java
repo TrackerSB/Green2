@@ -3,7 +3,6 @@ package bayern.steinbrecher.green2.sharedBasis.utility;
 import bayern.steinbrecher.wizard.StandaloneWizardPage;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -14,9 +13,6 @@ import javafx.stage.Window;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,34 +56,6 @@ public interface StagePreparer {
                 .addAll(getRegisteredStylesheets());
     }
 
-    private <T> T runLaterBlocking(Callable<T> actions) {
-        AtomicReference<T> resultRef = new AtomicReference<>();
-        Runnable exceptionSafeExecution = () -> {
-            try {
-                resultRef.set(actions.call());
-            } catch (Exception ex) {
-                LOGGER.log(Level.WARNING, "Actions on FXAppThread failed", ex);
-                resultRef.set(null);
-            }
-        };
-        if (Platform.isFxApplicationThread()) {
-            exceptionSafeExecution.run();
-        } else {
-            CountDownLatch latch = new CountDownLatch(1);
-            Platform.runLater(() -> {
-                exceptionSafeExecution.run();
-                latch.countDown();
-            });
-            try {
-                latch.await();
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.INFO,
-                        "Waiting for FX main thread to execute the given actions was interrupted", ex);
-            }
-        }
-        return resultRef.get();
-    }
-
     /**
      * <ul>
      *     <li>Create a {@link Stage}</li>
@@ -98,14 +66,14 @@ public interface StagePreparer {
      * NOTE This method may be called from any thread.
      */
     default Stage getPreparedStage() {
-        Stage stage = runLaterBlocking(Stage::new);
+        Stage stage = ThreadUtility.runLaterBlocking(Stage::new);
         if (stage == null) {
             throw new IllegalStateException("Couldn't create a stage");
         } else {
             addLogo(stage);
             Scene scene = new Scene(new Label("The scene is empty"));
             addStyles(scene);
-            runLaterBlocking(() -> {
+            ThreadUtility.runLaterBlocking(() -> {
                 stage.setScene(scene);
                 return null;
             });

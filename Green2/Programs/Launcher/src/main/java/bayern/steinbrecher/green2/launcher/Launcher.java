@@ -206,7 +206,8 @@ public final class Launcher extends Application {
                 if (optOnlineVersion.isPresent()) {
                     boolean isInstallationOutdated = !AppInfo.VERSION.equalsIgnoreCase(optOnlineVersion.get());
                     if (isInstallationOutdated) {
-                        Optional<Boolean> userConfirmedUpdate = ChoiceDialog.askForUpdate(getHostServices());
+                        Optional<Boolean> userConfirmedUpdate
+                                = ThreadUtility.runLaterBlocking(() -> ChoiceDialog.askForUpdate(getHostServices()));
                         if (userConfirmedUpdate.orElse(false)) {
                             try {
                                 startUpdateProcess();
