@@ -8,7 +8,7 @@ allprojects {
 
 dependencies {
     implementation "bayern.steinbrecher:DBConnector:0.15-rc.2-SNAPSHOT"
-    implementation "bayern.steinbrecher:JavaUtility:0.16"
+    implementation "bayern.steinbrecher:JavaUtility:0.18-rc.2-SNAPSHOT"
     compile "bayern.steinbrecher:Wizard:1.49"
 }
 
