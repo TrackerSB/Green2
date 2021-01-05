@@ -11,6 +11,7 @@ import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
+import bayern.steinbrecher.green2.sharedBasis.utility.ThreadUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.URLUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
@@ -199,7 +200,7 @@ public final class Launcher extends Application {
     public void start(Stage primaryStage) {
         Platform.setImplicitExit(false);
 
-        new Thread(() -> {
+        Thread startup = new Thread(() -> {
             if (isApplicationInstalled()) {
                 Optional<String> optOnlineVersion = readOnlineVersion();
                 if (optOnlineVersion.isPresent()) {
@@ -207,7 +208,11 @@ public final class Launcher extends Application {
                     if (isInstallationOutdated) {
                         Optional<Boolean> userConfirmedUpdate = ChoiceDialog.askForUpdate(getHostServices());
                         if (userConfirmedUpdate.orElse(false)) {
-                            startUpdateProcess();
+                            try {
+                                startUpdateProcess();
+                            } catch (Exception ex) { // In any case: If update fails, start installed version
+                                LOGGER.log(Level.SEVERE, "Update failed. Try starting installed version.", ex);
+                            }
                         }
                     }
                 }
@@ -219,7 +224,12 @@ public final class Launcher extends Application {
                 startMemberManagement();
             }
             Platform.exit();
-        }).start();
+        }, "Startup thread");
+        startup.setUncaughtExceptionHandler((thread, exception) -> {
+            ThreadUtility.DEFAULT_THREAD_EXCEPTION_HANDLER.uncaughtException(thread, exception);
+            Platform.exit();
+        });
+        startup.start();
     }
 
     public static void main(String[] args) {

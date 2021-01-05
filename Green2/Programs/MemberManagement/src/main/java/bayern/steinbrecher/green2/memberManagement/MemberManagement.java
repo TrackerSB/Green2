@@ -27,6 +27,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
+import bayern.steinbrecher.green2.sharedBasis.utility.ThreadUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Application;
@@ -100,7 +101,7 @@ public class MemberManagement extends Application {
         splashScreenStage.showingProperty()
                 .addListener((obs, wasShowing, isShowing) -> {
                     if (isShowing) {
-                        Runnable closeTask = () -> {
+                        Thread closeTask = new Thread(() -> {
                             try {
                                 Thread.sleep(SPLASHSCREEN_DISPLAY_DURATION);
                             } catch (InterruptedException ex) {
@@ -108,9 +109,9 @@ public class MemberManagement extends Application {
                                         "The visualization of the splash screen has been interrupted", ex);
                             }
                             Platform.runLater(splashScreenStage::close);
-                        };
-                        new Thread(closeTask)
-                                .start();
+                        });
+                        closeTask.setUncaughtExceptionHandler(ThreadUtility.DEFAULT_THREAD_EXCEPTION_HANDLER);
+                        closeTask.start();
                     }
                 });
         splashScreenStage.showAndWait();
@@ -285,12 +286,13 @@ public class MemberManagement extends Application {
                     if (isShowing) {
                         waitScreenStage.hide();
                     } else {
-                        if(!loginCanceled.get()) {
+                        if (!loginCanceled.get()) {
                             waitScreenStage.show();
                             if (login.isValid()) {
                                 Optional<? extends DBCredentials> credentials = login.getResult();
                                 if (credentials.isPresent()) {
-                                    new Thread(() -> {
+                                    // FIXME Can the following thread be split in a clearer name?
+                                    Thread validateCredentialsAndShowMenu = new Thread(() -> {
                                         boolean credentialsAreValid = validateCredentials(credentials.get());
                                         if (credentialsAreValid) {
                                             Platform.runLater(() -> {
@@ -300,7 +302,10 @@ public class MemberManagement extends Application {
                                         } else {
                                             Platform.runLater(loginStage::show);
                                         }
-                                    }).start();
+                                    });
+                                    validateCredentialsAndShowMenu.setUncaughtExceptionHandler(
+                                            ThreadUtility.DEFAULT_THREAD_EXCEPTION_HANDLER);
+                                    validateCredentialsAndShowMenu.start();
                                 } else {
                                     LOGGER.log(Level.WARNING, "The login did not provide credentials");
                                     Platform.exit();
