@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,21 +73,16 @@ public interface StagePreparer {
         if (Platform.isFxApplicationThread()) {
             exceptionSafeExecution.run();
         } else {
+            CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
                 exceptionSafeExecution.run();
-                synchronized (resultRef) {
-                    resultRef.notifyAll();
-                }
+                latch.countDown();
             });
-            while (resultRef.get() == null) {
-                try {
-                    synchronized (resultRef) {
-                        resultRef.wait();
-                    }
-                } catch (InterruptedException ex) {
-                    LOGGER.log(Level.INFO,
-                            "Waiting for FX main thread to execute the given actions was interrupted", ex);
-                }
+            try {
+                latch.await();
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.INFO,
+                        "Waiting for FX main thread to execute the given actions was interrupted", ex);
             }
         }
         return resultRef.get();
