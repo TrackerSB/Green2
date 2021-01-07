@@ -20,7 +20,7 @@ public final class AppInfo {
 
     private static final Logger LOGGER = Logger.getLogger(AppInfo.class.getName());
     public static final String APP_NAME = "Grün2";
-    public static final String VERSION = "2u14-SNAPSHOT";
+    public static final String VERSION = "2u14-RC.1";
     public static final String UPDATE_NAME = "The real update";
 
     private AppInfo() {
