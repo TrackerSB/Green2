@@ -4,7 +4,6 @@ import bayern.steinbrecher.green2.sharedBasis.data.SupportedOS;
 import javafx.application.Platform;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,13 +45,14 @@ public enum Programs {
         try {
             Process nextProgramProcess = new ProcessBuilder(args)
                     .start();
-            nextProgramProcess.waitFor();
-            String errorMessage = IOStreamUtility
-                    .readAll(nextProgramProcess.getErrorStream(), Charset.defaultCharset());
-            if (!errorMessage.isBlank()) {
-                LOGGER.log(Level.SEVERE, String.format("The started program yielded errors:\n%s", errorMessage));
-            }
-        } catch (InterruptedException | IOException ex) {
+            // FIXME Piping stdout and stderr has HUGE performance issues
+            // nextProgramProcess.waitFor();
+            // String errorMessage = IOStreamUtility
+            //         .readAll(nextProgramProcess.getErrorStream(), Charset.defaultCharset());
+            // if (!errorMessage.isBlank()) {
+            //     LOGGER.log(Level.SEVERE, String.format("The started program yielded errors:\n%s", errorMessage));
+            // }
+        } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Starting the next program failed", ex);
         }
         Platform.exit();
