@@ -428,34 +428,38 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                         Originator originator = sepaFormPage.getResult()
                                 .orElseThrow();
 
-                        EnvironmentHandler.askForSavePath(stage, "sepa", "xml")
-                                .ifPresent(file -> {
-                                    try {
-                                        List<Member> invalidMember
-                                                = SepaPain00800302XMLGenerator.createXMLFile(selectedMember, originator,
-                                                sequenceType, file, EnvironmentHandler.getProfile()
-                                                        .getOrDefault(ProfileSettings.SEPA_USE_BOM, true));
-                                        String message = invalidMember.stream()
-                                                .map(Member::toString)
-                                                .collect(Collectors.joining("\n"));
-                                        if (!message.isEmpty()) {
-                                            try {
-                                                Alert alert = DialogUtility.createErrorAlert(message + "\n"
-                                                        + EnvironmentHandler
-                                                        .getResourceValue("haveBadAccountInformation"));
-                                                Platform.runLater(alert::show);
-                                            } catch (DialogCreationException ex) {
-                                                LOGGER.log(
-                                                        Level.WARNING,
-                                                        "Could not inform user graphically that some member have "
-                                                                + "invalid account information",
-                                                        ex);
-                                            }
-                                        }
-                                    } catch (IOException ex) {
-                                        LOGGER.log(Level.SEVERE, "The sepa xml file could not be created.", ex);
-                                    }
-                                });
+                        Optional<File> optSavePath = EnvironmentHandler.askForSavePath(stage, "sepa", "xml");
+                        if (optSavePath.isPresent()) {
+                            File savePath = optSavePath.get();
+                            boolean useBOM = EnvironmentHandler.getProfile()
+                                    .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
+                            List<Member> invalidMember;
+                            try {
+                                invalidMember = SepaPain00800302XMLGenerator.createXMLFile(
+                                        selectedMember, originator, sequenceType, savePath, useBOM);
+                            } catch (IOException ex) {
+                                LOGGER.log(Level.SEVERE, "The sepa xml file could not be created.", ex);
+                                invalidMember = List.of();
+                            }
+                            String message = invalidMember.stream()
+                                    .map(Member::toString)
+                                    .collect(Collectors.joining("\n"));
+                            if (!message.isEmpty()) {
+                                try {
+                                    String badAccountInfoMessage
+                                            = EnvironmentHandler.getResourceValue("haveBadAccountInformation");
+                                    Alert alert = StagePreparer.prepare(DialogUtility.createErrorAlert(
+                                            String.format("%s\n%s", message, badAccountInfoMessage)));
+                                    Platform.runLater(alert::show);
+                                } catch (DialogCreationException ex) {
+                                    LOGGER.log(
+                                            Level.WARNING,
+                                            "Could not inform user graphically that some member have "
+                                                    + "invalid account information",
+                                            ex);
+                                }
+                            }
+                        }
                     }
                 });
                 Stage wizardStage = StagePreparer.getDefaultPreparedStage();

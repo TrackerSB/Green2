@@ -8,7 +8,6 @@ import bayern.steinbrecher.javaUtility.DialogUtility;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -74,12 +73,8 @@ public class ProfileChoice implements StagePreparer {
         });
 
         Parent root = new VBox(choiceLabel, profilePane, create);
-        if (stage.getScene() == null) {
-            stage.setScene(new Scene(root));
-        } else {
-            stage.getScene()
-                    .setRoot(root);
-        }
+        stage.getScene()
+                .setRoot(root);
         stage.setResizable(false);
         stage.setTitle(EnvironmentHandler.getResourceValue("chooseProfile"));
         stage.showAndWait();
@@ -101,8 +96,8 @@ public class ProfileChoice implements StagePreparer {
     private void askForDeleteProfile(String profileName) {
         String message = MessageFormat.format(EnvironmentHandler.getResourceValue("reallyDelete"), profileName);
         try {
-            Alert confirmation
-                    = DialogUtility.createConfirmationAlert(Alert.AlertType.CONFIRMATION, message);
+            Alert confirmation = StagePreparer.prepare(
+                    DialogUtility.createConfirmationAlert(Alert.AlertType.CONFIRMATION, message));
             DialogPane dialogPane = confirmation.getDialogPane();
             ((Button) dialogPane.lookupButton(ButtonType.OK)).setDefaultButton(false);
             ((Button) dialogPane.lookupButton(ButtonType.CANCEL)).setDefaultButton(true);
@@ -178,7 +173,8 @@ public class ProfileChoice implements StagePreparer {
                 initialProfile = null;
             }
 
-            ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(initialProfile, availableProfiles);
+            ChoiceDialog<String> choiceDialog = StagePreparer.prepare(
+                    new ChoiceDialog<>(initialProfile, availableProfiles));
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
             Platform.runLater(() -> dialogPane.lookupButton(ButtonType.OK).requestFocus());
 

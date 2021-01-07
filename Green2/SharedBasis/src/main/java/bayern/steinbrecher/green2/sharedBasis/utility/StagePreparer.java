@@ -4,7 +4,7 @@ import bayern.steinbrecher.wizard.StandaloneWizardPage;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -93,11 +93,11 @@ public interface StagePreparer {
         // @formatter: on
     }
 
-    static <T extends Alert> T prepare(T alert) {
-        Scene scene = alert.getDialogPane()
+    static <T extends Dialog<?>> T prepare(T dialog) {
+        Scene scene = dialog.getDialogPane()
                 .getScene();
         if (scene == null) {
-            LOGGER.log(Level.WARNING, "Neither styles nor logo can be attached to the alert since it has no scene");
+            LOGGER.log(Level.WARNING, "Neither styles nor logo can be attached to the dialog since it has no scene");
         } else {
             scene.getStylesheets()
                     .add(DEFAULT_STYLESHEET);
@@ -106,9 +106,9 @@ public interface StagePreparer {
                 addLogo((Stage) window);
             } else {
                 LOGGER.log(Level.WARNING,
-                        "Cannot associate application logo to alert since it is not attached to a stage");
+                        "Cannot associate application logo to dialog since it is not attached to a stage");
             }
         }
-        return alert;
+        return dialog;
     }
 }

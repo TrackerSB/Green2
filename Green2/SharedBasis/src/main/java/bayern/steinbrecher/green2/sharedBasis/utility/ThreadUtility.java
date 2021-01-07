@@ -19,7 +19,8 @@ public final class ThreadUtility {
                 Level.SEVERE, String.format("Thread %s threw an uncaught exception", thread.getName()), exception);
         Alert stacktraceAlert;
         try {
-            stacktraceAlert = DialogUtility.createStacktraceAlert(exception, "unexpectedAbort");
+            stacktraceAlert = StagePreparer.prepare(
+                    DialogUtility.createStacktraceAlert(exception, "unexpectedAbort"));
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show stacktrace to user", ex);
             stacktraceAlert = null;

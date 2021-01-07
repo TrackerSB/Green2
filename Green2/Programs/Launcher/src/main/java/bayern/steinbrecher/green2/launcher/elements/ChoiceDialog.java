@@ -45,7 +45,8 @@ public class ChoiceDialog implements StagePreparer {
         });
         VBox vbox = new VBox(message, hyperlink, new HBox(yesButton, noButton));
 
-        stage.setScene(new Scene(vbox));
+        stage.getScene()
+                .setRoot(vbox);
         stage.initStyle(StageStyle.UTILITY);
         stage.setResizable(false);
         stage.setTitle(EnvironmentHandler.getResourceValue("installUpdates"));
