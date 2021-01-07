@@ -34,7 +34,7 @@ task createDeployableArchive(type: Zip) {
 
 allprojects {
     group "bayern.steinbrecher.Green2"
-    version "2u14-SNAPSHOT"
+    version "2u14-RC.1"
 
     repositories {
         mavenCentral()
