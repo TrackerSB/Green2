@@ -184,7 +184,11 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                     EnvironmentHandler.getResourceValue("prename"),
                     EnvironmentHandler.getResourceValue("lastname"),
                     EnvironmentHandler.getResourceValue("memberSince"),
-                    EnvironmentHandler.getResourceValue("isActive")
+                    EnvironmentHandler.getResourceValue("isActive"),
+                    EnvironmentHandler.getResourceValue("street"),
+                    EnvironmentHandler.getResourceValue("houseNumber"),
+                    EnvironmentHandler.getResourceValue("cityCode"),
+                    EnvironmentHandler.getResourceValue("city")
             ));
             result.addAll(streamCurrentMember()
                     .filter(m -> !m.getHonorings().getOrDefault(yearsOfMembership, Boolean.FALSE))
@@ -194,7 +198,11 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                                     m.getPerson().getPrename(),
                                     m.getPerson().getLastname(),
                                     m.getMemberSince().toString(),
-                                    m.isActive().map(Object::toString).orElse("")))
+                                    m.isActive().map(Object::toString).orElse(""),
+                                    m.getHome().getStreet(),
+                                    m.getHome().getHouseNumber(),
+                                    m.getHome().getPostcode(),
+                                    m.getHome().getPlace()))
                     .collect(Collectors.toList())
             );
             try {
