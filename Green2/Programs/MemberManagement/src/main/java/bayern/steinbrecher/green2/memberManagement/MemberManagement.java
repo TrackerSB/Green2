@@ -124,6 +124,7 @@ public class MemberManagement extends Application {
         String databaseHost = loadedProfile.getOrDefault(ProfileSettings.DATABASE_HOST, "localhost");
         int databasePort = loadedProfile.getOrDefault(ProfileSettings.DATABASE_PORT, dbms.getDefaultPort());
         String databaseName = loadedProfile.get(ProfileSettings.DATABASE_NAME);
+        boolean enableSSL = loadedProfile.getOrDefault(ProfileSettings.USE_SSL_IF_NO_SSH, true);
         DBConnection dbConnection = null;
 
         Alert failureReport = null;
@@ -131,7 +132,7 @@ public class MemberManagement extends Application {
             try {
                 if (credentials instanceof SimpleCredentials) {
                     dbConnection = new SimpleConnection(
-                            dbms, databaseHost, databasePort, databaseName, (SimpleCredentials) credentials);
+                            dbms, databaseHost, databasePort, databaseName, (SimpleCredentials) credentials, enableSSL);
                 } else if (credentials instanceof SshCredentials) {
                     String sshHost = loadedProfile.getOrDefault(ProfileSettings.SSH_HOST, "localhost");
                     int sshPort = loadedProfile.getOrDefault(ProfileSettings.SSH_PORT, 22);

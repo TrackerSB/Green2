@@ -38,6 +38,8 @@ public class ConfigDialogController extends WizardPageController<Optional<Void>>
     @FXML
     private CheckBox useSSHCheckBox;
     @FXML
+    private CheckBox useSSLCheckBox;
+    @FXML
     private CheckBox sepaWithBomCheckBox;
     @FXML
     private CheckedTextField sshCharsetTextField;
@@ -88,6 +90,7 @@ public class ConfigDialogController extends WizardPageController<Optional<Void>>
         //Load settings
         profile = EnvironmentHandler.getProfile();
         useSSHCheckBox.setSelected(profile.getOrDefault(ProfileSettings.USE_SSH, true));
+        useSSLCheckBox.setSelected(profile.getOrDefault(ProfileSettings.USE_SSL_IF_NO_SSH, true));
         sshHostTextField.setText(profile.getOrDefault(ProfileSettings.SSH_HOST, ""));
         //CHECKSTYLE.OFF: MagicNumber - 22 is the default port of SSH
         sshPort.getValueFactory().setValue(profile.getOrDefault(ProfileSettings.SSH_PORT, 22));
@@ -123,6 +126,7 @@ public class ConfigDialogController extends WizardPageController<Optional<Void>>
         boolean isValid = isValid();
         if (isValid) {
             profile.set(ProfileSettings.USE_SSH, useSSHCheckBox.isSelected());
+            profile.set(ProfileSettings.USE_SSL_IF_NO_SSH, useSSLCheckBox.isSelected());
             profile.set(ProfileSettings.SSH_HOST, sshHostTextField.getText());
             profile.set(ProfileSettings.SSH_PORT, sshPort.getValue());
             profile.set(ProfileSettings.DATABASE_HOST, databaseHostTextField.getText());

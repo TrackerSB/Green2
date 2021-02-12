@@ -69,6 +69,7 @@ public abstract class /*enum*/ ProfileSettings<T> {
      * Indicates whether to activate the features relating to the birthday of member.
      */
     public static final ProfileSettings<Boolean> ACTIVATE_BIRTHDAY_FEATURES = new BooleanSetting();
+    public static final ProfileSettings<Boolean> USE_SSL_IF_NO_SSH = new BooleanSetting();
 
     /**
      * Contains all values like an enum. NOTE: It will be removed when generic enums are added to Java.

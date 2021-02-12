@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?language javascript?>
-<?import bayern.steinbrecher.checkedElements.CheckedComboBox?>
+
 <?import bayern.steinbrecher.checkedElements.buttons.HelpButton?>
+<?import bayern.steinbrecher.checkedElements.CheckedComboBox?>
 <?import bayern.steinbrecher.checkedElements.spinner.CheckedIntegerSpinner?>
 <?import bayern.steinbrecher.checkedElements.textfields.CharsetTextField?>
 <?import bayern.steinbrecher.checkedElements.textfields.CheckedRegexTextField?>
@@ -13,7 +14,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
-
 <VBox xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bayern.steinbrecher.green2.configurationDialog.ConfigDialogController">
     <fx:script>
@@ -21,6 +21,10 @@
         function handleCheckBoxAction(event) {
             sshPort.disable = !useSSHCheckBox.selected;
             sshPort.checked = useSSHCheckBox.selected;
+            useSSLCheckBox.disable = useSSHCheckBox.selected;
+            if (useSSHCheckBox.selected) {
+                useSSLCheckBox.selected = true;
+            }
         }
     </fx:script>
     <GridPane>
@@ -66,65 +70,72 @@
                           promptText="%sshCharset"
                           GridPane.rowIndex="4"
                           GridPane.columnIndex="1"/>
+        <CheckBox fx:id="useSSLCheckBox"
+                  selected="true"
+                  text="%useSSL"
+                  GridPane.rowIndex="5"
+                  GridPane.columnIndex="0"
+                  GridPane.columnSpan="2"
+                  onAction="handleCheckBoxAction(event);"/>
         <Label text="%databaseHost"
                labelFor="${databaseHostTextField}"
-               GridPane.rowIndex="5"
+               GridPane.rowIndex="6"
                GridPane.columnIndex="0"/>
         <CheckedTextField fx:id="databaseHostTextField"
                           promptText="%databaseHost"
-                          GridPane.rowIndex="5"
+                          GridPane.rowIndex="6"
                           GridPane.columnIndex="1"/>
         <Label text="%databasePort"
                labelFor="${databasePort}"
-               GridPane.rowIndex="6"
+               GridPane.rowIndex="7"
                GridPane.columnIndex="0"/>
         <CheckedIntegerSpinner fx:id="databasePort"
                                min="0"
                                amountToStepBy="1"
                                editable="true"
-                               GridPane.rowIndex="6"
+                               GridPane.rowIndex="7"
                                GridPane.columnIndex="1"/>
         <Label text="%databaseName"
                labelFor="${databaseNameTextField}"
-               GridPane.rowIndex="7"
+               GridPane.rowIndex="8"
                GridPane.columnIndex="0"/>
         <CheckedTextField fx:id="databaseNameTextField"
                           promptText="%databaseName"
-                          GridPane.rowIndex="7"
+                          GridPane.rowIndex="8"
                           GridPane.columnIndex="1"/>
         <CheckBox fx:id="birthdayFeaturesCheckbox"
                   selected="true"
                   text="%activateBirthdayFeatures"
-                  GridPane.rowIndex="8"
+                  GridPane.rowIndex="9"
                   GridPane.columnIndex="0"/>
         <HelpButton helpMessage="%helpBirthdayFeatures"
-                    GridPane.rowIndex="8"
+                    GridPane.rowIndex="9"
                     GridPane.columnIndex="1"/>
         <Label text="%birthdayExpression"
                labelFor="${birthdayExpressionTextField}"
-               GridPane.rowIndex="9"
+               GridPane.rowIndex="10"
                GridPane.columnIndex="0"/>
         <CheckedRegexTextField fx:id="birthdayExpressionTextField"
                                promptText="%birthdayExpression"
                                disable="${!birthdayFeaturesCheckbox.selected}"
                                checked="${birthdayFeaturesCheckbox.selected}"
-                               GridPane.rowIndex="9"
+                               GridPane.rowIndex="10"
                                GridPane.columnIndex="1"/>
         <CheckBox fx:id="sepaWithBomCheckBox"
                   selected="true"
                   text="%sepaUseBom"
-                  GridPane.rowIndex="10"
+                  GridPane.rowIndex="11"
                   GridPane.columnIndex="0"/>
         <HelpButton helpMessage="%helpBom"
-                    GridPane.rowIndex="10"
+                    GridPane.rowIndex="11"
                     GridPane.columnIndex="1"/>
         <Label text="%dbms"
                labelFor="${dbmsComboBox}"
-               GridPane.rowIndex="11"
+               GridPane.rowIndex="12"
                GridPane.columnIndex="0"/>
         <CheckedComboBox fx:id="dbmsComboBox"
                          promptText="%chooseDbms"
-                         GridPane.rowIndex="11"
+                         GridPane.rowIndex="12"
                          GridPane.columnIndex="1"/>
     </GridPane>
     <ButtonBar>
