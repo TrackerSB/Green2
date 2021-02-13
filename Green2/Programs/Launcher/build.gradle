@@ -6,7 +6,7 @@ dependencies {
     implementation project(":SharedBasis")
     implementation "bayern.steinbrecher:CheckedElements:0.11.10-SNAPSHOT"
     implementation "bayern.steinbrecher:JavaUtility:0.18-rc.2-SNAPSHOT"
-    implementation "bayern.steinbrecher:Wizard:1.49"
+    implementation "bayern.steinbrecher:Wizard:1.50"
 }
 
 javafx {

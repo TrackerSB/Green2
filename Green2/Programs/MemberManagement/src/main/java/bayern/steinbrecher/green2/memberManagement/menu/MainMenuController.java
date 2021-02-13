@@ -54,7 +54,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
@@ -129,7 +128,6 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private CheckedIntegerSpinner yearSpinner3;
     @FXML
     private javafx.scene.control.Menu honoringsMenu;
-    private final ListProperty<MenuItem> addedHonorings = new SimpleListProperty<>(FXCollections.observableArrayList());
     @FXML
     private javafx.scene.control.Menu licensesMenu;
     @FXML
@@ -204,7 +202,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                     .collect(Collectors.toList())
             );
             try {
-                Pane resultDialog = new ResultDialog(result)
+                // FIXME Is StandaloneWizardPage more appropriate?
+                Parent resultDialog = new ResultDialog(result)
                         .generateEmbeddableWizardPage()
                         .getRoot();
                 Stage resultStage = StagePreparer.getDefaultPreparedStage();
