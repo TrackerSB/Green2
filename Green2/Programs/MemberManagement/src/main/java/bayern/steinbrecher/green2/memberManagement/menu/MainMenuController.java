@@ -36,19 +36,16 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.LoadException;
@@ -118,6 +115,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private final BooleanProperty allDataAvailable = new SimpleBooleanProperty(this, "allDataAvailable");
     private final BooleanProperty activateBirthdayFeatures
             = new SimpleBooleanProperty(this, "activateBirthdayFeatures", true);
+    private final ReadOnlyBooleanWrapper honoringsAvailable = new ReadOnlyBooleanWrapper(false);
 
     @FXML
     private MenuItem generateAddressesBirthdayItem;
@@ -221,27 +219,27 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
 
     private void generateHonoringsMenu() {
         member.availableProperty().addListener((obs, wereAvailable, areAvailable) -> {
-            honoringsMenu.getItems().removeAll(addedHonorings);
-            //TODO Is the following command guaranteed to run before new items are added?
-            Platform.runLater(addedHonorings::clear);
-
-            streamCurrentMember()
+            final Collection<MenuItem> membershipMenuItems = streamCurrentMember()
                     .map(Member::getHonorings)
                     .flatMap(h -> h.keySet().stream())
                     .distinct()
                     .sorted()
-                    .forEach(year -> {
+                    .map(year -> {
                         String membershipTitle = EnvironmentHandler.getResourceValue("yearsMembership", year);
                         MenuItem membershipItem = new MenuItem(membershipTitle);
                         membershipItem.setOnAction(aevt -> showHonorings(year));
                         membershipItem.disableProperty()
                                 .bind(yearSpinner.validProperty().not());
-                        Platform.runLater(() -> {
-                            honoringsMenu.getItems()
-                                    .add(membershipItem);
-                            addedHonorings.add(membershipItem);
-                        });
-                    });
+                        return membershipItem;
+                    })
+                    .collect(Collectors.toUnmodifiableList());
+            Platform.runLater(() -> {
+                honoringsMenu.getItems()
+                        .clear();
+                honoringsMenu.getItems()
+                        .addAll(membershipMenuItems);
+                honoringsAvailable.set(!membershipMenuItems.isEmpty());
+            });
         });
     }
 
@@ -851,8 +849,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
      * to access these.
      */
     @Deprecated(forRemoval = false, since = "2u14")
-    public BooleanBinding honoringsAvailableProperty() {
-        return addedHonorings.emptyProperty().not();
+    public ReadOnlyBooleanProperty honoringsAvailableProperty() {
+        return honoringsAvailable;
     }
 
     /**
