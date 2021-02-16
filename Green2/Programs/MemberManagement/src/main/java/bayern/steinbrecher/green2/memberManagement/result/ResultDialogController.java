@@ -1,10 +1,5 @@
 package bayern.steinbrecher.green2.memberManagement.result;
 
-import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
-import bayern.steinbrecher.javaUtility.ControllerUtility;
-import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.wizard.WizardPageController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -22,14 +17,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * The controller of {@link ResultDialog}.
@@ -38,7 +28,6 @@ import java.util.stream.Collectors;
  */
 public class ResultDialogController extends WizardPageController<Optional<Void>> {
 
-    private static final Logger LOGGER = Logger.getLogger(ResultDialogController.class.getName());
     @FXML
     private TableView<List<ReadOnlyStringProperty>> resultView;
     private final ObjectProperty<List<List<String>>> results = new SimpleObjectProperty<>();
@@ -46,10 +35,11 @@ public class ResultDialogController extends WizardPageController<Optional<Void>>
 
     @FXML
     public void initialize() {
-        empty.bind(Bindings.createBooleanBinding(() -> {
-            return results.get() == null || results.get().size() < 2
-                    || results.get().stream().flatMap(List::stream).count() <= 0;
-        }, results));
+        empty.bind(Bindings.createBooleanBinding(
+                () -> results.get() == null
+                        || results.get().size() < 2
+                        || results.get().stream().mapToLong(List::size).sum() <= 0,
+                results));
         results.addListener((obs, oldVal, newVal) -> {
             resultView.getItems().clear();
             resultView.getColumns().clear();
@@ -91,26 +81,6 @@ public class ResultDialogController extends WizardPageController<Optional<Void>>
     @FXML
     @SuppressWarnings("unused")
     private void export() {
-        if (!isEmpty()) {
-            Optional<File> path = EnvironmentHandler.askForSavePath(
-                    ControllerUtility.determineStage(resultView).orElse(null), "query", "csv");
-            if (path.isPresent()) {
-                String content = results.get().stream()
-                        .map(row -> row.stream().collect(Collectors.joining(";")))
-                        .collect(Collectors.joining("\n"));
-                try {
-                    IOStreamUtility.printContent(content, path.get(), true);
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                    try {
-                        DialogUtility.createStacktraceAlert(ex, EnvironmentHandler.getResourceValue("exportFailed"))
-                                .show();
-                    } catch (DialogCreationException exx) {
-                        LOGGER.log(Level.SEVERE, "Could not show error dialog to user", exx);
-                    }
-                }
-            }
-        }
     }
 
     /**
