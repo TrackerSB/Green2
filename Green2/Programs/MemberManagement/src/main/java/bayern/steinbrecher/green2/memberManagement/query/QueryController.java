@@ -11,6 +11,7 @@ import bayern.steinbrecher.checkedElements.spinner.CheckedSpinner;
 import bayern.steinbrecher.checkedElements.textfields.CheckedTextField;
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.dbConnector.DBConnection.Column;
+import bayern.steinbrecher.dbConnector.DBConnection.Table;
 import bayern.steinbrecher.dbConnector.query.GenerationFailedException;
 import bayern.steinbrecher.dbConnector.query.QueryCondition;
 import bayern.steinbrecher.dbConnector.query.QueryFailedException;
@@ -30,10 +31,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -61,8 +62,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Represents the controller of the dialog for querying member.
- *
  * @author Stefan Huber
  */
 public class QueryController extends WizardPageController<Optional<List<List<String>>>> {
@@ -77,9 +76,9 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
     private final ObjectProperty<DBConnection> dbConnection = new SimpleObjectProperty<>(this, "dbConnection");
     private final ObjectProperty<Optional<List<List<String>>>> lastQueryResult
             = new SimpleObjectProperty<>(Optional.empty());
-    private boolean isLastQueryUptodate;
+    private boolean isLastQueryUpToDate;
 
-    //TODO Is there any way to connect these questionmarks?
+    //TODO Is there any way to connect these question marks?
     @SuppressWarnings("unchecked")
     private Optional<CheckedConditionField<?>> createConditionField(Column<?> column) {
         CheckedConditionField<?> conditionField;
@@ -122,7 +121,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
                     conditionField.get()
-                            .addListener(invLis -> isLastQueryUptodate = false);
+                            .addListener(invLis -> isLastQueryUpToDate = false);
                     conditionFields.add(conditionField.get());
                     ObservableList<Node> children = conditionField.get()
                             .getChildren();
@@ -142,7 +141,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                         + "The lengths include: {0}", lengths);
             }
         }
-        isLastQueryUptodate = false;
+        isLastQueryUpToDate = false;
     }
 
     @FXML
@@ -170,50 +169,41 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             newVal.addListener((ListChangeListener.Change<? extends CheckedConditionField<?>> change) -> {
                 while (change.next()) {
                     change.getAddedSubList()
-                            .forEach(ccf -> ccf.addListener(invalidObs -> isLastQueryUptodate = false));
+                            .forEach(ccf -> ccf.addListener(invalidObs -> isLastQueryUpToDate = false));
                 }
             });
             BooleanBinding allConditionFieldsValid
                     = BindingUtility.reduceAnd(newVal.stream().map(CheckedConditionField::validProperty));
-            BooleanBinding isAnyConditionFieldNonEmpty
-                    = BindingUtility.reduceAnd(newVal.stream().map(CheckedConditionField::emptyProperty))
-                    .not();
             BooleanBinding isAnyTableSelected = tableSelection.getSelectionModel()
                     .selectedItemProperty()
                     .isNotNull();
             bindValidProperty(
                     allConditionFieldsValid
-                            .and(isAnyConditionFieldNonEmpty)
                             .and(isAnyTableSelected)
             );
+            // FIXME 2021-02-20: validProperty() listener is called very often (for every element separately)
         });
     }
 
     private synchronized void updateLastQueryResult() throws GenerationFailedException, QueryFailedException {
-        if (!isLastQueryUptodate) {
+        if (!isLastQueryUpToDate) {
             List<QueryCondition<?>> conditions = conditionFields.stream()
-                    .map(CheckedConditionField::getCondition)
+                    .map(CheckedConditionField::generateCondition)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());
-            List<Column<?>> columns = conditionFields.stream()
-                    .filter(CheckedConditionField::isSelected)
-                    .map(CheckedConditionField::getColumn)
-                    .collect(Collectors.toList());
+            Table<?, ?> memberTable = getDbConnection().getTable(Tables.MEMBER)
+                    .orElseThrow();
             String searchQuery = getDbConnection()
                     .getDbms()
                     .getQueryGenerator()
                     .generateSearchQueryStatement(
-                            getDbConnection().getDatabaseName(),
-                            getDbConnection().getTable(Tables.MEMBER).orElseThrow(), columns, conditions);
+                            getDbConnection().getDatabaseName(), memberTable, memberTable.getColumns(), conditions);
             lastQueryResult.set(Optional.of(getDbConnection().execQuery(searchQuery)));
-            isLastQueryUptodate = true;
+            isLastQueryUpToDate = true;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Optional<List<List<String>>> calculateResult() {
         try {
@@ -224,29 +214,14 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         return lastQueryResult.get();
     }
 
-    /**
-     * Returns the property holding the currently used {@link DBConnection}.
-     *
-     * @return The property holding the currently used {@link DBConnection}.
-     */
     public ObjectProperty<DBConnection> dbConnectionProperty() {
         return dbConnection;
     }
 
-    /**
-     * Sets a new {@link DBConnection}.
-     *
-     * @param dbConnection The {@link DBConnection} to use from now on.
-     */
     public void setDbConnection(DBConnection dbConnection) {
         this.dbConnection.set(dbConnection);
     }
 
-    /**
-     * Returns the currently used {@link DBConnection}.
-     *
-     * @return The currently used {@link DBConnection}.
-     */
     public DBConnection getDbConnection() {
         return dbConnectionProperty().get();
     }
@@ -259,11 +234,9 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
     private abstract static class CheckedConditionField<T> extends HBox implements CheckedControl, Observable {
 
         private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
-        private final BooleanProperty empty = new SimpleBooleanProperty(this, "empty", false);
+        private final BooleanProperty empty = new SimpleBooleanProperty(true);
         private final Column<T> column;
         private final QueryGenerator queryGenerator;
-        private final CheckBox selectColumn = new CheckBox();
-        private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper(this, "selected", true);
 
         /**
          * Creates a new {@link CheckedConditionField} for the given column and its appropriate type.
@@ -276,24 +249,21 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             this.queryGenerator = queryGenerator;
 
             ccBase.checkedProperty().bind(emptyProperty().not());
-            selectColumn.setSelected(true);
-            selected.bind(selectColumn.selectedProperty());
-            getChildren().add(selectColumn);
             getChildren().add(new Label(column.getName()));
         }
 
         /**
          * @since 2u14
          */
-        protected abstract Optional<QueryCondition<T>> getConditionImpl();
+        protected abstract Optional<QueryCondition<T>> generateConditionImpl();
 
         /**
          * @since 2u14
          */
-        public final Optional<QueryCondition<T>> getCondition() {
+        public final Optional<QueryCondition<T>> generateCondition() {
             Optional<QueryCondition<T>> condition;
             if (isValid() && !isEmpty()) {
-                condition = getConditionImpl();
+                condition = generateConditionImpl();
             } else {
                 condition = Optional.empty();
             }
@@ -330,28 +300,6 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             };
         }
 
-        /**
-         * Adds listener additionally to {@link #addListener(javafx.beans.InvalidationListener)}.
-         *
-         * @param listener The listener to add.
-         */
-        protected abstract void addListenerImpl(InvalidationListener listener);
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public final void addListener(InvalidationListener listener) {
-            selectColumn.selectedProperty()
-                    .addListener(listener);
-            addListenerImpl(listener);
-        }
-
-        /**
-         * Returns the column this field represents.
-         *
-         * @return The column this field represents.
-         */
         public Column<T> getColumn() {
             return column;
         }
@@ -363,70 +311,30 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             return queryGenerator;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public ObservableList<ReportEntry> getReports() {
             return ccBase.getReports();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean addReport(ReportEntry report) {
             return ccBase.addReport(report);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
-        public BooleanProperty checkedProperty() {
+        public ReadOnlyBooleanProperty checkedProperty() {
             return ccBase.checkedProperty();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean isChecked() {
             return ccBase.isChecked();
         }
 
-        /**
-         * Returns the property holding whether this column has to be shown in the output result.
-         *
-         * @return The property holding whether this column has to be shown in the output result.
-         */
-        public ReadOnlyBooleanProperty selectedProperty() {
-            return selected.getReadOnlyProperty();
-        }
-
-        /**
-         * Checks whether this column has to be shown in the output result.
-         *
-         * @return {@code true} only if if this column has to be shown in the output result.
-         */
-        public boolean isSelected() {
-            return selectedProperty().get();
-        }
-
-        /**
-         * Returns the property holding whether the input field is empty.
-         *
-         * @return Holds {@code true} only if the input field is empty.
-         */
         public ReadOnlyBooleanProperty emptyProperty() {
             return empty;
         }
 
-        /**
-         * Checks whether the input field is empty.
-         *
-         * @return {@code true} only if the input field is empty.
-         */
         public boolean isEmpty() {
             return emptyProperty().get();
         }
@@ -441,20 +349,19 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             empty.bind(obs);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public ReadOnlyBooleanProperty validProperty() {
             return ccBase.validProperty();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean isValid() {
             return validProperty().get();
+        }
+
+        @Override
+        public boolean addValidityConstraint(ObservableBooleanValue constraint) {
+            return ccBase.addValidityConstraint(constraint);
         }
     }
 
@@ -470,14 +377,17 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
 
         BooleanConditionField(Column<Boolean> column, QueryGenerator queryGenerator) {
             super(column, queryGenerator);
+
             bindEmptyProperty(checkbox.indeterminateProperty());
+            addValidityConstraint(checkbox.indeterminateProperty().not());
+
             getChildren().add(new HBox());
             getChildren().add(new HBox());
             getChildren().add(checkbox);
         }
 
         @Override
-        protected Optional<QueryCondition<Boolean>> getConditionImpl() {
+        protected Optional<QueryCondition<Boolean>> generateConditionImpl() {
             QueryCondition<Boolean> condition;
             if (checkbox.isIndeterminate()) {
                 condition = null;
@@ -490,7 +400,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        public void addListenerImpl(InvalidationListener listener) {
+        public void addListener(InvalidationListener listener) {
             checkbox.selectedProperty().addListener(listener);
             checkbox.indeterminateProperty().addListener(listener);
         }
@@ -520,14 +430,15 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         StringConditionField(Column<String> column, QueryGenerator queryGenerator) {
             super(column, queryGenerator);
 
-            inputField.checkedProperty().bind(checkedProperty());
             compareMode.setConverter(compareModeConverter);
             compareMode.getSelectionModel()
                     .select(QueryOperator.CONTAINS);
-
             GridPane.setHgrow(inputField, Priority.ALWAYS);
+
             bindEmptyProperty(inputField.emptyProperty());
-            addReports(inputField);
+            inputField.checkedProperty()
+                    .bind(checkedProperty());
+            addValidityConstraint(inputField.validProperty());
 
             getChildren().add(new HelpButton(EnvironmentHandler.getResourceValue("sqlWildcardsHelp")));
             getChildren().add(compareMode);
@@ -535,14 +446,14 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        protected Optional<QueryCondition<String>> getConditionImpl() {
+        protected Optional<QueryCondition<String>> generateConditionImpl() {
             return Optional.of(
                     compareMode.getValue()
                             .generateCondition(getQueryGenerator(), getColumn(), inputField.getText()));
         }
 
         @Override
-        public void addListenerImpl(InvalidationListener listener) {
+        public void addListener(InvalidationListener listener) {
             compareMode.valueProperty().addListener(listener);
             inputField.textProperty().addListener(listener);
         }
@@ -569,8 +480,6 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             this.spinner = spinner;
             compareSymbol = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
 
-            spinner.checkedProperty()
-                    .bind(checkedProperty());
             spinner.setEditable(true);
             spinner.getEditor()
                     .setText("");
@@ -578,8 +487,11 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             compareSymbol.getSelectionModel()
                     .selectFirst();
             GridPane.setHgrow(spinner, Priority.ALWAYS);
+
             bindEmptyProperty(spinner.getEditor().textProperty().isEmpty());
-            addReports(spinner);
+            spinner.checkedProperty()
+                    .bind(checkedProperty());
+            addValidityConstraint(spinner.validProperty());
 
             getChildren().add(new HBox());
             getChildren().add(compareSymbol);
@@ -587,7 +499,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        protected Optional<QueryCondition<T>> getConditionImpl() {
+        protected Optional<QueryCondition<T>> generateConditionImpl() {
             return Optional.of(
                     compareSymbol.getValue()
                             .generateCondition(getQueryGenerator(), getColumn(), spinner.getValue())
@@ -595,7 +507,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        public void addListenerImpl(InvalidationListener listener) {
+        public void addListener(InvalidationListener listener) {
             spinner.valueProperty().addListener(listener);
             compareSymbol.valueProperty().addListener(listener);
         }
@@ -655,8 +567,8 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         ));
         private static final StringConverter<QueryOperator<LocalDate>> compareModeConverter
                 = createStringConverter(valueDisplayMap);
-        private final ComboBox<QueryOperator<LocalDate>> compareMode = new ComboBox<>(FXCollections
-                .observableArrayList(valueDisplayMap.keySet()));
+        private final ComboBox<QueryOperator<LocalDate>> compareMode
+                = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
         private final CheckedDatePicker datePicker = new CheckedDatePicker();
 
         LocalDateConditionField(Column<LocalDate> column, QueryGenerator queryGenerator) {
@@ -665,11 +577,11 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             compareMode.setConverter(compareModeConverter);
             compareMode.getSelectionModel()
                     .select(QueryOperator.IS_AT_DATE);
-            datePicker.checkedProperty()
-                    .bind(checkedProperty());
 
             bindEmptyProperty(datePicker.emptyProperty());
-            addReports(datePicker);
+            datePicker.checkedProperty()
+                    .bind(checkedProperty());
+            addValidityConstraint(datePicker.validProperty());
 
             getChildren().add(new HBox());
             getChildren().add(compareMode);
@@ -677,7 +589,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        protected Optional<QueryCondition<LocalDate>> getConditionImpl() {
+        protected Optional<QueryCondition<LocalDate>> generateConditionImpl() {
             return Optional.of(
                     compareMode.getValue()
                             .generateCondition(getQueryGenerator(), getColumn(), datePicker.getValue())
@@ -685,7 +597,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         }
 
         @Override
-        public void addListenerImpl(InvalidationListener listener) {
+        public void addListener(InvalidationListener listener) {
             compareMode.valueProperty().addListener(listener);
             datePicker.valueProperty().addListener(listener);
         }

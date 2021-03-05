@@ -12,8 +12,6 @@ import bayern.steinbrecher.green2.memberManagement.generator.sepa.SepaPain008003
 import bayern.steinbrecher.green2.memberManagement.generator.sepa.SequenceType;
 import bayern.steinbrecher.green2.memberManagement.people.Originator;
 import bayern.steinbrecher.green2.memberManagement.query.Query;
-import bayern.steinbrecher.green2.memberManagement.result.ResultDialog;
-import bayern.steinbrecher.green2.memberManagement.selection.SelectionGroup;
 import bayern.steinbrecher.green2.memberManagement.sepaform.SepaForm;
 import bayern.steinbrecher.green2.memberManagement.utility.CheckReportDialogUtility;
 import bayern.steinbrecher.green2.sharedBasis.data.AppInfo;
@@ -27,12 +25,13 @@ import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.javaUtility.SepaUtility;
-import bayern.steinbrecher.wizard.EmbeddedWizardPage;
 import bayern.steinbrecher.wizard.StandaloneWizardPageController;
 import bayern.steinbrecher.wizard.Wizard;
+import bayern.steinbrecher.wizard.WizardPage;
 import bayern.steinbrecher.wizard.WizardState;
 import bayern.steinbrecher.wizard.pages.Selection;
-import com.google.common.collect.BiMap;
+import bayern.steinbrecher.wizard.pages.SelectionGroup;
+import bayern.steinbrecher.wizard.pages.TablePage;
 import com.google.common.collect.HashBiMap;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -54,7 +53,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -76,6 +74,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,6 +89,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -203,12 +203,10 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             );
             try {
                 // FIXME Is StandaloneWizardPage more appropriate?
-                Parent resultDialog = new ResultDialog(result)
-                        .generateEmbeddableWizardPage()
-                        .getRoot();
                 Stage resultStage = StagePreparer.getDefaultPreparedStage();
-                resultStage.getScene()
-                        .setRoot(resultDialog);
+                final TablePage resultsPage = new TablePage();
+                resultsPage.setResults(result);
+                resultsPage.embedStandaloneWizardPage(resultStage, null);
                 resultStage.show();
             } catch (LoadException ex) {
                 LOGGER.log(Level.SEVERE, "Could not create result dialog", ex);
@@ -375,121 +373,115 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 .anyMatch(m -> m.getContribution().isPresent());
     }
 
-    private void generateSepa(Stream<Member> memberToSelectFuture, boolean useMemberContributions,
-                              SequenceType sequenceType) {
-        try {
-            Set<Member> memberToSelect = memberToSelectFuture.collect(Collectors.toSet());
+    private Pair<Wizard, Pair<Supplier<Set<Member>>, Supplier<Originator>>> generateSepaWizard(
+            Set<Member> memberToSelect, boolean useMemberContributions) {
+        Map<String, WizardPage<?, ?>> pages = new HashMap<>();
 
-            if (memberToSelect.isEmpty()) {
-                showNoMemberForOutputDialog();
-            } else {
-                boolean askForContribution = !(useMemberContributions && isContributionColumnEnabled());
+        SepaForm sepaFormPage = new SepaForm();
+        pages.put(WizardPage.FIRST_PAGE_KEY, sepaFormPage);
 
-                EmbeddedWizardPage<Optional<Originator>> sepaFormPage = new SepaForm().generateEmbeddableWizardPage();
-                sepaFormPage.setFinishAndNext(false, () -> askForContribution ? "contribution" : "selection");
-                EmbeddedWizardPage<Optional<BiMap<Double, Color>>> contributionPage
-                        = new Contribution().generateEmbeddableWizardPage();
-                EmbeddedWizardPage<Optional<Set<Member>>> selectionPage
-                        = new Selection<>(memberToSelect).generateEmbeddableWizardPage();
-                selectionPage.setFinishAndNext(true, null);
+        Supplier<Set<Member>> selectedMemberCalculator;
+        boolean contributionAvailable = useMemberContributions && isContributionColumnEnabled();
+        if (contributionAvailable) {
+            Selection<Member> selectionPage = new Selection<>(memberToSelect);
+            pages.put("selection", selectionPage);
 
-                Map<String, EmbeddedWizardPage<?>> pages = new HashMap<>();
-                pages.put(EmbeddedWizardPage.FIRST_PAGE_KEY, sepaFormPage);
-                pages.put("contribution", contributionPage);
-                pages.put("selection", selectionPage);
-                Wizard wizard = Wizard.create(pages);
+            selectionPage.setFinishAndNext(true, null);
+            sepaFormPage.setFinishAndNext(false, () -> "selection");
 
-                CompletableFuture<EmbeddedWizardPage<Optional<Map<Member, Double>>>> selectionGroupPage
-                        = contributionPage.setFinishAndDynamicNext(
-                        false, () -> new SelectionGroup<>(new HashSet<>(memberToSelect),
-                                contributionPage.getResult().orElse(HashBiMap.create())), "selectionGroup")
-                        .thenApply(page -> {
-                            page.setFinishAndNext(true, null);
-                            return page;
-                        });
-                wizard.stateProperty().addListener((obs, oldVal, newVal) -> {
-                    if (newVal == WizardState.FINISHED) {
-                        Set<Member> selectedMember;
-                        if (askForContribution) {
-                            Optional<Map<Member, Double>> groupedMember;
-                            try {
-                                groupedMember = selectionGroupPage.get()
-                                        .getResult();
-                            } catch (InterruptedException | ExecutionException ex) {
-                                LOGGER.log(Level.SEVERE, "Could not display group selection page", ex);
-                                groupedMember = Optional.empty();
-                            }
-                            selectedMember = groupedMember.orElseThrow()
-                                    .entrySet()
-                                    .stream()
-                                    .map(entry -> new Member.Builder(entry.getKey())
-                                            .setContribution(Optional.ofNullable(entry.getValue()))
-                                            .generate())
-                                    .collect(Collectors.toSet());
-                        } else {
-                            selectedMember = selectionPage.getResult()
-                                    .orElseThrow();
-                        }
-                        Originator originator = sepaFormPage.getResult()
-                                .orElseThrow();
+            selectedMemberCalculator = () -> selectionPage.getResult().orElseThrow();
+        } else {
+            Contribution contributionPage = new Contribution();
+            pages.put("contribution", contributionPage);
 
-                        Optional<File> optSavePath = EnvironmentHandler.askForSavePath(stage, "sepa", "xml");
-                        if (optSavePath.isPresent()) {
-                            File savePath = optSavePath.get();
-                            boolean useBOM = EnvironmentHandler.getProfile()
-                                    .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
-                            List<Member> invalidMember;
-                            try {
-                                invalidMember = SepaPain00800302XMLGenerator.createXMLFile(
-                                        selectedMember, originator, sequenceType, savePath, useBOM);
-                            } catch (IOException ex) {
-                                LOGGER.log(Level.SEVERE, "The sepa xml file could not be created.", ex);
-                                invalidMember = List.of();
-                            }
-                            String message = invalidMember.stream()
-                                    .map(Member::toString)
-                                    .collect(Collectors.joining("\n"));
-                            if (!message.isEmpty()) {
-                                try {
-                                    String badAccountInfoMessage
-                                            = EnvironmentHandler.getResourceValue("haveBadAccountInformation");
-                                    Alert alert = StagePreparer.prepare(DialogUtility.createErrorAlert(
-                                            String.format("%s\n%s", message, badAccountInfoMessage)));
-                                    Platform.runLater(alert::show);
-                                } catch (DialogCreationException ex) {
-                                    LOGGER.log(
-                                            Level.WARNING,
-                                            "Could not inform user graphically that some member have "
-                                                    + "invalid account information",
-                                            ex);
-                                }
-                            }
-                        }
-                    }
-                });
-                Stage wizardStage = StagePreparer.getDefaultPreparedStage();
-                wizard.stateProperty()
-                        .addListener((obs, previousState, currentState) -> {
-                            if (currentState == WizardState.FINISHED
-                                    || currentState == WizardState.ABORTED) {
-                                wizardStage.close();
-                            }
-                        });
-                wizardStage.initOwner(stage);
-                wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
-                wizardStage.setResizable(false);
-                wizardStage.getScene()
-                        .setRoot(wizard.getRoot());
-                wizardStage.showAndWait();
-            }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            String noSepaDebit = EnvironmentHandler.getResourceValue("noSepaDebit");
+            SelectionGroup<Member, Double> selectionGroupPage = new SelectionGroup<>(
+                    () -> memberToSelect, () -> contributionPage.getResult().orElse(HashBiMap.create()));
+            pages.put("selectionGroup", selectionGroupPage);
+
+            selectionGroupPage.setFinishAndNext(true, null);
+            contributionPage.setFinishAndNext(false, () -> "selectionGroup");
+            sepaFormPage.setFinishAndNext(false, () -> "contribution");
+
+            selectedMemberCalculator = () -> selectionGroupPage.getResult()
+                    .orElseThrow()
+                    .entrySet()
+                    .stream()
+                    .map(entry -> new Member.Builder(entry.getKey())
+                            .setContribution(Optional.ofNullable(entry.getValue()))
+                            .generate())
+                    .collect(Collectors.toSet());
+        }
+
+        Wizard wizard = Wizard.create(pages);
+        return new Pair<>(wizard, new Pair<>(selectedMemberCalculator, () -> sepaFormPage.getResult().orElseThrow()));
+    }
+
+    private void exportSepaResults(Set<Member> selectedMember, Originator originator, SequenceType sequenceType) {
+        Optional<File> optSavePath = EnvironmentHandler.askForSavePath(stage, "sepa", "xml");
+        if (optSavePath.isPresent()) {
+            File savePath = optSavePath.get();
+            boolean useBOM = EnvironmentHandler.getProfile()
+                    .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
+            List<Member> invalidMember;
             try {
-                DialogUtility.showAndWait(DialogUtility.createStacktraceAlert(ex, noSepaDebit, noSepaDebit));
-            } catch (DialogCreationException exx) {
-                LOGGER.log(Level.WARNING, "Could not show stacktrace graphically to user", exx);
+                invalidMember = SepaPain00800302XMLGenerator.createXMLFile(
+                        selectedMember, originator, sequenceType, savePath, useBOM);
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, "The sepa xml file could not be created.", ex);
+                invalidMember = List.of();
             }
+            String message = invalidMember.stream()
+                    .map(Member::toString)
+                    .collect(Collectors.joining("\n"));
+            if (!message.isEmpty()) {
+                try {
+                    String badAccountInfoMessage
+                            = EnvironmentHandler.getResourceValue("haveBadAccountInformation");
+                    Alert alert = StagePreparer.prepare(DialogUtility.createErrorAlert(
+                            String.format("%s\n%s", message, badAccountInfoMessage)));
+                    Platform.runLater(alert::show);
+                } catch (DialogCreationException ex) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Could not inform user graphically that some member have "
+                                    + "invalid account information",
+                            ex);
+                }
+            }
+        }
+    }
+
+    private void generateSepa(
+            Stream<Member> memberToSelectFuture, boolean useMemberContributions, SequenceType sequenceType) {
+        Set<Member> memberToSelect = memberToSelectFuture.collect(Collectors.toSet());
+
+        if (memberToSelect.isEmpty()) {
+            showNoMemberForOutputDialog();
+        } else {
+            Pair<Wizard, Pair<Supplier<Set<Member>>, Supplier<Originator>>> wizardProvider
+                    = generateSepaWizard(memberToSelect, useMemberContributions);
+            Wizard wizard = wizardProvider.getKey();
+            Stage wizardStage = StagePreparer.getDefaultPreparedStage();
+            wizard.stateProperty()
+                    .addListener((obs, previousState, currentState) -> {
+                        switch (currentState) {
+                        case FINISHED:
+                            Pair<Supplier<Set<Member>>, Supplier<Originator>> wizardResults
+                                    = wizardProvider.getValue();
+                            exportSepaResults(
+                                    wizardResults.getKey().get(), wizardResults.getValue().get(), sequenceType);
+                            // Fall through
+                        case ABORTED:
+                            wizardStage.close();
+                        }
+                    });
+            wizardStage.initOwner(stage);
+            wizardStage.initModality(Modality.WINDOW_MODAL);
+            wizardStage.setTitle(EnvironmentHandler.getResourceValue("generateSepa"));
+            wizardStage.setResizable(false);
+            wizardStage.getScene()
+                    .setRoot(wizard.getRoot());
+            wizardStage.showAndWait();
         }
     }
 
@@ -555,49 +547,75 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @SuppressWarnings("unused")
     private void openQueryDialog(ActionEvent aevt) {
         callOnDisabled(aevt, () -> {
-            try {
-                Map<String, EmbeddedWizardPage<?>> pages = new HashMap<>();
-                EmbeddedWizardPage<Optional<List<List<String>>>> queryDialogPage = new Query(dbConnection)
-                        .generateEmbeddableWizardPage();
-                pages.put(EmbeddedWizardPage.FIRST_PAGE_KEY, queryDialogPage);
-                Wizard queryWizard = Wizard.create(pages);
-                queryDialogPage.setFinishAndNext(false, () -> {
-                    try {
-                        EmbeddedWizardPage<Optional<Void>> queryResultPage
-                                = new ResultDialog(queryDialogPage.getResult().orElse(new ArrayList<>()))
-                                .generateEmbeddableWizardPage();
-                        queryResultPage.setFinishAndNext(true, null);
-                        queryWizard.putPage("queryResult", queryResultPage);
-                        return "queryResult";
-                    } catch (LoadException ex) {
-                        throw new Error("Could not generate wizard page showing the query result", ex);
-                    }
-                });
-                Stage wizardStage = StagePreparer.getDefaultPreparedStage();
-                wizardStage.initOwner(stage);
-                wizardStage.initModality(Modality.WINDOW_MODAL);
-                wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
-                wizardStage.setResizable(true);
-                wizardStage.getScene()
-                        .setRoot(queryWizard.getRoot());
-                queryWizard.stateProperty()
-                        .addListener((obs, previousState, currentState) -> {
-                            if (currentState == WizardState.ABORTED
-                                    || currentState == WizardState.FINISHED) {
-                                wizardStage.close();
+            Map<String, WizardPage<?, ?>> pages = new HashMap<>();
+
+            Query queryPage = new Query(dbConnection);
+            pages.put(WizardPage.FIRST_PAGE_KEY, queryPage);
+
+            final Supplier<List<List<String>>> resultTask = () -> Collections
+                    .unmodifiableList(queryPage.getResult().orElse(List.of()));
+            final Supplier<List<String>> resultColumnsTask = () -> resultTask.get().get(0);
+
+            final Selection<String> exportColumnsPage = new Selection<>(() -> new HashSet<>(resultColumnsTask.get()));
+            pages.put("exportColumnSelection", exportColumnsPage);
+
+            final TablePage resultDialog = new TablePage();
+            pages.put("queryResult", resultDialog);
+
+            resultDialog.setFinishAndNext(true, null);
+            exportColumnsPage.setFinishAndNext(false, () -> {
+                final List<List<String>> queryResult = resultTask.get();
+                final List<String> queryResultColumns = resultColumnsTask.get();
+                final Optional<Set<String>> selectedColumns = exportColumnsPage.getResult();
+
+                List<List<String>> filteredQueryResult;
+                if (selectedColumns.isPresent() && selectedColumns.get().size() < queryResult.size()) {
+                    final Set<Integer> selectedColumnIndices = new HashSet<>();
+                    for (final String selectedColumn : selectedColumns.get()) {
+                        final int selectedColumnIndex = queryResultColumns.indexOf(selectedColumn);
+                        if (selectedColumnIndex < 0) {
+                            LOGGER.log(Level.WARNING,
+                                    String.format("Could not find index of column containing %s", selectedColumn));
+                        } else {
+                            if (!selectedColumnIndices.add(selectedColumnIndex)) {
+                                LOGGER.log(Level.WARNING,
+                                        String.format("The index %d was already added", selectedColumnIndex));
                             }
-                        });
-                wizardStage.show();
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                try {
-                    DialogUtility.createStacktraceAlert(
-                            ex, EnvironmentHandler.getResourceValue("noQueryDialog"))
-                            .showAndWait();
-                } catch (DialogCreationException exx) {
-                    LOGGER.log(Level.WARNING, "Could not show stacktrace graphically to user", exx);
+                        }
+                    }
+
+                    filteredQueryResult = new ArrayList<>();
+                    for (final List<String> resultRow : queryResult) {
+                        final List<String> filteredRow = new ArrayList<>();
+                        for (final int selectedColumnIndex : selectedColumnIndices) {
+                            filteredRow.add(resultRow.get(selectedColumnIndex));
+                        }
+                        filteredQueryResult.add(filteredRow);
+                    }
+                } else {
+                    filteredQueryResult = queryResult;
                 }
-            }
+                resultDialog.setResults(filteredQueryResult);
+                return "queryResult";
+            });
+            queryPage.setFinishAndNext(false, () -> "exportColumnSelection");
+
+            Stage wizardStage = StagePreparer.getDefaultPreparedStage();
+            wizardStage.initOwner(stage);
+            wizardStage.initModality(Modality.WINDOW_MODAL);
+            wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
+            wizardStage.setResizable(true);
+            Wizard queryWizard = Wizard.create(pages);
+            wizardStage.getScene()
+                    .setRoot(queryWizard.getRoot());
+            queryWizard.stateProperty()
+                    .addListener((obs, previousState, currentState) -> {
+                        if (currentState == WizardState.ABORTED
+                                || currentState == WizardState.FINISHED) {
+                            wizardStage.close();
+                        }
+                    });
+            wizardStage.show();
         });
     }
 
