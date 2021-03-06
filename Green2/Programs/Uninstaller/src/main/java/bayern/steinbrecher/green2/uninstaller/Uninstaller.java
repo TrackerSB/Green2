@@ -6,8 +6,8 @@ import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.uninstaller.confirmUninstall.ConfirmUninstall;
 import bayern.steinbrecher.green2.uninstaller.deleteConfigs.DeleteConfigs;
-import bayern.steinbrecher.wizard.EmbeddedWizardPage;
 import bayern.steinbrecher.wizard.Wizard;
+import bayern.steinbrecher.wizard.WizardPage;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -26,17 +26,17 @@ public final class Uninstaller extends Application {
     private static final Logger LOGGER = Logger.getLogger(Uninstaller.class.getName());
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
-        EmbeddedWizardPage<Optional<Boolean>> deleteConfigsPage = new DeleteConfigs()
-                .generateEmbeddableWizardPage();
-        deleteConfigsPage.setFinishAndNext(false, () -> "confirmUninstall");
+    public void start(Stage primaryStage) {
+        Map<String, WizardPage<?, ?>> pages = new HashMap<>();
 
-        EmbeddedWizardPage<Optional<Void>> confirmUninstallPage = new ConfirmUninstall()
-                .generateEmbeddableWizardPage();
+        DeleteConfigs deleteConfigsPage = new DeleteConfigs();
+        pages.put(WizardPage.FIRST_PAGE_KEY, deleteConfigsPage);
 
-        Map<String, EmbeddedWizardPage<?>> pages = new HashMap<>();
-        pages.put(EmbeddedWizardPage.FIRST_PAGE_KEY, deleteConfigsPage);
+        ConfirmUninstall confirmUninstallPage = new ConfirmUninstall();
         pages.put("confirmUninstall", confirmUninstallPage);
+
+        confirmUninstallPage.setFinishAndNext(true, null);
+        deleteConfigsPage.setFinishAndNext(false, () -> "confirmUninstall");
 
         Stage stage = StagePreparer.getDefaultPreparedStage();
         Wizard wizard = Wizard.create(pages);

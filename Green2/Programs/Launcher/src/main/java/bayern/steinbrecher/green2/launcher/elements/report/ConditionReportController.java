@@ -4,7 +4,7 @@ import bayern.steinbrecher.checkedElements.CheckedTableView;
 import bayern.steinbrecher.checkedElements.report.ReportEntry;
 import bayern.steinbrecher.checkedElements.report.ReportType;
 import bayern.steinbrecher.checkedElements.report.Reportable;
-import bayern.steinbrecher.checkedElements.report.ReportableBase;
+import bayern.steinbrecher.checkedElements.CheckableControlBase;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.wizard.WizardPageController;
 import javafx.beans.Observable;
@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -85,9 +86,6 @@ public class ConditionReportController extends WizardPageController<Optional<Boo
                 .setAll(List.of(conditionNameColumn, conditionValueColumn));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Optional<Boolean> calculateResult() {
         boolean result = conditions.getValue()
@@ -114,9 +112,7 @@ public class ConditionReportController extends WizardPageController<Optional<Boo
      */
     public void setConditions(Map<String, Callable<Boolean>> conditions) {
         this.conditions.getValue().clear();
-        conditions.entrySet()
-                .stream()
-                .forEach(entry -> this.conditions.getValue().add(new Condition(entry.getKey(), entry.getValue())));
+        conditions.forEach((key, value) -> this.conditions.getValue().add(new Condition(key, value)));
     }
 
     /**
@@ -125,8 +121,8 @@ public class ConditionReportController extends WizardPageController<Optional<Boo
     //FIXME How to make this class static again?
     private /*static*/ class Condition implements Reportable {
 
-        private final ReportableBase<CheckedTableView<Condition>> reportableBase
-                = new ReportableBase<>(conditionsReport);
+        private final CheckableControlBase<CheckedTableView<Condition>> reportableBase
+                = new CheckableControlBase<>(conditionsReport);
         private final StringProperty name = new SimpleStringProperty(this, "name");
         /**
          * Currently the hold value is not updated automatically.
@@ -161,8 +157,6 @@ public class ConditionReportController extends WizardPageController<Optional<Boo
         /**
          * Returns the name of this {@link Condition}. This name is used for displaying a speaking description to the
          * user.
-         *
-         * @return
          */
         public String getName() {
             return nameProperty().get();
@@ -177,9 +171,6 @@ public class ConditionReportController extends WizardPageController<Optional<Boo
             nameProperty().set(name);
         }
 
-        /**
-         * @return
-         */
         public ReadOnlyObjectProperty<Optional<Boolean>> valueProperty() {
             return value;
         }
@@ -194,36 +185,32 @@ public class ConditionReportController extends WizardPageController<Optional<Boo
             return valueProperty().get();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public ObservableList<ReportEntry> getReports() {
             return reportableBase.getReports();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean addReport(ReportEntry report) {
             return reportableBase.addReport(report);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public ReadOnlyBooleanProperty validProperty() {
             return reportableBase.validProperty();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public boolean isValid() {
             return reportableBase.isValid();
+        }
+
+        /**
+         * @since 2u14
+         */
+        @Override
+        public boolean addValidityConstraint(ObservableBooleanValue constraint) {
+            return reportableBase.addValidityConstraint(constraint);
         }
     }
 }
