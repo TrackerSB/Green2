@@ -9,7 +9,7 @@ allprojects {
 dependencies {
     implementation "bayern.steinbrecher:DBConnector:0.15-rc.6-SNAPSHOT"
     implementation "bayern.steinbrecher:JavaUtility:0.18-rc.2-SNAPSHOT"
-    compile "bayern.steinbrecher:GenericWizard:1.61-rc.12-SNAPSHOT"
+    implementation "bayern.steinbrecher:GenericWizard:1.61-rc.12-SNAPSHOT"
 }
 
 javafx {
