@@ -50,10 +50,13 @@ allprojects {
         modularity.inferModulePath = true
     }
 
-    sourceCompatibility = 15
-    targetCompatibility = 15
+    sourceCompatibility = 16
+    targetCompatibility = "$sourceCompatibility" as Integer
 
-    compileJava.options.encoding = 'UTF-8'
+    compileJava{
+        options.encoding = 'UTF-8'
+        options.release = "$sourceCompatibility" as Integer
+    }
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
