@@ -55,7 +55,7 @@ allprojects {
 
     compileJava {
         options.encoding = 'UTF-8'
-        options.release = "$sourceCompatibility" as Property<Integer>
+        options.release = "$sourceCompatibility" as Integer
     }
 
     tasks.withType(JavaCompile) {
