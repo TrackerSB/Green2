@@ -28,8 +28,8 @@ task createDeployableArchive(type: Zip) {
             }) { into "lib" }
         }
     }
-    from("${projectDir}/../installationAttachments") {into "bin"}
-    from("${projectDir}/../licenses") {into "licenses"}
+    from("${projectDir}/../installationAttachments") { into "bin" }
+    from("${projectDir}/../licenses") { into "licenses" }
 }
 
 allprojects {
@@ -53,9 +53,9 @@ allprojects {
     sourceCompatibility = 16
     targetCompatibility = "$sourceCompatibility" as Integer
 
-    compileJava{
+    compileJava {
         options.encoding = 'UTF-8'
-        options.release = "$sourceCompatibility" as Integer
+        options.release = "$sourceCompatibility" as Property<Integer>
     }
 
     tasks.withType(JavaCompile) {
