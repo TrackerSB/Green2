@@ -5,6 +5,7 @@ module bayern.steinbrecher.green2.MemberManagement {
     requires bayern.steinbrecher.DBConnector;
     requires bayern.steinbrecher.GenericWizard;
     requires bayern.steinbrecher.green2.SharedBasis;
+    requires bayern.steinbrecher.SepaXMLGenerator;
     requires bayern.steinbrecher.Utility;
     requires com.google.common;
     requires java.desktop;

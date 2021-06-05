@@ -8,8 +8,6 @@ import bayern.steinbrecher.dbConnector.scheme.TableScheme;
 import bayern.steinbrecher.green2.memberManagement.contribution.Contribution;
 import bayern.steinbrecher.green2.memberManagement.generator.AddressGenerator;
 import bayern.steinbrecher.green2.memberManagement.generator.BirthdayGenerator;
-import bayern.steinbrecher.green2.memberManagement.generator.sepa.SepaPain00800302XMLGenerator;
-import bayern.steinbrecher.green2.memberManagement.generator.sepa.SequenceType;
 import bayern.steinbrecher.green2.memberManagement.people.Originator;
 import bayern.steinbrecher.green2.memberManagement.query.Query;
 import bayern.steinbrecher.green2.memberManagement.sepaform.SepaForm;
@@ -19,12 +17,22 @@ import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.people.Member;
+import bayern.steinbrecher.green2.sharedBasis.people.MemberBuilder;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
 import bayern.steinbrecher.javaUtility.DialogUtility;
 import bayern.steinbrecher.javaUtility.SepaUtility;
+import bayern.steinbrecher.sepaxmlgenerator.AccountHolder;
+import bayern.steinbrecher.sepaxmlgenerator.BIC;
+import bayern.steinbrecher.sepaxmlgenerator.Creditor;
+import bayern.steinbrecher.sepaxmlgenerator.CreditorId;
+import bayern.steinbrecher.sepaxmlgenerator.IBAN;
+import bayern.steinbrecher.sepaxmlgenerator.MessageId;
+import bayern.steinbrecher.sepaxmlgenerator.SepaDocumentDescription;
+import bayern.steinbrecher.sepaxmlgenerator.SepaGenerator;
+import bayern.steinbrecher.sepaxmlgenerator.SepaVersion;
 import bayern.steinbrecher.wizard.StandaloneWizardPageController;
 import bayern.steinbrecher.wizard.Wizard;
 import bayern.steinbrecher.wizard.WizardPage;
@@ -76,6 +84,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventObject;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -187,18 +196,18 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                     EnvironmentHandler.getResourceValue("city")
             ));
             result.addAll(streamCurrentMember()
-                    .filter(m -> !m.getHonorings().getOrDefault(yearsOfMembership, Boolean.FALSE))
-                    .filter(m -> yearSpinner.getValue() - m.getMemberSince().getYear() >= yearsOfMembership)
+                    .filter(m -> !m.honorings().getOrDefault(yearsOfMembership, Boolean.FALSE))
+                    .filter(m -> yearSpinner.getValue() - m.memberSince().getYear() >= yearsOfMembership)
                     .map(
-                            m -> List.of(Integer.toString(m.getMembershipnumber()),
-                                    m.getPerson().getPrename(),
-                                    m.getPerson().getLastname(),
-                                    m.getMemberSince().toString(),
-                                    m.isActive().map(Object::toString).orElse(""),
-                                    m.getHome().getStreet(),
-                                    m.getHome().getHouseNumber(),
-                                    m.getHome().getPostcode(),
-                                    m.getHome().getPlace()))
+                            m -> List.of(m.membershipnumber(),
+                                    m.person().firstname(),
+                                    m.person().lastname(),
+                                    m.memberSince().toString(),
+                                    m.active().map(Object::toString).orElse(""),
+                                    m.home().street(),
+                                    m.home().houseNumber(),
+                                    m.home().postcode(),
+                                    m.home().place()))
                     .collect(Collectors.toList())
             );
             try {
@@ -217,7 +226,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private void generateHonoringsMenu() {
         member.availableProperty().addListener((obs, wereAvailable, areAvailable) -> {
             final Collection<MenuItem> membershipMenuItems = streamCurrentMember()
-                    .map(Member::getHonorings)
+                    .map(Member::honorings)
                     .flatMap(h -> h.keySet().stream())
                     .distinct()
                     .sorted()
@@ -370,7 +379,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     //TODO Where to place this method? How to generalize it for all optional columns?
     private boolean isContributionColumnEnabled() {
         return streamCurrentMember()
-                .anyMatch(m -> m.getContribution().isPresent());
+                .anyMatch(m -> m.contribution().isPresent());
     }
 
     private Pair<Wizard, Pair<Supplier<Set<Member>>, Supplier<Originator>>> generateSepaWizard(
@@ -406,9 +415,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                     .orElseThrow()
                     .entrySet()
                     .stream()
-                    .map(entry -> new Member.Builder(entry.getKey())
-                            .setContribution(Optional.ofNullable(entry.getValue()))
-                            .generate())
+                    .map(entry -> MemberBuilder.builder(entry.getKey())
+                            .contribution(Optional.ofNullable(entry.getValue()))
+                            .build())
                     .collect(Collectors.toSet());
         }
 
@@ -416,43 +425,38 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         return new Pair<>(wizard, new Pair<>(selectedMemberCalculator, () -> sepaFormPage.getResult().orElseThrow()));
     }
 
-    private void exportSepaResults(Set<Member> selectedMember, Originator originator, SequenceType sequenceType) {
+    private void exportSepaResults(Set<Member> selectedMember, Originator originator) {
         Optional<File> optSavePath = EnvironmentHandler.askForSavePath(stage, "sepa", "xml");
         if (optSavePath.isPresent()) {
             File savePath = optSavePath.get();
             boolean useBOM = EnvironmentHandler.getProfile()
                     .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
-            List<Member> invalidMember;
             try {
-                invalidMember = SepaPain00800302XMLGenerator.createXMLFile(
-                        selectedMember, originator, sequenceType, savePath, useBOM);
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, "The sepa xml file could not be created.", ex);
-                invalidMember = List.of();
-            }
-            String message = invalidMember.stream()
-                    .map(Member::toString)
-                    .collect(Collectors.joining("\n"));
-            if (!message.isEmpty()) {
-                try {
-                    String badAccountInfoMessage
-                            = EnvironmentHandler.getResourceValue("haveBadAccountInformation");
-                    Alert alert = StagePreparer.prepare(DialogUtility.createErrorAlert(
-                            String.format("%s\n%s", message, badAccountInfoMessage)));
-                    Platform.runLater(alert::show);
-                } catch (DialogCreationException ex) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Could not inform user graphically that some member have "
-                                    + "invalid account information",
-                            ex);
-                }
+                SepaGenerator.getGenerator(SepaVersion.PAIN_008_001_09)
+                        .generateXML(
+                                new SepaDocumentDescription(
+                                        new MessageId(originator.getMsgId()),
+                                        new Creditor(
+                                                originator.getCreator(),
+                                                new AccountHolder(
+                                                        originator.getCreditor(),
+                                                        "", // FIXME Separate first- and lastname
+                                                        new IBAN(originator.getIban()),
+                                                        new BIC(originator.getBic())),
+                                                new CreditorId(originator.getCreditorId())
+                                        ),
+                                        List.of(),
+                                        GregorianCalendar.from(
+                                                originator.getExecutionDate().atStartOfDay(ZoneId.systemDefault())))
+                        );
+            } catch (bayern.steinbrecher.sepaxmlgenerator.GenerationFailedException ex) {
+                LOGGER.log(Level.WARNING, "Could not generate XML for SEPA direct debit", ex);
             }
         }
     }
 
     private void generateSepa(
-            Stream<Member> memberToSelectFuture, boolean useMemberContributions, SequenceType sequenceType) {
+            Stream<Member> memberToSelectFuture, boolean useMemberContributions) {
         Set<Member> memberToSelect = memberToSelectFuture.collect(Collectors.toSet());
 
         if (memberToSelect.isEmpty()) {
@@ -469,7 +473,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                             Pair<Supplier<Set<Member>>, Supplier<Originator>> wizardResults
                                     = wizardProvider.getValue();
                             exportSepaResults(
-                                    wizardResults.getKey().get(), wizardResults.getValue().get(), sequenceType);
+                                    wizardResults.getKey().get(), wizardResults.getValue().get());
                             // Fall through
                         case ABORTED:
                             wizardStage.close();
@@ -622,21 +626,21 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     @FXML
     @SuppressWarnings("unused")
     private void generateContributionSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(streamNonContributionFree(), true, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(streamNonContributionFree(), true));
     }
 
     @FXML
     @SuppressWarnings("unused")
     private void generateUniversalSepa(ActionEvent aevt) {
-        callOnDisabled(aevt, () -> generateSepa(streamCurrentMember(), false, SequenceType.RCUR));
+        callOnDisabled(aevt, () -> generateSepa(streamCurrentMember(), false));
     }
 
     private List<String> checkIbans() {
         String noIban = EnvironmentHandler.getResourceValue("noIban");
         return streamCurrentMember()
-                .filter(m -> !SepaUtility.isValidIban(m.getAccountHolder().getIban()))
+                .filter(m -> !SepaUtility.isValidIban(m.mandate().owner().iban().value()))
                 .map(m -> {
-                    String iban = m.getAccountHolder().getIban();
+                    String iban = m.mandate().owner().iban().value();
                     return m + ": \"" + (iban.isEmpty() ? noIban : iban) + "\"";
                 })
                 .collect(Collectors.toList());
@@ -645,9 +649,9 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private List<String> checkBics() {
         String noBic = EnvironmentHandler.getResourceValue("noBic");
         return streamCurrentMember()
-                .filter(m -> !SepaUtility.isValidBic(m.getAccountHolder().getBic()))
+                .filter(m -> !SepaUtility.isValidBic(m.mandate().owner().bic().value()))
                 .map(m -> {
-                    String bic = m.getAccountHolder().getBic();
+                    String bic = m.mandate().owner().bic().value();
                     return m + ": \"" + (bic.isEmpty() ? noBic : bic) + "\"";
                 })
                 .collect(Collectors.toList());
@@ -664,11 +668,11 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     }
 
     private List<String> checkBirthdays() {
-        return checkDates(streamCurrentMember(), m -> m.getPerson().getBirthday());
+        return checkDates(streamCurrentMember(), m -> m.person().birthday());
     }
 
     private List<String> checkMandateSigned() {
-        return checkDates(streamCurrentMember(), m -> m.getAccountHolder().getMandateSigned());
+        return checkDates(streamCurrentMember(), m -> m.mandate().signed());
     }
 
     private List<String> checkContributions() {
@@ -676,11 +680,11 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         if (isContributionColumnEnabled()) {
             invalidContributions = streamCurrentMember()
                     .filter(m -> {
-                        Optional<Double> contribution = m.getContribution();
+                        Optional<Double> contribution = m.contribution();
                         return contribution.isEmpty() || contribution.get() < 0
-                                || contribution.get() == 0 && !m.isContributionfree();
+                                || contribution.get() == 0 && !m.contributionfree();
                     })
-                    .map(m -> m.toString() + ": " + m.getContribution())
+                    .map(m -> m.toString() + ": " + m.contribution())
                     .collect(Collectors.toList());
         } else {
             invalidContributions = new ArrayList<>();
@@ -887,7 +891,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             return member.get()
                     .get()
                     .stream()
-                    .filter(m -> m.getLeavingDate().isEmpty());
+                    .filter(m -> m.leavingDate().isEmpty());
         } catch (InterruptedException | ExecutionException ex) {
             LOGGER.log(Level.SEVERE, "Failed to query current members. Return empty list.", ex);
             return Stream.of();
@@ -896,7 +900,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
 
     private Stream<Member> streamNonContributionFree() {
         return streamCurrentMember()
-                .filter(m -> !m.isContributionfree());
+                .filter(m -> !m.contributionfree());
     }
 
     private Stream<Member> streamBirthdayMembers(int year) {

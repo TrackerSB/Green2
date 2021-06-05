@@ -49,8 +49,8 @@ public final class AddressGenerator {
      */
     private static Map<Member, String> createSalutations(Collection<Member> member, Map<String, String> nicknames) {
         return member.stream().collect(Collectors.toMap(m -> m,
-                m -> (m.getPerson().isMale() ? "Lieber " : "Liebe ")
-                + nicknames.getOrDefault(m.getPerson().getPrename(), m.getPerson().getPrename())));
+                m -> (m.person().male() ? "Lieber " : "Liebe ")
+                + nicknames.getOrDefault(m.person().firstname(), m.person().firstname())));
     }
 
     /**
@@ -64,16 +64,16 @@ public final class AddressGenerator {
         return new StringBuilder("Vorname;Nachname;Strasse;Hausnummer;PLZ;Ort;Geburtstag;Anrede\n")
                 .append(memberSalutationsMapping.entrySet().stream()
                         .map(entry -> {
-                            Person person = entry.getKey().getPerson();
-                            Address address = entry.getKey().getHome();
+                            Person person = entry.getKey().person();
+                            Address address = entry.getKey().home();
                             return new StringJoiner(";")
-                                    .add(person.getPrename())
-                                    .add(person.getLastname())
-                                    .add(address.getStreet())
-                                    .add(address.getHouseNumber())
-                                    .add(address.getPostcode())
-                                    .add(address.getPlace())
-                                    .add(String.valueOf(person.getBirthday()))
+                                    .add(person.firstname())
+                                    .add(person.lastname())
+                                    .add(address.street())
+                                    .add(address.houseNumber())
+                                    .add(address.postcode())
+                                    .add(address.place())
+                                    .add(String.valueOf(person.birthday()))
                                     .add(entry.getValue())
                                     .toString();
                         })

@@ -23,10 +23,10 @@ public final class BirthdayGenerator {
      * members name.
      */
     public static final Comparator<Member> SORTING = Comparator.comparing(
-            (Member m) -> m.getPerson().getBirthday().getYear()).reversed()
-            .thenComparing(m -> m.getPerson().getBirthday().getMonth())
-            .thenComparing(m -> m.getPerson().getBirthday().getDayOfMonth())
-            .thenComparing(m -> m.getPerson().getName());
+            (Member m) -> m.person().birthday().getYear()).reversed()
+            .thenComparing(m -> m.person().birthday().getMonth())
+            .thenComparing(m -> m.person().birthday().getDayOfMonth())
+            .thenComparing(m -> m.person().name());
 
     /**
      * Prohibit construction of an object.
@@ -50,23 +50,23 @@ public final class BirthdayGenerator {
 
         member.sort(SORTING);
 
-        boolean distinguishActivePassive = member.parallelStream().anyMatch(m -> m.isActive().isPresent());
+        boolean distinguishActivePassive = member.parallelStream().anyMatch(m -> m.active().isPresent());
 
         StringBuilder output = new StringBuilder("Geburtstage ")
                 .append(year);
         List<Member> currentActive = new ArrayList<>();
         List<Member> currentPassive = new ArrayList<>();
         List<Member> currentNeither = new ArrayList<>();
-        int currentAge = year - member.get(0).getPerson().getBirthday().getYear();
+        int currentAge = year - member.get(0).person().birthday().getYear();
         for (Member m : member) {
-            if (year - m.getPerson().getBirthday().getYear() != currentAge) {
+            if (year - m.person().birthday().getYear() != currentAge) {
                 appendMember(
                         output, currentAge, currentActive, currentPassive, currentNeither, distinguishActivePassive);
                 currentActive.clear();
                 currentPassive.clear();
-                currentAge = year - m.getPerson().getBirthday().getYear();
+                currentAge = year - m.person().birthday().getYear();
             }
-            Optional<Boolean> active = m.isActive();
+            Optional<Boolean> active = m.active();
             if (active.isPresent()) {
                 if (active.get()) {
                     currentActive.add(m);
@@ -86,8 +86,8 @@ public final class BirthdayGenerator {
     private static StringBuilder getMemberLines(List<Member> member) {
         return member.stream()
                 .map(m -> {
-                    Person person = m.getPerson();
-                    return person.getPrename() + ';' + person.getLastname() + ';' + person.getBirthday() + '\n';
+                    Person person = m.person();
+                    return person.firstname() + ';' + person.lastname() + ';' + person.birthday() + '\n';
                 })
                 .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append);
     }
@@ -144,7 +144,7 @@ public final class BirthdayGenerator {
      * @see Profile#getAgeFunction()
      */
     public static boolean getsNotified(Member member, int year) {
-        LocalDate birthday = member.getPerson().getBirthday();
+        LocalDate birthday = member.person().birthday();
         return birthday != null
                 && EnvironmentHandler.getProfile()
                         .getAgeFunction()

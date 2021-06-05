@@ -10,6 +10,9 @@ dependencies {
     implementation "bayern.steinbrecher:DBConnector:0.15"
     implementation "bayern.steinbrecher:JavaUtility:0.18-rc.2-SNAPSHOT"
     implementation "bayern.steinbrecher:GenericWizard:1.61-rc.12-SNAPSHOT"
+    implementation "bayern.steinbrecher:SepaXMLGenerator:0.1-rc.4-SNAPSHOT"
+    annotationProcessor "io.soabase.record-builder:record-builder-processor:1.19"
+    compileOnly "io.soabase.record-builder:record-builder-core:1.19"
 }
 
 javafx {
