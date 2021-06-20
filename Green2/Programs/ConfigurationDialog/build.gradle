@@ -4,9 +4,9 @@ run {
 
 dependencies {
     implementation project(":SharedBasis")
-    implementation "bayern.steinbrecher:CheckedElements:0.12"
+    implementation "bayern.steinbrecher:CheckedElements:0.13-rc.2-SNAPSHOT"
     implementation "bayern.steinbrecher:DBConnector:0.15"
-    implementation "bayern.steinbrecher:JavaUtility:0.18-rc.2-SNAPSHOT"
+    implementation "bayern.steinbrecher:JavaUtility:0.18-rc.9-SNAPSHOT"
     implementation "bayern.steinbrecher:GenericWizard:1.61-rc.12-SNAPSHOT"
 }
 

@@ -22,8 +22,7 @@ import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogUtility;
-import bayern.steinbrecher.javaUtility.SepaUtility;
+import bayern.steinbrecher.javaUtility.DialogGenerator;
 import bayern.steinbrecher.sepaxmlgenerator.AccountHolder;
 import bayern.steinbrecher.sepaxmlgenerator.BIC;
 import bayern.steinbrecher.sepaxmlgenerator.Creditor;
@@ -114,6 +113,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
             .withZone(ZoneId.systemDefault());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
+    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     private Stage stage;
     private DBConnection dbConnection;
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
@@ -318,7 +318,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private void showNoMemberForOutputDialog() {
         String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
         try {
-            DialogUtility.showAndWait(DialogUtility.createInfoAlert(noMemberForOutput, noMemberForOutput));
+            DialogGenerator.showAndWait(DIALOG_GENERATOR.createInfoAlert(noMemberForOutput, noMemberForOutput));
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not inform user graphically that no member were found", ex);
         }
@@ -638,7 +638,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private List<String> checkIbans() {
         String noIban = EnvironmentHandler.getResourceValue("noIban");
         return streamCurrentMember()
-                .filter(m -> !SepaUtility.isValidIban(m.mandate().owner().iban().value()))
+                .filter(m -> m.mandate().owner().iban().isValid())
                 .map(m -> {
                     String iban = m.mandate().owner().iban().value();
                     return m + ": \"" + (iban.isEmpty() ? noIban : iban) + "\"";
@@ -649,7 +649,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private List<String> checkBics() {
         String noBic = EnvironmentHandler.getResourceValue("noBic");
         return streamCurrentMember()
-                .filter(m -> !SepaUtility.isValidBic(m.mandate().owner().bic().value()))
+                .filter(m -> m.mandate().owner().bic().isValid())
                 .map(m -> {
                     String bic = m.mandate().owner().bic().value();
                     return m + ": \"" + (bic.isEmpty() ? noBic : bic) + "\"";
@@ -776,7 +776,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String credits = EnvironmentHandler.getResourceValue("credits");
         String creditsContent = EnvironmentHandler.getResourceValue("creditsContent");
         try {
-            Alert alert = StagePreparer.prepare(DialogUtility.createMessageAlert(creditsContent, credits, credits));
+            Alert alert = StagePreparer.prepare(DIALOG_GENERATOR.createMessageAlert(creditsContent, credits, credits));
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show credits graphically to user", ex);
@@ -793,7 +793,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String versionInfo = AppInfo.VERSION + " (" + AppInfo.UPDATE_NAME + ")" + compDateTime;
         String version = EnvironmentHandler.getResourceValue("version");
         try {
-            Alert alert = StagePreparer.prepare(DialogUtility.createInfoAlert(versionInfo, version, version));
+            Alert alert = StagePreparer.prepare(DIALOG_GENERATOR.createInfoAlert(versionInfo, version, version));
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show version information graphically to user", ex);

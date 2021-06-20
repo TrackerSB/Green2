@@ -29,7 +29,7 @@ import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.sharedBasis.utility.ThreadUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogUtility;
+import bayern.steinbrecher.javaUtility.DialogGenerator;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
@@ -59,6 +59,7 @@ public class MemberManagement extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(MemberManagement.class.getName());
     private static final long SPLASHSCREEN_DISPLAY_DURATION = 2500; // [ms]
+    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     private Profile loadedProfile;
     private DBConnection dbConnection;
 
@@ -147,25 +148,25 @@ public class MemberManagement extends Application {
             } catch (AuthException ex) {
                 LOGGER.log(Level.INFO, null, ex);
                 String checkInput = EnvironmentHandler.getResourceValue("checkInput");
-                failureReport = DialogUtility.createInfoAlert(checkInput, checkInput);
+                failureReport = DIALOG_GENERATOR.createInfoAlert(checkInput, checkInput);
             } catch (ConnectionFailedException ex) {
                 LOGGER.log(Level.INFO, null, ex);
                 String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
-                failureReport = DialogUtility.createInfoAlert(checkConnection, checkConnection);
+                failureReport = DIALOG_GENERATOR.createInfoAlert(checkConnection, checkConnection);
             } catch (DatabaseNotFoundException ex) {
                 LOGGER.log(Level.SEVERE, "Could not find database on host.", ex);
                 String databaseNotFound = EnvironmentHandler.getResourceValue("databaseNotFound");
-                failureReport = DialogUtility.createErrorAlert(databaseNotFound, databaseNotFound);
+                failureReport = DIALOG_GENERATOR.createErrorAlert(databaseNotFound, databaseNotFound);
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Could not connect due to an unhandled exception.", ex);
                 String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
-                failureReport = DialogUtility.createStacktraceAlert(ex, unexpectedAbort, unexpectedAbort);
+                failureReport = DIALOG_GENERATOR.createStacktraceAlert(ex, unexpectedAbort, unexpectedAbort);
             }
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show error to user", ex);
         }
         if (failureReport != null) {
-            DialogUtility.showAndWait(StagePreparer.prepare(failureReport));
+            DialogGenerator.showAndWait(StagePreparer.prepare(failureReport));
         }
         return Optional.ofNullable(dbConnection);
     }
@@ -180,7 +181,7 @@ public class MemberManagement extends Application {
                     LOGGER.log(Level.WARNING, "The database to connect to does not exist");
                     String databaseNotExistent = EnvironmentHandler.getResourceValue(
                             "couldntFindDatabase", dbConnection.getDatabaseName());
-                    failureReport = DialogUtility.createErrorAlert(databaseNotExistent, databaseNotExistent);
+                    failureReport = DIALOG_GENERATOR.createErrorAlert(databaseNotExistent, databaseNotExistent);
                 } else {
                     Map<TableScheme<?, ?>, Set<SimpleColumnPattern<?, ?>>> missingColumns = new HashMap<>();
                     for (TableScheme<?, ?> scheme : Tables.SCHEMES) {
@@ -202,13 +203,13 @@ public class MemberManagement extends Application {
                                     return entry.getKey() + ": " + missingColumnsListing;
                                 })
                                 .collect(Collectors.joining("\n"));
-                        failureReport = DialogUtility.createErrorAlert(invalidScheme, missingColumnsListingMessage);
+                        failureReport = DIALOG_GENERATOR.createErrorAlert(invalidScheme, missingColumnsListingMessage);
                     }
                 }
             } catch (QueryFailedException ex) {
                 LOGGER.log(Level.SEVERE, "Could not validate database connection", ex);
                 String validationFailed = EnvironmentHandler.getResourceValue("validationFailed");
-                failureReport = DialogUtility.createErrorAlert(validationFailed, validationFailed);
+                failureReport = DIALOG_GENERATOR.createErrorAlert(validationFailed, validationFailed);
             }
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show error to user", ex);
@@ -216,7 +217,7 @@ public class MemberManagement extends Application {
         if (failureReport == null) {
             return true;
         } else {
-            DialogUtility.showAndWait(StagePreparer.prepare(failureReport));
+            DialogGenerator.showAndWait(StagePreparer.prepare(failureReport));
             return false;
         }
     }
@@ -322,8 +323,8 @@ public class MemberManagement extends Application {
             } else {
                 String badConfigs = EnvironmentHandler.getResourceValue("badConfigs", loadedProfile.getProfileName());
                 try {
-                    Alert failureReport = StagePreparer.prepare(DialogUtility.createErrorAlert(badConfigs, badConfigs));
-                    DialogUtility.showAndWait(failureReport)
+                    Alert failureReport = StagePreparer.prepare(DIALOG_GENERATOR.createErrorAlert(badConfigs, badConfigs));
+                    DialogGenerator.showAndWait(failureReport)
                             .ifPresent(buttontype -> {
                                 if (buttontype == ButtonType.OK) {
                                     Programs.CONFIGURATION_DIALOG.call();

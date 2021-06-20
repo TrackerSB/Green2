@@ -1,7 +1,7 @@
 package bayern.steinbrecher.green2.sharedBasis.utility;
 
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogUtility;
+import bayern.steinbrecher.javaUtility.DialogGenerator;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class ThreadUtility {
+    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     private static final Logger LOGGER = Logger.getLogger(ThreadUtility.class.getName());
     public static final UncaughtExceptionHandler DEFAULT_THREAD_EXCEPTION_HANDLER = (thread, exception) -> {
         LOGGER.log(
@@ -20,13 +21,13 @@ public final class ThreadUtility {
         Alert stacktraceAlert;
         try {
             stacktraceAlert = StagePreparer.prepare(
-                    DialogUtility.createStacktraceAlert(exception, "unexpectedAbort"));
+                    DIALOG_GENERATOR.createStacktraceAlert(exception, "unexpectedAbort"));
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show stacktrace to user", ex);
             stacktraceAlert = null;
         }
         if (stacktraceAlert != null) {
-            DialogUtility.showAndWait(stacktraceAlert);
+            DialogGenerator.showAndWait(stacktraceAlert);
         }
     };
 

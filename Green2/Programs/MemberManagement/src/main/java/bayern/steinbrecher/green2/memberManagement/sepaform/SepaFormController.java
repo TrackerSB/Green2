@@ -9,7 +9,9 @@ import bayern.steinbrecher.checkedElements.textfields.sepa.MessageIdTextField;
 import bayern.steinbrecher.green2.memberManagement.people.Originator;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.javaUtility.BindingUtility;
-import bayern.steinbrecher.javaUtility.SepaUtility;
+import bayern.steinbrecher.sepaxmlgenerator.MessageId;
+import bayern.steinbrecher.sepaxmlgenerator.PaymentInformationId;
+import bayern.steinbrecher.sepaxmlgenerator.SepaDocumentDescription;
 import bayern.steinbrecher.wizard.WizardPageController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -59,15 +61,15 @@ public class SepaFormController extends WizardPageController<Optional<Originator
         List<CheckedTextField> checkedTextFields = Arrays.asList(creatorTextField, creditorTextField, ibanTextField,
                 bicTextField, creditorIdTextField, purposeTextField, messageIdTextField, pmtInfIdTextField);
 
-        pmtInfIdTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_PMTINFID);
+        pmtInfIdTextField.setMaxColumnCount(PaymentInformationId.MAX_CHAR_PMTINFID);
         pmtInfIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
-                "helpPmtInfId", SepaUtility.UNIQUE_MONTH_PMTINFID, SepaUtility.MAX_CHAR_PMTINFID));
-        creatorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_FIELD);
+                "helpPmtInfId", PaymentInformationId.UNIQUE_MONTH_PMTINFID, PaymentInformationId.MAX_CHAR_PMTINFID));
+        creatorTextField.setMaxColumnCount(SepaDocumentDescription.MAX_CHAR_NAME_FIELD);
         creatorHelpButton.setHelpMessage(
-                EnvironmentHandler.getResourceValue("helpCreator", SepaUtility.MAX_CHAR_NAME_FIELD));
-        creditorTextField.setMaxColumnCount(SepaUtility.MAX_CHAR_NAME_FIELD);
+                EnvironmentHandler.getResourceValue("helpCreator", SepaDocumentDescription.MAX_CHAR_NAME_FIELD));
+        creditorTextField.setMaxColumnCount(SepaDocumentDescription.MAX_CHAR_NAME_FIELD);
         messageIdHelpButton.setHelpMessage(EnvironmentHandler.getResourceValue(
-                "helpMessageId", SepaUtility.UNIQUE_DAYS_MESSAGEID, SepaUtility.MAX_CHAR_MESSAGE_ID));
+                "helpMessageId", MessageId.UNIQUE_DAYS_MESSAGEID, MessageId.MAX_CHAR_MESSAGE_ID));
 
         bindValidProperty(executionDatePicker.validProperty()
                 .and(BindingUtility.reduceAnd(checkedTextFields.stream()

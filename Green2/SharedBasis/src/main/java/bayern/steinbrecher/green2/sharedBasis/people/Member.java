@@ -36,6 +36,22 @@ public record Member(
         COLLATOR.setStrength(Collator.SECONDARY);
     }
 
+    public Member {
+        if (active == null) {
+            active = Optional.empty();
+        }
+        if (contribution == null) {
+            contribution = Optional.empty();
+        }
+        if (leavingDate == null) {
+            leavingDate = Optional.empty();
+        }
+    }
+
+    private Optional<Boolean> initActive(){
+        return Optional.empty();
+    }
+
     /**
      * The application reuses the IDs of the associated mandates (unique) as membership number (unique). Thus there
      * should be 1:1 mapping between instances of {@link Member} and {@link DirectDebitMandate}.

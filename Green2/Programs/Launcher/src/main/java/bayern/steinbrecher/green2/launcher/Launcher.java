@@ -14,7 +14,7 @@ import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.sharedBasis.utility.ThreadUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.URLUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogUtility;
+import bayern.steinbrecher.javaUtility.DialogGenerator;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 public final class Launcher extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(Launcher.class.getName());
+    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     public static final String PROGRAMFOLDER_PATH_ONLINE
             = URLUtility.resolveURL("https://steinbrecher.bayern/green2")
             .orElse("");
@@ -154,12 +155,12 @@ public final class Launcher extends Application {
             LOGGER.log(Level.SEVERE, "The installation process failed", ex);
             try {
                 Alert stacktraceAlert = StagePreparer.prepare(
-                        DialogUtility.createStacktraceAlert(ex,
+                        DIALOG_GENERATOR.createStacktraceAlert(ex,
                                 EnvironmentHandler.getResourceValue("installErrorMessage"),
                                 EnvironmentHandler.getResourceValue("installError")
                         )
                 );
-                DialogUtility.showAndWait(stacktraceAlert);
+                DialogGenerator.showAndWait(stacktraceAlert);
             } catch (DialogCreationException exx) {
                 LOGGER.log(Level.WARNING, "Could not show exception to user", exx);
             }

@@ -4,7 +4,7 @@ import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;
 import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogUtility;
+import bayern.steinbrecher.javaUtility.DialogGenerator;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -36,6 +36,7 @@ public class ProfileChoice implements StagePreparer {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileChoice.class.getName());
     private static final String LAST_PROFILE_KEY = "defaultProfile";
+    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     private Profile profile;
     private boolean created;
     private final GridPane profilePane = new GridPane();
@@ -97,11 +98,11 @@ public class ProfileChoice implements StagePreparer {
         String message = MessageFormat.format(EnvironmentHandler.getResourceValue("reallyDelete"), profileName);
         try {
             Alert confirmation = StagePreparer.prepare(
-                    DialogUtility.createConfirmationAlert(Alert.AlertType.CONFIRMATION, message));
+                    DIALOG_GENERATOR.createConfirmationAlert(Alert.AlertType.CONFIRMATION, message));
             DialogPane dialogPane = confirmation.getDialogPane();
             ((Button) dialogPane.lookupButton(ButtonType.OK)).setDefaultButton(false);
             ((Button) dialogPane.lookupButton(ButtonType.CANCEL)).setDefaultButton(true);
-            DialogUtility.showAndWait(confirmation)
+            DialogGenerator.showAndWait(confirmation)
                     .ifPresent(buttonType -> {
                         if (buttonType == ButtonType.OK) {
                             int rowIndexOfDeletedRow = -1;

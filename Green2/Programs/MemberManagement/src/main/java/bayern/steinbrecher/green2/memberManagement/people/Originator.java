@@ -2,7 +2,9 @@ package bayern.steinbrecher.green2.memberManagement.people;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;
-import bayern.steinbrecher.javaUtility.SepaUtility;
+import bayern.steinbrecher.sepaxmlgenerator.CreditorId;
+import bayern.steinbrecher.sepaxmlgenerator.IBAN;
+import bayern.steinbrecher.sepaxmlgenerator.MessageId;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -196,7 +198,7 @@ public class Originator {
      * @param msgId The new message id.
      */
     public void setMsgId(String msgId) {
-        if (!SepaUtility.isValidMessageId(msgId)) {
+        if (!new MessageId(msgId).isValid()) {
             throw new IllegalArgumentException("\"" + msgId + "\" no valid message id.");
         }
         this.msgId = msgId;
@@ -235,7 +237,7 @@ public class Originator {
      * @param iban The new IBAN.
      */
     public void setIban(String iban) {
-        if (!SepaUtility.isValidIban(iban)) {
+        if (!new IBAN(iban).isValid()) {
             throw new IllegalArgumentException("\"" + iban + "\" is no valid iban.");
         }
         this.iban = iban.replaceAll(" ", "");
@@ -274,7 +276,7 @@ public class Originator {
      * @param creditorId The new truster id.
      */
     public void setCreditorId(String creditorId) {
-        if (!SepaUtility.isValidCreditorId(creditorId)) {
+        if (!new CreditorId(creditorId).isValid()) {
             throw new IllegalArgumentException("\"" + creditorId + "\" is no valid creditor id.");
         }
         this.creditorId = creditorId.replaceAll(" ", "");
