@@ -10,6 +10,8 @@ task createDeployableArchive(type: Zip) {
      * for :Programs
      */
     subprojects {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
         afterEvaluate { // Ensure that all tasks and runtime dependencies are found
             subprojects.each {
                 // NOTE "startScripts" depends already on "jar"
