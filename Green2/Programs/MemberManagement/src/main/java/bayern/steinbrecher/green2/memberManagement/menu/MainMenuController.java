@@ -52,6 +52,8 @@ import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.LoadException;
@@ -183,7 +185,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
 
     private void showHonorings(int yearsOfMembership) {
         if (yearSpinner.isValid()) {
-            List<List<String>> result = new ArrayList<>();
+            ObservableList<List<String>> result = FXCollections.observableArrayList();
             result.add(List.of(
                     EnvironmentHandler.getResourceValue("membershipNumber"),
                     EnvironmentHandler.getResourceValue("prename"),
@@ -214,7 +216,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 // FIXME Is StandaloneWizardPage more appropriate?
                 Stage resultStage = StagePreparer.getDefaultPreparedStage();
                 final TablePage resultsPage = new TablePage();
-                resultsPage.setResults(result);
+                resultsPage.setContents(result);
                 resultsPage.embedStandaloneWizardPage(resultStage, null);
                 resultStage.show();
             } catch (LoadException ex) {
@@ -599,7 +601,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 } else {
                     filteredQueryResult = queryResult;
                 }
-                resultDialog.setResults(filteredQueryResult);
+                resultDialog.setContents(filteredQueryResult);
                 return "queryResult";
             });
             queryPage.setFinishAndNext(false, () -> "exportColumnSelection");
