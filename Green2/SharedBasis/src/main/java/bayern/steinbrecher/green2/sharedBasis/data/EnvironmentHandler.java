@@ -75,7 +75,7 @@ public final class EnvironmentHandler {
     /**
      * Returns the value behind {@code key} of the resource bundle inserted params.
      *
-     * @param key The key to search for.
+     * @param key    The key to search for.
      * @param params The params to insert.
      * @return The value with inserted params.
      */
@@ -94,7 +94,7 @@ public final class EnvironmentHandler {
     /**
      * Returns a list of values behind {@code key} of the resource bundle and with inserted params.
      *
-     * @param key The key to search for.
+     * @param key    The key to search for.
      * @param params The list of params to insert each in the value behind {@code key}.
      * @return The list of values with inserted params.
      */
@@ -130,7 +130,7 @@ public final class EnvironmentHandler {
      * Loads the profile with name {@code profileName}.
      *
      * @param profileName The name of the profile to load.
-     * @param newProfile {@code true} if it is new and does not exist yet.
+     * @param newProfile  {@code true} if it is new and does not exist yet.
      * @return The loaded profile.
      */
     public static Profile loadProfile(String profileName, boolean newProfile) {
@@ -153,16 +153,17 @@ public final class EnvironmentHandler {
      * Opens a dialog asking the user to choose a directory based on the directory selected last time which is updated
      * on success.
      *
-     * @param owner The owner of the dialog.
-     * @param filePrefixKey The key of the name of the file which may be extended by a number if it already exists.
-     * @param fileEnding The format of the file. NOTE: Without leading point.
+     * @param owner                  The owner of the dialog.
+     * @param filePrefixKey          The key of the name of the file which may be extended by a number if it already
+     *                               exists.
+     * @param fileEnding             The format of the file. NOTE: Without leading point.
      * @param filePrefixKeyArguments Arguments passed when resolving {@code filePrefixKey}.
      * @return The chosen directory or {@link Optional#empty()} if no directory was chosen.
      * @see IOStreamUtility#askForSavePath(javafx.stage.Stage, java.lang.String, java.lang.String, java.lang.String)
      * @see #getResourceValue(java.lang.String, java.lang.Object...)
      */
     public static Optional<File> askForSavePath(Stage owner, String filePrefixKey, String fileEnding,
-            Object... filePrefixKeyArguments) {
+                                                Object... filePrefixKeyArguments) {
         File initialDirectory = new File(PREFERENCES_USER_NODE.get(LAST_SAVE_PATH_KEY, DEFAULT_SAVE_PATH));
         if (!initialDirectory.exists()) {
             initialDirectory = new File(DEFAULT_SAVE_PATH);
