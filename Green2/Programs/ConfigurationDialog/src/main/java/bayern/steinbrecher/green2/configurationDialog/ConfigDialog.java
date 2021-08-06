@@ -2,15 +2,12 @@ package bayern.steinbrecher.green2.configurationDialog;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,14 +16,14 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class ConfigDialog extends Application implements StagePreparer {
+public class ConfigDialog extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(ConfigDialog.class.getName());
 
     @Override
     public void start(Stage primaryStage) {
         ProfileChoice.askForProfile(true).ifPresent(profile -> {
-            Stage stage = getPreparedStage();
+            Stage stage = EnvironmentHandler.STAGE_FACTORY.create();
             try {
                 EnvironmentHandler.loadProfile(profile);
 
@@ -56,21 +53,6 @@ public class ConfigDialog extends Application implements StagePreparer {
         });
     }
 
-    @Override
-    public Collection<String> getRegisteredStylesheets() {
-        Collection<String> stylesheets = new ArrayList<>(StagePreparer.super.getRegisteredStylesheets());
-        stylesheets.add(
-                getClass()
-                        .getResource("/bayern/steinbrecher/green2/configurationDialog/configDialog.css")
-                        .toExternalForm());
-        return stylesheets;
-    }
-
-    /**
-     * main-method.
-     *
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         launch(args);
     }

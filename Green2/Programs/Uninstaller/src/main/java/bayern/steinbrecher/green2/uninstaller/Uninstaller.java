@@ -3,7 +3,6 @@ package bayern.steinbrecher.green2.uninstaller;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.SupportedOS;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.uninstaller.confirmUninstall.ConfirmUninstall;
 import bayern.steinbrecher.green2.uninstaller.deleteConfigs.DeleteConfigs;
 import bayern.steinbrecher.wizard.Wizard;
@@ -38,7 +37,7 @@ public final class Uninstaller extends Application {
         confirmUninstallPage.setFinishAndNext(true, null);
         deleteConfigsPage.setFinishAndNext(false, () -> "confirmUninstall");
 
-        Stage stage = StagePreparer.getDefaultPreparedStage();
+        Stage stage = EnvironmentHandler.STAGE_FACTORY.create();
         Wizard wizard = Wizard.create(pages);
         wizard.stateProperty().addListener((obs, oldVal, newVal) -> {
             switch (newVal) {

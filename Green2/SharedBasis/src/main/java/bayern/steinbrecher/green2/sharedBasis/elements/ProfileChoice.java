@@ -2,9 +2,8 @@ package bayern.steinbrecher.green2.sharedBasis.elements;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Profile;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogGenerator;
+import bayern.steinbrecher.javaUtility.DialogFactory;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -32,11 +31,10 @@ import java.util.logging.Logger;
  *
  * @author Stefan Huber
  */
-public class ProfileChoice implements StagePreparer {
+public class ProfileChoice {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileChoice.class.getName());
     private static final String LAST_PROFILE_KEY = "defaultProfile";
-    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     private Profile profile;
     private boolean created;
     private final GridPane profilePane = new GridPane();
@@ -97,12 +95,12 @@ public class ProfileChoice implements StagePreparer {
     private void askForDeleteProfile(String profileName) {
         String message = MessageFormat.format(EnvironmentHandler.getResourceValue("reallyDelete"), profileName);
         try {
-            Alert confirmation = StagePreparer.prepare(
-                    DIALOG_GENERATOR.createConfirmationAlert(Alert.AlertType.CONFIRMATION, message));
+            Alert confirmation =
+                    EnvironmentHandler.DIALOG_FACTORY.createConfirmationAlert(Alert.AlertType.CONFIRMATION, message);
             DialogPane dialogPane = confirmation.getDialogPane();
             ((Button) dialogPane.lookupButton(ButtonType.OK)).setDefaultButton(false);
             ((Button) dialogPane.lookupButton(ButtonType.CANCEL)).setDefaultButton(true);
-            DialogGenerator.showAndWait(confirmation)
+            DialogFactory.showAndWait(confirmation)
                     .ifPresent(buttonType -> {
                         if (buttonType == ButtonType.OK) {
                             int rowIndexOfDeletedRow = -1;
@@ -161,7 +159,7 @@ public class ProfileChoice implements StagePreparer {
         Optional<Profile> profile;
         if (editable) {
             ProfileChoice choice = new ProfileChoice();
-            Stage choiceStage = choice.getPreparedStage();
+            Stage choiceStage = EnvironmentHandler.STAGE_FACTORY.create();
             choice.embedContentIntoAndWait(choiceStage);
             profile = Optional.ofNullable(choice.profile);
         } else {
@@ -174,8 +172,7 @@ public class ProfileChoice implements StagePreparer {
                 initialProfile = null;
             }
 
-            ChoiceDialog<String> choiceDialog = StagePreparer.prepare(
-                    new ChoiceDialog<>(initialProfile, availableProfiles));
+            ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(initialProfile, availableProfiles);
             DialogPane dialogPane = choiceDialog.dialogPaneProperty().get();
             Platform.runLater(() -> dialogPane.lookupButton(ButtonType.OK).requestFocus());
 

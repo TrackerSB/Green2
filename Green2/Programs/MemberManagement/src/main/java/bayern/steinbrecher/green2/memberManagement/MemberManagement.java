@@ -26,10 +26,9 @@ import bayern.steinbrecher.green2.sharedBasis.data.ProfileSettings;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
 import bayern.steinbrecher.green2.sharedBasis.elements.ProfileChoice;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.sharedBasis.utility.ThreadUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogGenerator;
+import bayern.steinbrecher.javaUtility.DialogFactory;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
@@ -59,7 +58,6 @@ public class MemberManagement extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(MemberManagement.class.getName());
     private static final long SPLASHSCREEN_DISPLAY_DURATION = 2500; // [ms]
-    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     private Profile loadedProfile;
     private DBConnection dbConnection;
 
@@ -90,7 +88,7 @@ public class MemberManagement extends Application {
 
     private static void showSplashScreen() {
         SplashScreen splashScreen = new SplashScreen();
-        Stage splashScreenStage = splashScreen.getPreparedStage();
+        Stage splashScreenStage = EnvironmentHandler.STAGE_FACTORY.create();
         try {
             splashScreen.embedStandaloneWizardPage(splashScreenStage, EnvironmentHandler.getResourceValue("skip"));
         } catch (LoadException ex) {
@@ -148,25 +146,26 @@ public class MemberManagement extends Application {
             } catch (AuthException ex) {
                 LOGGER.log(Level.INFO, null, ex);
                 String checkInput = EnvironmentHandler.getResourceValue("checkInput");
-                failureReport = DIALOG_GENERATOR.createInfoAlert(checkInput, checkInput);
+                failureReport = EnvironmentHandler.DIALOG_FACTORY.createInfoAlert(checkInput, checkInput);
             } catch (ConnectionFailedException ex) {
                 LOGGER.log(Level.INFO, null, ex);
                 String checkConnection = EnvironmentHandler.getResourceValue("checkConnection");
-                failureReport = DIALOG_GENERATOR.createInfoAlert(checkConnection, checkConnection);
+                failureReport = EnvironmentHandler.DIALOG_FACTORY.createInfoAlert(checkConnection, checkConnection);
             } catch (DatabaseNotFoundException ex) {
                 LOGGER.log(Level.SEVERE, "Could not find database on host.", ex);
                 String databaseNotFound = EnvironmentHandler.getResourceValue("databaseNotFound");
-                failureReport = DIALOG_GENERATOR.createErrorAlert(databaseNotFound, databaseNotFound);
+                failureReport = EnvironmentHandler.DIALOG_FACTORY.createErrorAlert(databaseNotFound, databaseNotFound);
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "Could not connect due to an unhandled exception.", ex);
                 String unexpectedAbort = EnvironmentHandler.getResourceValue("unexpectedAbort");
-                failureReport = DIALOG_GENERATOR.createStacktraceAlert(ex, unexpectedAbort, unexpectedAbort);
+                failureReport = EnvironmentHandler.DIALOG_FACTORY.createStacktraceAlert(ex, unexpectedAbort,
+                        unexpectedAbort);
             }
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show error to user", ex);
         }
         if (failureReport != null) {
-            DialogGenerator.showAndWait(StagePreparer.prepare(failureReport));
+            DialogFactory.showAndWait(failureReport);
         }
         return Optional.ofNullable(dbConnection);
     }
@@ -181,7 +180,8 @@ public class MemberManagement extends Application {
                     LOGGER.log(Level.WARNING, "The database to connect to does not exist");
                     String databaseNotExistent = EnvironmentHandler.getResourceValue(
                             "couldntFindDatabase", dbConnection.getDatabaseName());
-                    failureReport = DIALOG_GENERATOR.createErrorAlert(databaseNotExistent, databaseNotExistent);
+                    failureReport = EnvironmentHandler.DIALOG_FACTORY.createErrorAlert(databaseNotExistent,
+                            databaseNotExistent);
                 } else {
                     Map<TableScheme<?, ?>, Set<SimpleColumnPattern<?, ?>>> missingColumns = new HashMap<>();
                     for (TableScheme<?, ?> scheme : Tables.SCHEMES) {
@@ -203,13 +203,14 @@ public class MemberManagement extends Application {
                                     return entry.getKey() + ": " + missingColumnsListing;
                                 })
                                 .collect(Collectors.joining("\n"));
-                        failureReport = DIALOG_GENERATOR.createErrorAlert(invalidScheme, missingColumnsListingMessage);
+                        failureReport = EnvironmentHandler.DIALOG_FACTORY.createErrorAlert(invalidScheme,
+                                missingColumnsListingMessage);
                     }
                 }
             } catch (QueryFailedException ex) {
                 LOGGER.log(Level.SEVERE, "Could not validate database connection", ex);
                 String validationFailed = EnvironmentHandler.getResourceValue("validationFailed");
-                failureReport = DIALOG_GENERATOR.createErrorAlert(validationFailed, validationFailed);
+                failureReport = EnvironmentHandler.DIALOG_FACTORY.createErrorAlert(validationFailed, validationFailed);
             }
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show error to user", ex);
@@ -217,7 +218,7 @@ public class MemberManagement extends Application {
         if (failureReport == null) {
             return true;
         } else {
-            DialogGenerator.showAndWait(StagePreparer.prepare(failureReport));
+            DialogFactory.showAndWait(failureReport);
             return false;
         }
     }
@@ -236,7 +237,7 @@ public class MemberManagement extends Application {
         assert dbConnection != null : "Cannot open main menu without established database connection";
 
         MainMenu mainMenu = new MainMenu(dbConnection);
-        Stage menuStage = mainMenu.getPreparedStage();
+        Stage menuStage = EnvironmentHandler.STAGE_FACTORY.create();
         try {
             mainMenu.embedStandaloneWizardPage(menuStage, null);
         } catch (LoadException ex) {
@@ -257,7 +258,7 @@ public class MemberManagement extends Application {
                 showSplashScreen();
 
                 WaitScreen waitScreen = new WaitScreen();
-                Stage waitScreenStage = waitScreen.getPreparedStage();
+                Stage waitScreenStage = EnvironmentHandler.STAGE_FACTORY.create();
                 try {
                     waitScreen.embedStandaloneWizardPage(
                             waitScreenStage, EnvironmentHandler.getResourceValue("cancel"));
@@ -274,7 +275,7 @@ public class MemberManagement extends Application {
                 } else {
                     login = new SimpleLogin();
                 }
-                Stage loginStage = login.getPreparedStage();
+                Stage loginStage = EnvironmentHandler.STAGE_FACTORY.create();
                 try {
                     login.embedStandaloneWizardPage(loginStage, EnvironmentHandler.getResourceValue("login"));
                 } catch (LoadException ex) {
@@ -323,8 +324,8 @@ public class MemberManagement extends Application {
             } else {
                 String badConfigs = EnvironmentHandler.getResourceValue("badConfigs", loadedProfile.getProfileName());
                 try {
-                    Alert failureReport = StagePreparer.prepare(DIALOG_GENERATOR.createErrorAlert(badConfigs, badConfigs));
-                    DialogGenerator.showAndWait(failureReport)
+                    Alert failureReport = EnvironmentHandler.DIALOG_FACTORY.createErrorAlert(badConfigs, badConfigs);
+                    DialogFactory.showAndWait(failureReport)
                             .ifPresent(buttontype -> {
                                 if (buttontype == ButtonType.OK) {
                                     Programs.CONFIGURATION_DIALOG.call();

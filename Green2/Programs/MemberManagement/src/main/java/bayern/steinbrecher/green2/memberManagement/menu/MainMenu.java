@@ -2,11 +2,8 @@ package bayern.steinbrecher.green2.memberManagement.menu;
 
 import bayern.steinbrecher.dbConnector.DBConnection;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.wizard.StandaloneWizardPage;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -14,7 +11,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public class MainMenu extends StandaloneWizardPage<Optional<Void>, MainMenuController> implements StagePreparer {
+public class MainMenu extends StandaloneWizardPage<Optional<Void>, MainMenuController> {
 
     private final DBConnection dbConnection;
 
@@ -31,12 +28,5 @@ public class MainMenu extends StandaloneWizardPage<Optional<Void>, MainMenuContr
     @Override
     protected void afterControllerInitialized() {
         getController().setDbConnection(dbConnection);
-    }
-
-    @Override
-    public Collection<String> getRegisteredStylesheets() {
-        Collection<String> stylesheets = new ArrayList<>(StagePreparer.super.getRegisteredStylesheets());
-        stylesheets.add(getClass().getResource("MainMenu.css").toExternalForm());
-        return stylesheets;
     }
 }

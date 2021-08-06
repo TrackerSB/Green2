@@ -2,11 +2,15 @@ package bayern.steinbrecher.green2.sharedBasis.data;
 
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
+import bayern.steinbrecher.javaUtility.DialogFactory;
+import bayern.steinbrecher.javaUtility.StageFactory;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -54,6 +58,16 @@ public final class EnvironmentHandler {
     public static final String APP_DATA_PATH = HOME_DIR + (SupportedOS.CURRENT == SupportedOS.WINDOWS
             ? "/AppData/Roaming/" : "/.config/") + PathUtility.APPLICATION_FOLDER_NAME;
     private static final Property<Profile> loadedProfile = new SimpleObjectProperty<>();
+
+    private static final String LOGO_PATH = EnvironmentHandler.class
+            .getResource("/bayern/steinbrecher/green2/sharedBasis/icons/logo.png")
+            .toExternalForm();
+    private static final Image LOGO = new Image(LOGO_PATH);
+    // FIXME Add default icon to stage factory
+    public static final StageFactory STAGE_FACTORY
+            = new StageFactory(Modality.APPLICATION_MODAL, StageStyle.DECORATED, LOGO,
+            "/bayern/steinbrecher/green2/sharedBasis/styles/styles.css", null);
+    public static final DialogFactory DIALOG_FACTORY = new DialogFactory(STAGE_FACTORY);
 
     static {
         //Create configDir if not existing

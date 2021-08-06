@@ -10,11 +10,10 @@ import bayern.steinbrecher.green2.sharedBasis.data.SupportedOS;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.Programs;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.green2.sharedBasis.utility.ThreadUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.URLUtility;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogGenerator;
+import bayern.steinbrecher.javaUtility.DialogFactory;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -46,7 +45,6 @@ import java.util.logging.Logger;
 public final class Launcher extends Application {
 
     private static final Logger LOGGER = Logger.getLogger(Launcher.class.getName());
-    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     public static final String PROGRAMFOLDER_PATH_ONLINE
             = URLUtility.resolveURL("https://steinbrecher.bayern/green2")
             .orElse("");
@@ -91,8 +89,8 @@ public final class Launcher extends Application {
         downloadTarget.deleteOnExit();
         FileOutputStream downloadTargetStream = new FileOutputStream(downloadTarget);
 
+        Stage progressStage = EnvironmentHandler.STAGE_FACTORY.create();
         ProgressDialog progress = new ProgressDialog();
-        Stage progressStage = StagePreparer.getDefaultPreparedStage();
         progress.embedStandaloneWizardPage(progressStage, EnvironmentHandler.getResourceValue("hide"));
         downloadSourceChannel.progressProperty()
                 .addListener((obs, previousProgress, currentProgress)
@@ -154,13 +152,12 @@ public final class Launcher extends Application {
         } catch (InterruptedException | IOException ex) {
             LOGGER.log(Level.SEVERE, "The installation process failed", ex);
             try {
-                Alert stacktraceAlert = StagePreparer.prepare(
-                        DIALOG_GENERATOR.createStacktraceAlert(ex,
-                                EnvironmentHandler.getResourceValue("installErrorMessage"),
-                                EnvironmentHandler.getResourceValue("installError")
-                        )
+                Alert stacktraceAlert = EnvironmentHandler.DIALOG_FACTORY.createStacktraceAlert(
+                        ex,
+                        EnvironmentHandler.getResourceValue("installErrorMessage"),
+                        EnvironmentHandler.getResourceValue("installError")
                 );
-                DialogGenerator.showAndWait(stacktraceAlert);
+                DialogFactory.showAndWait(stacktraceAlert);
             } catch (DialogCreationException exx) {
                 LOGGER.log(Level.WARNING, "Could not show exception to user", exx);
             }

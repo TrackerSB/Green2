@@ -1,9 +1,7 @@
 package bayern.steinbrecher.green2.launcher.elements;
 
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import javafx.application.HostServices;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -19,7 +17,7 @@ import java.util.Optional;
  *
  * @author Stefan Huber
  */
-public class ChoiceDialog implements StagePreparer {
+public class ChoiceDialog {
 
     private Boolean installUpdates;
 
@@ -61,7 +59,7 @@ public class ChoiceDialog implements StagePreparer {
      */
     public static Optional<Boolean> askForUpdate(HostServices hostServices) {
         ChoiceDialog choiceDialog = new ChoiceDialog();
-        Stage choiceDialogStage = choiceDialog.getPreparedStage();
+        Stage choiceDialogStage = EnvironmentHandler.STAGE_FACTORY.create();
         choiceDialog.embedContentIntoAndWait(choiceDialogStage, hostServices);
         return Optional.ofNullable(choiceDialog.installUpdates);
     }

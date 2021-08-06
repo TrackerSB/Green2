@@ -5,6 +5,7 @@ run {
 dependencies {
     implementation project(":SharedBasis")
     implementation "bayern.steinbrecher:GenericWizard:1.61-rc.17-SNAPSHOT"
+    implementation "bayern.steinbrecher:JavaUtility:0.18-rc.11-SNAPSHOT"
 }
 
 javafx {

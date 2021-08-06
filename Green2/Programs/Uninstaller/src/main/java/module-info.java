@@ -2,6 +2,7 @@ module bayern.steinbrecher.green2.Uninstaller {
     exports bayern.steinbrecher.green2.uninstaller;
 
     requires bayern.steinbrecher.GenericWizard;
+    requires bayern.steinbrecher.Utility;
     requires bayern.steinbrecher.green2.SharedBasis;
     requires java.logging;
     requires java.prefs;

@@ -20,9 +20,8 @@ import bayern.steinbrecher.green2.sharedBasis.people.Member;
 import bayern.steinbrecher.green2.sharedBasis.people.MemberBuilder;
 import bayern.steinbrecher.green2.sharedBasis.utility.IOStreamUtility;
 import bayern.steinbrecher.green2.sharedBasis.utility.PathUtility;
-import bayern.steinbrecher.green2.sharedBasis.utility.StagePreparer;
 import bayern.steinbrecher.javaUtility.DialogCreationException;
-import bayern.steinbrecher.javaUtility.DialogGenerator;
+import bayern.steinbrecher.javaUtility.DialogFactory;
 import bayern.steinbrecher.sepaxmlgenerator.AccountHolder;
 import bayern.steinbrecher.sepaxmlgenerator.BIC;
 import bayern.steinbrecher.sepaxmlgenerator.Creditor;
@@ -115,7 +114,6 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
             .withZone(ZoneId.systemDefault());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
-    private static final DialogGenerator DIALOG_GENERATOR = new DialogGenerator();
     private Stage stage;
     private DBConnection dbConnection;
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
@@ -214,7 +212,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             );
             try {
                 // FIXME Is StandaloneWizardPage more appropriate?
-                Stage resultStage = StagePreparer.getDefaultPreparedStage();
+                Stage resultStage = EnvironmentHandler.STAGE_FACTORY.create();
                 final TablePage resultsPage = new TablePage();
                 resultsPage.setContents(result);
                 resultsPage.embedStandaloneWizardPage(resultStage, null);
@@ -320,7 +318,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private void showNoMemberForOutputDialog() {
         String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
         try {
-            DialogGenerator.showAndWait(DIALOG_GENERATOR.createInfoAlert(noMemberForOutput, noMemberForOutput));
+            DialogFactory.showAndWait(EnvironmentHandler.DIALOG_FACTORY.createInfoAlert(noMemberForOutput, noMemberForOutput));
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not inform user graphically that no member were found", ex);
         }
@@ -467,7 +465,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             Pair<Wizard, Pair<Supplier<Set<Member>>, Supplier<Originator>>> wizardProvider
                     = generateSepaWizard(memberToSelect, useMemberContributions);
             Wizard wizard = wizardProvider.getKey();
-            Stage wizardStage = StagePreparer.getDefaultPreparedStage();
+            Stage wizardStage = EnvironmentHandler.STAGE_FACTORY.create();
             wizard.stateProperty()
                     .addListener((obs, previousState, currentState) -> {
                         switch (currentState) {
@@ -606,7 +604,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             });
             queryPage.setFinishAndNext(false, () -> "exportColumnSelection");
 
-            Stage wizardStage = StagePreparer.getDefaultPreparedStage();
+            Stage wizardStage = EnvironmentHandler.STAGE_FACTORY.create();
             wizardStage.initOwner(stage);
             wizardStage.initModality(Modality.WINDOW_MODAL);
             wizardStage.setTitle(EnvironmentHandler.getResourceValue("queryData"));
@@ -721,7 +719,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
                 reports.put(EnvironmentHandler.getResourceValue(key), messages);
             });
 
-            Stage reportsStage = StagePreparer.getDefaultPreparedStage();
+            Stage reportsStage = EnvironmentHandler.STAGE_FACTORY.create();
             reportsStage.initOwner(getStage());
             reportsStage.initModality(Modality.APPLICATION_MODAL);
             reportsStage.initStyle(StageStyle.UTILITY);
@@ -778,7 +776,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String credits = EnvironmentHandler.getResourceValue("credits");
         String creditsContent = EnvironmentHandler.getResourceValue("creditsContent");
         try {
-            Alert alert = StagePreparer.prepare(DIALOG_GENERATOR.createMessageAlert(creditsContent, credits, credits));
+            Alert alert = EnvironmentHandler.DIALOG_FACTORY.createMessageAlert(creditsContent, credits, credits);
             Platform.runLater(alert::show);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show credits graphically to user", ex);
@@ -795,8 +793,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         String versionInfo = AppInfo.VERSION + " (" + AppInfo.UPDATE_NAME + ")" + compDateTime;
         String version = EnvironmentHandler.getResourceValue("version");
         try {
-            Alert alert = StagePreparer.prepare(DIALOG_GENERATOR.createInfoAlert(versionInfo, version, version));
-            Platform.runLater(alert::show);
+            Alert alert = EnvironmentHandler.DIALOG_FACTORY.createInfoAlert(versionInfo, version, version);
+            DialogFactory.showAndWait(alert);
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not show version information graphically to user", ex);
         }
