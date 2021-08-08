@@ -7,6 +7,7 @@ module bayern.steinbrecher.green2.SharedBasis {
     requires bayern.steinbrecher.DBConnector;
     requires bayern.steinbrecher.SepaXMLGenerator;
     requires bayern.steinbrecher.Utility;
+    requires io.soabase.recordbuilder.core;
     requires java.compiler;
     requires java.logging;
     requires java.prefs;
@@ -16,7 +17,6 @@ module bayern.steinbrecher.green2.SharedBasis {
     requires javafx.graphics;
 
     requires static bayern.steinbrecher.GenericWizard;
-    requires static record.builder.core;
 
     // FIXME Opens to whom?
     opens bayern.steinbrecher.green2.sharedBasis.data.language;
