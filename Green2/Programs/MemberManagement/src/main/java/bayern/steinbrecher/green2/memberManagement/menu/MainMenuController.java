@@ -26,6 +26,7 @@ import bayern.steinbrecher.sepaxmlgenerator.AccountHolder;
 import bayern.steinbrecher.sepaxmlgenerator.BIC;
 import bayern.steinbrecher.sepaxmlgenerator.Creditor;
 import bayern.steinbrecher.sepaxmlgenerator.CreditorId;
+import bayern.steinbrecher.sepaxmlgenerator.DirectDebitTransaction;
 import bayern.steinbrecher.sepaxmlgenerator.IBAN;
 import bayern.steinbrecher.sepaxmlgenerator.MessageId;
 import bayern.steinbrecher.sepaxmlgenerator.SepaDocumentDescription;
@@ -114,6 +115,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
             .withZone(ZoneId.systemDefault());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
+    public static final SepaGenerator SEPA_GENERATOR = SepaGenerator.getGenerator(SepaVersion.PAIN_008_001_09);
     private Stage stage;
     private DBConnection dbConnection;
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
@@ -318,7 +320,8 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
     private void showNoMemberForOutputDialog() {
         String noMemberForOutput = EnvironmentHandler.getResourceValue("noMemberForOutput");
         try {
-            DialogFactory.showAndWait(EnvironmentHandler.DIALOG_FACTORY.createInfoAlert(noMemberForOutput, noMemberForOutput));
+            DialogFactory.showAndWait(EnvironmentHandler.DIALOG_FACTORY.createInfoAlert(noMemberForOutput,
+                    noMemberForOutput));
         } catch (DialogCreationException ex) {
             LOGGER.log(Level.WARNING, "Could not inform user graphically that no member were found", ex);
         }
@@ -425,31 +428,43 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
         return new Pair<>(wizard, new Pair<>(selectedMemberCalculator, () -> sepaFormPage.getResult().orElseThrow()));
     }
 
+    private Collection<DirectDebitTransaction> generateTransactions(Set<Member> members, String purpose) {
+        return members.stream()
+                .filter(m -> !m.contributionfree())
+                .map(m -> new DirectDebitTransaction(
+                        m.mandate(),
+                        purpose,
+                        m.contribution().get()
+                ))
+                .toList();
+    }
+
     private void exportSepaResults(Set<Member> selectedMember, Originator originator) {
         Optional<File> optSavePath = EnvironmentHandler.askForSavePath(stage, "sepa", "xml");
         if (optSavePath.isPresent()) {
-            File savePath = optSavePath.get();
-            boolean useBOM = EnvironmentHandler.getProfile()
-                    .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
+            Collection<DirectDebitTransaction> transactions
+                    = generateTransactions(selectedMember, originator.getPurpose());
             try {
-                SepaGenerator.getGenerator(SepaVersion.PAIN_008_001_09)
-                        .generateXML(
-                                new SepaDocumentDescription(
-                                        new MessageId(originator.getMsgId()),
-                                        new Creditor(
-                                                originator.getCreator(),
-                                                new AccountHolder(
-                                                        originator.getCreditor(),
-                                                        "", // FIXME Separate first- and lastname
-                                                        new IBAN(originator.getIban()),
-                                                        new BIC(originator.getBic())),
-                                                new CreditorId(originator.getCreditorId())
-                                        ),
-                                        List.of(),
-                                        GregorianCalendar.from(
-                                                originator.getExecutionDate().atStartOfDay(ZoneId.systemDefault())))
-                        );
-            } catch (bayern.steinbrecher.sepaxmlgenerator.GenerationFailedException ex) {
+                String sepaContent = SEPA_GENERATOR.generateXML(
+                        new SepaDocumentDescription(
+                                new MessageId(originator.getMsgId()),
+                                new Creditor(
+                                        originator.getCreator(),
+                                        new AccountHolder(
+                                                originator.getCreditor(),
+                                                "", // FIXME Separate first- and lastname
+                                                new IBAN(originator.getIban()),
+                                                new BIC(originator.getBic())),
+                                        new CreditorId(originator.getCreditorId())
+                                ),
+                                transactions,
+                                GregorianCalendar.from(
+                                        originator.getExecutionDate().atStartOfDay(ZoneId.systemDefault())))
+                );
+                boolean useBOM = EnvironmentHandler.getProfile()
+                        .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
+                IOStreamUtility.printContent(sepaContent, optSavePath.get(), useBOM);
+            } catch (bayern.steinbrecher.sepaxmlgenerator.GenerationFailedException | IOException ex) {
                 LOGGER.log(Level.WARNING, "Could not generate XML for SEPA direct debit", ex);
             }
         }

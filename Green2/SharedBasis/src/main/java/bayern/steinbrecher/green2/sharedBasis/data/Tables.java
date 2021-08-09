@@ -187,6 +187,12 @@ public final class Tables {
         public Member build() {
             member.person(person.build());
             member.home(address.build());
+            if (owner.firstname().isBlank()) {
+                owner.firstname(person.firstname());
+            }
+            if (owner.lastname().isBlank()) {
+                owner.lastname(person.lastname());
+            }
             mandate.owner(owner.build());
             member.mandate(mandate.build());
             return member.build();
