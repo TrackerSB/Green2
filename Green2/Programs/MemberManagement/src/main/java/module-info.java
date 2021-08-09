@@ -11,7 +11,6 @@ module bayern.steinbrecher.green2.MemberManagement {
     requires java.desktop;
     requires java.logging;
     requires java.sql;
-    requires java.xml;
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
