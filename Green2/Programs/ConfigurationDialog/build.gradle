@@ -4,10 +4,10 @@ run {
 
 dependencies {
     implementation project(":SharedBasis")
-    implementation "bayern.steinbrecher:CheckedElements:0.13-rc.2-SNAPSHOT"
+    implementation "bayern.steinbrecher:CheckedElements:0.13-rc.3-SNAPSHOT"
     implementation "bayern.steinbrecher:DBConnector:0.15"
-    implementation "bayern.steinbrecher:JavaUtility:0.18-rc.11-SNAPSHOT"
-    implementation "bayern.steinbrecher:GenericWizard:1.61-rc.17-SNAPSHOT"
+    implementation "bayern.steinbrecher:GenericWizard:1.61-rc.18-SNAPSHOT"
+    implementation "bayern.steinbrecher:JavaUtility:0.18-rc.12-SNAPSHOT"
 }
 
 javafx {
