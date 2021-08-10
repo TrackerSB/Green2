@@ -13,7 +13,8 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import java.net.URL?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="bayern.steinbrecher.green2.memberManagement.menu.MainMenuController">
+           fx:controller="bayern.steinbrecher.green2.memberManagement.menu.MainMenuController"
+           minWidth="500">
     <stylesheets>
         <URL value="@MainMenu.css"/>
     </stylesheets>
