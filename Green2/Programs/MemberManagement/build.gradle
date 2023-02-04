@@ -5,10 +5,10 @@ run {
 dependencies {
     implementation project(":SharedBasis")
     implementation "bayern.steinbrecher:CheckedElements:0.13-rc.3-SNAPSHOT"
-    implementation "bayern.steinbrecher:DBConnector:0.16-rc.1-SNAPSHOT"
+    implementation "bayern.steinbrecher:DBConnector:0.16-rc.73-SNAPSHOT"
     implementation "bayern.steinbrecher:JavaUtility:0.18-rc.12-SNAPSHOT"
     implementation "bayern.steinbrecher:GenericWizard:1.61-rc.18-SNAPSHOT"
-    implementation "bayern.steinbrecher:SepaXMLGenerator:0.1-rc.17-SNAPSHOT"
+    implementation "bayern.steinbrecher:SepaXMLGenerator:0.1-rc.26-SNAPSHOT"
     implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'org.jetbrains:annotations:21.0.1'
 }

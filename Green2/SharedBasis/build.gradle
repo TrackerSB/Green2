@@ -7,7 +7,7 @@ allprojects {
 }
 
 dependencies {
-    implementation "bayern.steinbrecher:DBConnector:0.16-rc.1-SNAPSHOT"
+    implementation "bayern.steinbrecher:DBConnector:0.16-rc.73-SNAPSHOT"
     implementation "bayern.steinbrecher:GenericWizard:1.61-rc.18-SNAPSHOT"
     implementation "bayern.steinbrecher:JavaUtility:0.18-rc.12-SNAPSHOT"
     implementation "bayern.steinbrecher:SepaXMLGenerator:0.1-rc.17-SNAPSHOT"

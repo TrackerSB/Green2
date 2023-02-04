@@ -38,9 +38,11 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +172,7 @@ public class MemberManagement extends Application {
         return Optional.ofNullable(dbConnection);
     }
 
-    private boolean validateDBConnection() {
+    private <T> boolean validateDBConnection() {
         assert dbConnection != null : "Cannot validate non existing database connection";
 
         Alert failureReport = null;
@@ -186,9 +188,9 @@ public class MemberManagement extends Application {
                     Map<TableScheme<?, ?>, Set<SimpleColumnPattern<?, ?>>> missingColumns = new HashMap<>();
                     for (TableScheme<?, ?> scheme : Tables.SCHEMES) {
                         dbConnection.createTableIfNotExists(scheme);
-                        Set<SimpleColumnPattern<?, ?>> currentMissingColumns = dbConnection.getMissingColumns(scheme);
+                        Set<? extends SimpleColumnPattern<?, ?>> currentMissingColumns = dbConnection.getMissingColumns(scheme);
                         if (!currentMissingColumns.isEmpty()) {
-                            missingColumns.put(scheme, currentMissingColumns);
+                            missingColumns.put(scheme, (Set<SimpleColumnPattern<?, ?>>) currentMissingColumns);
                         }
                     }
                     if (!missingColumns.isEmpty()) {

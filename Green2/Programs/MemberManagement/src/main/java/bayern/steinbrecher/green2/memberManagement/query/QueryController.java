@@ -20,6 +20,7 @@ import bayern.steinbrecher.dbConnector.query.QueryOperator;
 import bayern.steinbrecher.dbConnector.scheme.TableScheme;
 import bayern.steinbrecher.green2.sharedBasis.data.EnvironmentHandler;
 import bayern.steinbrecher.green2.sharedBasis.data.Tables;
+import bayern.steinbrecher.green2.sharedBasis.people.Member;
 import bayern.steinbrecher.javaUtility.BindingUtility;
 import bayern.steinbrecher.wizard.WizardPageController;
 import com.google.common.collect.BiMap;
@@ -80,24 +81,24 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
 
     //TODO Is there any way to connect these question marks?
     @SuppressWarnings("unchecked")
-    private Optional<CheckedConditionField<?>> createConditionField(Column<?> column) {
+    private Optional<CheckedConditionField<?>> createConditionField(Column<?, ?> column) {
         CheckedConditionField<?> conditionField;
         //TODO How to avoid isAssignableFrom(...)?
         //TODO How to avoid explicit cast?
-        Class<?> columnType = column.getColumnType();
+        Class<?> columnType = column.columnType();
         QueryGenerator queryGenerator = getDbConnection()
                 .getDbms()
                 .getQueryGenerator();
         if (Boolean.class.isAssignableFrom(columnType)) {
-            conditionField = new BooleanConditionField((Column<Boolean>) column, queryGenerator);
+            conditionField = new BooleanConditionField((Column<?, Boolean>) column, queryGenerator);
         } else if (String.class.isAssignableFrom(columnType)) {
-            conditionField = new StringConditionField((Column<String>) column, queryGenerator);
+            conditionField = new StringConditionField((Column<?, String>) column, queryGenerator);
         } else if (Integer.class.isAssignableFrom(columnType)) {
-            conditionField = new IntegerConditionField((Column<Integer>) column, queryGenerator);
+            conditionField = new IntegerConditionField((Column<?, Integer>) column, queryGenerator);
         } else if (Double.class.isAssignableFrom(columnType)) {
-            conditionField = new DoubleConditionField((Column<Double>) column, queryGenerator);
+            conditionField = new DoubleConditionField((Column<?, Double>) column, queryGenerator);
         } else if (LocalDate.class.isAssignableFrom(columnType)) {
-            conditionField = new LocalDateConditionField((Column<LocalDate>) column, queryGenerator);
+            conditionField = new LocalDateConditionField((Column<?, LocalDate>) column, queryGenerator);
         } else {
             conditionField = null;
         }
@@ -108,8 +109,8 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         queryInput.getChildren().clear();
         conditionFields.clear();
 
-        List<Column<?>> sortedColumns = connection.getAllColumns(table).stream()
-                .sorted(Comparator.comparingInt(Column::getIndex))
+        List<Column<?, ?>> sortedColumns = connection.getAllColumns(table).stream()
+                .sorted(Comparator.comparingInt(Column::index))
                 .collect(Collectors.toList());
         if (sortedColumns.isEmpty()) {
             throw new IllegalStateException(
@@ -117,7 +118,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         } else {
             Set<Integer> conditionFieldLengths = new HashSet<>();
             for (int rowCounter = 0; rowCounter < sortedColumns.size(); rowCounter++) {
-                Column<?> column = sortedColumns.get(rowCounter);
+                Column<?, ?> column = sortedColumns.get(rowCounter);
                 Optional<CheckedConditionField<?>> conditionField = createConditionField(column);
                 if (conditionField.isPresent()) {
                     conditionField.get()
@@ -130,7 +131,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                     queryInput.addRow(rowCounter, conditionFieldChildren);
                 } else {
                     LOGGER.log(Level.WARNING, "The type {0} of column {1} is not supported by the query dialog.",
-                            new Object[]{column.getColumnType(), column.getName()});
+                            new Object[]{column.columnType(), column.name()});
                 }
             }
             if (conditionFieldLengths.size() > 1) { // NOPMD - Containing more than a single element indicates a problem
@@ -192,13 +193,14 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .collect(Collectors.toList());
-            Table<?, ?> memberTable = getDbConnection().getTable(Tables.MEMBER)
+            Table<Set<Member>, Tables.MemberTableEntryBuilder> memberTable = getDbConnection().getTable(Tables.MEMBER)
                     .orElseThrow();
+            Set<Column<Tables.MemberTableEntryBuilder, ?>> columns = memberTable.getColumns();
             String searchQuery = getDbConnection()
                     .getDbms()
                     .getQueryGenerator()
                     .generateSearchQueryStatement(
-                            getDbConnection().getDatabaseName(), memberTable, memberTable.getColumns(), conditions);
+                            getDbConnection().getDatabaseName(), memberTable, columns, conditions);
             lastQueryResult.set(Optional.of(getDbConnection().execQuery(searchQuery)));
             isLastQueryUpToDate = true;
         }
@@ -235,7 +237,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
 
         private final CheckableControlBase<CheckedConditionField<T>> ccBase = new CheckableControlBase<>(this);
         private final BooleanProperty empty = new SimpleBooleanProperty(true);
-        private final Column<T> column;
+        private final Column<?, T> column;
         private final QueryGenerator queryGenerator;
 
         /**
@@ -243,13 +245,13 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
          *
          * @param column The column to create an input field for.
          */
-        CheckedConditionField(Column<T> column, QueryGenerator queryGenerator) {
+        CheckedConditionField(Column<?, T> column, QueryGenerator queryGenerator) {
             super();
             this.column = column;
             this.queryGenerator = queryGenerator;
 
             ccBase.checkedProperty().bind(emptyProperty().not());
-            getChildren().add(new Label(column.getName()));
+            getChildren().add(new Label(column.name()));
         }
 
         /**
@@ -300,7 +302,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             };
         }
 
-        public Column<T> getColumn() {
+        public Column<?, T> getColumn() {
             return column;
         }
 
@@ -375,7 +377,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
             setIndeterminate(true);
         }};
 
-        BooleanConditionField(Column<Boolean> column, QueryGenerator queryGenerator) {
+        BooleanConditionField(Column<?, Boolean> column, QueryGenerator queryGenerator) {
             super(column, queryGenerator);
 
             bindEmptyProperty(checkbox.indeterminateProperty());
@@ -427,7 +429,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         private final ComboBox<QueryOperator<String>> compareMode
                 = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
 
-        StringConditionField(Column<String> column, QueryGenerator queryGenerator) {
+        StringConditionField(Column<?, String> column, QueryGenerator queryGenerator) {
             super(column, queryGenerator);
 
             compareMode.setConverter(compareModeConverter);
@@ -474,7 +476,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
         private final CheckedSpinner<T> spinner;
         private final ComboBox<QueryOperator<T>> compareSymbol;
 
-        SpinnerConditionField(Column<T> column, QueryGenerator queryGenerator,
+        SpinnerConditionField(Column<?, T> column, QueryGenerator queryGenerator,
                               BiMap<QueryOperator<T>, String> valueDisplayMap, CheckedSpinner<T> spinner) {
             super(column, queryGenerator);
             this.spinner = spinner;
@@ -524,12 +526,12 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     private static class IntegerConditionField extends SpinnerConditionField<Integer> {
 
-        IntegerConditionField(Column<Integer> column, QueryGenerator queryGenerator) {
+        IntegerConditionField(Column<?, Integer> column, QueryGenerator queryGenerator) {
             super(column, queryGenerator,
                     HashBiMap.create(Map.of(
                             QueryOperator.IS_EQUAL_I, "=",
-                            QueryOperator.IS_SMALLER_I, "<",
-                            QueryOperator.IS_SMALLER_EQUAL_I, "<=",
+                            QueryOperator.IS_LESS_I, "<",
+                            QueryOperator.IS_LESS_EQUAL_I, "<=",
                             QueryOperator.IS_GREATER_EQUAL_I, ">=",
                             QueryOperator.IS_GREATER_I, ">"
                     )),
@@ -542,12 +544,12 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
      */
     private static class DoubleConditionField extends SpinnerConditionField<Double> {
 
-        DoubleConditionField(Column<Double> column, QueryGenerator queryGenerator) {
+        DoubleConditionField(Column<?, Double> column, QueryGenerator queryGenerator) {
             super(column, queryGenerator,
                     HashBiMap.create(Map.of(
                             QueryOperator.IS_EQUAL_D, "=",
-                            QueryOperator.IS_SMALLER_D, "<",
-                            QueryOperator.IS_SMALLER_EQUAL_D, "<=",
+                            QueryOperator.IS_LESS_D, "<",
+                            QueryOperator.IS_LESS_EQUAL_D, "<=",
                             QueryOperator.IS_GREATER_EQUAL_D, ">=",
                             QueryOperator.IS_GREATER_D, ">"
                     )),
@@ -571,7 +573,7 @@ public class QueryController extends WizardPageController<Optional<List<List<Str
                 = new ComboBox<>(FXCollections.observableArrayList(valueDisplayMap.keySet()));
         private final CheckedDatePicker datePicker = new CheckedDatePicker();
 
-        LocalDateConditionField(Column<LocalDate> column, QueryGenerator queryGenerator) {
+        LocalDateConditionField(Column<?, LocalDate> column, QueryGenerator queryGenerator) {
             super(column, queryGenerator);
 
             compareMode.setConverter(compareModeConverter);

@@ -115,7 +115,7 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
             .withZone(ZoneId.systemDefault());
     private static final int CURRENT_YEAR = LocalDate.now().getYear();
-    public static final SepaGenerator SEPA_GENERATOR = SepaGenerator.getGenerator(SepaVersion.PAIN_008_001_09);
+    public static final SepaGenerator SEPA_GENERATOR = SepaGenerator.getGenerator(SepaVersion.PAIN_008_001_02);
     private Stage stage;
     private DBConnection dbConnection;
     private final ObjectProperty<Optional<LocalDateTime>> dataLastUpdated
@@ -445,25 +445,28 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             Collection<DirectDebitTransaction> transactions
                     = generateTransactions(selectedMember, originator.getPurpose());
             try {
-                String sepaContent = SEPA_GENERATOR.generateXML(
-                        new SepaDocumentDescription(
-                                new MessageId(originator.getMsgId()),
-                                new Creditor(
-                                        originator.getCreator(),
-                                        new AccountHolder(
-                                                originator.getCreditor(),
-                                                "", // FIXME Separate first- and lastname
-                                                new IBAN(originator.getIban()),
-                                                new BIC(originator.getBic())),
-                                        new CreditorId(originator.getCreditorId())
-                                ),
-                                transactions,
-                                GregorianCalendar.from(
-                                        originator.getExecutionDate().atStartOfDay(ZoneId.systemDefault())))
-                );
-                boolean useBOM = EnvironmentHandler.getProfile()
-                        .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
-                IOStreamUtility.printContent(sepaContent, optSavePath.get(), useBOM);
+                SepaDocumentDescription sepaDescription = new SepaDocumentDescription(
+                        new MessageId(originator.getMsgId()),
+                        new Creditor(
+                                originator.getCreator(),
+                                new AccountHolder(
+                                        originator.getCreditor(),
+                                        "", // FIXME Separate first- and lastname
+                                        new IBAN(originator.getIban()),
+                                        new BIC(originator.getBic())),
+                                new CreditorId(originator.getCreditorId())
+                        ),
+                        transactions,
+                        GregorianCalendar.from(
+                                originator.getExecutionDate().atStartOfDay(ZoneId.systemDefault())));
+                if (SepaGenerator.validateDescription(sepaDescription)) {
+                    String sepaContent = SEPA_GENERATOR.generateXML(sepaDescription);
+                    boolean useBOM = EnvironmentHandler.getProfile()
+                            .getOrDefault(ProfileSettings.SEPA_USE_BOM, true);
+                    IOStreamUtility.printContent(sepaContent, optSavePath.get(), useBOM);
+                } else {
+                    LOGGER.log(Level.WARNING, "The SEPA description is invalid");
+                }
             } catch (bayern.steinbrecher.sepaxmlgenerator.GenerationFailedException | IOException ex) {
                 LOGGER.log(Level.WARNING, "Could not generate XML for SEPA direct debit", ex);
             }
@@ -484,14 +487,14 @@ public class MainMenuController extends StandaloneWizardPageController<Optional<
             wizard.stateProperty()
                     .addListener((obs, previousState, currentState) -> {
                         switch (currentState) {
-                        case FINISHED:
-                            Pair<Supplier<Set<Member>>, Supplier<Originator>> wizardResults
-                                    = wizardProvider.getValue();
-                            exportSepaResults(
-                                    wizardResults.getKey().get(), wizardResults.getValue().get());
-                            // Fall through
-                        case ABORTED:
-                            wizardStage.close();
+                            case FINISHED:
+                                Pair<Supplier<Set<Member>>, Supplier<Originator>> wizardResults
+                                        = wizardProvider.getValue();
+                                exportSepaResults(
+                                        wizardResults.getKey().get(), wizardResults.getValue().get());
+                                // Fall through
+                            case ABORTED:
+                                wizardStage.close();
                         }
                     });
             wizardStage.initOwner(stage);
